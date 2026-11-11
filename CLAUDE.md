@@ -131,3 +131,4 @@ Stopping rules:
 - Q26 says anchor C is excluded from the Owner Portfolio as a co-op; Q9 and Q19 say it is in one. Resolve before Q9, Q19 or Q26.
 - Q20's list of required component questions is incomplete.
 - Q1 stage 2: Geosupport fields and the answer fields depending on them are `pending` until the first cached responses are recorded (`profiles/geosupport.yaml`, `profiles/q01-answer.yaml`).
+- Q1 stage 3 is done. Neither scheme names a `dcterms:publisher` (an info-level `validate_skos` note). Set it when the vocabulary is first published. Later questions add their hierarchies to `vocabulary/taxonomy-notes.md`.

@@ -23,3 +23,7 @@ Each concept in `watchline.ttl` and the questions it serves. Updated per questio
 | `year-built`, `building-class`, `residential-units`, `assessed-value` | the four characteristics | Q1.4 |
 | `reported-count`, `parcel-count`, `building-count`, `unit-count` | counts, each with its counting unit | Q1.2, Q1.4 |
 | `source-snapshot`, `source-record` | provenance | Q1.4 (all) |
+
+## Stage 3 (taxonomy)
+
+Q1: 8 `skos:broader` links, each justified in `taxonomy-notes.md`. `addressed-building` is now a top concept related to `building` (was narrower). No concept IDs changed.

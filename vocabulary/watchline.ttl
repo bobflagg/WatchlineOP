@@ -8,7 +8,7 @@ vocab:watchline a skos:ConceptScheme ;
     dct:title "Watchline vocabulary"@en ;
     dct:created "2026-11-11"^^xsd:date ;
     dct:description "Controlled vocabulary for the WatchlineOP landlord research ontology pipeline."@en ;
-    skos:hasTopConcept vocab:tax-lot, vocab:bbl, vocab:building, vocab:bin, vocab:street-address,
+    skos:hasTopConcept vocab:tax-lot, vocab:bbl, vocab:building, vocab:bin, vocab:addressed-building, vocab:street-address,
         vocab:address-resolution, vocab:address-resolution-outcome, vocab:address-candidate,
         vocab:street-name-variant, vocab:hpd-registration,
         vocab:inferred-resolution, vocab:geosupport-return-code,
@@ -65,12 +65,14 @@ vocab:bin a skos:Concept ;
     skos:related vocab:building ;
     dct:source "specs/questions/q01.md" .
 
+# Top concept by intent: a role a building plays in one answer, not a kind of building (is-a test fails).
 vocab:addressed-building a skos:Concept ;
     skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
     skos:prefLabel "addressed building"@en ;
     skos:definition "The building at the input street address, as distinguished from the other buildings on the same tax lot."@en ;
     skos:scopeNote "A role a building plays in one answer, not a kind of building."@en ;
-    skos:broader vocab:building ;
+    skos:related vocab:building ;
     dct:source "specs/questions/q01.md" .
 
 vocab:street-address a skos:Concept ;

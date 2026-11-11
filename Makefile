@@ -50,8 +50,8 @@ vocab: ## Stage 1: check the controlled vocabulary file exists
 profiles: ## Stage 2: validate application profiles and column crosswalks
 	uv run python scripts/check_profiles.py
 
-taxonomy: ## Stage 3: taxonomy
-	$(call todo,stage 3 taxonomy checks)
+taxonomy: ## Stage 3: check broader/narrower links against vocabulary/taxonomy-notes.md
+	uv run python scripts/check_taxonomy.py
 
 thesaurus: ## Stage 4: thesaurus
 	$(call todo,stage 4 thesaurus checks)
