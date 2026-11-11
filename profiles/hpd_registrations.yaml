@@ -1,0 +1,52 @@
+# Application profile: HPD registrations (source key `hpd_registrations`, table public.hpd_registrations).
+# Inspected with postgres-justfix on 2026-11-11 (row count 203,236; 193,567 distinct registrationid;
+# 200,417 distinct bin; 181,863 distinct bbl). Only columns used by a question are profiled.
+profile: hpd_registrations
+source_key: hpd_registrations
+snapshot: {snapshot_id: hpd-registrations-2026-05-29, snapshot_date: "2026-05-29", note: max lastregistrationdate}
+columns:
+  registrationid:
+    semantic_type: registration identifier
+    physical_type: integer
+    allowed: {range: ">= 1"}
+    null_policy: "no nulls"
+    observed: "Not unique per row (203,236 rows, 193,567 ids): one registration can cover several buildings. Use with bin for a row locator."
+    concept: hpd-registration
+    used_by: [Q1.2]
+  boroid:
+    semantic_type: borough code of the registered building
+    physical_type: smallint
+    allowed: {values: [1, 2, 3, 4, 5]}
+    null_policy: "no nulls"
+    concept: street-address
+    used_by: [Q1.2, Q1.3]
+  housenumber:
+    semantic_type: house number of the registered building's address
+    physical_type: text
+    allowed: {format: "digits, or Queens hyphenated/lettered forms (37-36, 60-05A, 5-38 REAR)"}
+    null_policy: "no nulls. 55,161 rows are not all digits; do not parse as an integer."
+    concept: street-address
+    used_by: [Q1.2, Q1.3]
+  streetname:
+    semantic_type: street name in HPD's spelling
+    physical_type: text
+    allowed: {format: "uppercase; ordinal and spelled-out forms (54TH STREET, SEVENTH AVENUE)"}
+    null_policy: "no nulls"
+    concept: street-name-variant
+    used_by: [Q1.2, Q1.3]
+  bbl:
+    semantic_type: tax lot identifier (BBL) of the registered building
+    physical_type: "character(10)"
+    allowed: {pattern: '^[1-5][0-9]{9}$'}
+    null_policy: "no nulls, 0 malformed. boroid/block/lot agree with bbl in all rows."
+    observed: "1,096 registration rows have a bbl absent from pluto_latest; report as an unmatched registration, do not drop silently."
+    concept: bbl
+    used_by: [Q1.1, Q1.2]
+  bin:
+    semantic_type: building identifier (BIN)
+    physical_type: "character(7)"
+    allowed: {pattern: '^[1-5][0-9]{6}$', excluded_placeholders: ["'0      '", "'       '", "N000000 (1000000, 2000000, 3000000, 4000000, 5000000)", "malformed 6-digit values ('300000 ', '200000 ')"]}
+    null_policy: "0 SQL nulls. 398 rows fail the pattern (361 '0', 33 blank, 3 '300000 ', 1 '200000 ' ...). 363 match N000000. These are placeholders: reject as BINs, report the registration as having no recorded BIN."
+    observed: "Values are space-padded to 7: trim before testing. 246 BINs occur under more than one BBL. 1,065 (bbl, bin) pairs have more than one row: dedupe on (bbl, bin) and keep every registrationid as evidence. Do not choose the first row."
+    concept: bin
+    used_by: [Q1.2]

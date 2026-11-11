@@ -1,0 +1,55 @@
+# Shared evidence (provenance) profile. Applies to every sourced value in every answer.
+# Fields come from specs/roadmap.md (Stage 2) and physical-implementation.md section 1 (Evidence).
+# Term mappings are proposals for the metadata schema, not accepted external alignments.
+profile: evidence
+version: 1
+fields:
+  source_key:
+    description: Key of the source in data/sources.yaml.
+    type: string
+    allowed: {ref: data/sources.yaml#sources}
+    maps_to: dct:source
+    concept: source-record
+  snapshot_id:
+    description: Identifier of the source snapshot or release (for example pluto 26v1, a BOR release, a cache id).
+    type: string
+    allowed: {pattern: "non-empty; format per source"}
+    maps_to: dcat:version
+    concept: source-snapshot
+  snapshot_date:
+    description: As-of (data-through) date of the snapshot, not the query or restore date.
+    type: date
+    allowed: {format: ISO 8601 (YYYY-MM-DD), nullable: true, null_meaning: publisher gives no record date}
+    maps_to: prov:generatedAtTime
+    concept: source-snapshot
+  run_id:
+    description: Identifier of the build or test run that produced the value.
+    type: string
+    allowed: {pattern: "non-empty; BOR run ids keep their own format"}
+    maps_to: prov:wasGeneratedBy
+  source_category:
+    description: Where the evidence comes from, tracked separately from reliability.
+    type: enum
+    allowed: {values: [public_record, published_reporting, web_content, project_derived]}
+    maps_to: dct:type
+  assertion_type:
+    description: "Evidence rule: recorded assertion (Type I), derived conclusion or lead (Type II), or reported claim."
+    type: enum
+    allowed: {values: [type_i, type_ii, reported_claim]}
+    maps_to: project term (no Dublin Core or PROV-O equivalent); type_ii implies prov:wasDerivedFrom
+  review_status:
+    description: Review state of a claim or lead.
+    type: enum
+    allowed: {values: [unreviewed, confirmed, refuted, inconclusive, contested]}
+    maps_to: project term
+  source_record_locator:
+    description: Source-record key or reproducible row locator (table, key column, key value).
+    type: string
+    allowed: {pattern: "non-empty; for database sources 'schema.table:key=value'"}
+    maps_to: prov:hadPrimarySource
+    concept: source-record
+  mapping_git_revision:
+    description: Git revision of the mapping file that produced the value.
+    type: string
+    allowed: {pattern: "40-character lowercase hex commit id"}
+    maps_to: prov:used

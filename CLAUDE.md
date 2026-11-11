@@ -81,7 +81,7 @@ Web discovery can recur at any step. The workflow is iterative.
 - **Type II, derived conclusion or lead:** a method resolves, groups, classifies or infers beyond what a source states.
 - **Reported claim:** a publication states something. The publication is recorded evidence. The claim's truth and applicability need separate assessment.
 - Reliability per question: **I**, **II**, or **I+II** (a recorded chain with derived links).
-- Track source category separately: `public_record`, `published_reporting`, `web_content`, `project-derived`.
+- Track source category separately: `public_record`, `published_reporting`, `web_content`, `project_derived`.
 - Web and document findings are session/dossier evidence by default. Promoting them into the graph needs a separately governed process. Cached retrieval must support replay and evaluation.
 
 ## Sources
@@ -130,3 +130,4 @@ Stopping rules:
 - Name-normalization rules, the `mail_drop_list`, ACRIS document-type descriptions (`acris_document_codes` is unusable locally) and which HPD contact types count as "registered owner" are undefined. Settle each when the first question needing it is started.
 - Q26 says anchor C is excluded from the Owner Portfolio as a co-op; Q9 and Q19 say it is in one. Resolve before Q9, Q19 or Q26.
 - Q20's list of required component questions is incomplete.
+- Q1 stage 2: Geosupport fields and the answer fields depending on them are `pending` until the first cached responses are recorded (`profiles/geosupport.yaml`, `profiles/q01-answer.yaml`).

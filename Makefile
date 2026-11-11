@@ -47,8 +47,8 @@ vocab: ## Stage 1: check the controlled vocabulary file exists
 	@test -f vocabulary/watchline.ttl || { echo "vocabulary/watchline.ttl not found" >&2; exit 1; }
 	@echo "present. Run validate_skos through the skos MCP server and review its findings."
 
-profiles: ## Stage 2: metadata schema and application profiles
-	$(call todo,stage 2 profiles and column crosswalks)
+profiles: ## Stage 2: validate application profiles and column crosswalks
+	uv run python scripts/check_profiles.py
 
 taxonomy: ## Stage 3: taxonomy
 	$(call todo,stage 3 taxonomy checks)

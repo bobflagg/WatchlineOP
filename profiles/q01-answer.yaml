@@ -1,0 +1,193 @@
+# Answer-shape profile for Q1 (specs/questions/q01.md, "Required content of an answer").
+# `source` is a profile field (<profile>.<field>) or `derived` (with `derivation`).
+# Every sourced value also carries the evidence fields in profiles/evidence.yaml.
+profile: q01-answer
+question: Q1
+reliability: I
+fields:
+  input_address:
+    requirement: 1
+    source: geosupport.input_address
+    type: string
+    allowed: {pending: true}
+    concept: street-address
+    uncertainty: false
+    status: pending
+    pending_reason: geosupport input layout not yet recorded (see geosupport.yaml)
+  resolution_outcome:
+    requirement: 1
+    source: derived
+    derivation: classify the cached Geosupport response with the q01.md rules (GRC plus input-versus-returned address comparison)
+    type: enum
+    allowed: {scheme: "https://watchline.example/vocab/address-resolution-outcomes", values: [matched exactly, matched by variant, ambiguous, not found]}
+    concept: address-resolution-outcome
+    uncertainty: true
+    assertion_type: type_i
+    status: pending
+    pending_reason: depends on geosupport.grc and returned_address; the exact/variant GRC cases are still to verify
+  geosupport_return_code:
+    requirement: 1
+    source: geosupport.grc
+    type: string
+    allowed: {pending: true}
+    concept: geosupport-return-code
+    uncertainty: true
+    status: pending
+    pending_reason: no cached response
+  geosupport_reason_code:
+    requirement: 1
+    source: geosupport.reason_code
+    type: string
+    allowed: {pending: true}
+    concept: geosupport-reason-code
+    uncertainty: true
+    status: pending
+    pending_reason: no cached response
+  returned_address:
+    requirement: 1
+    source: geosupport.returned_address
+    type: string
+    allowed: {pending: true}
+    concept: street-address
+    uncertainty: true
+    status: pending
+    pending_reason: no cached response; reported when outcome is matched by variant
+  address_candidates:
+    requirement: 5
+    source: geosupport.street_name_list
+    type: list of string
+    allowed: {cardinality: ">= 2 when outcome is ambiguous, empty otherwise"}
+    concept: address-candidate
+    uncertainty: true
+    status: pending
+    pending_reason: no cached response
+  alternate_address:
+    requirement: 1
+    source: derived
+    derivation: address under which the lot was found when the input address is absent from the lot data (q01.md scenario)
+    type: string
+    allowed: {nullable: true, null_meaning: "no alternate address used"}
+    concept: alternate-address
+    uncertainty: true
+    status: pending
+    pending_reason: no worked example exists yet (q01.md Pending)
+  inferred_resolution:
+    requirement: 1
+    source: derived
+    derivation: true when the resolution used an alternate address
+    type: boolean
+    allowed: {values: [true, false]}
+    concept: inferred-resolution
+    uncertainty: true
+    assertion_type: type_ii
+    status: pending
+    pending_reason: depends on alternate_address
+  bbl:
+    requirement: 2
+    source: pluto.bbl
+    type: string
+    allowed: {pattern: '^[1-5][0-9]{9}$', nullable: true, null_meaning: "not found or ambiguous: no lot chosen"}
+    concept: bbl
+    uncertainty: false
+  tax_lot_address:
+    requirement: 2
+    source: pluto.address
+    type: string
+    allowed: {nullable: true, null_meaning: "PLUTO records no address for the lot"}
+    concept: street-address
+    uncertainty: false
+  buildings:
+    requirement: 2
+    source: hpd_registrations.bin
+    type: list of string
+    allowed: {item_pattern: '^[1-5][0-9]{6}$', empty_meaning: "no building recorded in the HPD registrations (not 'no buildings')"}
+    concept: bin
+    uncertainty: true
+    note: "Complete only for registered buildings. Placeholder BINs are excluded and reported as registrations with no recorded BIN."
+  addressed_building:
+    requirement: 2
+    source: derived
+    derivation: the BIN whose HPD housenumber and streetname match the input address after street-name normalization
+    type: string
+    allowed: {item_pattern: '^[1-5][0-9]{6}$', nullable: true, null_meaning: "no registered building matches the input address"}
+    concept: addressed-building
+    uncertainty: true
+    assertion_type: type_ii
+    status: pending
+    pending_reason: name-normalization rules are undefined (CLAUDE.md open points); settle with this question's graph tests
+  year_built:
+    requirement: 3
+    source: pluto.yearbuilt
+    type: integer
+    allowed: {range: [914, 2025], nullable: true, null_meaning: "null or zero in the source = unknown"}
+    concept: year-built
+    uncertainty: false
+  building_class:
+    requirement: 3
+    source: pluto.bldgclass
+    type: string
+    allowed: {pattern: '^[A-Z][A-Z0-9]$', nullable: true, null_meaning: "blank in the source = missing"}
+    concept: building-class
+    uncertainty: false
+  residential_units:
+    requirement: 3
+    source: pluto.unitsres
+    type: integer
+    units: residential units, lot-wide
+    allowed: {range: [0, 10914], nullable: true, null_meaning: "null in the source = missing; zero is a real value"}
+    concept: residential-units
+    uncertainty: false
+    note: "Never copy to each building or sum across BINs."
+  assessed_value:
+    requirement: 3
+    source: pluto.assesstot
+    type: integer
+    units: USD, whole dollars in the source; exact integer cents in the graph
+    allowed: {range: [0, 8496376200], nullable: true, null_meaning: "null in the source = missing"}
+    concept: assessed-value
+    uncertainty: false
+  parcel_count:
+    requirement: 4
+    source: derived
+    derivation: number of distinct BBLs the address resolves to (0 or 1 for Q1)
+    type: integer
+    counting_unit: tax lot
+    allowed: {range: [0, 1]}
+    concept: parcel-count
+    uncertainty: false
+    assertion_type: type_i
+  building_count:
+    requirement: 4
+    source: derived
+    derivation: number of distinct valid BINs in hpd_registrations for the BBL
+    type: integer
+    counting_unit: building (registered in HPD registrations)
+    allowed: {range: ">= 0"}
+    concept: building-count
+    uncertainty: true
+    assertion_type: type_i
+  unit_count:
+    requirement: 4
+    source: pluto.unitsres
+    type: integer
+    counting_unit: residential unit (lot-wide)
+    allowed: {range: [0, 10914], nullable: true, null_meaning: "missing in the source"}
+    concept: unit-count
+    uncertainty: false
+  pluto_building_count:
+    requirement: 4
+    source: pluto.numbldgs
+    type: integer
+    counting_unit: building (as PLUTO counts them)
+    allowed: {range: [0, 1862], nullable: true, null_meaning: "missing in the source"}
+    concept: building-count
+    uncertainty: true
+    note: "Cross-check only; differs from the HPD BIN count on 24,990 of 180,831 registered lots."
+  evidence:
+    requirement: 3
+    source: derived
+    derivation: evidence fields attached to each sourced value
+    type: object
+    allowed: {profile: evidence}
+    concept: source-record
+    uncertainty: false

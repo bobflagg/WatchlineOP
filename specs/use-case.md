@@ -58,7 +58,7 @@ A [BOR](dependencies.md#bor-beneficial-owner-resolution) display name or person 
 - **Type II — derived conclusion or lead:** a method resolves, groups, classifies, or infers beyond what a source explicitly states.
 - **Reported claim:** a publication states something about a subject. Its publication is recorded evidence; the claim's truth and applicability require separate assessment.
 
-Track source category separately: `public_record`, `published_reporting`, `web_content`, or `project-derived`.
+Track source category separately: `public_record`, `published_reporting`, `web_content`, or `project_derived`.
 
 ## Dossier and research stopping rules
 

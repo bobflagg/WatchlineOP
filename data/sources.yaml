@@ -30,7 +30,7 @@ sources:
     version: 26v1
     row_count: 858602
     used_for: lots (BBL), units, year built, owner name, community district for slicing
-    columns_used: bbl, borough, block, lot, cd, address, bldgclass, landuse, ownername, bldgarea, unitsres, assesstot, yearbuilt, version
+    columns_used: bbl, borough, block, lot, cd, address, bldgclass, landuse, ownername, bldgarea, unitsres, assesstot, yearbuilt, numbldgs, version
     data_through: null # PLUTO has no record date; the release is 26v1
     reliability: I
     retrieved_at: null
