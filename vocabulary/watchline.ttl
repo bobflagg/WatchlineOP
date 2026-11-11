@@ -32,6 +32,7 @@ vocab:tax-lot a skos:Concept ;
     skos:altLabel "parcel"@en, "lot"@en ;
     skos:definition "A parcel of land recorded as one unit for NYC property tax purposes."@en ;
     skos:scopeNote "A tax lot is not necessarily one building. Lot counts and building counts differ."@en ;
+    skos:related vocab:bbl, vocab:building, vocab:parcel-count, vocab:source-reported-characteristic ;
     dct:source "specs/questions/q01.md" .
 
 # Top concept by intent: an identifier is not a kind of tax lot (is-a test fails).
@@ -49,9 +50,10 @@ vocab:building a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:topConceptOf vocab:watchline ;
     skos:prefLabel "building"@en ;
-    skos:altLabel "structure"@en ;
+    skos:hiddenLabel "structure"@en ;
     skos:definition "A structure recorded by the city under its own building identifier."@en ;
     skos:scopeNote "In Q1, buildings are known only through HPD registrations. A lot with no registration has no recorded building, which is not the same as having none."@en ;
+    skos:related vocab:addressed-building, vocab:bin, vocab:building-count, vocab:hpd-registration, vocab:source-reported-characteristic, vocab:tax-lot ;
     dct:source "specs/questions/q01.md" .
 
 # Top concept by intent: an identifier is not a kind of building (is-a test fails).
@@ -62,7 +64,7 @@ vocab:bin a skos:Concept ;
     skos:altLabel "building identification number"@en ;
     skos:definition "The NYC identifier of a building."@en ;
     skos:scopeNote "Identifies a building; it is not the building itself."@en ;
-    skos:related vocab:building ;
+    skos:related vocab:building, vocab:hpd-registration ;
     dct:source "specs/questions/q01.md" .
 
 # Top concept by intent: a role a building plays in one answer, not a kind of building (is-a test fails).
@@ -79,9 +81,11 @@ vocab:street-address a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:topConceptOf vocab:watchline ;
     skos:prefLabel "street address"@en ;
-    skos:altLabel "address"@en, "input address"@en ;
+    skos:altLabel "input address"@en ;
+    skos:hiddenLabel "address"@en ;
     skos:definition "A house number and street name, in a borough, that names a place."@en ;
     skos:scopeNote "Sources spell street names differently (7 AVENUE, SEVENTH AVENUE). An input address is a street address in the role of question input."@en ;
+    skos:related vocab:address-resolution ;
     dct:source "specs/questions/q01.md" .
 
 vocab:alternate-address a skos:Concept ;
@@ -90,6 +94,7 @@ vocab:alternate-address a skos:Concept ;
     skos:definition "A different street address, such as a street-name variant or corner address, under which the same tax lot is recorded."@en ;
     skos:scopeNote "Used only when the input address is absent from the lot data. The resolution is then inferred."@en ;
     skos:broader vocab:street-address ;
+    skos:related vocab:inferred-resolution ;
     dct:source "specs/questions/q01.md", "specs/questions/q01.md#scenarios" .
 
 # --- Address resolution (Q1.3) ---
@@ -100,7 +105,7 @@ vocab:address-resolution a skos:Concept ;
     skos:prefLabel "address resolution"@en ;
     skos:definition "The act of mapping an input street address to a tax lot."@en ;
     skos:scopeNote "Its result is an address resolution outcome. The service evidence is the Geosupport return code and reason code."@en ;
-    skos:related vocab:address-resolution-outcome ;
+    skos:related vocab:address-resolution-outcome, vocab:geosupport-reason-code, vocab:geosupport-return-code, vocab:street-address ;
     dct:source "specs/questions/q01.md", "specs/questions/q01.md#address-resolution-outcomes" .
 
 vocab:street-name-variant a skos:Concept ;
@@ -118,7 +123,7 @@ vocab:hpd-registration a skos:Concept ;
     skos:prefLabel "HPD registration"@en ;
     skos:definition "A multiple-dwelling registration filed with the city's housing agency (HPD), associating a street address with a tax lot and a building."@en ;
     skos:scopeNote "In Q1 it is the only source of BINs, so a lot with no registration has no recorded building. Q2 extends this concept with the parties a registration discloses."@en ;
-    skos:related vocab:bin ;
+    skos:related vocab:bin, vocab:building ;
     dct:source "specs/questions/q01.md", "data/sources.yaml" .
 
 vocab:address-resolution-outcome a skos:Concept ;
@@ -128,6 +133,7 @@ vocab:address-resolution-outcome a skos:Concept ;
     skos:altLabel "match outcome"@en ;
     skos:definition "The classification of an input address's resolution, taking one value from the address resolution outcomes scheme."@en ;
     skos:scopeNote "Decided by the Geosupport return code and a comparison of the returned address with the input, never by message text."@en ;
+    skos:related vocab:address-resolution, vocab:geosupport-return-code ;
     dct:source "specs/questions/q01.md", "specs/questions/q01.md#address-resolution-outcomes" .
 
 vocab:matched-exactly a skos:Concept ;
@@ -143,6 +149,7 @@ vocab:matched-by-variant a skos:Concept ;
     skos:prefLabel "matched by variant"@en ;
     skos:definition "The address resolved to a tax lot, but the returned address differs from the input beyond case and whitespace, or the service returned a warning."@en ;
     skos:scopeNote "Not the same as a street-name spelling variant. The answer reports the returned address and reason code."@en ;
+    skos:related vocab:street-name-variant ;
     dct:source "specs/questions/q01.md", "specs/questions/q01.md#address-resolution-outcomes" .
 
 vocab:ambiguous a skos:Concept ;
@@ -151,6 +158,7 @@ vocab:ambiguous a skos:Concept ;
     skos:prefLabel "ambiguous"@en ;
     skos:definition "The address matched several similar street names and no tax lot was chosen."@en ;
     skos:scopeNote "The answer returns the address candidates and never silently selects one."@en ;
+    skos:related vocab:address-candidate ;
     dct:source "specs/questions/q01.md", "specs/questions/q01.md#address-resolution-outcomes" .
 
 vocab:not-found a skos:Concept ;
@@ -168,6 +176,7 @@ vocab:address-candidate a skos:Concept ;
     skos:prefLabel "address candidate"@en ;
     skos:definition "One of several street names or addresses returned for an ambiguous input address."@en ;
     skos:scopeNote "A candidate is not a match. A match is the single result of an unambiguous resolution."@en ;
+    skos:related vocab:ambiguous ;
     dct:source "specs/questions/q01.md", "specs/questions/q01.md#address-resolution-outcomes" .
 
 vocab:inferred-resolution a skos:Concept ;
@@ -176,6 +185,7 @@ vocab:inferred-resolution a skos:Concept ;
     skos:prefLabel "inferred resolution"@en ;
     skos:definition "A resolution reached through an alternate address because the input address was absent from the lot data."@en ;
     skos:scopeNote "A derived conclusion, to be labelled as inferred in the answer."@en ;
+    skos:related vocab:alternate-address ;
     dct:source "specs/questions/q01.md", "specs/questions/q01.md#scenarios" .
 
 vocab:geosupport-return-code a skos:Concept ;
@@ -185,6 +195,7 @@ vocab:geosupport-return-code a skos:Concept ;
     skos:altLabel "GRC"@en ;
     skos:definition "The code with which the Geosupport address service reports the result of a request."@en ;
     skos:scopeNote "Separate from the reason code. Classification is based on codes, not message text."@en ;
+    skos:related vocab:address-resolution, vocab:address-resolution-outcome, vocab:geosupport-reason-code ;
     dct:source "specs/questions/q01.md", "specs/questions/q01.md#address-resolution-outcomes" .
 
 vocab:geosupport-reason-code a skos:Concept ;
@@ -193,6 +204,7 @@ vocab:geosupport-reason-code a skos:Concept ;
     skos:prefLabel "Geosupport reason code"@en ;
     skos:definition "The code with which the Geosupport address service qualifies a return code."@en ;
     skos:scopeNote "Separate from the return code."@en ;
+    skos:related vocab:address-resolution, vocab:geosupport-return-code ;
     dct:source "specs/questions/q01.md", "specs/questions/q01.md#address-resolution-outcomes" .
 
 # --- Characteristics and counts (Q1.4) ---
@@ -203,6 +215,7 @@ vocab:source-reported-characteristic a skos:Concept ;
     skos:prefLabel "source-reported characteristic"@en ;
     skos:definition "A property of a tax lot or building as stated by a source record."@en ;
     skos:scopeNote "A recorded assertion. It says what the source states, not that the value is correct."@en ;
+    skos:related vocab:building, vocab:source-record, vocab:tax-lot ;
     dct:source "specs/questions/q01.md" .
 
 vocab:year-built a skos:Concept ;
@@ -223,10 +236,12 @@ vocab:building-class a skos:Concept ;
 vocab:residential-units a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:prefLabel "residential units"@en ;
-    skos:altLabel "dwelling units"@en, "apartments"@en ;
+    skos:altLabel "dwelling units"@en ;
+    skos:hiddenLabel "apartments"@en ;
     skos:definition "The number of residential units on a tax lot as reported by the source."@en ;
     skos:scopeNote "Lot-wide. Must not be copied to each building or summed across a lot's buildings."@en ;
     skos:broader vocab:source-reported-characteristic ;
+    skos:related vocab:unit-count ;
     dct:source "specs/questions/q01.md", "data/sources.yaml" .
 
 vocab:assessed-value a skos:Concept ;
@@ -250,6 +265,7 @@ vocab:parcel-count a skos:Concept ;
     skos:prefLabel "parcel count"@en ;
     skos:definition "A reported count whose counting unit is the tax lot."@en ;
     skos:broader vocab:reported-count ;
+    skos:related vocab:tax-lot ;
     dct:source "specs/questions/q01.md" .
 
 vocab:building-count a skos:Concept ;
@@ -258,6 +274,7 @@ vocab:building-count a skos:Concept ;
     skos:definition "A reported count whose counting unit is the building."@en ;
     skos:scopeNote "Complete only for registered buildings."@en ;
     skos:broader vocab:reported-count ;
+    skos:related vocab:building ;
     dct:source "specs/questions/q01.md", "data/sources.yaml" .
 
 vocab:unit-count a skos:Concept ;
@@ -276,6 +293,7 @@ vocab:source-snapshot a skos:Concept ;
     skos:topConceptOf vocab:watchline ;
     skos:prefLabel "source snapshot"@en ;
     skos:definition "A specific, identified version of a source dataset from which values were taken."@en ;
+    skos:related vocab:source-record ;
     dct:source "specs/questions/q01.md", "data/README.md" .
 
 vocab:source-record a skos:Concept ;
@@ -283,4 +301,5 @@ vocab:source-record a skos:Concept ;
     skos:topConceptOf vocab:watchline ;
     skos:prefLabel "source record"@en ;
     skos:definition "A single row or entry in a source snapshot from which a value was taken."@en ;
+    skos:related vocab:source-reported-characteristic, vocab:source-snapshot ;
     dct:source "specs/questions/q01.md", "specs/physical-implementation.md" .

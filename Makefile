@@ -53,8 +53,8 @@ profiles: ## Stage 2: validate application profiles and column crosswalks
 taxonomy: ## Stage 3: check broader/narrower links against vocabulary/taxonomy-notes.md
 	uv run python scripts/check_taxonomy.py
 
-thesaurus: ## Stage 4: thesaurus
-	$(call todo,stage 4 thesaurus checks)
+thesaurus: ## Stage 4: check related links, label notes and external mappings
+	uv run python scripts/check_thesaurus.py
 
 ontology: ## Stage 5: ontology, reasoner and OOPS!
 	$(call todo,stage 5 ontology checks)

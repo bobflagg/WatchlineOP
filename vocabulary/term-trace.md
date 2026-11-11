@@ -27,3 +27,7 @@ Each concept in `watchline.ttl` and the questions it serves. Updated per questio
 ## Stage 3 (taxonomy)
 
 Q1: 8 `skos:broader` links, each justified in `taxonomy-notes.md`. `addressed-building` is now a top concept related to `building` (was narrower). No concept IDs changed.
+
+## Stage 4 (thesaurus)
+
+Q1: 22 related pairs, each with a kind and justification in `thesaurus-notes.md`. `structure`, `address` and `apartments` are now hidden labels. 3 external mappings in `mappings/external.sssom.tsv`. No concept IDs changed.
