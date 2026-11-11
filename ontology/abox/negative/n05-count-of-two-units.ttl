@@ -1,0 +1,8 @@
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix vocab: <https://watchline.example/vocab/> .
+@prefix onto:  <https://watchline.example/onto/> .
+@prefix id:    <https://watchline.example/id/> .
+
+# Must be inconsistent: one tally is both a building count and a unit count.
+# Enforces "parcel, building and unit counts are reported separately and never converted".
+id:neg-count a onto:BuildingCount, onto:UnitCount ; onto:countValue 3 .

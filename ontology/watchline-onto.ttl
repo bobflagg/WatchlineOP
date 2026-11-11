@@ -1,0 +1,404 @@
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct:   <http://purl.org/dc/terms/> .
+@prefix prov:  <http://www.w3.org/ns/prov#> .
+@prefix vocab: <https://watchline.example/vocab/> .
+@prefix onto:  <https://watchline.example/onto/> .
+
+# Watchline ontology, Q1 fragment (Stage 5).
+# Three namespaces stay separate: concepts (vocab:), ontology elements (onto:), instances (id:).
+# The only concept IRIs used here are the four address resolution outcomes, as controlled values
+# (explicit exception recorded in concept-mapping.csv). Axiom reasons: ontology-notes.md.
+
+<https://watchline.example/onto> a owl:Ontology ;
+    dct:title "Watchline ontology"@en ;
+    dct:description "OWL 2 ontology for the WatchlineOP landlord research pipeline. This fragment covers Q1: address to tax lot and buildings."@en ;
+    dct:created "2026-11-11"^^xsd:date .
+
+# --- Annotation property for the question trace ---
+
+onto:traceQuestion a owl:AnnotationProperty ;
+    rdfs:label "traced to question"@en ;
+    rdfs:comment "Names the competency question (or sub-question) that requires the element. Every class and property carries at least one."@en ;
+    onto:traceQuestion "Q1" .
+
+# --- External terms (PROV-O, declared locally, no owl:imports) ---
+
+prov:Entity a owl:Class ;
+    rdfs:label "Entity"@en ;
+    rdfs:comment "PROV-O: a physical, digital, conceptual, or other kind of thing with some fixed aspects. Declared here because source records and snapshots are specialized from it."@en .
+
+prov:Activity a owl:Class ;
+    rdfs:label "Activity"@en ;
+    rdfs:comment "PROV-O: something that occurs over a period of time and acts upon or with entities. Declared here because an address resolution is specialized from it."@en .
+
+# --- Classes ---
+
+onto:TaxLot a owl:Class ;
+    rdfs:label "tax lot"@en ;
+    rdfs:comment "A parcel of land recorded as one unit for NYC property tax purposes. Bearer of lot-wide source-reported characteristics. Not necessarily one building."@en ;
+    onto:traceQuestion "Q1.1", "Q1.2", "Q1.4" ;
+    owl:disjointWith onto:Building .
+
+onto:Building a owl:Class ;
+    rdfs:label "building"@en ;
+    rdfs:comment "A structure recorded by the city under its own building identifier. Known in Q1 only through HPD registrations; a building is never a tax lot."@en ;
+    onto:traceQuestion "Q1.2" .
+
+onto:StreetAddress a owl:Class ;
+    rdfs:label "street address"@en ;
+    rdfs:comment "A house number and street name, in a borough, that names a place. Instances are individual spellings as a source or a request gives them; two spellings of one street are two instances."@en ;
+    onto:traceQuestion "Q1.1", "Q1.3" .
+
+onto:AddressResolution a owl:Class ;
+    rdfs:subClassOf prov:Activity ;
+    rdfs:label "address resolution"@en ;
+    rdfs:comment "One act of mapping an input street address to a tax lot. It has an outcome, and may have a tax lot, an addressed building, a returned address, candidates and service codes."@en ;
+    onto:traceQuestion "Q1.1", "Q1.3" .
+
+onto:AddressResolutionOutcome a owl:Class ;
+    rdfs:label "address resolution outcome"@en ;
+    rdfs:comment "The classification of one address resolution. A closed set of exactly four controlled values taken from the SKOS scheme address-resolution-outcomes."@en ;
+    onto:traceQuestion "Q1.3" ;
+    owl:equivalentClass [ a owl:Class ;
+        owl:oneOf ( vocab:matched-exactly vocab:matched-by-variant vocab:ambiguous vocab:not-found ) ] .
+
+onto:AddressCandidate a owl:Class ;
+    rdfs:label "address candidate"@en ;
+    rdfs:comment "One of several street names or addresses returned for an ambiguous input address. A candidate is not a match."@en ;
+    onto:traceQuestion "Q1.3" .
+
+onto:InferredResolution a owl:Class ;
+    rdfs:label "inferred resolution"@en ;
+    rdfs:comment "An address resolution reached through an alternate address because the input address was absent from the lot data. A derived conclusion (Type II), defined by use of an alternate address."@en ;
+    onto:traceQuestion "Q1.3" ;
+    owl:equivalentClass [ a owl:Class ;
+        owl:intersectionOf ( onto:AddressResolution
+            [ a owl:Restriction ; owl:onProperty onto:usedAlternateAddress ; owl:someValuesFrom onto:StreetAddress ] ) ] .
+
+onto:HpdRegistration a owl:Class ;
+    rdfs:label "HPD registration"@en ;
+    rdfs:comment "A multiple-dwelling registration filed with the city's housing agency (HPD), associating a street address with a tax lot and a building. The source of every BIN in Q1."@en ;
+    onto:traceQuestion "Q1.2" .
+
+onto:ReportedCount a owl:Class ;
+    rdfs:label "reported count"@en ;
+    rdfs:comment "A tally given in an answer, always with its counting unit named. Parcel, building and unit counts are separate kinds and are never converted into one another."@en ;
+    onto:traceQuestion "Q1.2", "Q1.4" .
+
+onto:ParcelCount a owl:Class ;
+    rdfs:subClassOf onto:ReportedCount ,
+        [ a owl:Restriction ; owl:onProperty onto:countingUnit ; owl:hasValue "tax lot" ] ;
+    rdfs:label "parcel count"@en ;
+    rdfs:comment "A reported count whose counting unit is the tax lot."@en ;
+    onto:traceQuestion "Q1.4" .
+
+onto:BuildingCount a owl:Class ;
+    rdfs:subClassOf onto:ReportedCount ,
+        [ a owl:Restriction ; owl:onProperty onto:countingUnit ; owl:hasValue "building" ] ;
+    rdfs:label "building count"@en ;
+    rdfs:comment "A reported count whose counting unit is the building. Complete only for registered buildings when counted from HPD registrations; a count read from PLUTO is a different basis and names its own source record."@en ;
+    onto:traceQuestion "Q1.2", "Q1.4" .
+
+onto:UnitCount a owl:Class ;
+    rdfs:subClassOf onto:ReportedCount ,
+        [ a owl:Restriction ; owl:onProperty onto:countingUnit ; owl:hasValue "residential unit" ] ;
+    rdfs:label "unit count"@en ;
+    rdfs:comment "A reported count whose counting unit is the residential unit. Lot-wide; the tally given in an answer, drawing on the source-reported residential units of the tax lot."@en ;
+    onto:traceQuestion "Q1.4" .
+
+[] a owl:AllDisjointClasses ;
+    owl:members ( onto:ParcelCount onto:BuildingCount onto:UnitCount ) .
+
+onto:SourceSnapshot a owl:Class ;
+    rdfs:subClassOf prov:Entity ;
+    rdfs:label "source snapshot"@en ;
+    rdfs:comment "A specific, identified version of a source dataset from which values were taken (for example PLUTO 26v1, or HPD registrations as of a date)."@en ;
+    onto:traceQuestion "Q1.4" .
+
+onto:SourceRecord a owl:Class ;
+    rdfs:subClassOf prov:Entity ;
+    rdfs:label "source record"@en ;
+    rdfs:comment "A single row or entry in a source snapshot from which a value was taken. It is evidence of what the source states, not of its correctness."@en ;
+    onto:traceQuestion "Q1.2", "Q1.4" .
+
+# --- Identifiers and addresses ---
+
+onto:hasBbl a owl:DatatypeProperty ;
+    rdfs:label "has BBL"@en ;
+    rdfs:comment "The NYC identifier of a tax lot (borough, block, lot), held as a ten-digit string, never a number. Format: profiles/pluto.yaml."@en ;
+    rdfs:domain onto:TaxLot ;
+    rdfs:range xsd:string ;
+    onto:traceQuestion "Q1.1" .
+
+onto:hasBin a owl:DatatypeProperty ;
+    rdfs:label "has BIN"@en ;
+    rdfs:comment "The NYC identifier of a building, held as a seven-digit string, never a number. Format: profiles/hpd_registrations.yaml."@en ;
+    rdfs:domain onto:Building ;
+    rdfs:range xsd:string ;
+    onto:traceQuestion "Q1.2" .
+
+onto:addressText a owl:DatatypeProperty ;
+    rdfs:label "address text"@en ;
+    rdfs:comment "The house number and street name of a street address exactly as the source or request spells it."@en ;
+    rdfs:domain onto:StreetAddress ;
+    rdfs:range xsd:string ;
+    onto:traceQuestion "Q1.1", "Q1.3" .
+
+onto:hasRecordedAddress a owl:ObjectProperty ;
+    rdfs:label "has recorded address"@en ;
+    rdfs:comment "Relates a recorded thing to the street address a source records for it, for example the single address PLUTO holds for a tax lot, or the address on an HPD registration."@en ;
+    rdfs:range onto:StreetAddress ;
+    onto:traceQuestion "Q1.1" .
+
+# --- Address resolution ---
+
+onto:hasInputAddress a owl:ObjectProperty ;
+    rdfs:label "has input address"@en ;
+    rdfs:comment "Relates an address resolution to the street address that was put to it."@en ;
+    rdfs:domain onto:AddressResolution ;
+    rdfs:range onto:StreetAddress ;
+    onto:traceQuestion "Q1.1" .
+
+onto:resolvedToTaxLot a owl:ObjectProperty ;
+    rdfs:label "resolved to tax lot"@en ;
+    rdfs:comment "Relates an address resolution to the one tax lot it chose. Absent when the outcome is ambiguous or not found."@en ;
+    rdfs:domain onto:AddressResolution ;
+    rdfs:range onto:TaxLot ;
+    onto:traceQuestion "Q1.1" .
+
+onto:hasOutcome a owl:ObjectProperty ;
+    rdfs:label "has outcome"@en ;
+    rdfs:comment "Relates an address resolution to its outcome, one of the four controlled values."@en ;
+    rdfs:domain onto:AddressResolution ;
+    rdfs:range onto:AddressResolutionOutcome ;
+    onto:traceQuestion "Q1.3" .
+
+onto:returnedAddress a owl:ObjectProperty ;
+    rdfs:label "returned address"@en ;
+    rdfs:comment "Relates an address resolution to the street address the service returned, which may differ from the input beyond case and whitespace."@en ;
+    rdfs:domain onto:AddressResolution ;
+    rdfs:range onto:StreetAddress ;
+    onto:traceQuestion "Q1.3" .
+
+onto:usedAlternateAddress a owl:ObjectProperty ;
+    rdfs:label "used alternate address"@en ;
+    rdfs:comment "Relates an address resolution to a different street address under which the same tax lot was recorded and through which the lot was reached."@en ;
+    rdfs:domain onto:AddressResolution ;
+    rdfs:range onto:StreetAddress ;
+    onto:traceQuestion "Q1.3" .
+
+onto:hasAddressCandidate a owl:ObjectProperty ;
+    rdfs:label "has address candidate"@en ;
+    rdfs:comment "Relates an address resolution to a candidate it returned. Two or more candidates accompany an ambiguous outcome."@en ;
+    rdfs:domain onto:AddressResolution ;
+    rdfs:range onto:AddressCandidate ;
+    onto:traceQuestion "Q1.3" .
+
+onto:candidateText a owl:DatatypeProperty ;
+    rdfs:label "candidate text"@en ;
+    rdfs:comment "The street name or address string of an address candidate, as the service lists it."@en ;
+    rdfs:domain onto:AddressCandidate ;
+    rdfs:range xsd:string ;
+    onto:traceQuestion "Q1.3" .
+
+onto:hasAddressedBuilding a owl:ObjectProperty ;
+    rdfs:label "has addressed building"@en ;
+    rdfs:comment "Relates an address resolution to the building at its input address, as distinguished from the other buildings on the same tax lot. The role exists only within one resolution; it is not a kind of building."@en ;
+    rdfs:domain onto:AddressResolution ;
+    rdfs:range onto:Building ;
+    onto:traceQuestion "Q1.2" .
+
+onto:geosupportReturnCode a owl:DatatypeProperty ;
+    rdfs:label "Geosupport return code"@en ;
+    rdfs:comment "The code (GRC) with which the Geosupport address service reports the result of the request behind a resolution. Outcomes are decided from codes, never message text."@en ;
+    rdfs:domain onto:AddressResolution ;
+    rdfs:range xsd:string ;
+    onto:traceQuestion "Q1.3" .
+
+onto:geosupportReasonCode a owl:DatatypeProperty ;
+    rdfs:label "Geosupport reason code"@en ;
+    rdfs:comment "The code with which the Geosupport address service qualifies the return code of the request behind a resolution. Kept separate from the return code."@en ;
+    rdfs:domain onto:AddressResolution ;
+    rdfs:range xsd:string ;
+    onto:traceQuestion "Q1.3" .
+
+# An ambiguous or not-found resolution never carries a chosen tax lot.
+[] a owl:AllDisjointClasses ;
+    owl:members (
+        [ a owl:Restriction ; owl:onProperty onto:hasOutcome ; owl:hasValue vocab:ambiguous ]
+        [ a owl:Restriction ; owl:onProperty onto:resolvedToTaxLot ; owl:someValuesFrom onto:TaxLot ] ) .
+
+[] a owl:AllDisjointClasses ;
+    owl:members (
+        [ a owl:Restriction ; owl:onProperty onto:hasOutcome ; owl:hasValue vocab:not-found ]
+        [ a owl:Restriction ; owl:onProperty onto:resolvedToTaxLot ; owl:someValuesFrom onto:TaxLot ] ) .
+
+# --- HPD registrations, tax lots and buildings ---
+
+onto:registersBuilding a owl:ObjectProperty ;
+    rdfs:label "registers building"@en ;
+    rdfs:comment "Relates an HPD registration to the building it registers (the BIN it records)."@en ;
+    rdfs:domain onto:HpdRegistration ;
+    rdfs:range onto:Building ;
+    onto:traceQuestion "Q1.2" .
+
+onto:registeredOnTaxLot a owl:ObjectProperty ;
+    rdfs:label "registered on tax lot"@en ;
+    rdfs:comment "Relates an HPD registration to the tax lot (the BBL) it records."@en ;
+    rdfs:domain onto:HpdRegistration ;
+    rdfs:range onto:TaxLot ;
+    onto:traceQuestion "Q1.2" .
+
+onto:hasRecordedBuilding a owl:ObjectProperty ;
+    rdfs:label "has recorded building"@en ;
+    rdfs:comment "Relates a tax lot to a building that an HPD registration records on it. Complete only for registered buildings: the absence of this relation does not mean the lot has no building."@en ;
+    rdfs:domain onto:TaxLot ;
+    rdfs:range onto:Building ;
+    owl:propertyChainAxiom ( [ owl:inverseOf onto:registeredOnTaxLot ] onto:registersBuilding ) ;
+    onto:traceQuestion "Q1.2" .
+
+# --- Source-reported characteristics (lot-wide) ---
+
+onto:reportedYearBuilt a owl:DatatypeProperty ;
+    rdfs:label "reported year built"@en ;
+    rdfs:comment "The year of construction a source states for a tax lot (calendar year). A recorded assertion, not a finding. Unknown is the absence of the property."@en ;
+    rdfs:domain onto:TaxLot ;
+    rdfs:range xsd:integer ;
+    onto:traceQuestion "Q1.4" .
+
+onto:reportedBuildingClass a owl:DatatypeProperty ;
+    rdfs:label "reported building class"@en ;
+    rdfs:comment "The city's code classifying the primary use and type of the buildings on a tax lot, as a source states it. The classification system is the source's."@en ;
+    rdfs:domain onto:TaxLot ;
+    rdfs:range xsd:string ;
+    onto:traceQuestion "Q1.4" .
+
+onto:reportedResidentialUnits a owl:DatatypeProperty ;
+    rdfs:label "reported residential units"@en ;
+    rdfs:comment "The number of residential units on a tax lot as a source states it. Lot-wide: must not be copied to each building or summed across a lot's buildings. Zero is a real value; missing is the absence of the property."@en ;
+    rdfs:domain onto:TaxLot ;
+    rdfs:range xsd:nonNegativeInteger ;
+    onto:traceQuestion "Q1.4" .
+
+onto:reportedAssessedValue a owl:DatatypeProperty ;
+    rdfs:label "reported assessed value"@en ;
+    rdfs:comment "The total value the city assigns to a tax lot for property tax, in whole US dollars as the source states it. The physical cent encoding is a Stage 6 decision."@en ;
+    rdfs:domain onto:TaxLot ;
+    rdfs:range xsd:nonNegativeInteger ;
+    onto:traceQuestion "Q1.4" .
+
+# --- Reported counts ---
+
+onto:countValue a owl:DatatypeProperty ;
+    rdfs:label "count value"@en ;
+    rdfs:comment "The number a reported count states."@en ;
+    rdfs:domain onto:ReportedCount ;
+    rdfs:range xsd:nonNegativeInteger ;
+    onto:traceQuestion "Q1.2", "Q1.4" .
+
+onto:countingUnit a owl:DatatypeProperty ;
+    rdfs:label "counting unit"@en ;
+    rdfs:comment "The name of the unit a reported count counts: tax lot, building or residential unit."@en ;
+    rdfs:domain onto:ReportedCount ;
+    rdfs:range xsd:string ;
+    onto:traceQuestion "Q1.4" .
+
+onto:countedForTaxLot a owl:ObjectProperty ;
+    rdfs:label "counted for tax lot"@en ;
+    rdfs:comment "Relates a reported count to the tax lot it describes."@en ;
+    rdfs:domain onto:ReportedCount ;
+    rdfs:range onto:TaxLot ;
+    onto:traceQuestion "Q1.4" .
+
+onto:countedFromRecord a owl:ObjectProperty ;
+    rdfs:label "counted from record"@en ;
+    rdfs:comment "Relates a reported count to the source record it draws on (for example a PLUTO record for a PLUTO building count). A count derived from several records names each."@en ;
+    rdfs:domain onto:ReportedCount ;
+    rdfs:range onto:SourceRecord ;
+    onto:traceQuestion "Q1.4" .
+
+# --- Evidence ---
+
+onto:hasSourceRecord a owl:ObjectProperty ;
+    rdfs:label "has source record"@en ;
+    rdfs:comment "Relates a recorded thing (a tax lot, an HPD registration, a resolution) to a source record that supports a value or relation stated about it. Which properties a record supports is a Stage 6 rule."@en ;
+    rdfs:range onto:SourceRecord ;
+    onto:traceQuestion "Q1.2", "Q1.4" .
+
+onto:inSnapshot a owl:ObjectProperty ;
+    rdfs:label "in snapshot"@en ;
+    rdfs:comment "Relates a source record to the source snapshot it is a row of."@en ;
+    rdfs:domain onto:SourceRecord ;
+    rdfs:range onto:SourceSnapshot ;
+    onto:traceQuestion "Q1.4" .
+
+onto:sourceKey a owl:DatatypeProperty ;
+    rdfs:label "source key"@en ;
+    rdfs:comment "The key of the source in data/sources.yaml (for example pluto, hpd_registrations, geosupport)."@en ;
+    rdfs:domain onto:SourceRecord ;
+    rdfs:range xsd:string ;
+    onto:traceQuestion "Q1.4" .
+
+onto:sourceRecordLocator a owl:DatatypeProperty ;
+    rdfs:label "source record locator"@en ;
+    rdfs:comment "A reproducible row locator for a source record: for a database source, schema.table:key=value."@en ;
+    rdfs:domain onto:SourceRecord ;
+    rdfs:range xsd:string ;
+    onto:traceQuestion "Q1.4" .
+
+onto:snapshotId a owl:DatatypeProperty ;
+    rdfs:label "snapshot identifier"@en ;
+    rdfs:comment "The identifier of a source snapshot or release (for example pluto-26v1)."@en ;
+    rdfs:domain onto:SourceSnapshot ;
+    rdfs:range xsd:string ;
+    onto:traceQuestion "Q1.4" .
+
+onto:snapshotDate a owl:DatatypeProperty ;
+    rdfs:label "snapshot date"@en ;
+    rdfs:comment "The as-of (data-through) date of a source snapshot, not the query or restore date. Absent when the publisher gives no record date."@en ;
+    rdfs:domain onto:SourceSnapshot ;
+    rdfs:range xsd:date ;
+    onto:traceQuestion "Q1.4" .
+
+onto:runId a owl:DatatypeProperty ;
+    rdfs:label "run identifier"@en ;
+    rdfs:comment "The identifier of the build or test run that produced a value. Evidence metadata from profiles/evidence.yaml."@en ;
+    rdfs:range xsd:string ;
+    onto:traceQuestion "Q1.4" .
+
+onto:mappingGitRevision a owl:DatatypeProperty ;
+    rdfs:label "mapping git revision"@en ;
+    rdfs:comment "The 40-character Git commit id of the mapping file that produced a value. Evidence metadata from profiles/evidence.yaml."@en ;
+    rdfs:range xsd:string ;
+    onto:traceQuestion "Q1.4" .
+
+onto:sourceCategory a owl:DatatypeProperty ;
+    rdfs:label "source category"@en ;
+    rdfs:comment "Where the evidence comes from, tracked separately from reliability: public_record, published_reporting, web_content or project_derived."@en ;
+    rdfs:range [ a rdfs:Datatype ; owl:oneOf ( "public_record" "published_reporting" "web_content" "project_derived" ) ] ;
+    onto:traceQuestion "Q1.4" .
+
+onto:assertionType a owl:DatatypeProperty ;
+    rdfs:label "assertion type"@en ;
+    rdfs:comment "The evidence rule behind a value: type_i (recorded assertion), type_ii (derived conclusion or lead) or reported_claim. Recorded, derived and reported are never merged."@en ;
+    rdfs:range [ a rdfs:Datatype ; owl:oneOf ( "type_i" "type_ii" "reported_claim" ) ] ;
+    onto:traceQuestion "Q1.4" .
+
+onto:reviewStatus a owl:DatatypeProperty ;
+    rdfs:label "review status"@en ;
+    rdfs:comment "The review state of a claim or lead: unreviewed, confirmed, refuted, inconclusive or contested."@en ;
+    rdfs:range [ a rdfs:Datatype ; owl:oneOf ( "unreviewed" "confirmed" "refuted" "inconclusive" "contested" ) ] ;
+    onto:traceQuestion "Q1.4" .
+
+# --- Controlled values: the four outcomes (concept IRIs kept, see concept-mapping.csv) ---
+
+vocab:matched-exactly a owl:NamedIndividual, onto:AddressResolutionOutcome .
+vocab:matched-by-variant a owl:NamedIndividual, onto:AddressResolutionOutcome .
+vocab:ambiguous a owl:NamedIndividual, onto:AddressResolutionOutcome .
+vocab:not-found a owl:NamedIndividual, onto:AddressResolutionOutcome .
+
+[] a owl:AllDifferent ;
+    owl:distinctMembers ( vocab:matched-exactly vocab:matched-by-variant vocab:ambiguous vocab:not-found ) .

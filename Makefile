@@ -32,7 +32,7 @@ dirs: ## Create the planned repository layout
 	mkdir -p $(DIRS)
 
 versions: ## Print tool versions to record with test results
-	@uv --version; uv run python --version
+	@uv --version; uv run python --version; java -version 2>&1 | head -1; tools/robot --version 2>&1 | tail -1
 
 check-env: ## Verify required .env keys are set (values are not printed)
 	@test -f .env || { echo ".env not found" >&2; exit 1; }
@@ -56,8 +56,8 @@ taxonomy: ## Stage 3: check broader/narrower links against vocabulary/taxonomy-n
 thesaurus: ## Stage 4: check related links, label notes and external mappings
 	uv run python scripts/check_thesaurus.py
 
-ontology: ## Stage 5: ontology, reasoner and OOPS!
-	$(call todo,stage 5 ontology checks)
+ontology: ## Stage 5: ontology, reasoner, report and OOPS! record
+	uv run python scripts/check_ontology.py
 
 ## --- Stage 6: knowledge graph ---------------------------------------------
 

@@ -1,0 +1,75 @@
+concept_iri,element_iri,element_kind,questions,note
+https://watchline.example/vocab/tax-lot,https://watchline.example/onto/TaxLot,class,Q1.1;Q1.2;Q1.4,
+https://watchline.example/vocab/building,https://watchline.example/onto/Building,class,Q1.2,
+https://watchline.example/vocab/street-address,https://watchline.example/onto/StreetAddress,class,Q1.1;Q1.3,
+https://watchline.example/vocab/address-resolution,https://watchline.example/onto/AddressResolution,class,Q1.1;Q1.3,
+https://watchline.example/vocab/address-resolution-outcome,https://watchline.example/onto/AddressResolutionOutcome,class,Q1.3,Closed enumeration of the four outcome values.
+https://watchline.example/vocab/address-candidate,https://watchline.example/onto/AddressCandidate,class,Q1.3,
+https://watchline.example/vocab/inferred-resolution,https://watchline.example/onto/InferredResolution,class,Q1.3,Defined class: address resolution that used an alternate address.
+https://watchline.example/vocab/hpd-registration,https://watchline.example/onto/HpdRegistration,class,Q1.2,
+https://watchline.example/vocab/reported-count,https://watchline.example/onto/ReportedCount,class,Q1.2;Q1.4,
+https://watchline.example/vocab/parcel-count,https://watchline.example/onto/ParcelCount,class,Q1.4,
+https://watchline.example/vocab/building-count,https://watchline.example/onto/BuildingCount,class,Q1.2;Q1.4,
+https://watchline.example/vocab/unit-count,https://watchline.example/onto/UnitCount,class,Q1.4,
+https://watchline.example/vocab/source-snapshot,https://watchline.example/onto/SourceSnapshot,class,Q1.4,
+https://watchline.example/vocab/source-record,https://watchline.example/onto/SourceRecord,class,Q1.2;Q1.4,
+https://watchline.example/vocab/matched-exactly,https://watchline.example/vocab/matched-exactly,controlled_value,Q1.3,"Explicit exception: the individual keeps its concept IRI (roadmap SKOS-to-ontology mapping, controlled values)."
+https://watchline.example/vocab/matched-by-variant,https://watchline.example/vocab/matched-by-variant,controlled_value,Q1.3,"Explicit exception: the individual keeps its concept IRI (roadmap SKOS-to-ontology mapping, controlled values)."
+https://watchline.example/vocab/ambiguous,https://watchline.example/vocab/ambiguous,controlled_value,Q1.3,"Explicit exception: the individual keeps its concept IRI (roadmap SKOS-to-ontology mapping, controlled values)."
+https://watchline.example/vocab/not-found,https://watchline.example/vocab/not-found,controlled_value,Q1.3,"Explicit exception: the individual keeps its concept IRI (roadmap SKOS-to-ontology mapping, controlled values)."
+https://watchline.example/vocab/bbl,https://watchline.example/onto/hasBbl,datatype_property,Q1.1,"Identifier concept becomes a datatype property of the tax lot, not a class."
+https://watchline.example/vocab/bin,https://watchline.example/onto/hasBin,datatype_property,Q1.2,"Identifier concept becomes a datatype property of the building, not a class."
+https://watchline.example/vocab/street-address,https://watchline.example/onto/addressText,datatype_property,Q1.1;Q1.3,
+https://watchline.example/vocab/street-address,https://watchline.example/onto/hasRecordedAddress,object_property,Q1.1,
+https://watchline.example/vocab/tax-lot,https://watchline.example/onto/hasRecordedAddress,object_property,Q1.1,
+https://watchline.example/vocab/street-address,https://watchline.example/onto/hasInputAddress,object_property,Q1.1,An input address is a street address in the role of question input.
+https://watchline.example/vocab/address-resolution,https://watchline.example/onto/hasInputAddress,object_property,Q1.1,
+https://watchline.example/vocab/address-resolution,https://watchline.example/onto/resolvedToTaxLot,object_property,Q1.1,
+https://watchline.example/vocab/tax-lot,https://watchline.example/onto/resolvedToTaxLot,object_property,Q1.1,
+https://watchline.example/vocab/address-resolution-outcome,https://watchline.example/onto/hasOutcome,object_property,Q1.3,
+https://watchline.example/vocab/address-resolution,https://watchline.example/onto/hasOutcome,object_property,Q1.3,
+https://watchline.example/vocab/street-address,https://watchline.example/onto/returnedAddress,object_property,Q1.3,
+https://watchline.example/vocab/address-resolution,https://watchline.example/onto/returnedAddress,object_property,Q1.3,
+https://watchline.example/vocab/alternate-address,https://watchline.example/onto/usedAlternateAddress,object_property,Q1.3,"Role, not a subclass: an alternate address is a street address in a role within one resolution."
+https://watchline.example/vocab/inferred-resolution,https://watchline.example/onto/usedAlternateAddress,object_property,Q1.3,
+https://watchline.example/vocab/address-candidate,https://watchline.example/onto/hasAddressCandidate,object_property,Q1.3,
+https://watchline.example/vocab/address-resolution,https://watchline.example/onto/hasAddressCandidate,object_property,Q1.3,
+https://watchline.example/vocab/address-candidate,https://watchline.example/onto/candidateText,datatype_property,Q1.3,
+https://watchline.example/vocab/addressed-building,https://watchline.example/onto/hasAddressedBuilding,object_property,Q1.2,"Role, not a subclass of Building: the property exists only within one resolution."
+https://watchline.example/vocab/building,https://watchline.example/onto/hasAddressedBuilding,object_property,Q1.2,
+https://watchline.example/vocab/geosupport-return-code,https://watchline.example/onto/geosupportReturnCode,datatype_property,Q1.3,
+https://watchline.example/vocab/geosupport-reason-code,https://watchline.example/onto/geosupportReasonCode,datatype_property,Q1.3,
+https://watchline.example/vocab/hpd-registration,https://watchline.example/onto/registersBuilding,object_property,Q1.2,
+https://watchline.example/vocab/building,https://watchline.example/onto/registersBuilding,object_property,Q1.2,
+https://watchline.example/vocab/hpd-registration,https://watchline.example/onto/registeredOnTaxLot,object_property,Q1.2,
+https://watchline.example/vocab/tax-lot,https://watchline.example/onto/registeredOnTaxLot,object_property,Q1.2,
+https://watchline.example/vocab/building,https://watchline.example/onto/hasRecordedBuilding,object_property,Q1.2,Derived by property chain through HPD registrations; incomplete by construction.
+https://watchline.example/vocab/hpd-registration,https://watchline.example/onto/hasRecordedBuilding,object_property,Q1.2,
+https://watchline.example/vocab/year-built,https://watchline.example/onto/reportedYearBuilt,datatype_property,Q1.4,
+https://watchline.example/vocab/source-reported-characteristic,https://watchline.example/onto/reportedYearBuilt,datatype_property,Q1.4,The characteristic concept has no class: each kind is a datatype property of the tax lot.
+https://watchline.example/vocab/building-class,https://watchline.example/onto/reportedBuildingClass,datatype_property,Q1.4,
+https://watchline.example/vocab/source-reported-characteristic,https://watchline.example/onto/reportedBuildingClass,datatype_property,Q1.4,The characteristic concept has no class: each kind is a datatype property of the tax lot.
+https://watchline.example/vocab/residential-units,https://watchline.example/onto/reportedResidentialUnits,datatype_property,Q1.4,
+https://watchline.example/vocab/source-reported-characteristic,https://watchline.example/onto/reportedResidentialUnits,datatype_property,Q1.4,The characteristic concept has no class: each kind is a datatype property of the tax lot.
+https://watchline.example/vocab/assessed-value,https://watchline.example/onto/reportedAssessedValue,datatype_property,Q1.4,
+https://watchline.example/vocab/source-reported-characteristic,https://watchline.example/onto/reportedAssessedValue,datatype_property,Q1.4,The characteristic concept has no class: each kind is a datatype property of the tax lot.
+https://watchline.example/vocab/reported-count,https://watchline.example/onto/countValue,datatype_property,Q1.2;Q1.4,
+https://watchline.example/vocab/reported-count,https://watchline.example/onto/countingUnit,datatype_property,Q1.4,
+https://watchline.example/vocab/reported-count,https://watchline.example/onto/countedForTaxLot,object_property,Q1.4,
+https://watchline.example/vocab/tax-lot,https://watchline.example/onto/countedForTaxLot,object_property,Q1.4,
+https://watchline.example/vocab/reported-count,https://watchline.example/onto/countedFromRecord,object_property,Q1.4,
+https://watchline.example/vocab/source-record,https://watchline.example/onto/countedFromRecord,object_property,Q1.4,
+https://watchline.example/vocab/source-record,https://watchline.example/onto/hasSourceRecord,object_property,Q1.2;Q1.4,
+https://watchline.example/vocab/source-reported-characteristic,https://watchline.example/onto/hasSourceRecord,object_property,Q1.2;Q1.4,Each characteristic value is tied to a source record.
+https://watchline.example/vocab/source-snapshot,https://watchline.example/onto/inSnapshot,object_property,Q1.4,
+https://watchline.example/vocab/source-record,https://watchline.example/onto/inSnapshot,object_property,Q1.4,
+https://watchline.example/vocab/source-record,https://watchline.example/onto/sourceKey,datatype_property,Q1.4,
+https://watchline.example/vocab/source-record,https://watchline.example/onto/sourceRecordLocator,datatype_property,Q1.4,
+https://watchline.example/vocab/source-snapshot,https://watchline.example/onto/snapshotId,datatype_property,Q1.4,
+https://watchline.example/vocab/source-snapshot,https://watchline.example/onto/snapshotDate,datatype_property,Q1.4,
+,https://watchline.example/onto/runId,datatype_property,Q1.4,no concept: evidence metadata from profiles/evidence.yaml; the vocabulary has no concept for it yet.
+,https://watchline.example/onto/mappingGitRevision,datatype_property,Q1.4,no concept: evidence metadata from profiles/evidence.yaml; the vocabulary has no concept for it yet.
+,https://watchline.example/onto/sourceCategory,datatype_property,Q1.4,no concept: evidence metadata from profiles/evidence.yaml; the vocabulary has no concept for it yet.
+,https://watchline.example/onto/assertionType,datatype_property,Q1.4,no concept: evidence metadata from profiles/evidence.yaml; the vocabulary has no concept for it yet.
+,https://watchline.example/onto/reviewStatus,datatype_property,Q1.4,no concept: evidence metadata from profiles/evidence.yaml; the vocabulary has no concept for it yet.
+,https://watchline.example/onto/traceQuestion,annotation_property,Q1,no concept: ontology plumbing for the question trace.

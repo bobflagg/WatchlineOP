@@ -133,3 +133,4 @@ Stopping rules:
 - Q1 stage 2: Geosupport fields and the answer fields depending on them are `pending` until the first cached responses are recorded (`profiles/geosupport.yaml`, `profiles/q01-answer.yaml`).
 - Q1 stage 4 is done (22 related pairs, 3 external mappings; see `vocabulary/thesaurus-notes.md`). Later questions extend the notes and the SSSOM file.
 - Q1 stage 3 is done. Neither scheme names a `dcterms:publisher` (an info-level `validate_skos` note). Set it when the vocabulary is first published. Later questions add their hierarchies to `vocabulary/taxonomy-notes.md`.
+- Q1 stage 5: ontology passes the reasoner, ROBOT report and OOPS! (no critical pitfalls). Open: the ontology license (set `dc:license`; `ontology/report-profile.txt` keeps the ROBOT license rule at INFO), and vocabulary concepts for run, source category, assertion type and review status (mapped today as "no concept:").

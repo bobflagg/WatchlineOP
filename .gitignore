@@ -26,3 +26,6 @@ wheels/
 
 # macOS metadata
 .DS_Store
+
+# Local tools (ROBOT jar and wrapper; see ontology/ontology-notes.md)
+/tools/

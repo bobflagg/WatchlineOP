@@ -1,0 +1,9 @@
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix vocab: <https://watchline.example/vocab/> .
+@prefix onto:  <https://watchline.example/onto/> .
+@prefix id:    <https://watchline.example/id/> .
+
+# Must be inconsistent: a lot-wide characteristic (residential units) is stated on a Building.
+# reportedResidentialUnits has domain TaxLot, so the building would also be a TaxLot, and
+# TaxLot and Building are disjoint. Enforces "lot-wide values are not attached to buildings".
+id:neg-building a onto:Building ; onto:hasBin "3324448" ; onto:reportedResidentialUnits 18 .
