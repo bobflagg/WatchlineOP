@@ -1,0 +1,39 @@
+# Q1 replay fixture template. One file per case, e.g. q01-a-single-building.yaml.
+# Move to tests/fixtures/q01/ when the tests directory exists.
+# The test replays `response`; it never calls the live service.
+
+fixture:
+  id: Q1-A-single-building      # Q1-<anchor or case>-<short name>
+  version: 1                    # new snapshot, release or cache = new version; keep the old one
+  question: Q1
+  status: provisional           # provisional | verified
+  case: ordinary                # ordinary | multi_building_lot | variant | no_hpd_registration | ambiguous | not_found | alternate_address
+
+request:
+  input_address: "5413 7 Avenue"
+  borough: Brooklyn
+  geosupport_function: 1B       # as actually called
+
+response:
+  retrieved_at: null            # ISO 8601, when the response was recorded
+  geosupport_release: null      # e.g. the Geosupport version string
+  docker_image: null            # image name and tag or digest
+  sha256: null                  # checksum of raw_file
+  raw_file: q01-a-single-building.response.json   # unedited service output, stored beside this file
+
+expected:
+  outcome: exact                # exact | variant | ambiguous | not_found
+  grc: null                     # from the recorded response
+  reason_code: null
+  bbl: "3008260002"             # null for ambiguous and not_found
+  returned_address: null        # normalized address Geosupport returned
+  candidates: []                # ambiguous only: street names from the candidate list
+  variants_tried: []            # not_found only
+  inferred: false               # true only for the alternate-address scenario
+
+frozen_snapshot_checks:         # run against the frozen database
+  pluto_bbl_exists: true        # BBL is in pluto_latest (26v1)
+  hpd_bins: ["3014788"]         # BINs from hpd_registrations (2026-05-29); [] if none registered
+  pluto_numbldgs: 1
+
+notes: ""                       # caveats, e.g. "BIN absent because no HPD registration"

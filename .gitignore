@@ -1,0 +1,28 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Local credentials (keep sanitized examples eligible for version control)
+.env
+.mcp.json
+.env.*
+!.env.example
+!.env.template
+!.mcp.json.example
+
+# Large local source data and generated graph artifacts
+/data/raw/
+/data/dumps/
+/data/snapshots/
+/data/generated/
+/ignore-this-directory/
+
+# macOS metadata
+.DS_Store

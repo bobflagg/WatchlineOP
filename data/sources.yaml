@@ -1,0 +1,250 @@
+# Source datasets. All NYC and NYS record sources are read from the local
+# PostgreSQL database `justfixwow` (JustFix / Who Owns What mirror), not from the
+# NYC Open Data or data.ny.gov Socrata portals. The mirror is a practical ingestion
+# source, not an assurance that records are current or complete.
+#
+# Access: pipeline scripts, graph tests and expected-answer SQL use psycopg with
+# credentials provided in the .env file, loaded with load_dotenv from the dotenv module.
+# Interactive exploration may use the postgres-justfix MCP server. Committed fixtures and
+# expected answers come from scripts, not from chat sessions.
+
+database:
+  name: justfixwow
+  engine: PostgreSQL
+  access: read-only. Scripts use psycopg and .env; interactive exploration uses the postgres-justfix MCP server
+  checked_on: 2026-11-09
+  loaded_at: 2026-05-29 # adopted by decision 2026-11-11 as the freeze date for Q1 (matches hpd_registrations data_through); actual load date unknown
+  note: >-
+    Several tables are partial or stale against the live sources (see data_through and
+    notes below). Expected answers come only from this snapshot (specs/decisions.md).
+    Values from live portals or earlier reads are not test inputs; differences from them
+    are freshness or coverage limits, not test failures.
+
+sources:
+  pluto:
+    name: Primary Land Use Tax Lot Output (PLUTO)
+    publisher: NYC Department of City Planning
+    table: pluto_latest
+    schema: public
+    key: bbl
+    version: 26v1
+    row_count: 858602
+    used_for: lots (BBL), units, year built, owner name, community district for slicing
+    columns_used: bbl, borough, block, lot, cd, address, bldgclass, landuse, ownername, bldgarea, unitsres, assesstot, yearbuilt, version
+    data_through: null # PLUTO has no record date; the release is 26v1
+    reliability: I
+    retrieved_at: null
+    notes: >-
+      Older releases (pluto_10v1 ... pluto_25v2_1) are also in the database. Use
+      pluto_latest unless a historical question needs an earlier release.
+
+  acris_master:
+    name: ACRIS - Real Property Master
+    publisher: NYC Department of Finance
+    table: real_property_master
+    schema: public
+    key: documentid
+    row_count: 17009118 # estimate
+    used_for: recorded documents (deeds, mortgages) with dates and amounts
+    columns_used: documentid, recordtype, crfn, borough, doctype, docdate, docamount, recordedfiled, modifieddate, goodthroughdate
+    data_through: 2026-05-29 # max recordedfiled; goodthroughdate 2026-05-31
+    reliability: I
+    retrieved_at: null
+    notes: >-
+      Use real_property_master, not acris_real_property_master. The acris_* copy ends
+      2025-01-31 and misses later documents, including deed 2025032100031001 (recorded
+      2025-04-02). Verified: real_property_master holds documents 2021022201130003,
+      2021031601183001 and 2025032100031001.
+
+  acris_parties:
+    name: ACRIS - Real Property Parties
+    publisher: NYC Department of Finance
+    table: real_property_parties
+    schema: public
+    key: documentid
+    row_count: 46338284 # estimate
+    used_for: grantors, grantees, lenders and their addresses
+    columns_used: documentid, recordtype, partytype, name, address1, address2, country, city, state, zip, goodthroughdate
+    data_through: 2026-05-31 # goodthroughdate of the paired master
+    reliability: I
+    retrieved_at: null
+    notes: Use real_property_parties, not acris_real_property_parties (the older copy).
+
+  acris_legals:
+    name: ACRIS - Real Property Legals
+    publisher: NYC Department of Finance
+    table: real_property_legals
+    schema: public
+    key: documentid
+    row_count: 22657952 # estimate
+    used_for: links each ACRIS document to a BBL
+    columns_used: documentid, recordtype, borough, block, lot, easement, partiallot, airrights, subterraneanrights, propertytype, streetnumber, streetname, unit, goodthroughdate, bbl
+    data_through: 2026-05-31
+    reliability: I
+    retrieved_at: null
+    notes: Use real_property_legals, not acris_real_property_legals (the older copy).
+
+  acris_document_codes:
+    name: ACRIS - Document Control Codes
+    publisher: NYC Department of Finance
+    table: acris_document_control_codes
+    schema: public
+    row_count: 126
+    used_for: vocabulary source for document types (descriptions, party-type meanings). Needed by Q3, Q12, Q14, Q18
+    status: unusable_locally
+    reliability: I
+    retrieved_at: null
+    notes: >-
+      Checked 2026-11-09: all 126 rows have blank doctype and blank doctypedescription,
+      so the table cannot name or describe document types. The document-type codes
+      themselves are present in real_property_master.doctype (for example DEED, MTGE,
+      SAT, AL&R, TL&R, SAGE, AGMT, ASST). DECISION NEEDED: where the descriptions and
+      party-type meanings should come from.
+
+  hpd_registrations:
+    name: Multiple Dwelling Registrations
+    publisher: NYC Department of Housing Preservation and Development
+    table: hpd_registrations
+    schema: public
+    key: registrationid
+    row_count: 203236
+    used_for: registered buildings (3+ units), registration dates
+    columns_used: registrationid, buildingid, boroid, boro, housenumber, streetname, zip, block, lot, bin, lastregistrationdate, registrationenddate, bbl
+    data_through: 2026-05-29 # max lastregistrationdate
+    reliability: I
+    retrieved_at: null
+
+  hpd_contacts:
+    name: Registration Contacts
+    publisher: NYC Department of Housing Preservation and Development
+    table: hpd_contacts
+    schema: public
+    key: registrationcontactid
+    row_count: 782024
+    used_for: owners, head officers, officers, managing agents and business addresses
+    columns_used: registrationcontactid, registrationid, type, contactdescription, corporationname, title, firstname, middleinitial, lastname, businesshousenumber, businessstreetname, businessapartment, businesscity, businessstate, businesszip
+    data_through: 2026-05-29 # no date column; same snapshot as hpd_registrations
+    reliability: I
+    retrieved_at: null
+
+  hpd_violations:
+    name: Housing Maintenance Code Violations
+    publisher: NYC Department of Housing Preservation and Development
+    table: hpd_violations
+    schema: public
+    key: violationid
+    row_count: 1970575
+    used_for: violations by class (A/B/C), status and dates
+    columns_used: violationid, buildingid, registrationid, class, inspectiondate, novissueddate, currentstatus, currentstatusdate, violationstatus, bin, bbl
+    data_through: 2026-07-02 # max inspectiondate
+    reliability: I
+    retrieved_at: null
+    notes: >-
+      The table has an `apartment` column. Do not return it. Open counts here can
+      differ from the live source (for example 438 52 Street, BBL 3008070024, shows 4
+      open violations here, as in Q15). That is a freshness limit, not a test failure.
+
+  hpd_complaints:
+    name: Housing Maintenance Code Complaints and Problems
+    publisher: NYC Department of Housing Preservation and Development
+    table: hpd_complaints_and_problems
+    schema: public
+    key: problemid
+    row_count: 16167204
+    used_for: complaints and problems by building (type, category, status, dates). About 16M problem rows; use building-level aggregates only (see competency-questions, Q27)
+    columns_used: receiveddate, problemid, complaintid, buildingid, type, majorcategory, minorcategory, problemcode, complaintstatus, complaintstatusdate, problemstatus, problemstatusdate, problemduplicateflag, bin, bbl
+    columns_excluded: apartment, unittype, spacetype, complaintanonymousflag, uniquekey, latitude, longitude, censustract
+    data_through: 2026-07-07 # max receiveddate
+    reliability: I
+    retrieved_at: null
+    notes: >-
+      Use hpd_complaints_and_problems. The split tables hpd_complaints and
+      hpd_complaint_problems end 2023-11-30 and are not used. `apartment` is filled on
+      nearly every row. Per Q27, no apartment, unit or complainant detail
+      may be loaded or returned, only building-level counts.
+
+  hpd_litigations:
+    name: Housing Litigations
+    publisher: NYC Department of Housing Preservation and Development
+    table: hpd_litigations
+    schema: public
+    key: litigationid
+    row_count: 239434
+    used_for: HPD-initiated Housing Court cases against owners (case type, open date, status, harassment finding, respondent)
+    columns_used: litigationid, buildingid, casetype, caseopendate, casestatus, openjudgement, findingofharassment, findingdate, penalty, respondent, bin, bbl
+    data_through: 2026-07-09 # max caseopendate, excluding two rows with future dates
+    reliability: I
+    retrieved_at: null
+    notes: >-
+      Two rows have caseopendate after 2026-11-09 (the latest is 2030-10-05). Treat
+      them as source errors: report, do not silently drop or correct.
+
+  nys_corporations:
+    name: Active Corporations - Beginning 1800
+    publisher: NY Department of State
+    table: dos_active_corporations
+    schema: public
+    key: dosid
+    row_count: 4242054
+    used_for: entity filings, process and registered-agent addresses
+    columns_used: dosid, currententityname, initialdosfilingdate, county, jurisdiction, entitytype, dosprocessname, dosprocessaddress1, dosprocessaddress2, dosprocesscity, dosprocessstate, dosprocesszip, ceoname, registeredagentname, registeredagentaddress1, registeredagentaddress2, registeredagentcity, registeredagentstate, registeredagentzip, locationname
+    data_through: 2026-07-06 # max initialdosfilingdate
+    reliability: I
+    retrieved_at: null
+    notes: Active entities only. A dissolved entity is absent, which is not evidence it never existed.
+
+  # Non-database inputs. No table; keys are used in specs/questions/.
+  bor_layers:
+    name: BOR/NLR derived layers (Owner Portfolio, Operational Network) and edge-level evidence
+    publisher: project repos (BOR, NLR)
+    table: null
+    id: null
+    used_for: group memberships and the supporting edges, loaded as Type II
+    reliability: II
+    source_category: project_derived
+    retrieved_at: null
+    notes: >-
+      Not read from justfixwow. The Who Owns What tables in the wow schema
+      (wow_bldgs, wow_landlords, wow_portfolios) are a different, third-party
+      grouping and must not be mistaken for the BOR layers.
+
+  mail_drop_list:
+    name: Curated mail-drop and registered-agent address list
+    publisher: this project (resolution/)
+    table: null
+    id: null
+    used_for: addresses that must never on their own link two entities
+    reliability: II
+    source_category: project_derived
+    retrieved_at: null
+
+  geosupport:
+    name: NYC Geosupport address resolution
+    publisher: NYC Department of City Planning
+    table: null
+    id: null
+    version: null # pin the Geosupport release and Docker image used by each test
+    used_for: address variant matching and resolution outcome (exact, variant, ambiguous, not found) for Q1; the BBL it returns is checked against pluto and hpd_registrations
+    reliability: I
+    source_category: public_record
+    retrieved_at: null # per cached response
+    notes: >-
+      Run on demand through Docker; not read from justfixwow. Acceptance tests replay
+      cached responses and do not call the live service. Each cached response records
+      the input address, the service output, the Geosupport release and image version,
+      and the retrieval time. Address variant matching belongs to Geosupport, not the
+      graph (decisions.md, 2026-11-11).
+
+  web_research:
+    name: Web research and retrieved filings
+    publisher: various (state registries, news, nonprofit filings)
+    table: null
+    id: null
+    used_for: session evidence with url, retrieved_at and source_category
+    reliability: I
+    retrieved_at: null
+
+# Web and document findings are not datasets (see specs/use-case.md, evidence rules). A primary record
+# retrieved from the web is public_record (Type I); reports and other web content carry
+# source_category and review_status. Free public business registries of other states
+# are in scope for out-of-state entities; paid sources are not.
