@@ -1,0 +1,24 @@
+# Same format as tests/negative/q02/cases.yaml: bad data inside a transaction that is always rolled back.
+cases:
+  - {name: deed without type,        create: "MATCH (l:Lot) WITH l LIMIT 1 CREATE (l)-[:HAS_DEED]->(:Deed {documentId: 'x', recordedDate: date('2020-01-01')})", rule: DeedShape.documentType.minCount}
+  - {name: deed type DEED COR,       create: "MATCH (l:Lot) WITH l LIMIT 1 CREATE (l)-[:HAS_DEED]->(:Deed {documentId: 'x', docType: 'DEED COR', recordedDate: date('2020-01-01')})", rule: DeedShape.documentType.pattern}
+  - {name: deed type as number,      create: "MATCH (l:Lot) WITH l LIMIT 1 CREATE (l)-[:HAS_DEED]->(:Deed {documentId: 'x', docType: 5, recordedDate: date('2020-01-01')})", rule: DeedShape.documentType.datatype}
+  - {name: deed without recorded date, create: "MATCH (l:Lot) WITH l LIMIT 1 CREATE (l)-[:HAS_DEED]->(:Deed {documentId: 'x', docType: 'DEED'})", rule: DeedShape.recordedDate.minCount}
+  - {name: recorded date as text,    create: "MATCH (l:Lot) WITH l LIMIT 1 CREATE (l)-[:HAS_DEED]->(:Deed {documentId: 'x', docType: 'DEED', recordedDate: '2020-01-01'})", rule: DeedShape.recordedDate.datatype}
+  - {name: document date as text,    create: "MATCH (l:Lot) WITH l LIMIT 1 CREATE (l)-[:HAS_DEED]->(:Deed {documentId: 'x', docType: 'DEED', recordedDate: date('2020-01-01'), docDate: 'soon'})", rule: DeedShape.documentDate.datatype}
+  - {name: deed without id,          create: "MATCH (l:Lot) WITH l LIMIT 1 CREATE (l)-[:HAS_DEED]->(:Deed {docType: 'DEED', recordedDate: date('2020-01-01')})", rule: DeedShape.documentId.minCount}
+  - {name: negative amount,          create: "MATCH (l:Lot) WITH l LIMIT 1 CREATE (l)-[:HAS_DEED]->(:Deed {documentId: 'x', docType: 'DEED', recordedDate: date('2020-01-01'), amount: -1})", rule: DeedShape.documentAmount.minInclusive}
+  - {name: amount as text,           create: "MATCH (l:Lot) WITH l LIMIT 1 CREATE (l)-[:HAS_DEED]->(:Deed {documentId: 'x', docType: 'DEED', recordedDate: date('2020-01-01'), amount: 'free'})", rule: DeedShape.documentAmount.datatype}
+  - {name: deed with no lot,         create: "CREATE (:Deed {documentId: 'x', docType: 'DEED', recordedDate: date('2020-01-01')})", rule: DeedShape.inv_hasDeed.minCount}
+  - {name: HAS_DEED ends on a deed,  create: "MATCH (a:Lot), (b:Lot) WHERE a <> b WITH a, b LIMIT 1 CREATE (a)-[:HAS_DEED]->(b)", rule: LotDeedShape.hasDeed.class}
+  - {name: HAS_GRANTEE ends on a grantee, create: "MATCH (a:Deed), (b:Deed) WHERE a <> b WITH a, b LIMIT 1 CREATE (a)-[:HAS_GRANTEE]->(b)", rule: DeedShape.hasGrantee.class}
+  - {name: grantee with no deed,     create: "CREATE (:Grantee {partyKey: 'x'})", rule: GranteeShape.inv_hasGrantee.minCount}
+  - {name: grantee on two deeds,     create: "MATCH (g:Grantee) WITH g LIMIT 1 MATCH (d:Deed) WHERE NOT (d)-[:HAS_GRANTEE]->(g) WITH g, d LIMIT 1 CREATE (d)-[:HAS_GRANTEE]->(g)", rule: GranteeShape.inv_hasGrantee.maxCount}
+  - {name: grantee with empty name,  create: "MATCH (d:Deed) WITH d LIMIT 1 CREATE (d)-[:HAS_GRANTEE]->(:Grantee {partyKey: 'x', name: ''})", rule: GranteeShape.granteeName.minLength}
+  - {name: grantee name as number,   create: "MATCH (d:Deed) WITH d LIMIT 1 CREATE (d)-[:HAS_GRANTEE]->(:Grantee {partyKey: 'x', name: 7})", rule: GranteeShape.granteeName.datatype}
+  - {name: grantee with empty address, create: "MATCH (d:Deed) WITH d LIMIT 1 CREATE (d)-[:HAS_GRANTEE]->(:Grantee {partyKey: 'x', mailingAddress: ''})", rule: GranteeShape.mailingAddress.minLength}
+  - {name: grantee with empty zip,   create: "MATCH (d:Deed) WITH d LIMIT 1 CREATE (d)-[:HAS_GRANTEE]->(:Grantee {partyKey: 'x', zip: ''})", rule: GranteeShape.zipCode.minLength}
+  - {name: owner contact with empty address, create: "MATCH (r:Registration) WITH r LIMIT 1 CREATE (r)-[:HAS_OWNER_CONTACT]->(:OwnerContact {contactKey: 'x', contactType: 'CorporateOwner', mailingAddress: ''})", rule: OwnerContactAddressShape.mailingAddress.minLength}
+  - {name: duplicate HAS_DEED pair,  create: "MATCH (l:Lot)-[:HAS_DEED]->(d:Deed) WITH l, d LIMIT 1 CREATE (l)-[:HAS_DEED]->(d)", check: queries/checks/q03-duplicate-deed-pair.cypher}
+  - {name: duplicate documentId,     create: "MATCH (d:Deed) WITH d LIMIT 1 CREATE (:Deed {documentId: d.documentId})", error: constraint}
+  - {name: duplicate partyKey,       create: "MATCH (g:Grantee) WITH g LIMIT 1 CREATE (:Grantee {partyKey: g.partyKey})", error: constraint}

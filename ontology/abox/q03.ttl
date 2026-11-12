@@ -1,0 +1,59 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q3 example data. Values come from the verified fixtures in tests/q3_*/fixtures.yaml
+# (ACRIS through 2026-05-31, HPD 2026-05-29). Person names are not repeated.
+# Comparison results (name and address agreement) are computed at answer time and are not in the graph.
+
+# Anchor A: the latest deed is not a sale (amount 0); an earlier deed carries the price.
+id:lot-3008260002 a onto:TaxLot ; onto:bbl "3008260002" ; onto:hasDeed id:deed-2025032100031001, id:deed-2021022201130003 .
+id:deed-2025032100031001 a onto:Deed ; onto:documentId "2025032100031001" ; onto:documentType "DEED" ;
+    onto:documentDate "2025-03-14"^^xsd:date ; onto:recordedDate "2025-04-02"^^xsd:date ; onto:documentAmount 0 ;
+    onto:hasGrantee id:grantee-2025032100031001-1 .
+id:grantee-2025032100031001-1 a onto:Grantee ; onto:granteeName "5413 PLAZA LLC" ;
+    onto:mailingAddress "746 61ST STREET" ; onto:zipCode "11220" .
+id:deed-2021022201130003 a onto:Deed ; onto:documentId "2021022201130003" ; onto:documentType "DEED" ;
+    onto:documentDate "2021-02-16"^^xsd:date ; onto:recordedDate "2021-02-26"^^xsd:date ; onto:documentAmount 5000000 ;
+    onto:hasGrantee id:grantee-2021022201130003-1 .
+id:grantee-2021022201130003-1 a onto:Grantee ; onto:granteeName "5413 PLAZA LLC" ;
+    onto:mailingAddress "5 CROMWELL CIRCLE" ; onto:zipCode "10304" .
+# The Q2 owner contact on this lot, with the business address Q3.5 adds.
+id:owner-316103-a a onto:OwnerContact ; onto:mailingAddress "746 61ST STREET" ; onto:zipCode "11220" .
+
+# Anchor D: two deeds recorded the same day. Both stay; none is chosen. One deed has three grantees
+# (AVE and AVENUE spelled both ways); the other has a second address line holding a floor.
+id:lot-3008210012 a onto:TaxLot ; onto:bbl "3008210012" ; onto:hasDeed id:deed-2017061600025001, id:deed-2017061600025002 .
+id:deed-2017061600025001 a onto:Deed ; onto:documentId "2017061600025001" ; onto:documentType "DEED" ;
+    onto:documentDate "2017-06-13"^^xsd:date ; onto:recordedDate "2017-06-28"^^xsd:date ; onto:documentAmount 0 ;
+    onto:hasGrantee id:grantee-2017061600025001-1, id:grantee-2017061600025001-2, id:grantee-2017061600025001-3 .
+id:grantee-2017061600025001-1 a onto:Grantee ; onto:granteeName "CLL2 LLC" ; onto:mailingAddress "1465A FLATBUSH AVENUE" ; onto:zipCode "11210" .
+id:grantee-2017061600025001-2 a onto:Grantee ; onto:granteeName "NEIGHBORHOOD STABILIZATION ASSOCIATES I, L.P." ; onto:mailingAddress "1465A FLATBUSH AVENUE" ; onto:zipCode "11210" .
+id:grantee-2017061600025001-3 a onto:Grantee ; onto:granteeName "SUNSET IV EQUITIES LLC" ; onto:mailingAddress "1465A FLATBUSH AVE" ; onto:zipCode "11210" .
+id:deed-2017061600025002 a onto:Deed ; onto:documentId "2017061600025002" ; onto:documentType "DEED" ;
+    onto:documentDate "2017-06-13"^^xsd:date ; onto:recordedDate "2017-06-28"^^xsd:date ; onto:documentAmount 45839605 ;
+    onto:hasGrantee id:grantee-2017061600025002-1, id:grantee-2017061600025002-2 .
+id:grantee-2017061600025002-1 a onto:Grantee ; onto:granteeName "HP SUNSET PARK I HOUSING DEV FUND COMPANY, INC" ;
+    onto:mailingAddress "152 WEST 57TH STREET" ; onto:addressLineTwo "36TH FLOOR" ; onto:zipCode "10019" .
+id:grantee-2017061600025002-2 a onto:Grantee ; onto:granteeName "SUNSET PARK OWNER I LLC" ;
+    onto:mailingAddress "152 WEST 57TH STREET" ; onto:addressLineTwo "36TH FLOOR" ; onto:zipCode "10019" .
+
+# Anchor G: two grantees, one of them spelled K S where HPD has KS (a difference, decided at answer time).
+id:lot-3008080025 a onto:TaxLot ; onto:bbl "3008080025" ; onto:hasDeed id:deed-2018092900072001 .
+id:deed-2018092900072001 a onto:Deed ; onto:documentId "2018092900072001" ; onto:documentType "DEED" ;
+    onto:documentDate "2018-09-26"^^xsd:date ; onto:recordedDate "2018-10-18"^^xsd:date ; onto:documentAmount 4000000 ;
+    onto:hasGrantee id:grantee-2018092900072001-1, id:grantee-2018092900072001-2 .
+id:grantee-2018092900072001-1 a onto:Grantee ; onto:granteeName "AADVA REALTY LLC" ; onto:mailingAddress "14 SINCLAIR DR" ; onto:zipCode "11024" .
+id:grantee-2018092900072001-2 a onto:Grantee ; onto:granteeName "K S TURNPIKE LLC" ; onto:mailingAddress "14 SINCLAIR DR" ; onto:zipCode "11024" .
+
+# A life estate deed (a variant type), with no grantee recorded: the deed stands alone.
+id:lot-3008000019 a onto:TaxLot ; onto:bbl "3008000019" ; onto:hasDeed id:deed-2025071300004001 .
+id:deed-2025071300004001 a onto:Deed ; onto:documentId "2025071300004001" ; onto:documentType "DEED, LE" ;
+    onto:documentDate "2025-06-30"^^xsd:date ; onto:recordedDate "2025-07-17"^^xsd:date ; onto:documentAmount 0 .
+
+# One deed on several lots (the second lot is a synthetic stand-in): a deed has many lots.
+id:lot-3008010039 a onto:TaxLot ; onto:bbl "3008010039" ; onto:hasDeed id:deed-2015081800619001 .
+id:lot-3008010040 a onto:TaxLot ; onto:bbl "3008010040" ; onto:hasDeed id:deed-2015081800619001 .
+id:deed-2015081800619001 a onto:Deed ; onto:documentId "2015081800619001" ; onto:documentType "DEED" ;
+    onto:documentDate "2015-08-18"^^xsd:date ; onto:recordedDate "2015-09-03"^^xsd:date ; onto:documentAmount 0 .

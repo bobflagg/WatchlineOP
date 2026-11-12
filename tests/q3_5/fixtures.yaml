@@ -1,0 +1,17 @@
+# Q3.5 expected address agreement. Provisional until the frozen dump is identified (data/README.md).
+# Checked 2026-11-12. check_addresses.py computes each outcome in SQL (independent) and with src/watchline/compare.py.
+# Rule A1: street line equal after N1 and first five ZIP digits equal. The second line is reported apart.
+pairs:   # [street_a, zip_a, street_b, zip_b, outcome]
+  - ["746 61ST STREET", "11220", "746 61ST STREET", "11220", same]                 # anchor A: deed grantee and HPD owner
+  - ["746 61ST STREET", "11220", "746 61st  Street", "11220-1234", same]           # case, spacing and ZIP+4 are normalized
+  - ["14 SINCLAIR DR", "11024", "209-19 33RD ROAD", "11361", differs]              # anchor G
+  - ["1465A FLATBUSH AVE", "11210", "1465A FLATBUSH AVENUE", "11210", differs]     # AVE against AVENUE is a difference, not a finding
+  - [null, "11220", "746 61ST STREET", "11220", absent]
+  - ["746 61ST STREET", null, "746 61ST STREET", "11220", absent]
+lots:
+  - {bbl: "3008260002", note: "anchor A: same street line and ZIP", expect: [same]}
+  - {bbl: "3008080025", note: "anchor G: two grantees at one address, the owner elsewhere", expect: [differs, differs]}
+  - {bbl: "3008210012", note: "anchor D: five grantees on two tied deeds against three registrations", all: differs, pairs: 15}
+units:   # the second line is returned apart: [line_a, line_b, units reported]
+  - ["36TH FLOOR", "LL", ["36TH FLOOR", "LL"]]
+  - [null, "BSMT", [null, "BSMT"]]

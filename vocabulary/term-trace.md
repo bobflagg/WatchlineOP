@@ -92,3 +92,60 @@ Contact type values (scheme `owner-contact-types`): `corporate-owner`, `individu
 | Case: no registration found | No **building** exists for the lot (no HPD registration), so no **HPD registration** or **owner contact** is returned. |
 
 No gaps: every domain term resolves to a concept above. "Current" is the agent's reading of the end date.
+
+# Term trace: Q3
+
+Same conventions as Q1. Relationship properties and answer fields are named in the Lives as column.
+
+## Trace
+
+| Concept ID | Preferred label | Lives as | Sub-questions | Source |
+| --- | --- | --- | --- | --- |
+| `deed` | deed | `Deed` node | Q3.1, Q3.2 | `acris_master`, `acris_legals` |
+| `has-deed` | has deed | `HAS_DEED` relationship (Lot to Deed) | Q3.1 | `acris_legals` |
+| `document-id` | document id | `Deed.documentId` | Q3.1 | `acris_master` |
+| `document-type` | document type | `Deed.docType` | Q3.1 | `acris_master` |
+| `document-date` | document date | `Deed.docDate` | Q3.1 | `acris_master` |
+| `recorded-date` | recorded date | `Deed.recordedDate` | Q3.1 | `acris_master` |
+| `document-amount` | document amount | `Deed.amount` | Q3.1 | `acris_master` |
+| `grantee` | grantee | `Grantee` node | Q3.2 | `acris_parties` |
+| `has-grantee` | has grantee | `HAS_GRANTEE` relationship (Deed to Grantee) | Q3.2 | `acris_parties` |
+| `grantee-name` | grantee name | `Grantee.name` | Q3.2 | `acris_parties` |
+| `mailing-address` | mailing address | `Grantee.mailingAddress`, `OwnerContact.mailingAddress` | Q3.2, Q3.5 | `acris_parties`, `hpd_contacts` |
+| `address-line-two` | address line two | `Grantee.addressLine2`, `OwnerContact.addressLine2` | Q3.2, Q3.5 | `acris_parties`, `hpd_contacts` |
+| `zip-code` | ZIP code | `Grantee.zip`, `OwnerContact.zip` | Q3.2, Q3.5 | `acris_parties`, `hpd_contacts` |
+| `name-agreement` | name agreement | answer field `nameAgreement` | Q3.4 | `src/watchline/compare.py` |
+| `address-agreement` | address agreement | answer field `addressAgreement` | Q3.5 | `src/watchline/compare.py` |
+| `comparison-rule` | comparison rule | answer field `rule` | Q3.4, Q3.5 | `src/watchline/compare.py` |
+
+Name agreement values (scheme `name-agreement-outcomes`): `exact-normalized`, `normalization-match`, `different`, `not-comparable`. Address agreement values (scheme `address-agreement-outcomes`): `same`, `differs`, `address-absent`. Reused from Q2 for Q3.3: `registration`, `owner-contact`, `owner-name`, `has-registration`, `has-owner-contact`; from Q1: `tax-lot`, `building`, `has-building`.
+
+## Tagged as not in the graph or vocabulary
+
+| Term | Where it lives |
+| --- | --- |
+| Grantor / party role of a grantor | Not loaded (decision 2026-11-12); a later transaction question adds it |
+| Party type code (1, 2, 3) | Source detail; only grantees (2) are read |
+| Mortgage, assignment, transfer-tax and index-correction documents | Not deeds here; document types outside the eight deed codes |
+| Mail-drop address | Needs a curated list that does not exist yet (open point); the caveat is carried in `mailing-address` and `address-agreement` |
+| "Same party", "owner" as a conclusion | Never asserted; a name match is a lead |
+| Comparison outcomes | Computed at answer time by `src/watchline/compare.py`, not stored |
+| ACRIS document version rows, `modifieddate`, `goodthroughdate` | Used only to choose the current version of a document |
+| `crfn`, reel and page, `pcttransferred` | Not needed for Q3 |
+
+## Pilot restatement
+
+| Question | Restated with approved terms |
+| --- | --- |
+| Q3 Who is the grantee on the most recent deed for this lot, and does the deed name the same party as the HPD registration, compared by exact normalized name? | For the **tax lot**, list the **deed(s)** with the latest **recorded date**, each with its **document id**, **document type**, **document date** and **document amount**, and its **grantees** (**grantee name**, **mailing address**, **address line two**, **ZIP code**); list the **registered owner contacts** on the lot's buildings' **registrations**; report the **name agreement** and **address agreement** with the **comparison rule**. |
+| Q3.1 | Which **deeds** does the **tax lot** have, and which has the latest **recorded date**, with its dates and **document amount**? |
+| Q3.2 | Which **grantees** does the **deed** have? |
+| Q3.3 | Which **registered owner contacts** are on the **registrations** of the lot's **buildings**? (Q2.2 through `has-building`.) |
+| Q3.4 | What is the **name agreement** between each **grantee name** and each **owner name**, under which **comparison rule**? |
+| Q3.5 | What is the **address agreement** between each grantee's and each owner contact's **mailing address** and **ZIP code**, with the **address line two** reported apart? |
+| Worked example: exact agreement (anchor A) | **Deed** `2025032100031001`, **document amount** 0, **grantee** `5413 PLAZA LLC`, **name agreement** exact normalized (N1). The earlier deed for value is reported too. |
+| Worked example: spelling difference (anchor G) | Two **grantees** against `KS Turnpike LLC`: **name agreement** different for both, because `K S` is not `KS`. |
+| Case: two deeds the same day (anchor D) | Two **deeds** tie on the **recorded date**; both are returned, none chosen. |
+
+No gaps: every domain term resolves to a concept above.
+

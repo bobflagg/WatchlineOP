@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: Deed and Registration are disjoint. A recorded document is not an HPD registration.
+id:bad-deed-2 a onto:Deed, onto:Registration .

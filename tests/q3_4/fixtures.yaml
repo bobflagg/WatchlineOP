@@ -1,0 +1,19 @@
+# Q3.4 expected name agreement. Provisional until the frozen dump is identified (data/README.md).
+# Checked 2026-11-12. check_names.py computes each outcome in SQL (independent) and with src/watchline/compare.py, and
+# compares both with the fixture. Lots are also read from the graph with lookup.cypher and compared.
+# Rules: N1 = uppercase, trim, collapse whitespace; N2 = N1, remove periods, commas to spaces. Spaces inside a name stay.
+pairs:   # [name_a, name_b, outcome, rule]; rule is null unless the outcome is exact-normalized (N1) or normalization-match (N2)
+  - ["5413 PLAZA LLC", "5413 PLAZA LLC", exact-normalized, N1]
+  - ["5413  7TH AVENUE LLC", "5413 7TH AVENUE LLC", exact-normalized, N1]      # double space in ACRIS (deed 2003020300253001)
+  - ["HP SUNSET PARK I HDFC INC.", "HP SUNSET PARK I HDFC INC", normalization-match, N2]   # anchor D, two HPD spellings
+  - ["K S TURNPIKE LLC", "KS Turnpike LLC", different, null]                  # anchor G: a space is a difference
+  - ["NEIGHBORHOOD STABILIZATION ASSOCIATES I, L.P.", "NEIGHBORHOOD STABILIZATION ASSOCIATES I LP", normalization-match, N2]   # punctuation only
+  - ["SUNSET PARK OWNER I LLC", "SUNSET PARK OWNER 1 LLC", different, null]    # N2 never rewrites characters
+  - ["ACME REALTY, INC.", "ACME REALTY INC", normalization-match, N2]         # synthetic: comma and period
+  - ["ACME LLC", null, not-comparable, null]
+lots:
+  - {bbl: "3008260002", note: "anchor A: the latest deed names the registered owner",
+     expect: [["5413 PLAZA LLC", "5413 PLAZA LLC", exact-normalized, N1]]}
+  - {bbl: "3008080025", note: "anchor G: two grantees against KS Turnpike LLC; neither agrees",
+     expect: [["AADVA REALTY LLC", "KS Turnpike LLC", different, null], ["K S TURNPIKE LLC", "KS Turnpike LLC", different, null]]}
+  - {bbl: "3008210012", note: "anchor D: five grantees on two tied deeds against three registrations; none agrees", all: different, pairs: 15}

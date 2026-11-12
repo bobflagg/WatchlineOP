@@ -1,0 +1,5 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: documentId is functional. One deed is one ACRIS document, so it has one id.
+# (A functional date property cannot be tested here: xsd:date is outside the OWL 2 datatype map and HermiT ignores it.)
+id:bad-deed-1 a onto:Deed ; onto:documentId "BAD1", "BAD2" .

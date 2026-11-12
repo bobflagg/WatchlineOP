@@ -142,3 +142,78 @@ OOPS! (2026-11-12, `make oops`, run by the user, TBox only; raw report `oops-rep
 
 No critical or important pitfall.
 
+
+## Q3
+
+### Scope
+
+Adds two classes (`Deed`, `Grantee`), two object properties (`hasDeed`, `hasGrantee`) and nine datatype properties, three of them shared by `Grantee` and `OwnerContact`. Elements follow `profiles/q03.yaml`. Same namespaces, one ontology IRI, no version IRI.
+
+### Not modeled
+
+| Term | Reason |
+| --- | --- |
+| `Grantee.partyKey` | A loader key (document, name, address and ZIP joined). Identity only, never an answer field. |
+| name agreement, address agreement, comparison rule | Computed at answer time by `src/watchline/compare.py` over stored values; the outcome schemes stay SKOS. Storing them would assert a finding the rules do not support. |
+| The eight deed types as classes | `documentType` is a string as ACRIS spells it. A subclass per type would add no rule an answer needs; the allowed values are a Stage 6 shape. |
+| snapshots | Dataset-level provenance in `data/sources.yaml`, no per-record field. |
+| grantors, other party and document types, mail-drop flag | Out of scope for Q3 (decision 2026-11-12); no curated mail-drop list exists. |
+| `otherLots` | Derived at answer time: the count of other `hasDeed` subjects of the same deed. |
+
+### Axioms
+
+| Axiom | Reason |
+| --- | --- |
+| `Deed` disjointWith `Registration` | A recorded document is not a registration (Stage 3 candidate). Rejects one node carrying both. |
+| `Grantee` disjointWith `OwnerContact` | A deed party is not an HPD contact (Stage 3 candidate). Keeps the two sides of the comparison apart. |
+| `hasDeed` domain `TaxLot` | The graph links only lots to deeds (checked by `make profiles`). |
+| `hasGrantee`, `documentId`, `documentType`, `documentDate`, `recordedDate`, `documentAmount` domain `Deed` | Each appears only on deeds in the graph. |
+| `granteeName` domain `Grantee` | Appears only on grantees in the graph. |
+| `mailingAddress` domain `Grantee` or `OwnerContact` | Both party kinds carry a mailing address; the union keeps one property for both, as `address` does for lots and buildings. |
+| `addressLineTwo` domain `Grantee` or `OwnerContact` | Same reasoning as `mailingAddress`. |
+| `zipCode` domain `Grantee` or `OwnerContact` | Same reasoning as `mailingAddress`. |
+| `documentId`, `documentType`, `documentDate`, `recordedDate`, `documentAmount`, `granteeName`, `mailingAddress`, `addressLineTwo`, `zipCode` functional | Single-valued in the graph: one value per deed or party, absent (never multiple) when blank. For an owner contact, absent when exact duplicate rows disagree. |
+
+`hasDeed` is not inverse-functional (a deed can name many lots) and `hasGrantee` is not functional (a deed can have several grantees or none).
+
+### Rules for Stage 6 shapes
+
+- `documentId` is present on every deed; `documentType` is present and one of `DEED`, `DEED, TS`, `DEED, LE`, `DEED, RC`, `DEEDO`, `DEEDP`, `CORRD`, `CONDEED`; `recordedDate` is present on every deed.
+- `documentAmount` is an integer, never negative; 0 is reported as recorded, never read as a free sale.
+- Every deed is linked to at least one lot; every grantee to exactly one deed.
+- `granteeName` and the address properties are absent when blank, never an empty string.
+- Names are stored as recorded (trimmed only); no normalization is applied in the graph.
+- "Most recent deed" means the latest `recordedDate`; all deeds tying on it are returned.
+
+### Answer fields
+
+Each field of `profiles/q03.yaml` against the ontology.
+
+| Answer field | Ontology | Note |
+| --- | --- | --- |
+| `bbl` | `bbl` | from Q1 |
+| `deeds` | `hasDeed` | all that tie on the latest recorded date, none chosen |
+| `documentId`, `docType`, `docDate`, `recordedDate`, `amount` | `documentId`, `documentType`, `documentDate`, `recordedDate`, `documentAmount` | graph names `Deed.docType`, `Deed.docDate`, `Deed.amount` |
+| `otherLots` | not modeled | count of other `hasDeed` subjects, computed at answer time |
+| `grantees` | `hasGrantee` | all, none chosen; empty means none recorded |
+| `name` | `granteeName` | graph name `Grantee.name` |
+| `mailingAddress`, `addressLine2`, `zip` | `mailingAddress`, `addressLineTwo`, `zipCode` | graph names `addressLine2`, `zip`; on grantees and owner contacts |
+| `owners` | `hasOwnerContact` | Q2 path through the lot's buildings; the owner address is the three properties above |
+| `nameAgreement`, `addressAgreement`, `rule` | not modeled | derived at answer time by `compare.py` (N1, N2, A1) |
+
+### Reasoner and example data
+
+- ROBOT 1.9.11 with HermiT, as for Q1 and Q2.
+- `abox/q03.ttl` (verified fixtures; person names not repeated): consistent, no unsatisfiable class (`make ontology`, 2026-11-12, 58/58).
+- Negative cases, each meant to be flagged inconsistent: `n08` (two document ids on one deed), `n09` (a deed that is a registration), `n10` (a grantee that is an owner contact).
+- HermiT does not compare `xsd:date` values (not in the OWL 2 datatype map), so the date properties' functional axioms are not tested by a negative case; they are checked by the Stage 6 shapes.
+
+### Pitfall scan
+
+OOPS! (2026-11-12, `make oops`, run by the user, TBox only; raw report `oops-report.rdf`): one pitfall.
+
+| Pitfall | Level | Finding | Handling |
+| --- | --- | --- | --- |
+| P13 inverse relationships not declared | Minor | Affects 5 properties: `hasBuilding`, `hasRegistration`, `hasOwnerContact`, `hasDeed`, `hasGrantee` | Left as is, as for Q1 and Q2. The graph stores one direction and can be traversed both ways. Add an inverse when a question needs it. |
+
+No critical or important pitfall.

@@ -57,6 +57,18 @@ def reason(graph: Graph, workdir: Path, name: str) -> tuple[int, str]:
     return p.returncode, p.stdout + p.stderr
 
 
+def merge_nodes(schemas: list[dict]) -> dict:
+    """Nodes by label; a later question that adds properties to an earlier node (Q3 on OwnerContact) extends it."""
+    nodes: dict = {}
+    for q in schemas:
+        for lab, n in q["graph"]["nodes"].items():
+            if lab in nodes:
+                nodes[lab] = {**nodes[lab], "properties": {**nodes[lab]["properties"], **n["properties"]}}
+            else:
+                nodes[lab] = n
+    return nodes
+
+
 def main() -> int:
     onto = Graph()
     onto.parse(ROOT / "ontology" / "watchline-onto.ttl")
@@ -65,7 +77,7 @@ def main() -> int:
     schemas = [yaml.safe_load(f.read_text()) for f in sorted((ROOT / "profiles").glob("q[0-9][0-9].yaml"))]
     schema = {
         "graph": {
-            "nodes": {lab: n for q in schemas for lab, n in q["graph"]["nodes"].items()},
+            "nodes": merge_nodes(schemas),
             "relationships": {r: v for q in schemas for r, v in q["graph"]["relationships"].items()},
         },
         "answer": {k: v for q in schemas for k, v in q["answer"].items()},

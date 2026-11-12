@@ -1,0 +1,16 @@
+# Source profile: ACRIS real property master. Facts about the source only.
+# Queried 2026-11-12 against the frozen database.
+source_key: acris_master
+table: public.real_property_master
+data_through: 2026-05-29
+queried_on: 2026-11-12
+key: none
+key_notes: "documentid repeats as versions (14957 documents, 30138 rows; 3812 differ in content). Current version = latest modifieddate, then goodthroughdate; no ties remain. 3 documents change doctype between versions, so the type test uses the current version."
+columns:
+  - {name: documentid, physical_type: text, allowed: free text id, sentinels: none, used_by: [Q3.1, Q3.2], notes: "Not unique (versions). Joins to legals and parties."}
+  - {name: doctype, physical_type: text, allowed: [DEED, "DEED, TS", "DEED, LE", "DEED, RC", DEEDO, DEEDP, CORRD, CONDEED, "DEED COR"], sentinels: none, used_by: [Q3.1], notes: "Many other codes exist and are not read. DEED COR is an index correction, not a deed (decision 2026-11-12). Descriptions: data/sources.yaml."}
+  - {name: docdate, physical_type: date, allowed: a date, sentinels: {null: "no document date (56929 of 1003931 deeds in scope)"}, used_by: [Q3.1], notes: "Reported only when present; not the rule for 'most recent'."}
+  - {name: docamount, physical_type: bigint, allowed: "integer >= 0, whole dollars", sentinels: {"0": "common; does not mean a free sale"}, used_by: [Q3.1], notes: "Never null."}
+  - {name: recordedfiled, physical_type: date, allowed: a date, sentinels: none, used_by: [Q3.1], notes: "Never null on deed types. The rule for 'most recent'."}
+  - {name: modifieddate, physical_type: date, allowed: a date, sentinels: {null: "sorts last when choosing the current version"}, used_by: [Q3.1], notes: "Chooses the current version of a document."}
+  - {name: goodthroughdate, physical_type: date, allowed: a date, sentinels: none, used_by: [Q3.1], notes: "Tie-break for the current version; snapshot date of the master."}

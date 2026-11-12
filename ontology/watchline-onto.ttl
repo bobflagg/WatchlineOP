@@ -11,7 +11,7 @@
 
 <https://watchline.example/onto/watchline> a owl:Ontology ;
     dct:title "Watchline ontology"@en ;
-    dct:description "Classes and properties for the WatchlineOP landlord research graph. Q1 covers tax lots, buildings and their source-reported characteristics. Q2 adds HPD registrations and their owner contacts."@en .
+    dct:description "Classes and properties for the WatchlineOP landlord research graph. Q1 covers tax lots, buildings and their source-reported characteristics. Q2 adds HPD registrations and their owner contacts. Q3 adds deeds, their grantees and the mailing addresses of grantees and owner contacts."@en .
 
 onto:question a owl:AnnotationProperty ;
     rdfs:label "question"@en ;
@@ -172,4 +172,103 @@ onto:ownerName a owl:DatatypeProperty, owl:FunctionalProperty ;
     rdfs:comment "The name of an owner contact exactly as HPD records it: the corporation name, or first name, middle initial and last name joined. Absent when the source name is blank."@en ;
     onto:question "Q2.2" ;
     rdfs:domain onto:OwnerContact ;
+    rdfs:range xsd:string .
+
+# --- Q3 classes ---
+
+onto:Deed a owl:Class ;
+    rdfs:label "deed"@en ;
+    rdfs:comment "A recorded ACRIS document of one of eight deed types (DEED, DEED TS, DEED LE, DEED RC, DEEDO, DEEDP, CORRD, CONDEED), identified by its document id. It can name many tax lots. It records a transfer of title, not that a sale took place."@en ;
+    onto:question "Q3.1", "Q3.2" ;
+    owl:disjointWith onto:Registration .
+
+onto:Grantee a owl:Class ;
+    rdfs:label "grantee"@en ;
+    rdfs:comment "A party named on one deed as receiving title, with the name and address as that deed records them. Not an HPD owner contact; the two are compared at answer time, never merged."@en ;
+    onto:question "Q3.2" ;
+    owl:disjointWith onto:OwnerContact .
+
+# --- Q3 object properties ---
+
+onto:hasDeed a owl:ObjectProperty ;
+    rdfs:label "has deed"@en ;
+    rdfs:comment "Links a tax lot to a deed recorded against it. Many to many: a deed can name several lots."@en ;
+    onto:question "Q3.1" ;
+    rdfs:domain onto:TaxLot ;
+    rdfs:range onto:Deed .
+
+onto:hasGrantee a owl:ObjectProperty ;
+    rdfs:label "has grantee"@en ;
+    rdfs:comment "Links a deed to a grantee named on it. A deed can have several grantees, or none."@en ;
+    onto:question "Q3.2" ;
+    rdfs:domain onto:Deed ;
+    rdfs:range onto:Grantee .
+
+# --- Q3 datatype properties on Deed ---
+
+onto:documentId a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "document id"@en ;
+    rdfs:comment "ACRIS's identifier for a recorded document."@en ;
+    onto:question "Q3.1" ;
+    rdfs:domain onto:Deed ;
+    rdfs:range xsd:string .
+
+onto:documentType a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "document type"@en ;
+    rdfs:comment "The ACRIS code for the kind of deed, as recorded from the current version of the document."@en ;
+    onto:question "Q3.1" ;
+    rdfs:domain onto:Deed ;
+    rdfs:range xsd:string .
+
+onto:documentDate a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "document date"@en ;
+    rdfs:comment "The date written on the deed, as ACRIS records it. Absent when ACRIS has none. Not used to find the most recent deed."@en ;
+    onto:question "Q3.1" ;
+    rdfs:domain onto:Deed ;
+    rdfs:range xsd:date .
+
+onto:recordedDate a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "recorded date"@en ;
+    rdfs:comment "The date the deed was recorded with the city register. The rule for the most recent deed."@en ;
+    onto:question "Q3.1" ;
+    rdfs:domain onto:Deed ;
+    rdfs:range xsd:date .
+
+onto:documentAmount a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "document amount"@en ;
+    rdfs:comment "The dollar amount ACRIS records on the deed, in whole US dollars. 0 is common and is never read as a free sale."@en ;
+    onto:question "Q3.1" ;
+    rdfs:domain onto:Deed ;
+    rdfs:range xsd:integer .
+
+# --- Q3 datatype property on Grantee ---
+
+onto:granteeName a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "grantee name"@en ;
+    rdfs:comment "The name of a grantee exactly as the deed records it (trimmed). Never normalized in the graph. Absent when the party row has no name."@en ;
+    onto:question "Q3.2" ;
+    rdfs:domain onto:Grantee ;
+    rdfs:range xsd:string .
+
+# --- Q3 datatype properties used on both Grantee and OwnerContact ---
+
+onto:mailingAddress a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "mailing address"@en ;
+    rdfs:comment "The street line of the address a party gives: for a grantee the first address line on the deed, for an owner contact the business house number and street name. Can hold a care-of line. Absent when blank, or for an owner contact when exact duplicate rows disagree."@en ;
+    onto:question "Q3.2", "Q3.5" ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( onto:Grantee onto:OwnerContact ) ] ;
+    rdfs:range xsd:string .
+
+onto:addressLineTwo a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "address line two"@en ;
+    rdfs:comment "The second address line a party gives (a unit, suite, floor or another street line), as recorded. Reported apart and never compared. Absent when blank."@en ;
+    onto:question "Q3.2", "Q3.5" ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( onto:Grantee onto:OwnerContact ) ] ;
+    rdfs:range xsd:string .
+
+onto:zipCode a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "ZIP code"@en ;
+    rdfs:comment "The ZIP code of the mailing address a party gives, as recorded (five digits, nine digits or non-US text). Absent when blank."@en ;
+    onto:question "Q3.2", "Q3.5" ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( onto:Grantee onto:OwnerContact ) ] ;
     rdfs:range xsd:string .

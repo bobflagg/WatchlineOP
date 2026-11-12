@@ -1,0 +1,19 @@
+# Q3 acceptance results, 2026-11-12. Full rebuild and `make graph`, `make ontology`, `make thesaurus` run by the user; all passed (reported by the user; shapes count from tests/results/shapes.json).
+question: Q3
+fixture_version: provisional (not yet verified against an identified frozen dump)
+baseline: "Pending: dump filename and SHA-256 are not recorded in data/README.md. No result below is 'passed' for acceptance."
+tools:
+  shacl2cypher: "0.3.0 (strict mode; all Q1, Q2 and Q3 rules compile, no static diagnostics; coverage names and negative-case rules match)"
+  neo4j: "Neo4j Kernel 2026.04.0 enterprise (tests/results/shapes.json)"
+acceptance:
+  graph:
+    status: pending
+    reason: "baseline not identified"
+    evidence:
+      shapes_compile: "passed (compile only, no database)"
+      shapes_on_graph: "131/131 (Q1, Q2, Q3: 64 rules, supplemental checks, coverage, seeded bad-data cases with rollback)"
+      sub_question_checks: "passed in make graph (counts not captured; user-reported)"
+      negative_cases: "22 (tests/negative/q03/cases.yaml), all flagged or refused"
+      supplemental_checks: "queries/checks/q03-duplicate-deed-pair.cypher; 0 violations"
+      ontology_thesaurus: "make ontology and make thesaurus passed (user-reported)"
+    note: "Graph acceptance is the only declared type for Q3. No downstream fixtures are required."

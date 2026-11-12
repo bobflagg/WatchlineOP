@@ -1,17 +1,17 @@
 {
   "neo4j": "Neo4j Kernel 2026.04.0 enterprise",
   "shacl2cypher": "0.3.0",
-  "rules": 34,
+  "rules": 64,
   "checks": [
     {
-      "check": "all 34 rules compile in strict mode",
+      "check": "all 64 rules compile in strict mode",
       "passed": true,
       "detail": "[] []"
     },
     {
       "check": "the graph is loaded",
       "passed": true,
-      "detail": "(811817, 606213)"
+      "detail": "(3336386, 3207572)"
     },
     {
       "check": "graph conforms to BuildingRegistrationShape.hasRegistration.class",
@@ -40,6 +40,126 @@
     },
     {
       "check": "graph conforms to BuildingShape.inv_hasBuilding.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DeedShape.documentAmount.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DeedShape.documentAmount.minInclusive",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DeedShape.documentDate.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DeedShape.documentId.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DeedShape.documentId.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DeedShape.documentId.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DeedShape.documentType.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DeedShape.documentType.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DeedShape.documentType.pattern",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DeedShape.hasGrantee.class",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DeedShape.inv_hasDeed.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DeedShape.recordedDate.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DeedShape.recordedDate.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to GranteeShape.addressLineTwo.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to GranteeShape.addressLineTwo.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to GranteeShape.granteeName.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to GranteeShape.granteeName.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to GranteeShape.inv_hasGrantee.maxCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to GranteeShape.inv_hasGrantee.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to GranteeShape.mailingAddress.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to GranteeShape.mailingAddress.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to GranteeShape.zipCode.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to GranteeShape.zipCode.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotDeedShape.hasDeed.class",
       "passed": true,
       "detail": "0 violations"
     },
@@ -124,6 +244,36 @@
       "detail": "0 violations"
     },
     {
+      "check": "graph conforms to OwnerContactAddressShape.addressLineTwo.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OwnerContactAddressShape.addressLineTwo.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OwnerContactAddressShape.mailingAddress.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OwnerContactAddressShape.mailingAddress.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OwnerContactAddressShape.zipCode.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OwnerContactAddressShape.zipCode.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
       "check": "graph conforms to OwnerContactShape.contactType.datatype",
       "passed": true,
       "detail": "0 violations"
@@ -190,6 +340,11 @@
     },
     {
       "check": "graph conforms to queries/checks/q02-end-before-last.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q03-duplicate-deed-pair.cypher",
       "passed": true,
       "detail": "0 violations"
     },
@@ -389,9 +544,119 @@
       "detail": ""
     },
     {
+      "check": "negative: deed without type is flagged by DeedShape.documentType.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: deed type DEED COR is flagged by DeedShape.documentType.pattern",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: deed type as number is flagged by DeedShape.documentType.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: deed without recorded date is flagged by DeedShape.recordedDate.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: recorded date as text is flagged by DeedShape.recordedDate.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: document date as text is flagged by DeedShape.documentDate.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: deed without id is flagged by DeedShape.documentId.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: negative amount is flagged by DeedShape.documentAmount.minInclusive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: amount as text is flagged by DeedShape.documentAmount.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: deed with no lot is flagged by DeedShape.inv_hasDeed.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: HAS_DEED ends on a deed is flagged by LotDeedShape.hasDeed.class",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: HAS_GRANTEE ends on a grantee is flagged by DeedShape.hasGrantee.class",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: grantee with no deed is flagged by GranteeShape.inv_hasGrantee.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: grantee on two deeds is flagged by GranteeShape.inv_hasGrantee.maxCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: grantee with empty name is flagged by GranteeShape.granteeName.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: grantee name as number is flagged by GranteeShape.granteeName.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: grantee with empty address is flagged by GranteeShape.mailingAddress.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: grantee with empty zip is flagged by GranteeShape.zipCode.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: owner contact with empty address is flagged by OwnerContactAddressShape.mailingAddress.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate HAS_DEED pair is flagged by queries/checks/q03-duplicate-deed-pair.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate documentId is refused by a native constraint",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate partyKey is refused by a native constraint",
+      "passed": true,
+      "detail": ""
+    },
+    {
       "check": "seeded bad data left no trace (rolled back)",
       "passed": true,
-      "detail": "(811817, 606213) -> (811817, 606213)"
+      "detail": "(3336386, 3207572) -> (3336386, 3207572)"
     }
   ]
 }

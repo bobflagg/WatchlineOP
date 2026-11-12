@@ -1,0 +1,24 @@
+# Q3.2 expected grantees per Deed. Provisional until the frozen dump is identified (data/README.md).
+# Checked read-only 2026-11-12. check_grantees.py re-derives each from the source, so a stale fixture fails.
+# grantees: [name, mailingAddress, addressLine2, zip] as recorded; null = absent. Compared as a set.
+# Person names are not repeated: a person named in a source row is given as "<person>".
+deeds:
+  - {documentId: "2025032100031001", note: "anchor A: the latest deed, grantor and grantee are the same entity",
+     grantees: [["5413 PLAZA LLC", "746 61ST STREET", null, "11220"]]}
+  - {documentId: "2021022201130003", note: "anchor A: the last deed for value",
+     grantees: [["5413 PLAZA LLC", "5 CROMWELL CIRCLE", null, "10304"]]}
+  - {documentId: "2017061600025001", note: "anchor D: three grantees; two spell AVE and AVENUE",
+     grantees: [["CLL2 LLC", "1465A FLATBUSH AVENUE", null, "11210"],
+                ["NEIGHBORHOOD STABILIZATION ASSOCIATES I, L.P.", "1465A FLATBUSH AVENUE", null, "11210"],
+                ["SUNSET IV EQUITIES LLC", "1465A FLATBUSH AVE", null, "11210"]]}
+  - {documentId: "2017061600025002", note: "anchor D: the deed for value, a second line holds a floor",
+     grantees: [["HP SUNSET PARK I HOUSING DEV FUND COMPANY, INC", "152 WEST 57TH STREET", "36TH FLOOR", "10019"],
+                ["SUNSET PARK OWNER I LLC", "152 WEST 57TH STREET", "36TH FLOOR", "10019"]]}
+  - {documentId: "2018092900072001", note: "anchor G: two grantees",
+     grantees: [["AADVA REALTY LLC", "14 SINCLAIR DR", null, "11024"],
+                ["K S TURNPIKE LLC", "14 SINCLAIR DR", null, "11024"]]}
+  - {documentId: "FT_3830001229983", note: "eight grantees on one deed", grantee_count: 8}
+  - {documentId: "2005060101516001", note: "a grantee row with no name (a person's name sits in the address field): the name is absent", blank_names: 1}
+  - {documentId: "BK_6630000600361", note: "a named grantee with no address: the address is absent", blank_addresses: 1}
+absent_deeds: ["2005072601564001"]   # DEED COR: not a deed here, so not in the graph
+totals: {grantees: 1520638, named: 1520456, with_addr: 943047, deeds: 1003893}   # queried 2026-11-12; deeds = deeds that have at least one grantee (38 of 1,003,931 have none)

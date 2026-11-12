@@ -6,6 +6,9 @@ Run after scripts/load_buildings.py. Rules (see tests/q2_1/expected.sql and test
     type) are excluded and counted, never turned into a registration.
   - HAS_REGISTRATION: one per distinct (BIN, registrationid). lastRegistered and registrationEnd are the
     dates on those rows; if the rows disagree, or only some are null, the date is absent, never picked.
+  - OwnerContact also carries the mailing address HPD records (Q3.5): mailingAddress (house number and street name),
+    addressLine2 (apartment) and zip, as recorded, blank is absent. When exact duplicate contacts disagree on one
+    of them, that value is absent, never picked.
   - OwnerContact: contacts of type CorporateOwner, IndividualOwner or JointOwner on a loaded registration.
     Exact duplicates (same registration, type and name) are one contact. registrationcontactid is not
     unique in the snapshot, so the key is contactKey = registrationid|type|name. name = corporationname, or first, middle initial and last name joined; blank is absent.
@@ -44,7 +47,14 @@ CONTACTS_SQL = f"""
 SELECT c.registrationid::bigint, c.type,
        CASE WHEN c.type = 'CorporateOwner' THEN nullif(btrim(c.corporationname), '')
             ELSE nullif(btrim(concat_ws(' ', nullif(btrim(c.firstname), ''), nullif(btrim(c.middleinitial), ''),
-                                         nullif(btrim(c.lastname), ''))), '') END AS name
+                                         nullif(btrim(c.lastname), ''))), '') END AS name,
+       CASE WHEN count(DISTINCT nullif(btrim(concat_ws(' ', nullif(btrim(c.businesshousenumber), ''), nullif(btrim(c.businessstreetname), ''))), '')) = 1
+             AND count(nullif(btrim(concat_ws(' ', nullif(btrim(c.businesshousenumber), ''), nullif(btrim(c.businessstreetname), ''))), '')) = count(*)
+            THEN min(nullif(btrim(concat_ws(' ', nullif(btrim(c.businesshousenumber), ''), nullif(btrim(c.businessstreetname), ''))), '')) END AS mailing_address,
+       CASE WHEN count(DISTINCT nullif(btrim(c.businessapartment), '')) = 1 AND count(nullif(btrim(c.businessapartment), '')) = count(*)
+            THEN min(nullif(btrim(c.businessapartment), '')) END AS address_line2,
+       CASE WHEN count(DISTINCT nullif(btrim(c.businesszip), '')) = 1 AND count(nullif(btrim(c.businesszip), '')) = count(*)
+            THEN min(nullif(btrim(c.businesszip), '')) END AS zip
 FROM hpd_contacts c
 WHERE c.type IN {OWNER_TYPES}
   AND c.registrationid IN (SELECT registrationid FROM hpd_registrations WHERE bbl IS NOT NULL AND {VALID_BIN})
@@ -67,7 +77,8 @@ LOAD_CONTACTS = """
 UNWIND $rows AS row
 MATCH (r:Registration {registrationId: row.rid})
 MERGE (c:OwnerContact {contactKey: row.key})
-SET c.contactType = row.type, c.name = row.name
+SET c.contactType = row.type, c.name = row.name, c.mailingAddress = row.addr,
+    c.addressLine2 = row.line2, c.zip = row.zip
 MERGE (r)-[:HAS_OWNER_CONTACT]->(c)
 RETURN count(*) AS linked
 """
@@ -129,7 +140,8 @@ def main() -> int:
                 linked_pairs += session.execute_write(lambda tx, b=batch: tx.run(LOAD_PAIRS, rows=b).single()["linked"])
             print(f"  registrations {len(regs):,}, pairs {staged['pairs']:,}", flush=True)
             for rows in batches(pg, "contacts", CONTACTS_SQL):
-                batch = [{"key": f"{r}|{t}|{n or ''}", "rid": r, "type": t, "name": n} for r, t, n in rows]
+                batch = [{"key": f"{r}|{t}|{n or ''}", "rid": r, "type": t, "name": n, "addr": a, "line2": l, "zip": z}
+                         for r, t, n, a, l, z in rows]
                 staged["contacts"] += len(batch)
                 staged["named"] += sum(1 for r in batch if r["name"])
                 linked_contacts += session.execute_write(lambda tx, b=batch: tx.run(LOAD_CONTACTS, rows=b).single()["linked"])

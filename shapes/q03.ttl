@@ -1,0 +1,66 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix s2c:  <https://w3id.org/shacl2cypher#> .
+@prefix shp:  <https://watchline.example/shapes/> .
+
+# Q3 shapes: the rules OWL cannot express (ontology/ontology-notes.md, Q3 "Rules for Stage 6 shapes").
+# Compiled together with shapes/q01.ttl and shapes/q02.ttl, which name TaxLot and OwnerContact.
+
+# --- Graph names ---
+onto:Deed s2c:label "Deed" .
+onto:Grantee s2c:label "Grantee" .
+onto:hasDeed s2c:relationship "HAS_DEED" ; s2c:direction "out" .
+onto:hasGrantee s2c:relationship "HAS_GRANTEE" ; s2c:direction "out" .
+onto:documentId s2c:property "documentId" .
+onto:documentType s2c:property "docType" .
+onto:documentDate s2c:property "docDate" .
+onto:recordedDate s2c:property "recordedDate" .
+onto:documentAmount s2c:property "amount" .
+onto:granteeName s2c:property "name" .
+onto:mailingAddress s2c:property "mailingAddress" .
+onto:addressLineTwo s2c:property "addressLine2" .
+onto:zipCode s2c:property "zip" .
+
+# --- Rules ---
+shp:DeedShape a sh:NodeShape ;
+    s2c:key "documentId" ;
+    sh:targetClass onto:Deed ;
+    # R1 document id present
+    sh:property [ sh:path onto:documentId ; sh:minCount 1 ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    # R1 type present and one of the eight deed codes (as ACRIS spells them)
+    sh:property [ sh:path onto:documentType ; sh:minCount 1 ; sh:datatype xsd:string ;
+                  sh:pattern "^(DEED|DEED, TS|DEED, LE|DEED, RC|DEEDO|DEEDP|CORRD|CONDEED)$" ] ;
+    # R1 recorded date present
+    sh:property [ sh:path onto:recordedDate ; sh:minCount 1 ; sh:datatype xsd:date ] ;
+    # document date is a date when present (absent otherwise)
+    sh:property [ sh:path onto:documentDate ; sh:datatype xsd:date ] ;
+    # R2 amount is a whole number, never negative (0 kept as recorded)
+    sh:property [ sh:path onto:documentAmount ; sh:datatype xsd:integer ; sh:minInclusive 0 ] ;
+    # R3 every deed is linked to at least one lot; HAS_GRANTEE ends on a grantee
+    sh:property [ sh:path [ sh:inversePath onto:hasDeed ] ; sh:minCount 1 ] ;
+    sh:property [ sh:path onto:hasGrantee ; sh:class onto:Grantee ] .
+
+shp:GranteeShape a sh:NodeShape ;
+    s2c:key "partyKey" ;
+    sh:targetClass onto:Grantee ;
+    # R4 a blank name or address part is absent, never an empty string
+    sh:property [ sh:path onto:granteeName ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:mailingAddress ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:addressLineTwo ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:zipCode ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    # R3 every grantee is linked to exactly one deed
+    sh:property [ sh:path [ sh:inversePath onto:hasGrantee ] ; sh:minCount 1 ; sh:maxCount 1 ] .
+
+shp:LotDeedShape a sh:NodeShape ;
+    s2c:key "bbl" ;
+    sh:targetClass onto:TaxLot ;
+    sh:property [ sh:path onto:hasDeed ; sh:class onto:Deed ] .
+
+# Address parts added to owner contacts for Q3.5: same blank-is-absent rule.
+shp:OwnerContactAddressShape a sh:NodeShape ;
+    s2c:key "contactKey" ;
+    sh:targetClass onto:OwnerContact ;
+    sh:property [ sh:path onto:mailingAddress ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:addressLineTwo ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:zipCode ; sh:datatype xsd:string ; sh:minLength 1 ] .

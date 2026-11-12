@@ -54,3 +54,40 @@ One section per question. Records which concepts nest, why, and which stay flat 
 
 - `corporate-owner` and `individual-owner`: an owner contact has one type. Candidate only; the decision is Stage 5's.
 - `registration` and `building`: a registration is not a building. Candidate only.
+
+## Q3
+
+**Result: no hierarchy needed.** Still no `skos:broader`, `skos:narrower` or collections. Reviewed 2026-11-12; `watchline.ttl` was not changed in this stage.
+
+### Concepts left flat, and why
+
+| Concepts | Reason |
+| --- | --- |
+| `deed`, `grantee` | A deed has grantees (`has-grantee`), a relationship. A grantee is a party on a deed, not a kind of owner contact, owner or entity. |
+| `tax-lot`, `deed` | A lot has deeds (`has-deed`). Neither is a kind of the other. |
+| `grantee`, `owner-contact` | Both are named parties, but one is a deed role and the other an HPD contact. Grouping them under "party" would suggest they are interchangeable, which the project forbids. |
+| `document-id`, `document-type`, `document-date`, `recorded-date`, `document-amount` | Single source-reported facts of a deed. `document-date` and `recorded-date` are not grouped as "date"; the answer must keep them apart. |
+| `document-type` | The eight deed codes are values of a property, not concepts. Not made a scheme: no answer filters or groups by kind of deed, and the type is only reported. Revisit if a question needs correction versus sale deeds. |
+| `grantee-name`, `owner-name` | Properties of different parties. Neither is a kind of the other. |
+| `mailing-address`, `address-line-two`, `zip-code` | Parts of an address, a part-whole relation at most. `mailing-address` is not narrower than `address`: `address` is the address of a lot or building, and a party's mailing address is not the property's. |
+| `name-agreement`, `address-agreement`, `comparison-rule` | Answer-contract terms, computed at answer time. Not kinds of one another. |
+
+### Value sets (flat by intent)
+
+| Scheme | Values | Reason |
+| --- | --- | --- |
+| `name-agreement-outcomes` | `exact-normalized`, `normalization-match`, `different`, `not-comparable` | Grouping `exact-normalized` and `normalization-match` as "match" would let a reader treat both as a match finding; they carry different rules and the answer reports each with its rule. `not-comparable` is not a kind of `different`. |
+| `address-agreement-outcomes` | `same`, `differs`, `address-absent` | `address-absent` is not a kind of `differs`. Same reasoning. |
+
+### Groupings the question asks for
+
+| Grouping | Where it appears | Expressed as |
+| --- | --- | --- |
+| The dates and amount of a deed | Q3.1 | No collection. Each is its own field; same reasoning as Q1.4. |
+| The three agreement fields (name, address, rule) | Q3.4, Q3.5 | No collection. Each is its own answer field. |
+| The address parts of a party | Q3.2, Q3.5 | No collection. The parts are separate fields on the grantee and owner contact, and the match uses two while the third is reported apart. |
+
+### Disjointness candidates for Stage 5
+
+- `grantee` and `owner-contact`: a deed party is not an HPD contact. Candidate only.
+- `deed` and `registration`: a recorded document is not a registration. Candidate only.

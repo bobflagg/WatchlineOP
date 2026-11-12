@@ -1,0 +1,32 @@
+# Q3.1 expected deeds per Lot. Provisional until the frozen dump is identified (data/README.md).
+# Checked read-only 2026-11-12. check_deeds.py re-derives each from the source, so a stale fixture fails.
+# latest = the deeds that tie on the newest recordedDate, as {documentId: [docType, docDate, recordedDate, amount, otherLots]}.
+# deed_count = how many deeds the lot has in all.
+lots:
+  - bbl: "3008260002"
+    note: "anchor A: the latest deed is not a sale (amount 0); an earlier deed carries 5000000"
+    latest: {"2025032100031001": ["DEED", "2025-03-14", "2025-04-02", 0, 0]}
+    includes: {"2021022201130003": ["DEED", "2021-02-16", "2021-02-26", 5000000, 0]}
+  - bbl: "3008210012"
+    note: "anchor D: two deeds recorded the same day; both are returned, none is chosen"
+    latest: {"2017061600025001": ["DEED", "2017-06-13", "2017-06-28", 0, 16], "2017061600025002": ["DEED", "2017-06-13", "2017-06-28", 45839605, 16]}
+  - bbl: "3008080025"
+    note: "anchor G: a 2018 deed with two grantees"
+    latest: {"2018092900072001": ["DEED", "2018-09-26", "2018-10-18", 4000000, 0]}
+  - bbl: "3008150031"
+    note: "its newest document is a DEED COR (index correction), which is not a deed here; the latest deed is 1982"
+    latest: {"FT_3250000923125": ["DEED", "1982-08-17", "1982-08-18", 0, 1477]}
+    excludes: ["2005072601564001"]
+  - bbl: "3008000019"
+    note: "the latest deed is a life estate deed (a variant type)"
+    latest: {"2025071300004001": ["DEED, LE", "2025-06-30", "2025-07-17", 0, 0]}
+  - bbl: "3008010039"
+    note: "11 deeds; the newest is on this lot alone, and an earlier deed covers four lots (three other lots reported)"
+    latest: {"2023102700037001": ["DEED", "2023-10-12", "2023-10-30", 0, 0]}
+    includes: {"2015081800619001": ["DEED", "2015-08-18", "2015-09-03", 0, 3]}
+  - bbl: "3008970014"
+    note: "anchor F, in scope but not registered: still has its one deed"
+    deed_count: 1
+    latest_recorded: "2024-10-01"
+absent_lots: ["3008260011"]   # out of scope (712 54 Street, 1 unit, unregistered); the source holds 13 deeds for it, none is loaded
+totals: {deeds: 1003931, pairs: 1080721, with_docdate: 947002, lots: 195377, tied: 6178}   # queried 2026-11-12; lots = lots with at least one deed, tied = lots whose newest recorded date has 2+ deeds

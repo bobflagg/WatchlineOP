@@ -44,3 +44,7 @@ columns:
     sentinels: {null: "no last name; null on CorporateOwner rows"}
     used_by: [Q2.2]
     notes: "239 IndividualOwner or JointOwner rows have no last name and no first name, so the owner name is absent."
+  - {name: businesshousenumber, physical_type: text, allowed: free text, sentinels: {null_or_blank: "957 of 214049 owner-type rows"}, used_by: [Q3.5], notes: "With businessstreetname forms the mailing street line (joined by one space). Blank parts are left out."}
+  - {name: businessstreetname, physical_type: text, allowed: free text, sentinels: {null_or_blank: "961 of 214049 owner-type rows"}, used_by: [Q3.5], notes: "See businesshousenumber."}
+  - {name: businessapartment, physical_type: text, allowed: free text, sentinels: {null_or_blank: "132048 of 214049 owner-type rows"}, used_by: [Q3.5], notes: "Unit or suite; reported apart, never compared."}
+  - {name: businesszip, physical_type: text, allowed: "5 digits", observed: {"5 digits": 212313, "other text": 742}, sentinels: {null_or_blank: "994 owner-type rows"}, used_by: [Q3.5], notes: "No 9-digit values. Exact duplicate contacts that disagree on an address part leave that part absent in the graph."}

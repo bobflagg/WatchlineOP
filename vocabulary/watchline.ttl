@@ -8,7 +8,7 @@ vocab:watchline a skos:ConceptScheme ;
     dct:title "Watchline vocabulary"@en ;
     dct:created "2026-11-11"^^xsd:date ;
     dct:description "Controlled vocabulary for the WatchlineOP landlord research ontology pipeline."@en ;
-    skos:hasTopConcept vocab:tax-lot, vocab:building, vocab:has-building, vocab:bbl, vocab:bin, vocab:address, vocab:hpd-registered, vocab:pluto-building-count, vocab:year-built, vocab:building-class, vocab:residential-units, vocab:assessed-total-value, vocab:address-resolution-outcome, vocab:candidate-street-name, vocab:related-lot, vocab:in-graph, vocab:registration, vocab:has-registration, vocab:registration-id, vocab:last-registered-date, vocab:registration-end-date, vocab:owner-contact, vocab:has-owner-contact, vocab:contact-type, vocab:owner-name .
+    skos:hasTopConcept vocab:tax-lot, vocab:building, vocab:has-building, vocab:bbl, vocab:bin, vocab:address, vocab:hpd-registered, vocab:pluto-building-count, vocab:year-built, vocab:building-class, vocab:residential-units, vocab:assessed-total-value, vocab:address-resolution-outcome, vocab:candidate-street-name, vocab:related-lot, vocab:in-graph, vocab:registration, vocab:has-registration, vocab:registration-id, vocab:last-registered-date, vocab:registration-end-date, vocab:owner-contact, vocab:has-owner-contact, vocab:contact-type, vocab:owner-name, vocab:deed, vocab:has-deed, vocab:document-id, vocab:document-type, vocab:document-date, vocab:recorded-date, vocab:document-amount, vocab:grantee, vocab:has-grantee, vocab:grantee-name, vocab:mailing-address, vocab:address-line-two, vocab:zip-code, vocab:name-agreement, vocab:address-agreement, vocab:comparison-rule .
 
 vocab:address-resolution-outcomes a skos:ConceptScheme ;
     skos:prefLabel "Address resolution outcomes"@en ;
@@ -80,7 +80,7 @@ vocab:address a skos:Concept ;
     skos:prefLabel "address"@en ;
     skos:definition "A street address of a tax lot or building. For a lot it is the PLUTO address, or the most recent registration's address when the lot is not in PLUTO. For a building it is the most recent registration's address."@en ;
     skos:scopeNote "Absent when registrations tied for most recent name different addresses. The graph never picks one."@en ;
-    skos:related vocab:address-resolution-outcome ;
+    skos:related vocab:address-resolution-outcome, vocab:mailing-address ;
     dct:source "data/sources.yaml" .
 
 vocab:hpd-registered a skos:Concept ;
@@ -278,6 +278,7 @@ vocab:owner-contact a skos:Concept ;
     skos:altLabel "registered owner"@en, "owner of record"@en ;
     skos:definition "A contact HPD records on a registration with an owner type: corporate owner, individual owner or joint owner. Holds the contact type and the name as recorded."@en ;
     skos:scopeNote "Not proof of title and not interchangeable with the deed grantee, a process contact or the managing agent. Other contact types (agent, head officer, officer, shareholder, site manager, lessee) are not owner contacts. A registration can have several; a registration can have none (12,827 have no owner contact), and then the answer says none is recorded."@en ;
+    skos:related vocab:grantee ;
     dct:source "specs/questions/q02.md" .
 
 vocab:has-owner-contact a skos:Concept ;
@@ -304,6 +305,7 @@ vocab:owner-name a skos:Concept ;
     skos:definition "The name of an owner contact as HPD records it: the corporation name, or the first name, middle initial and last name joined."@en ;
     skos:scopeNote "Reported exactly as recorded; spellings of one entity differ across registrations (for example a trailing period). Absent when the source name is blank (422 contacts). Two spellings are not evidence that the owners differ or are the same."@en ;
     skos:hiddenLabel "corporationname"@en ;
+    skos:related vocab:name-agreement ;
     dct:source "specs/questions/q02.md" .
 
 vocab:corporate-owner a skos:Concept ;
@@ -332,4 +334,238 @@ vocab:joint-owner a skos:Concept ;
     skos:scopeNote "HPD contact type value as recorded. Not proof of title."@en ;
     skos:hiddenLabel "JointOwner"@en ;
     dct:source "specs/questions/q02.md" .
+
+
+# --- Q3 graph terms ---
+
+vocab:deed a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "deed"@en ;
+    skos:altLabel "deed document"@en, "title document"@en ;
+    skos:hiddenLabel "real_property_master"@en ;
+    skos:definition "A recorded document of a deed type that transfers or confirms title to real property, as ACRIS records it. The graph holds the deed types DEED, DEED TS, DEED LE, DEED RC, DEEDO, DEEDP, CORRD and CONDEED recorded against a lot in the rental-market scope."@en ;
+    skos:scopeNote "A deed is a recorded document, not proof that the grantee holds title today. DEED COR (an index correction code) and mortgage, assignment and transfer-tax documents are not deeds here. An amount of 0 does not mean a free sale, and the document type can be a correction or a life estate deed."@en ;
+    skos:related vocab:document-id ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:has-deed a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "has deed"@en ;
+    skos:definition "Links a tax lot to a deed recorded against it."@en ;
+    skos:scopeNote "Many to many: one deed can name several lots (8,031 of 160,873 newest deeds). The deed is never presented as lot-specific. Absence of a link means no deed in the snapshot, not that the lot never changed hands."@en ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:document-id a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "document id"@en ;
+    skos:hiddenLabel "documentid"@en ;
+    skos:definition "ACRIS's identifier for a recorded document."@en ;
+    skos:scopeNote "Identifies the document, not a lot or a party. The source repeats it across versions of the same document; the latest version is the current one."@en ;
+    skos:related vocab:deed ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:document-type a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "document type"@en ;
+    skos:altLabel "doc type"@en ;
+    skos:hiddenLabel "doctype"@en ;
+    skos:definition "The ACRIS code for the kind of document, as recorded: one of DEED; DEED TS; DEED LE; DEED RC; DEEDO; DEEDP; CORRD; CONDEED for the deeds in the graph."@en ;
+    skos:scopeNote "Reported with the deed so a reader can see when the newest document is a correction, a confirmatory deed or a life estate deed."@en ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:document-date a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "document date"@en ;
+    skos:altLabel "date of document"@en ;
+    skos:hiddenLabel "docdate"@en ;
+    skos:definition "The date written on the document, as ACRIS records it."@en ;
+    skos:scopeNote "Absent on 56,929 of the 1,003,931 deeds in the graph scope (queried 2026-11-12). The recorded date, not this one, decides which deed is the most recent."@en ;
+    skos:related vocab:recorded-date ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:recorded-date a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "recorded date"@en ;
+    skos:altLabel "recording date"@en, "date recorded"@en ;
+    skos:hiddenLabel "recordedfiled"@en ;
+    skos:definition "The date the document was recorded or filed with the city register."@en ;
+    skos:scopeNote "The rule for the most recent deed: the latest recorded date. Deeds that tie on it are all returned and none is chosen."@en ;
+    skos:related vocab:document-date ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:document-amount a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "document amount"@en ;
+    skos:altLabel "recorded amount"@en, "deed amount"@en ;
+    skos:hiddenLabel "docamount"@en ;
+    skos:definition "The dollar amount ACRIS records on the document, in whole US dollars."@en ;
+    skos:scopeNote "0 is common and does not mean a free sale or a gift. Reported as recorded; the answer does not call a deed a sale or give a price."@en ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:grantee a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "grantee"@en ;
+    skos:altLabel "party receiving title"@en ;
+    skos:hiddenLabel "partytype 2"@en, "buyer"@en ;
+    skos:definition "A party named on a deed as receiving title, with the name and address as recorded on that deed."@en ;
+    skos:scopeNote "One row per distinct name and address on the deed. A deed can have several (up to 20). A grantee is not an owner, the HPD registered owner or a resolved entity; the same name on two deeds is two grantees. Grantors are not in the graph."@en ;
+    skos:related vocab:owner-contact ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:has-grantee a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "has grantee"@en ;
+    skos:definition "Links a deed to a grantee named on it."@en ;
+    skos:scopeNote "All grantees of a deed are listed and none is chosen."@en ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:grantee-name a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "grantee name"@en ;
+    skos:altLabel "name of grantee"@en ;
+    skos:hiddenLabel "name"@en ;
+    skos:definition "The name of a grantee exactly as the deed records it."@en ;
+    skos:scopeNote "Not normalized in the graph. Absent when the party row has no name (a few deed rows hold a person's name in the address field instead). Compared with an owner name only at answer time, under a stated rule."@en ;
+    skos:related vocab:name-agreement ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:mailing-address a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "mailing address"@en ;
+    skos:altLabel "address line one"@en, "business address"@en ;
+    skos:hiddenLabel "address1"@en, "businessstreetname"@en ;
+    skos:definition "The street line of the address a party gives: for a grantee the first address line on the deed, for an owner contact the business house number and street name from the HPD registration, as recorded."@en ;
+    skos:scopeNote "Not the address of the property. Can be a care-of line, a person's name or a mail drop. Equal addresses at a mail drop are not evidence of anything. Reported as recorded; abbreviations (AVE and AVENUE) are different strings."@en ;
+    skos:related vocab:address-agreement, vocab:address ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:address-line-two a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "address line two"@en ;
+    skos:altLabel "unit"@en, "secondary address line"@en ;
+    skos:hiddenLabel "address2"@en, "businessapartment"@en ;
+    skos:definition "The second address line a party gives: a unit, suite, floor or another street line, as recorded."@en ;
+    skos:scopeNote "Reported apart from the address match and never compared. For an owner contact it is the business apartment."@en ;
+    skos:related vocab:address-agreement ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:zip-code a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "ZIP code"@en ;
+    skos:altLabel "zip"@en, "postal code"@en ;
+    skos:hiddenLabel "businesszip"@en ;
+    skos:definition "The ZIP code of the mailing address a party gives, as recorded (five digits, sometimes with four more)."@en ;
+    skos:scopeNote "Compared on its first five digits. Absent when blank."@en ;
+    skos:related vocab:address-agreement ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:name-agreement a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "name agreement"@en ;
+    skos:definition "The result of comparing a grantee name with a recorded owner name under a stated rule: exact normalized, normalization match, different or not comparable."@en ;
+    skos:scopeNote "A recorded comparison of strings. It is not a finding that the parties are the same, and a near match is not a finding. The rule is stated with the result. Computed at answer time; not stored."@en ;
+    skos:related vocab:grantee-name, vocab:owner-name, vocab:comparison-rule, vocab:address-agreement ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:address-agreement a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "address agreement"@en ;
+    skos:definition "The result of comparing a grantee's mailing address with an owner contact's mailing address: same, differs or absent."@en ;
+    skos:scopeNote "Same street line and ZIP is not evidence of common ownership, least of all at a mail drop. The second address line is reported apart. Computed at answer time; not stored."@en ;
+    skos:related vocab:mailing-address, vocab:zip-code, vocab:address-line-two, vocab:comparison-rule, vocab:name-agreement ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:comparison-rule a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "comparison rule"@en ;
+    skos:definition "The identifier of the rule that produced an agreement: N1, N2 or A1."@en ;
+    skos:scopeNote "N1: uppercase, trim, collapse spaces. N2: N1, then remove periods and turn commas into spaces. Spaces inside a name are never removed. A1: street line equal after N1 and the first five ZIP digits equal."@en ;
+    skos:related vocab:name-agreement, vocab:address-agreement ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:name-agreement-outcomes a skos:ConceptScheme ;
+    skos:prefLabel "Name agreement outcomes"@en ;
+    dct:title "Name agreement outcomes"@en ;
+    dct:created "2026-11-12"^^xsd:date ;
+    dct:description "Controlled values for the result of comparing two recorded names."@en ;
+    skos:hasTopConcept vocab:exact-normalized, vocab:normalization-match, vocab:different, vocab:not-comparable .
+
+vocab:address-agreement-outcomes a skos:ConceptScheme ;
+    skos:prefLabel "Address agreement outcomes"@en ;
+    dct:title "Address agreement outcomes"@en ;
+    dct:created "2026-11-12"^^xsd:date ;
+    dct:description "Controlled values for the result of comparing two recorded addresses."@en ;
+    skos:hasTopConcept vocab:same, vocab:differs, vocab:address-absent .
+
+vocab:exact-normalized a skos:Concept ;
+    skos:inScheme vocab:name-agreement-outcomes ;
+    skos:topConceptOf vocab:name-agreement-outcomes ;
+    skos:prefLabel "exact normalized"@en ;
+    skos:definition "The two names are equal after rule N1 (uppercase, trim, collapse whitespace)."@en ;
+    skos:scopeNote "Not a finding that the parties are the same."@en ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:normalization-match a skos:Concept ;
+    skos:inScheme vocab:name-agreement-outcomes ;
+    skos:topConceptOf vocab:name-agreement-outcomes ;
+    skos:prefLabel "normalization match"@en ;
+    skos:definition "The two names are not equal after N1 but are equal after rule N2 (N1, remove periods, commas to spaces). The answer states N2."@en ;
+    skos:scopeNote "Derived. A name match is a lead, not a link."@en ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:different a skos:Concept ;
+    skos:inScheme vocab:name-agreement-outcomes ;
+    skos:topConceptOf vocab:name-agreement-outcomes ;
+    skos:prefLabel "different"@en ;
+    skos:definition "Both names are present and not equal after N2. A difference of spacing inside a name counts."@en ;
+    skos:scopeNote "Reported as a difference; whether the parties are the same is not decided here."@en ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:not-comparable a skos:Concept ;
+    skos:inScheme vocab:name-agreement-outcomes ;
+    skos:topConceptOf vocab:name-agreement-outcomes ;
+    skos:prefLabel "not comparable"@en ;
+    skos:definition "One or both names are absent, so no comparison is made."@en ;
+    skos:scopeNote "Not the same as different."@en ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:same a skos:Concept ;
+    skos:inScheme vocab:address-agreement-outcomes ;
+    skos:topConceptOf vocab:address-agreement-outcomes ;
+    skos:prefLabel "same"@en ;
+    skos:definition "The street lines are equal after N1 and the first five digits of the ZIP codes are equal."@en ;
+    skos:scopeNote "Not evidence of common ownership, least of all at a mail drop."@en ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:differs a skos:Concept ;
+    skos:inScheme vocab:address-agreement-outcomes ;
+    skos:topConceptOf vocab:address-agreement-outcomes ;
+    skos:prefLabel "differs"@en ;
+    skos:definition "Both street lines and both ZIP codes are present and at least one differs."@en ;
+    skos:scopeNote "A different spelling of the same street, such as AVE and AVENUE, differs."@en ;
+    dct:source "specs/questions/q03.md" .
+
+vocab:address-absent a skos:Concept ;
+    skos:inScheme vocab:address-agreement-outcomes ;
+    skos:topConceptOf vocab:address-agreement-outcomes ;
+    skos:prefLabel "address absent"@en ;
+    skos:definition "Either street line or either ZIP code is absent, so no comparison is made."@en ;
+    skos:scopeNote "Not the same as differs."@en ;
+    dct:source "specs/questions/q03.md" .
 

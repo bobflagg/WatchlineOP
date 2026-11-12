@@ -21,3 +21,19 @@ https://watchline.example/vocab/last-registered-date,https://watchline.example/o
 https://watchline.example/vocab/registration-end-date,https://watchline.example/onto/registrationEnd,datatype_property,HAS_REGISTRATION.registrationEnd,Q2.1,graph: relationship property; ontology: on the registration
 https://watchline.example/vocab/contact-type,https://watchline.example/onto/contactType,datatype_property,OwnerContact.contactType,Q2.2,values are the owner-contact-types concepts, stored as HPD spells them
 https://watchline.example/vocab/owner-name,https://watchline.example/onto/ownerName,datatype_property,OwnerContact.name,Q2.2,
+https://watchline.example/vocab/deed,https://watchline.example/onto/Deed,class,Deed,Q3.1;Q3.2,
+https://watchline.example/vocab/grantee,https://watchline.example/onto/Grantee,class,Grantee,Q3.2,
+https://watchline.example/vocab/has-deed,https://watchline.example/onto/hasDeed,object_property,HAS_DEED,Q3.1,
+https://watchline.example/vocab/has-grantee,https://watchline.example/onto/hasGrantee,object_property,HAS_GRANTEE,Q3.2,
+https://watchline.example/vocab/document-id,https://watchline.example/onto/documentId,datatype_property,Deed.documentId,Q3.1,
+https://watchline.example/vocab/document-type,https://watchline.example/onto/documentType,datatype_property,Deed.docType,Q3.1,values are the eight ACRIS deed codes as ACRIS spells them
+https://watchline.example/vocab/document-date,https://watchline.example/onto/documentDate,datatype_property,Deed.docDate,Q3.1,
+https://watchline.example/vocab/recorded-date,https://watchline.example/onto/recordedDate,datatype_property,Deed.recordedDate,Q3.1,
+https://watchline.example/vocab/document-amount,https://watchline.example/onto/documentAmount,datatype_property,Deed.amount,Q3.1,
+https://watchline.example/vocab/grantee-name,https://watchline.example/onto/granteeName,datatype_property,Grantee.name,Q3.2,
+https://watchline.example/vocab/mailing-address,https://watchline.example/onto/mailingAddress,datatype_property,Grantee.mailingAddress,Q3.2,one property for grantees and owner contacts
+https://watchline.example/vocab/mailing-address,https://watchline.example/onto/mailingAddress,datatype_property,OwnerContact.mailingAddress,Q3.5,one property for grantees and owner contacts
+https://watchline.example/vocab/address-line-two,https://watchline.example/onto/addressLineTwo,datatype_property,Grantee.addressLine2,Q3.2,one property for grantees and owner contacts
+https://watchline.example/vocab/address-line-two,https://watchline.example/onto/addressLineTwo,datatype_property,OwnerContact.addressLine2,Q3.5,one property for grantees and owner contacts
+https://watchline.example/vocab/zip-code,https://watchline.example/onto/zipCode,datatype_property,Grantee.zip,Q3.2,one property for grantees and owner contacts
+https://watchline.example/vocab/zip-code,https://watchline.example/onto/zipCode,datatype_property,OwnerContact.zip,Q3.5,one property for grantees and owner contacts

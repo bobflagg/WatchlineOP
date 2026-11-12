@@ -1,0 +1,8 @@
+# Q3.3 expected owners per Lot (through its buildings' registrations). Provisional until the dump is identified.
+# Checked read-only 2026-11-12. check_lot_owners.py re-derives each from the source. Compared as sets of [registrationId, type, name].
+lots:
+  - {bbl: "3008260002", note: "anchor A", owners: [[316103, CorporateOwner, "5413 PLAZA LLC"]]}
+  - {bbl: "3008210012", note: "anchor D: three registrations, the owner spelled two ways",
+     owners: [[302437, CorporateOwner, "HP SUNSET PARK I HDFC INC."], [344220, CorporateOwner, "HP SUNSET PARK I HDFC INC."], [331116, CorporateOwner, "HP SUNSET PARK I HDFC INC"]]}
+  - {bbl: "3008080025", note: "anchor G: HPD spells it KS Turnpike LLC", owners: [[305188, CorporateOwner, "KS Turnpike LLC"]]}
+  - {bbl: "3008970014", note: "anchor F, unregistered: no building, so no registration and no owner", owners: []}

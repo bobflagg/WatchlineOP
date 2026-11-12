@@ -43,7 +43,7 @@ sources:
     publisher: NYC Department of Finance
     table: real_property_master
     schema: public
-    key: documentid
+    key: null # documentid is NOT unique (14,957 documents appear twice or more, as versions); the row with the latest modifieddate is current
     row_count: 17009118 # estimate
     used_for: recorded documents (deeds, mortgages) with dates and amounts
     columns_used: documentid, recordtype, crfn, borough, doctype, docdate, docamount, recordedfiled, modifieddate, goodthroughdate
@@ -55,34 +55,53 @@ sources:
       2025-01-31 and misses later documents, including deed 2025032100031001 (recorded
       2025-04-02). Verified: real_property_master holds documents 2021022201130003,
       2021031601183001 and 2025032100031001.
+      Q3 profile (queried 2026-11-12): documentid repeats as versions of one document (14,957 documents,
+      30,138 rows; 3,812 differ in content). The current version is the row with the latest modifieddate
+      (then goodthroughdate); no ties remain, and 3 documents change doctype between versions, so the type
+      test is applied to the current version. recordedfiled is never null on deed types; docdate is null on
+      56,929 of the 1,003,931 deeds in scope; docamount is never null, 0 is common. Document type codes
+      (official ACRIS descriptions, supplied by the user 2026-11-12, since acris_document_codes is unusable
+      locally): DEED = DEED; DEED, TS = timeshare deed; DEED, LE = life estate deed; DEED, RC = deed with
+      restrictive covenant; DEEDO = deed, other; DEEDP = deed, pre RPT tax; CORRD = correction deed;
+      CONDEED = confirmatory deed; DEED COR = correct index/deed, office use (not a deed, excluded).
 
   acris_parties:
     name: ACRIS - Real Property Parties
     publisher: NYC Department of Finance
     table: real_property_parties
     schema: public
-    key: documentid
+    key: null # no key: several party rows per document and partytype
     row_count: 46338284 # estimate
     used_for: grantors, grantees, lenders and their addresses
     columns_used: documentid, recordtype, partytype, name, address1, address2, country, city, state, zip, goodthroughdate
     data_through: 2026-05-31 # goodthroughdate of the paired master
     reliability: I
     retrieved_at: null
-    notes: Use real_property_parties, not acris_real_property_parties (the older copy).
+    notes: >-
+      Use real_property_parties, not acris_real_property_parties (the older copy). Q3 profile (queried 2026-11-12):
+      partytype 1 = grantor (25.3M rows), 2 = grantee (21.0M), 3 = other (46k). On the 1,003,931 in-scope deeds there
+      are 1,520,638 distinct grantee rows (1,520,456 with a name, 943,047 with address1). 38 deeds have no grantee.
+      address1 is not always a street: it can hold a care-of line or a person's name. address2 mixes units, floors
+      and second street lines. Names can carry double spaces; no lowercase names were seen in a Sunset Park sample of 12,736 rows. Exact duplicate rows
+      occur and are one grantee.
 
   acris_legals:
     name: ACRIS - Real Property Legals
     publisher: NYC Department of Finance
     table: real_property_legals
     schema: public
-    key: documentid
+    key: null # several lots per document; the pair (documentid, bbl) can repeat across versions
     row_count: 22657952 # estimate
     used_for: links each ACRIS document to a BBL
     columns_used: documentid, recordtype, borough, block, lot, easement, partiallot, airrights, subterraneanrights, propertytype, streetnumber, streetname, unit, goodthroughdate, bbl
     data_through: 2026-05-31
     reliability: I
     retrieved_at: null
-    notes: Use real_property_legals, not acris_real_property_legals (the older copy).
+    notes: >-
+      Use real_property_legals, not acris_real_property_legals (the older copy). Q3 profile (queried 2026-11-12): bbl is
+      never null or malformed. A deed can name many lots (8,031 of 160,873 newest deeds on registered lots). Sunset Park
+      deed rows carry no easement, air-rights or subterranean-rights flags; those flags are not read. Distinct
+      (bbl, documentid) pairs are used; a lot removed from a later version of a document cannot be detected.
 
   acris_document_codes:
     name: ACRIS - Document Control Codes
@@ -230,10 +249,16 @@ sources:
     publisher: this project (resolution/)
     table: null
     id: null
+    file: src/watchline/mail_drop_addresses.csv
+    status: preliminary # 122 rows, all review_status "unreviewed"; snapshot_id justfixwow-2026-05-29
     used_for: addresses that must never on their own link two entities
     reliability: II
     source_category: project_derived
     retrieved_at: null
+    notes: >-
+      Columns: address_key, zip5, kind (registered_agent, law_firm, management_office, unknown),
+      basis, per-source counts, sources (dos_process, bor_masked, hpd_agent), note, snapshot_id,
+      review_status. The file sits under src/ for now and should move to data/ when Q6 starts.
 
   geosupport:
     name: NYC Geosupport address resolution
