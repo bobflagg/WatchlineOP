@@ -1,0 +1,159 @@
+# Question schema: Q1 "Which tax lot does this address resolve to?" (sub-questions Q1.1 to Q1.4).
+# Declares what the graph holds and what the agent's answer contains. Rules were proved in Stage 1;
+# `proved_by` points at the expected-answer SQL or recorded responses that prove each one.
+# Concept IDs are relative to concept_base. Source columns are documented in profiles/<source_key>.yaml.
+question: Q1
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [pluto, hpd_registrations, geosupport]
+
+graph:
+  constraints:
+    - {name: lot_bbl_unique, label: Lot, property: bbl, kind: unique}
+    - {name: building_bin_unique, label: Building, property: bin, kind: unique}
+
+  nodes:
+    Lot:
+      concept: tax-lot
+      key: bbl
+      scope: >-
+        One Lot per BBL in hpd_registrations, plus every unregistered pluto_latest lot with unitsres >= 3
+        (214799 lots).
+      proved_by: tests/q1_1/expected.sql
+      properties:
+        bbl:
+          concept: bbl
+          type: string
+          source: pluto.bbl, hpd_registrations.bbl
+          allowed: "10 digits; first digit 1 to 5"
+          null_policy: never absent
+        address:
+          concept: address
+          type: string
+          source: pluto.address; hpd_registrations.housenumber + streetname when the lot is not in PLUTO
+          rule: >-
+            PLUTO address, blank is absent. For a registered BBL missing from PLUTO, the address of its most
+            recent registrations (lastregistrationdate, then registrationid, descending); if those name
+            more than one address it is absent.
+          null_policy: absent when blank, or when tied registrations disagree (21 lots)
+        hpdRegistered:
+          concept: hpd-registered
+          type: boolean
+          source: hpd_registrations.bbl
+          rule: true when the BBL has a row in hpd_registrations
+          null_policy: never absent
+        plutoNumBuildings:
+          concept: pluto-building-count
+          type: integer
+          source: pluto.numbldgs
+          rule: PLUTO's count as recorded. It is not the number of Building nodes, and it is named for its source so it is not mistaken for the HAS_BUILDING count.
+          null_policy: "0 kept; absent when PLUTO is null or the lot is not in PLUTO (1034 lots)"
+          proved_by: tests/q1_2/expected.sql
+        yearBuilt:
+          concept: year-built
+          type: integer
+          source: pluto.yearbuilt
+          rule: PLUTO year 0 means unknown
+          null_policy: "absent for 0, null, or a lot not in PLUTO (212796 lots have a value)"
+          proved_by: tests/q1_4/expected.sql
+        buildingClass:
+          concept: building-class
+          type: string
+          source: pluto.bldgclass
+          null_policy: "absent when blank or the lot is not in PLUTO (213765 lots have a value)"
+          proved_by: tests/q1_4/expected.sql
+        unitsRes:
+          concept: residential-units
+          type: integer
+          units: residential units, whole lot
+          source: pluto.unitsres
+          rule: Lot-wide. Never copied to buildings or summed across BINs.
+          null_policy: "0 kept as PLUTO's value (means PLUTO records none); absent when null or not in PLUTO (213755 lots have a value)"
+          proved_by: tests/q1_4/expected.sql
+        assessedTotal:
+          concept: assessed-total-value
+          type: integer
+          units: whole US dollars
+          source: pluto.assesstot
+          null_policy: "0 kept as PLUTO's value (means PLUTO records none); absent when null or not in PLUTO (213765 lots have a value)"
+          proved_by: tests/q1_4/expected.sql
+
+    Building:
+      concept: building
+      key: bin
+      scope: One Building per distinct valid BIN in hpd_registrations (200408 buildings).
+      proved_by: tests/q1_2/expected.sql
+      properties:
+        bin:
+          concept: bin
+          type: string
+          source: hpd_registrations.bin
+          allowed: "7 digits; first digit 1 to 5; not ending 000000"
+          rule: Rows with any other BIN are excluded and counted (761), never turned into buildings.
+          null_policy: never absent
+        address:
+          concept: address
+          type: string
+          source: hpd_registrations.housenumber + streetname
+          rule: >-
+            Address of the BIN's most recent registrations (lastregistrationdate, then registrationid,
+            descending), as HPD spells it. If tied registrations name more than one address it is absent.
+          null_policy: absent when tied registrations disagree (193 buildings)
+
+  relationships:
+    HAS_BUILDING:
+      concept: has-building
+      from: Lot
+      to: Building
+      source: hpd_registrations.bbl, hpd_registrations.bin
+      rule: >-
+        One relationship per distinct (BBL, BIN) pair with a valid BIN (200648 pairs). Many to many. Both
+        endpoints must already exist; a missing Lot is an error.
+      proved_by: tests/q1_2/expected.sql
+
+answer:
+  Q1.1:
+    lookup: tests/q1_1/lookup.cypher
+    fields:
+      input:         {concept: address, source: user input, type: string}
+      bbl:           {concept: bbl, source: Lot.bbl, type: string, null_policy: absent when the outcome is ambiguous or not found}
+      address:       {concept: address, source: Lot.address, type: string, null_policy: absent when the lot has none}
+      hpdRegistered: {concept: hpd-registered, source: Lot.hpdRegistered, type: boolean}
+      inGraph:       {concept: in-graph, source: tool output, type: boolean, null_policy: absent when there is no BBL}
+  Q1.2:
+    lookup: tests/q1_2/lookup.cypher
+    fields:
+      buildings:       {concept: building, source: "Lot-[:HAS_BUILDING]->Building (bin, address)", type: "list of {bin, address}", null_policy: "empty list when HPD names none; the answer says 'no building recorded in the HPD registrations', not 'no buildings'"}
+      buildingsListed: {concept: building, source: derived, type: integer, counting_unit: "BINs listed in HPD registrations", rule: count of buildings}
+      plutoNumBuildings:    {concept: pluto-building-count, source: Lot.plutoNumBuildings, type: integer, counting_unit: "buildings as PLUTO counts them", null_policy: absent when the lot is not in PLUTO}
+    note: "buildingsListed and plutoNumBuildings can differ; both are reported, labelled by source."
+  Q1.3:
+    recorded: tests/q1_3/recorded.json
+    fields:
+      input:       {concept: address, source: user input, type: string}
+      outcome:     {concept: address-resolution-outcome, source: Geosupport via the client, type: string, allowed_scheme: address-resolution-outcomes, allowed: [matched-exactly, matched-by-variant, ambiguous, not-found, service-unavailable]}
+      bbl:         {concept: bbl, source: geosupport."BOROUGH BLOCK LOT (BBL)", type: string, null_policy: absent unless matched}
+      bin:         {concept: bin, source: geosupport BIN, type: string, rule: "the addressed building: the BIN to mark in the Q1.2 building list", null_policy: absent when Geosupport gives none or a placeholder}
+      inGraph:     {concept: in-graph, source: Lot lookup, type: boolean, null_policy: absent when there is no BBL}
+      relatedLots: {concept: related-lot, source: "other Lots sharing the BIN via HAS_BUILDING", type: "list of string (BBL)", null_policy: "empty when none; condominium unit lots without a shared BIN are not found"}
+      candidates:  {concept: candidate-street-name, source: geosupport."List of Street Names", type: "list of string", null_policy: "empty unless ambiguous; at most 5"}
+      grc:         {concept: address-resolution-outcome, source: geosupport."Geosupport Return Code (GRC)", type: string}
+      inferred:    {concept: address-resolution-outcome, source: client, type: boolean, rule: "true when the lot came from a respelled address, not the one typed"}
+  Q1.4:
+    lookup: tests/q1_4/lookup.cypher
+    fields:
+      yearBuilt:     {concept: year-built, source: Lot.yearBuilt, type: integer, null_policy: absent means PLUTO has no value or the lot is not in PLUTO}
+      buildingClass: {concept: building-class, source: Lot.buildingClass, type: string, null_policy: absent when blank or not in PLUTO}
+      unitsRes:      {concept: residential-units, source: Lot.unitsRes, type: integer, counting_unit: "residential units, whole lot", null_policy: "0 means PLUTO records none"}
+      assessedTotal: {concept: assessed-total-value, source: Lot.assessedTotal, type: integer, counting_unit: whole US dollars, null_policy: "0 means PLUTO records none"}
+
+diagnostics:   # kept in test records and logs, not returned to the agent
+  - {name: message, source: geosupport."Message"}
+  - {name: tried, source: client, note: every spelling sent to Geosupport}
+
+not_stored:   # deliberately absent from the graph
+  - {term: address resolution outcome and its five values, reason: part of the answer, not a fact in the data}
+  - {term: other Geosupport response fields, reason: tool output; only the fields in profiles/geosupport.yaml are read}
+  - {term: condominium billing BBL, reason: documented limit of related lots; read but not stored}
+  - {term: hpd_registrations.registrationid and lastregistrationdate, reason: used only to choose the most recent address}
+  - {term: per-record source, snapshot or evidence nodes, reason: dataset-level provenance (data/sources.yaml); no derived edges or claims in Q1}

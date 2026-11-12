@@ -1,0 +1,21 @@
+# Each case creates bad data inside a transaction that is always rolled back, then checks that the named
+# rule reports a violation. `error: constraint` means the native constraint must refuse the write.
+# A case with `check:` runs the named supplemental Cypher check instead of a compiled rule.
+cases:
+  - {name: registration id 0,         create: "CREATE (:Building {bin: '1999990'})-[:HAS_REGISTRATION]->(:Registration {registrationId: 0})", rule: RegistrationShape.registrationId.minInclusive}
+  - {name: registration id as text,   create: "CREATE (:Building {bin: '1999990'})-[:HAS_REGISTRATION]->(:Registration {registrationId: 'abc'})", rule: RegistrationShape.registrationId.datatype}
+  - {name: registration without id,   create: "CREATE (:Building {bin: '1999990'})-[:HAS_REGISTRATION]->(:Registration {})", rule: RegistrationShape.registrationId.minCount}
+  - {name: registration with no building, create: "CREATE (:Registration {registrationId: 999999999})", rule: RegistrationShape.inv_hasRegistration.minCount}
+  - {name: HAS_REGISTRATION ends on a building, create: "MATCH (a:Building), (b:Building) WHERE a <> b WITH a, b LIMIT 1 CREATE (a)-[:HAS_REGISTRATION]->(b)", rule: BuildingRegistrationShape.hasRegistration.class}
+  - {name: HAS_OWNER_CONTACT ends on a registration, create: "MATCH (a:Registration), (b:Registration) WHERE a <> b WITH a, b LIMIT 1 CREATE (a)-[:HAS_OWNER_CONTACT]->(b)", rule: RegistrationShape.hasOwnerContact.class}
+  - {name: contact type Agent,        create: "MATCH (r:Registration) WITH r LIMIT 1 CREATE (r)-[:HAS_OWNER_CONTACT]->(:OwnerContact {contactKey: 'x', contactType: 'Agent'})", rule: OwnerContactShape.contactType.pattern}
+  - {name: contact type as number,    create: "MATCH (r:Registration) WITH r LIMIT 1 CREATE (r)-[:HAS_OWNER_CONTACT]->(:OwnerContact {contactKey: 'x', contactType: 5})", rule: OwnerContactShape.contactType.datatype}
+  - {name: contact without type,      create: "MATCH (r:Registration) WITH r LIMIT 1 CREATE (r)-[:HAS_OWNER_CONTACT]->(:OwnerContact {contactKey: 'x'})", rule: OwnerContactShape.contactType.minCount}
+  - {name: contact with empty name,   create: "MATCH (r:Registration) WITH r LIMIT 1 CREATE (r)-[:HAS_OWNER_CONTACT]->(:OwnerContact {contactKey: 'x', contactType: 'CorporateOwner', name: ''})", rule: OwnerContactShape.ownerName.minLength}
+  - {name: contact with name as number, create: "MATCH (r:Registration) WITH r LIMIT 1 CREATE (r)-[:HAS_OWNER_CONTACT]->(:OwnerContact {contactKey: 'x', contactType: 'CorporateOwner', name: 7})", rule: OwnerContactShape.ownerName.datatype}
+  - {name: contact with no registration, create: "CREATE (:OwnerContact {contactKey: 'x', contactType: 'CorporateOwner'})", rule: OwnerContactShape.inv_hasOwnerContact.minCount}
+  - {name: contact on two registrations, create: "MATCH (c:OwnerContact) WITH c LIMIT 1 MATCH (r:Registration) WHERE NOT (r)-[:HAS_OWNER_CONTACT]->(c) WITH c, r LIMIT 1 CREATE (r)-[:HAS_OWNER_CONTACT]->(c)", rule: OwnerContactShape.inv_hasOwnerContact.maxCount}
+  - {name: registration end before last, create: "MATCH (b:Building)-[h:HAS_REGISTRATION]->(:Registration) WITH h LIMIT 1 SET h.lastRegistered = date('2025-06-01'), h.registrationEnd = date('2025-01-01')", check: queries/checks/q02-end-before-last.cypher}
+  - {name: duplicate building and registration pair, create: "MATCH (b:Building)-[:HAS_REGISTRATION]->(r:Registration) WITH b, r LIMIT 1 CREATE (b)-[:HAS_REGISTRATION]->(r)", check: queries/checks/q02-duplicate-pair.cypher}
+  - {name: duplicate registrationId,  create: "MATCH (r:Registration) WITH r LIMIT 1 CREATE (:Registration {registrationId: r.registrationId})", error: constraint}
+  - {name: duplicate contactKey,      create: "MATCH (c:OwnerContact) WITH c LIMIT 1 CREATE (:OwnerContact {contactKey: c.contactKey})", error: constraint}

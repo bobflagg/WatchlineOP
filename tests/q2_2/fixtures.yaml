@@ -1,0 +1,17 @@
+# Q2.2 expected owner contacts per registration. Provisional until the frozen dump is identified (data/README.md).
+# Checked read-only 2026-11-12. check_owners.py re-derives each from the source, so a stale fixture fails.
+# Person names are not repeated: name "<person>" means a name is recorded, null means the name is blank.
+# Owners are compared as a set of [contactType, name].
+registrations:
+  - {bin: "3014788", registrationId: 316103, note: "anchor A", owners: [[CorporateOwner, "5413 PLAZA LLC"]]}
+  - {bin: "3013901", registrationId: 350423, note: "anchor C; HPD spelling differs from PLUTO", owners: [[CorporateOwner, "438 52 ST OWNERS CORP"]]}
+  - {bin: "3324448", registrationId: 302437, note: "anchor D, trailing period", owners: [[CorporateOwner, "HP SUNSET PARK I HDFC INC."]]}
+  - {bin: "3324450", registrationId: 344220, note: "anchor D", owners: [[CorporateOwner, "HP SUNSET PARK I HDFC INC."]]}
+  - {bin: "3324451", registrationId: 331116, note: "anchor D, no trailing period", owners: [[CorporateOwner, "HP SUNSET PARK I HDFC INC"]]}
+  - {bin: "1060822", registrationId: 121720, note: "two corporate owner contacts on one registration", owners: [[CorporateOwner, "HP PLAZA LLC"], [CorporateOwner, "HP PLAZA LP"]]}
+  - {bin: "5032172", registrationId: 10067, note: "two joint owners", owners: [[JointOwner, "<person>"], [JointOwner, "<person>"]]}
+  - {bin: "3110187", registrationId: 332569, note: "blank corporate owner name beside a named individual owner", owners: [[CorporateOwner, null], [IndividualOwner, "<person>"]]}
+  - {bin: "3082967", registrationId: 318901, note: "individual owner with a blank name", owners: [[IndividualOwner, null]]}
+  - {bin: "3014490", registrationId: 306882, note: "individual owner, registration ended 2021-09-01", owners: [[IndividualOwner, "<person>"]]}
+  - {bin: "3014601", registrationId: 345930, note: "registration with no owner contact", owners: []}
+totals: {contacts: 203802, named: 203412}

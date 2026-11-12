@@ -4,51 +4,61 @@ Run this for each competency question after its [stage 1](stage1-procedure.md) i
 
 To run it in a fresh Claude Code session, start with: "Execute specs/stage2-procedure.md for QNN."
 
-**Goal:** every field in the question's answer shape has a profile entry with source, type and allowed values, and every source column used is crosswalked to a profile field and a vocabulary concept.
+**Goal:** declare, once, the contract between source, graph and answer. Every graph element and answer field has a name, a vocabulary concept, a source, a type, allowed values and a null policy. A check then confirms that the graph holds exactly what is declared and nothing more.
 
 ## Ground rules
 
-- Read first: `CLAUDE.md` (auto-loaded), the question file, `vocabulary/watchline.ttl` and `vocabulary/term-trace.md`, `specs/decisions.md`, [roadmap.md](roadmap.md) (Stage 2 row, exit criterion 2), [physical-implementation.md](physical-implementation.md) (sections 1 to 3 and 6), and the entries in `data/sources.yaml` for this question's sources.
-- Inspect database sources with the read-only `postgres-justfix` MCP. Never guess a type, sentinel or format. Record what you find with the query date. Nothing committed comes from a chat session; checks are scripts.
-- Non-database sources (BOR/NLR releases, cached Geosupport and web responses, the mail-drop list) are profiled from their release files, manifests or cached responses, not from Postgres. If those are not available, mark the affected fields `pending` with the reason. Do not invent them.
-- If you change `vocabulary/watchline.ttl`, run `validate_skos` and report findings. Do not claim validity without running it.
+- Read first: `CLAUDE.md` (auto-loaded), the question file, `vocabulary/watchline.ttl` and `vocabulary/term-trace.md`, `specs/decisions.md`, the `tests/qN_M/` folders (their `expected.sql` and fixtures hold the rules already proved on data), and the entries in `data/sources.yaml` for this question's sources.
+- The schema records rules already proved in Stage 1; it does not invent new ones. If writing it exposes a gap, fix the rule in Stage 1 (test first), then return here.
+- Never guess a type, sentinel or format. Inspect database columns with the read-only `postgres-justfix` MCP and record the query date. Nothing committed comes from a chat session; checks are scripts.
+- Non-database sources (cached Geosupport responses, release files) are profiled from their recordings or manifests. Mark a field `pending` with a reason if they are not available. Do not invent them.
+- If you change `vocabulary/watchline.ttl`, run `validate_skos` and report findings.
 - Do not commit to Git unless asked. Stop and ask when a decision is unsettled.
 - Reuse before creating. Extend an existing source profile rather than starting a second one.
 
 ## One-time setup (first question only)
 
-Confirm with the user (recommended defaults apply if they say "go"), then log in [decisions.md](decisions.md):
+Confirm with the user, then log in [decisions.md](decisions.md):
 
-- **Layout:** `profiles/evidence.yaml` (shared provenance fields), `profiles/<source_key>.yaml` per source, `profiles/qNN-answer.yaml` and `profiles/crosswalk-qNN.yaml` per question.
-- **Naming:** `snake_case` field names. Allowed values reference a SKOS scheme IRI where one exists, otherwise an enum or range in the YAML.
-- **`source_category` spelling:** decided 2026-11-11: `project_derived` everywhere (see decisions.md).
-- **Shared evidence profile:** write `profiles/evidence.yaml` once, with the fields from the roadmap: `source_key`, `snapshot_id`, `snapshot_date` (ISO 8601), `run_id`, `source_category`, `assertion_type` (I, II, reported claim), `review_status` (`unreviewed`, `confirmed`, `refuted`, `inconclusive`, `contested`), plus `source_record_locator` and `mapping_git_revision` (physical-implementation section 1, Evidence). Map each to Dublin Core, DCAT or PROV-O terms.
-- **Check script:** add `scripts/check_profiles.py` (`pyyaml`, `rdflib`, added with `uv add`) and implement `make profiles` (see step 7).
+- **Layout:** `profiles/<source_key>.yaml` per source (shared across questions) and `profiles/qNN.yaml` per question, holding graph elements and answer fields.
+- **Naming:** `snake_case` for profile field names; graph labels, relationship types and properties exactly as the loader writes them. Allowed values reference a SKOS scheme IRI where one exists, otherwise an enum or range.
+- **Check script:** `scripts/check_profiles.py` (`pyyaml`, `rdflib`, `neo4j`) behind `make profiles` (step 6).
+- **Evidence fields:** per-record evidence (source key, snapshot, run, assertion type, review status) is defined only when a question first needs derived edges, claims, documents or cached responses stored in the graph. Database-row facts carry dataset-level provenance only (`data/sources.yaml`).
 
 ## Per-question steps
 
-1. **List the question's inputs.** From the question file, list its sources and the answer-shape fields (sub-questions included). Note which fields the stage 1 vocabulary already names.
-2. **Inspect the real data.** For each source column used, record the Postgres type, null and sentinel behaviour, units, precision, identifier formats and the shape of distinct values. Flag any column the question uses that is missing from `columns_used` in `data/sources.yaml`, and add it.
-3. **Source profiles.** For each source column give: name, semantic type, physical type, units, allowed values or range, null/sentinel policy, vocabulary concept IRI, and the question or sub-question that uses it. Include any physical encodings already accepted in physical-implementation.
-4. **Answer-shape profile.** One entry per answer field, naming its source profile field or saying it is derived, with allowed values. Counts name their counting unit. Fields that carry uncertainty, outcomes or assertion type say so.
-5. **Crosswalk.** Source column, profile field, vocabulary concept IRI, physical Neo4j property (the accepted name, or `TBD stage 6`).
-6. **Concept-level provenance (ask once, then follow the answer).** If accepted, add `dct:source` to the concepts new in this question's stage 1, pointing to the question file, source data dictionary or service guide that supports the definition. Run `validate_skos`.
-7. **Check.** Run `make profiles`. The script fails nonzero if: a YAML file is malformed or lacks required keys; a concept IRI is not in `watchline.ttl`; an answer field has no profile entry with source, type and allowed values; a crosswalked column is missing from `data/sources.yaml` `columns_used`; an enum differs from the specs. A missing or skipped check is a failure.
-8. **Review and accept.** Check the exit criterion below, log new decisions in `decisions.md`, and update `CLAUDE.md` (open points) and `tech-stack.md` if they changed. Report results and anything left open.
+1. **List the question's inputs.** From the question file and `term-trace.md`, list its sources, graph elements and answer fields.
+2. **Inspect the real data.** For each source column used, record the Postgres type, null and sentinel behaviour, units, precision and identifier formats. Flag any column missing from `columns_used` in `data/sources.yaml`, and add it.
+3. **Source profiles** (`profiles/<source_key>.yaml`). For each column used: name, physical type, units, allowed values or range, sentinels and their meaning, and the question that uses it. Record only facts about the source.
+4. **Question schema** (`profiles/qNN.yaml`), in three parts:
+   - **Graph elements:** each label, relationship type (with endpoints) and property: vocabulary concept IRI, semantic and physical type, units, allowed values or range, null policy (absent versus kept as recorded), and its source column or derivation rule with a pointer to the proving `expected.sql`.
+   - **Answer fields:** each field the agent returns, its source (a graph property, a tool output or derived), allowed values (outcomes reference their SKOS scheme), and the counting unit for any count. Fields that carry uncertainty or an outcome say so.
+   - **Not stored:** terms tagged as tool output or answer contract in Stage 1, so the schema shows what the graph deliberately omits.
+5. **Concept-level provenance (ask once, then follow the answer).** If accepted, add `dct:source` to concepts new in this question, pointing to the question file or source documentation. Run `validate_skos`.
+6. **Check.** Run `make profiles`. The script fails nonzero if:
+   - a YAML file is malformed or lacks required keys;
+   - a concept IRI is not in `watchline.ttl`;
+   - a source column named in a schema is missing from `data/sources.yaml` `columns_used` or from the source profile;
+   - a graph property or answer field lacks a concept, source or type (and a property a null policy), or an enum differs from its SKOS scheme;
+   - a file named in `proved_by`, `lookup` or `recorded` does not exist;
+   - the graph holds a label, relationship type or property the schema does not declare, or lacks one it declares, or a property's stored type differs from the declared one.
+
+   A missing or skipped check is a failure.
+7. **Review and accept.** Check the exit criterion, log new decisions in `decisions.md`, and update `CLAUDE.md` (open points) and `tech-stack.md` if they changed. Report results and anything left open.
 
 ## Exit criterion (per question)
 
-- Every field in the question's answer shape has a profile entry with source, type and allowed values.
-- Every source column used is in the crosswalk and in `data/sources.yaml` `columns_used`.
+- Every graph element and answer field has a schema entry with concept, source and type; every property has a null policy; every enum equals its SKOS scheme.
+- Every source column used is in its source profile and in `data/sources.yaml` `columns_used`.
 - Every concept IRI referenced exists in the vocabulary.
-- `make profiles` passes, with nothing skipped.
-- Fields that cannot be completed yet (for example BOR or cached-response fields) are marked `pending` with a reason, not filled in.
+- `make profiles` passes, with nothing skipped, and the graph has no undeclared label, relationship type or property.
+- Fields that cannot be completed yet are marked `pending` with a reason, not filled in.
 
 ## Deliverables (updated per question)
 
 - `profiles/<source_key>.yaml` (new or extended)
-- `profiles/qNN-answer.yaml`
-- `profiles/crosswalk-qNN.yaml`
+- `profiles/qNN.yaml`
+- `scripts/check_profiles.py` and the `make profiles` target
 - Updated `data/sources.yaml` where columns were missing
 - New entries in `decisions.md`
 

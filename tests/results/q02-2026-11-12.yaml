@@ -1,0 +1,21 @@
+# Q2 acceptance results, 2026-11-12. Counts are from a full rebuild (`make rebuild CONFIRM=watchline`, then `make graph`).
+question: Q2
+fixture_version: provisional (not yet verified against an identified frozen dump)
+baseline: "Pending: dump filename and SHA-256 are not recorded in data/README.md. Until they are, no result below is 'passed' for acceptance."
+tools:
+  neo4j: "Neo4j Kernel 2026.04.0 enterprise (tests/results/shapes.json)"
+  shacl2cypher: "0.3.0 (strict mode; all rules of Q1 and Q2 compile)"
+  reasoner: "ROBOT 1.9.11, HermiT 1.4.5.456, Java 11"
+acceptance:
+  graph:
+    status: pending
+    reason: baseline not identified
+    evidence:
+      sub_question_checks: {q2_1: "24/24", q2_2: "26/26", q1_1: "13/13", q1_2: "22/22", q1_3: "101/101", q1_4: "31/31"}
+      profiles: "136/136"
+      shapes: "78/78 (Q1 and Q2 rules on the graph, 2 supplemental Cypher checks, coverage, seeded bad-data cases with rollback)"
+      ontology: "41/41 (HermiT; 3 Q2 negative cases flagged)"
+      thesaurus: "11/11"
+      counts: "192,808 registrations; 201,763 building-registration pairs (198,525 with a last-registered date, 201,755 with an end date); 203,802 owner contacts (203,412 named)"
+      exclusions: "registrationid 0 placeholder: 3 pairs and its 27 contacts (6 owner type) excluded; 422 owner contacts counted over all registrations have a blank name and keep the name absent"
+    note: "Graph acceptance is the only declared type for Q2."

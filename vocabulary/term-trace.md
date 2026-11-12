@@ -1,33 +1,94 @@
-# Term-to-question trace
+# Term trace: Q1
 
-Each concept in `watchline.ttl` and the questions it serves. Updated per question in Stage 1. Prefix `vocab:` is `https://watchline.example/vocab/`.
+Concept IRIs use the base `https://watchline.example/vocab/` followed by the ID below. Graph names are the Neo4j label, relationship type or property. Sources are keys in `data/sources.yaml`.
 
-| Concept (`vocab:`) | Preferred label | Questions |
-| --- | --- | --- |
-| `tax-lot` | tax lot | Q1.1, Q1.2, Q1.4 |
-| `bbl` | BBL | Q1.1 |
-| `building` | building | Q1.2 |
-| `bin` | BIN | Q1.2 |
-| `addressed-building` | addressed building | Q1.2 |
-| `street-address` | street address | Q1.1 |
-| `alternate-address` | alternate address | Q1.3 |
-| `address-resolution` | address resolution | Q1.1, Q1.3 |
-| `address-resolution-outcome` | address resolution outcome | Q1.3 |
-| `matched-exactly`, `matched-by-variant`, `ambiguous`, `not-found` | outcome values (scheme `address-resolution-outcomes`) | Q1.3 |
-| `address-candidate` | address candidate | Q1.3 |
-| `inferred-resolution` | inferred resolution | Q1.3 |
-| `street-name-variant` | street-name variant | Q1.3 |
-| `geosupport-return-code`, `geosupport-reason-code` | Geosupport return / reason code | Q1.3 |
-| `hpd-registration` | HPD registration | Q1.2 (extended by Q2) |
-| `source-reported-characteristic` | source-reported characteristic | Q1.4 |
-| `year-built`, `building-class`, `residential-units`, `assessed-value` | the four characteristics | Q1.4 |
-| `reported-count`, `parcel-count`, `building-count`, `unit-count` | counts, each with its counting unit | Q1.2, Q1.4 |
-| `source-snapshot`, `source-record` | provenance | Q1.4 (all) |
+## Trace
 
-## Stage 3 (taxonomy)
+| Concept ID | Preferred label | Lives as | Sub-questions | Source |
+| --- | --- | --- | --- | --- |
+| `tax-lot` | tax lot | `Lot` node | Q1.1, Q1.2, Q1.4 | `pluto`, `hpd_registrations` |
+| `building` | building | `Building` node | Q1.2 | `hpd_registrations` |
+| `has-building` | has building | `HAS_BUILDING` relationship | Q1.2 | `hpd_registrations` |
+| `bbl` | BBL | `Lot.bbl` | Q1.1, Q1.3 | `pluto`, `hpd_registrations` |
+| `bin` | BIN | `Building.bin` | Q1.2, Q1.3 | `hpd_registrations` |
+| `address` | address | `Lot.address`, `Building.address` | Q1.1, Q1.2 | `pluto`, `hpd_registrations` |
+| `hpd-registered` | HPD registered | `Lot.hpdRegistered` | Q1.1 | `hpd_registrations` |
+| `pluto-building-count` | PLUTO building count | `Lot.plutoNumBuildings` | Q1.2 | `pluto` |
+| `year-built` | year built | `Lot.yearBuilt` | Q1.4 | `pluto` |
+| `building-class` | building class | `Lot.buildingClass` | Q1.4 | `pluto` |
+| `residential-units` | residential units | `Lot.unitsRes` | Q1.4 | `pluto` |
+| `assessed-total-value` | assessed total value | `Lot.assessedTotal` | Q1.4 | `pluto` |
+| `address-resolution-outcome` | address resolution outcome | answer field `outcome` | Q1.3 | `geosupport` |
+| `candidate-street-name` | candidate street name | answer field `candidates` | Q1.3 | `geosupport` |
+| `related-lot` | related lot | answer field `relatedLots` | Q1.3 | graph (`HAS_BUILDING`) |
+| `in-graph` | in graph | answer field `inGraph` | Q1.3 | graph |
 
-Q1: 8 `skos:broader` links, each justified in `taxonomy-notes.md`. `addressed-building` is now a top concept related to `building` (was narrower). No concept IDs changed.
+Outcome values (scheme `address-resolution-outcomes`): `matched-exactly`, `matched-by-variant`, `ambiguous`, `not-found`, `service-unavailable`. All Q1.3.
 
-## Stage 4 (thesaurus)
+## Tagged as not in the graph or vocabulary
 
-Q1: 22 related pairs, each with a kind and justification in `thesaurus-notes.md`. `structure`, `address` and `apartments` are now hidden labels. 3 external mappings in `mappings/external.sssom.tsv`. No concept IDs changed.
+| Term | Where it lives |
+| --- | --- |
+| Geosupport, PLUTO, HPD registrations | Sources, in `data/sources.yaml` |
+| Snapshot, release, provenance | Dataset-level records in `data/sources.yaml` and `data/README.md` |
+| Condominium billing lot | A documented limit of `related-lot` |
+
+## Pilot restatement
+
+| Question | Restated with approved terms |
+| --- | --- |
+| Q1 Which tax lot does this address resolve to? | Resolve the typed **address** to a **tax lot** and report its **BBL** with the **address resolution outcome**. |
+| Q1.1 | Which **tax lot** (**BBL**, **address**, **HPD registered**) does the resolved **BBL** identify, and is it **in graph**? |
+| Q1.2 | Which **buildings** (**BIN**, **address**) does the **tax lot** have, and how does the **PLUTO building count** compare with them? |
+| Q1.3 | Was the **address resolution outcome** matched exactly, matched by variant, ambiguous, not found or service unavailable? Which **candidate street names** and **related lots** go with it? |
+| Q1.4 | What are the **year built**, **building class**, **residential units** and **assessed total value** of the **tax lot**? |
+| Worked example: lot with three buildings | One **tax lot** with three **buildings** (three **BINs**) and one lot-wide **residential units** value. |
+| Worked example: PLUTO counts more than HPD lists | **PLUTO building count** 2 against one **building** listed by HPD; both reported, labelled by source. |
+
+No gaps: every domain term in the question, the sub-questions and the worked examples resolves to a concept above.
+
+
+# Term trace: Q2
+
+Same conventions as Q1. Relationship properties are written `HAS_REGISTRATION.property`.
+
+## Trace
+
+| Concept ID | Preferred label | Lives as | Sub-questions | Source |
+| --- | --- | --- | --- | --- |
+| `registration` | HPD registration | `Registration` node | Q2.1, Q2.2 | `hpd_registrations` |
+| `has-registration` | has registration | `HAS_REGISTRATION` relationship (Building to Registration) | Q2.1 | `hpd_registrations` |
+| `registration-id` | registration id | `Registration.registrationId` | Q2.1 | `hpd_registrations` |
+| `last-registered-date` | last registered date | `HAS_REGISTRATION.lastRegistered` | Q2.1 | `hpd_registrations` |
+| `registration-end-date` | registration end date | `HAS_REGISTRATION.registrationEnd` | Q2.1 | `hpd_registrations` |
+| `owner-contact` | registered owner contact | `OwnerContact` node | Q2.2 | `hpd_contacts` |
+| `has-owner-contact` | has owner contact | `HAS_OWNER_CONTACT` relationship (Registration to OwnerContact) | Q2.2 | `hpd_contacts` |
+| `contact-type` | contact type | `OwnerContact.contactType` | Q2.2 | `hpd_contacts` |
+| `owner-name` | owner name | `OwnerContact.name` | Q2.2 | `hpd_contacts` |
+
+Contact type values (scheme `owner-contact-types`): `corporate-owner`, `individual-owner`, `joint-owner`. All Q2.2. Reused from Q1: `building`, `bin`.
+
+## Tagged as not in the graph or vocabulary
+
+| Term | Where it lives |
+| --- | --- |
+| Registration period (start) | Not in the source; the answer says so |
+| Registration currency ("current", "ended") | Derived by the agent from the end date and a stated date; not stored |
+| Other contact types (agent, head officer, officer, shareholder, site manager, lessee) | Not owner contacts; belong to later questions (managing agent, officers) |
+| Contact business address, title | Not needed for Q2; later questions (party and address questions) |
+| `registrationcontactid` | Not unique; not stored |
+| Deed grantee, process contact, managing agent | Distinct roles, caveated in `owner-contact`; other questions |
+
+## Pilot restatement
+
+| Question | Restated with approved terms |
+| --- | --- |
+| Q2 Who is the HPD-registered owner of this building, and when was the registration last filed? | For the **building** (**BIN**), list its **HPD registrations** (**registration id**), each with its **last registered date** and **registration end date**, and the **registered owner contacts** (**contact type**, **owner name**) on each. |
+| Q2.1 | Which **HPD registrations** are on record for the **building**, and for each its **last registered date** and **registration end date**? |
+| Q2.2 | For each **HPD registration**, which **registered owner contacts** are recorded, with **contact type** and **owner name**? |
+| Worked example: co-op owner | **Owner name** `438 52 ST OWNERS CORP` as HPD spells it, **contact type** corporate owner; the spelling differs from PLUTO's and is reported as recorded. |
+| Worked example: multi-building lot | Three **buildings**, three **HPD registrations**, each with one **owner contact**; the **owner name** spellings differ and are reported as recorded. |
+| Case: registration ended | **Registration end date** 2021-09-01 is before the snapshot date; reported with the dates, not as current. |
+| Case: no registration found | No **building** exists for the lot (no HPD registration), so no **HPD registration** or **owner contact** is returned. |
+
+No gaps: every domain term resolves to a concept above. "Current" is the agent's reading of the end date.

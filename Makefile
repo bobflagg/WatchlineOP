@@ -9,16 +9,17 @@ SHELL := /bin/bash
 # POC graph target. Destructive steps must name it explicitly (physical-implementation.md, section 7).
 NEO4J_DB ?= watchline
 CONFIRM  ?=
+SKOS_REPO ?= $(HOME)/git-alt/intentional-arrangement-skos
 REQUIRED_ENV := JUSTFIX_DATABASE_URL NEO4J_URI NEO4J_USER NEO4J_PASSWORD NEO4J_DATABASE
-DIRS := vocabulary profiles ontology shapes mappings queries tests tests/fixtures scripts
+DIRS := src scripts tests specs data geosupport
 
 define todo
 	@echo "not implemented: $(1)" >&2; exit 1
 endef
 
-.PHONY: help setup dirs versions check-env \
+.PHONY: shapes oops help setup dirs versions check-env \
         vocab profiles taxonomy thesaurus ontology \
-        schema load reconcile shapes test graph rebuild clean
+        load test graph rebuild clean
 
 help: ## Show this help
 	@awk 'BEGIN{FS=":.*## "} /^[a-zA-Z_-]+:.*## /{printf "  %-12s %s\n",$$1,$$2}' $(MAKEFILE_LIST)
@@ -43,44 +44,45 @@ check-env: ## Verify required .env keys are set (values are not printed)
 ## --- Stages 1-5: semantic artifacts --------------------------------------
 # Vocabulary validation runs through the skos MCP server (validate_skos), not from Make.
 
-vocab: ## Stage 1: check the controlled vocabulary file exists
+vocab: ## Stage 1: run validate_skos on the vocabulary (uses a local clone of intentional-arrangement-skos)
 	@test -f vocabulary/watchline.ttl || { echo "vocabulary/watchline.ttl not found" >&2; exit 1; }
-	@echo "present. Run validate_skos through the skos MCP server and review its findings."
+	@test -x "$(SKOS_REPO)/.venv/bin/python" || { echo "SKOS_REPO not found: set SKOS_REPO=/path/to/intentional-arrangement-skos" >&2; exit 1; }
+	SKOS_REPO="$(SKOS_REPO)" "$(SKOS_REPO)/.venv/bin/python" scripts/validate_skos.py vocabulary/watchline.ttl
 
-profiles: ## Stage 2: validate application profiles and column crosswalks
+profiles: check-env ## Stage 2: check profiles/ against the vocabulary, data/sources.yaml and the live graph
 	uv run python scripts/check_profiles.py
 
-taxonomy: ## Stage 3: check broader/narrower links against vocabulary/taxonomy-notes.md
-	uv run python scripts/check_taxonomy.py
+taxonomy: ## Stage 3 (not yet redone)
+	$(call todo,stage 3 taxonomy)
 
-thesaurus: ## Stage 4: check related links, label notes and external mappings
+thesaurus: ## Stage 4: check related links, notes, labels and external mappings
 	uv run python scripts/check_thesaurus.py
 
-ontology: ## Stage 5: ontology, reasoner, report and OOPS! record
+ontology: ## Stage 5: check the ontology, mapping, notes and reasoner (needs Java and tools/robot)
 	uv run python scripts/check_ontology.py
 
-## --- Stage 6: knowledge graph ---------------------------------------------
+oops: ## Stage 5: send the TBox (only) to the OOPS! web service and list its pitfalls
+	uv run python scripts/oops_scan.py
 
-schema: check-env ## Apply scripts/neo4j-schema.cypher and verify indexes are online
-	$(call todo,apply scripts/neo4j-schema.cypher and verify indexes)
+## --- Stage 6: knowledge graph (Q1 so far: Lot, Building) -------------------
+# Each loader reconciles staged and graph counts and exits non-zero on a mismatch.
 
-load: check-env ## Load the graph from the frozen snapshot using mappings/
-	$(call todo,mapping-driven load in bounded batches)
+load: check-env ## Load Lot, Building and HAS_BUILDING, then Registration, HAS_REGISTRATION and OwnerContact (order matters)
+	uv run python scripts/load_lots.py
+	uv run python scripts/load_buildings.py
+	uv run python scripts/load_registrations.py
 
-reconcile: check-env ## Source-to-stage-to-graph counts and persisted-value checks
-	$(call todo,count and value reconciliation)
+test: check-env ## Run every sub-question check (tests/q*_*/check_*.py); all must pass
+	@for f in tests/q*_*/check_*.py; do echo "== $$f"; uv run python $$f || exit 1; done
 
-shapes: check-env ## Compile shapes (strict) and run shape and supplemental checks
-	$(call todo,shacl2cypher strict compile and execution)
+shapes: check-env ## Stage 6: compile the SHACL shapes, run them on the graph, run the seeded bad-data cases
+	uv run python scripts/check_shapes.py
 
-test: check-env ## Graph acceptance queries and negative fixtures
-	$(call todo,graph acceptance tests against frozen fixtures)
-
-graph: schema load reconcile shapes test ## Full graph build and validation
+graph: load profiles test shapes ## Full graph build and validation
 
 rebuild: ## Destructive: reset the POC graph (needs CONFIRM=<database name>)
 	@test "$(CONFIRM)" = "$(NEO4J_DB)" || { echo "refusing: run 'make rebuild CONFIRM=$(NEO4J_DB)' to reset database '$(NEO4J_DB)'" >&2; exit 1; }
-	$(call todo,reset the $(NEO4J_DB) database only; never the source DB or other graphs)
+	uv run python scripts/reset_graph.py
 
 clean: ## Remove Python caches
 	find . -name __pycache__ -type d -not -path './.venv/*' -prune -exec rm -rf {} +

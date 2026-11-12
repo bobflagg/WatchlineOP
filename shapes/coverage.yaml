@@ -1,0 +1,74 @@
+# Q1: every rule in "Rules for Stage 6 shapes" (ontology/ontology-notes.md) and how it is enforced.
+# covered_by: compiled (shacl2cypher rule names, run on the graph), native (Neo4j constraint),
+# test (a named sub-question check). scripts/check_shapes.py fails if a compiled rule is not listed
+# here or if a listed name does not exist.
+questions: [Q1, Q2]
+rules:
+  - id: R1
+    rule: "bbl is 10 digits, first digit 1 to 5; bin is 7 digits, first digit 1 to 5, not ending 000000"
+    covered_by: compiled
+    names: [LotShape.bbl.datatype, LotShape.bbl.pattern, BuildingShape.bin.datatype, BuildingShape.bin.pattern, BuildingShape.bin.not]
+  - id: R2
+    rule: "bbl on every lot, bin on every building, hpdRegistered on every lot"
+    covered_by: compiled
+    names: [LotShape.bbl.minCount, BuildingShape.bin.minCount, LotShape.hpdRegistered.datatype, LotShape.hpdRegistered.minCount]
+  - id: R3
+    rule: "Every building is linked to at least one lot; HAS_BUILDING ends on a building"
+    covered_by: compiled
+    names: [BuildingShape.inv_hasBuilding.minCount, LotShape.hasBuilding.class]
+  - id: R4
+    rule: "Value rules: yearBuilt is never 0; units, assessed value and building count are whole numbers of 0 or more (0 means PLUTO records none); building class is never blank"
+    covered_by: compiled
+    names: [LotShape.yearBuilt.datatype, LotShape.yearBuilt.minInclusive, LotShape.residentialUnits.datatype, LotShape.residentialUnits.minInclusive, LotShape.assessedTotalValue.datatype, LotShape.assessedTotalValue.minInclusive, LotShape.plutoBuildingCount.datatype, LotShape.plutoBuildingCount.minInclusive, LotShape.buildingClass.datatype, LotShape.buildingClass.minLength]
+  - id: R5
+    rule: "plutoBuildingCount and the number of HAS_BUILDING objects are different counts, always reported separately"
+    covered_by: test
+    names: [tests/q1_2/check_buildings.py]
+    note: "An answer rule, not a graph-state rule: the graph stores only PLUTO's count, and the two are compared in the answer."
+  - id: N1
+    rule: "One Lot per BBL, one Building per BIN"
+    covered_by: native
+    names: [lot_bbl_unique, building_bin_unique]
+  # --- Q2 (ontology/ontology-notes.md, Q2 "Rules for Stage 6 shapes") ---
+  - id: Q2-R1
+    question: Q2
+    rule: "registrationId is a positive integer and present on every registration"
+    covered_by: compiled
+    names: [RegistrationShape.registrationId.datatype, RegistrationShape.registrationId.minCount, RegistrationShape.registrationId.minInclusive]
+  - id: Q2-R2
+    question: Q2
+    rule: "contactType is one of CorporateOwner, IndividualOwner, JointOwner and present on every owner contact"
+    covered_by: compiled
+    names: [OwnerContactShape.contactType.datatype, OwnerContactShape.contactType.minCount, OwnerContactShape.contactType.pattern]
+  - id: Q2-R3
+    question: Q2
+    rule: "Every registration is linked to at least one building; every owner contact to exactly one registration; the relationships end on the right class"
+    covered_by: compiled
+    names: [RegistrationShape.inv_hasRegistration.minCount, OwnerContactShape.inv_hasOwnerContact.minCount, OwnerContactShape.inv_hasOwnerContact.maxCount, BuildingRegistrationShape.hasRegistration.class, RegistrationShape.hasOwnerContact.class]
+  - id: Q2-R4
+    question: Q2
+    rule: "At most one lastRegistered and one registrationEnd per building and registration pair (one HAS_REGISTRATION per pair)"
+    covered_by: check
+    names: [queries/checks/q02-duplicate-pair.cypher]
+    note: "Relationship properties are outside what shacl2cypher compiles; a named Cypher check covers it."
+  - id: Q2-R5
+    question: Q2
+    rule: "registrationEnd is never before lastRegistered"
+    covered_by: check
+    names: [queries/checks/q02-end-before-last.cypher]
+  - id: Q2-R6
+    question: Q2
+    rule: "An owner contact with no name has the name absent, never an empty string"
+    covered_by: compiled
+    names: [OwnerContactShape.ownerName.datatype, OwnerContactShape.ownerName.minLength]
+  - id: Q2-R7
+    question: Q2
+    rule: "Names are reported as recorded; no rule merges or compares spellings"
+    covered_by: test
+    names: [tests/q2_2/check_owners.py]
+    note: "An answer rule: the fixtures hold the three spellings of one owner and compare them as recorded."
+  - id: Q2-N1
+    question: Q2
+    rule: "One Registration per registrationId, one OwnerContact per contactKey"
+    covered_by: native
+    names: [registration_id_unique, owner_contact_key_unique]

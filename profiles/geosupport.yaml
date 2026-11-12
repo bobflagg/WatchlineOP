@@ -1,56 +1,64 @@
-# Application profile: Geosupport cached responses (source key `geosupport`; not in Postgres).
-# PENDING: no cached response exists in the repository yet, so nothing below is inspected.
-# Rules come from specs/questions/q01.md (Address resolution outcomes). Complete after the first
-# recorded responses (GRC/reason codes for 7 AVENUE/SEVENTH AVENUE and 54 STREET/54TH STREET).
-profile: geosupport
+# Source profile: NYC Geosupport (DCP) address service. Not a database table; profiled from recorded responses.
+# Recorded 2026-11-12 with scripts/record_geosupport.py (tests/q1_3/recorded.json, 18 cases, release 25b).
 source_key: geosupport
-snapshot: {snapshot_id: pending, snapshot_date: pending, note: "Geosupport release and Docker image pinned per test"}
-columns:
-  input_address:
-    semantic_type: input street address as typed
+kind: service
+release: 25b
+access: "Docker sidecar (geosupport/), POST /resolve; tests replay recorded responses and never call the live service."
+queried_on: 2026-11-12
+request_fields:
+  - {name: house_number, physical_type: text, allowed: "free text; blank is rejected (GRC 13)"}
+  - {name: street_name, physical_type: text, allowed: free text}
+  - {name: borough, physical_type: text, allowed: "borough name or code; used when zip_code is absent"}
+  - {name: zip_code, physical_type: text, allowed: "5 digits; used in place of borough"}
+columns:   # response fields the project reads
+  - name: "Geosupport Return Code (GRC)"
+    physical_type: "text (2 characters)"
+    allowed: ["00", "01", "11", "13", "42", "EE"]
+    observed: {"00": 13, "EE": 2, "11": 1, "13": 1, "42": 1, "01": 0}
+    meaning:
+      "00": success
+      "01": success with a warning (not yet observed)
+      "EE": street not recognized; similar names may be listed
+      "11": street not recognized, no similar names
+      "13": no house number
+      "42": house number out of range
+    used_by: [Q1.3]
+    notes: "Other codes are possible. The client treats any unlisted code as a failure, never as success."
+  - name: "Message"
     physical_type: text
-    allowed: {pending: true}
-    concept: street-address
-    status: pending
-    pending_reason: no cached response; function 1B input layout not yet recorded
+    allowed: free text
+    sentinels: {empty: "no message"}
+    used_by: [Q1.3]
+    notes: "Reported to the user. Logic never depends on its wording."
+  - name: "First Street Name Normalized"
+    physical_type: text
+    allowed: "street name as Geosupport normalizes it; the typed name when unrecognized"
+    used_by: [Q1.3]
+  - name: "House Number - Display Format"
+    physical_type: text
+    allowed: "house number as Geosupport returns it"
+    used_by: [Q1.3]
+  - name: "List of Street Names"
+    physical_type: "list of text"
+    allowed: "similar street names; empty unless GRC is EE"
+    used_by: [Q1.3]
+    notes: "May hold wrong suggestions (FIFTY-FOURTH STREET returns FIFTH AVENUE and FIFTH STREET)."
+  - name: "BOROUGH BLOCK LOT (BBL)"
+    physical_type: "object with BOROUGH BLOCK LOT (BBL), Borough Code, Tax Block, Tax Lot"
+    allowed: "10-digit BBL string inside the object"
+    sentinels:
+      empty_string: "no tax lot (GRC 00 with an empty BBL, or a rejected address)"
+      "0000000000": "no BBL"
     used_by: [Q1.1, Q1.3]
-  grc:
-    semantic_type: Geosupport return code
-    physical_type: "string, 2 characters (per q01.md rules: 00, 01, EE, other reject codes)"
-    allowed: {pending: true}
-    concept: geosupport-return-code
-    status: pending
-    pending_reason: full reject-code list (Appendix 4) and recorded responses not available
+    notes: "For a condominium, the BBL returned is the billing lot."
+  - name: "Building Identification Number (BIN) of Input Address or NAP"
+    physical_type: text
+    allowed: "7 digits"
+    sentinels: {empty_string: "no BIN", "x000000": "placeholder BIN"}
     used_by: [Q1.3]
-  reason_code:
-    semantic_type: Geosupport reason code
-    physical_type: string
-    allowed: {pending: true}
-    concept: geosupport-reason-code
-    status: pending
-    pending_reason: format and values not verified against a recorded response
+  - name: "Condominium Billing BBL"
+    physical_type: text
+    allowed: "10 digits"
+    sentinels: {"0000000000": "not a condominium", empty_string: "rejected address"}
     used_by: [Q1.3]
-  returned_bbl:
-    semantic_type: BBL from the 1A result set
-    physical_type: string
-    allowed: {pattern: '^[1-5][0-9]{9}$', note: "pattern assumed from the BBL concept; confirm on first response"}
-    concept: bbl
-    status: pending
-    pending_reason: no cached response
-    used_by: [Q1.1]
-  returned_address:
-    semantic_type: house number and street name returned
-    physical_type: string
-    allowed: {pending: true}
-    concept: street-address
-    status: pending
-    pending_reason: no cached response
-    used_by: [Q1.3]
-  street_name_list:
-    semantic_type: '"List of Street Names" candidates for GRC EE'
-    physical_type: list of string
-    allowed: {pending: true}
-    concept: address-candidate
-    status: pending
-    pending_reason: no cached response
-    used_by: [Q1.3]
+    notes: "Read but not stored or returned; documented as a limit of related lots."

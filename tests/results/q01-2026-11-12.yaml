@@ -1,0 +1,26 @@
+# Q1 acceptance results, 2026-11-12. Shape and sub-question counts are from the user's runs of `make graph`.
+question: Q1
+fixture_version: provisional (not yet verified against an identified frozen dump)
+baseline: "Pending: dump filename and SHA-256 are not recorded in data/README.md. Until they are, no result below is 'passed' for acceptance."
+tools:
+  neo4j: "recorded in tests/results/shapes.json by `make shapes` (covers Q1 and Q2 since 2026-11-12) (version and edition)"
+  shacl2cypher: "0.3.0 (strict mode; all 21 rules compile)"
+  reasoner: "ROBOT 1.9.11, HermiT 1.4.5.456, Java 11"
+  geosupport: "25b (Docker image, localhost:8081)"
+acceptance:
+  graph:
+    status: pending
+    reason: baseline not identified
+    evidence:
+      sub_question_checks: {q1_1: "13/13", q1_2: "22/22", q1_3: "101/101", q1_4: "31/31", profiles: "78/78"}
+      shapes: "46/46 (21 rules on the graph, coverage, 18 seeded bad-data cases, rollback)"
+  retrieval_extraction:
+    status: pending
+    reason: run downstream; fixtures delivered
+    fixtures: [tests/q1_3/recorded.json, tests/q1_3/fixtures.yaml]
+    contract: "profiles/q01.yaml, section answer (Q1.1 to Q1.4 fields, null policies and counting units)"
+  investigation:
+    status: pending
+    reason: run downstream; fixtures delivered
+    fixtures: [tests/q1_2/fixtures.yaml, tests/q1_4/fixtures.yaml]
+    contract: "17 Battery Place: report buildingsListed and plutoNumBuildings separately; condo unit lots are not found by shared BIN (documented limit)"

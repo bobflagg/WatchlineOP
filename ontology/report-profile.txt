@@ -1,2 +1,0 @@
-INFO	missing_definition
-INFO	missing_ontology_license

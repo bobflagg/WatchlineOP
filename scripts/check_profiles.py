@@ -1,194 +1,212 @@
-"""Stage 2 check: validate profiles/*.yaml against the vocabulary, data/sources.yaml and the specs.
+"""Check the Stage 2 schema (profiles/) against the vocabulary, data/sources.yaml and the live graph.
 
-Exits nonzero on any failure. A check that cannot run counts as a failure.
+Fails (exit 1) if any check fails; nothing is skipped. Read-only on Neo4j; the source database is not touched.
+
+1. YAML files are well-formed and carry the required keys.
+2. Every concept ID resolves to a skos:Concept in vocabulary/watchline.ttl; enum values equal their scheme.
+3. Every source column named in a schema is in its source profile and in data/sources.yaml columns_used,
+   and every profiled column is in columns_used.
+4. Files named in proved_by, lookup and recorded exist.
+5. The graph holds exactly the declared labels, relationship types, properties, constraints and endpoints,
+   with the declared value types, and every "never absent" property is present on every node.
+
+Run: uv run python scripts/check_profiles.py
 """
+
+import os
 import re
 import sys
 from pathlib import Path
 
 import yaml
-from rdflib import Graph, Namespace, RDF
+from dotenv import load_dotenv
+from neo4j import GraphDatabase
+from rdflib import Graph, Namespace, RDF, URIRef
 from rdflib.namespace import SKOS
 
-ROOT = Path(__file__).resolve().parent.parent
-VOCAB = Namespace("https://watchline.example/vocab/")
-SOURCE_PROFILES = {"pluto", "hpd_registrations", "geosupport"}  # profiles/<source_key>.yaml
-COLUMN_KEYS = {"semantic_type", "physical_type", "allowed", "concept", "used_by"}
-FIELD_KEYS = {"requirement", "source", "type", "allowed", "concept"}
+ROOT = Path(__file__).resolve().parents[1]
+REQUIRED_ENV = ("NEO4J_URI", "NEO4J_USER", "NEO4J_PASSWORD", "NEO4J_DATABASE")
+PROPERTY_KEYS = ("concept", "type", "source", "null_policy")
+FIELD_KEYS = ("concept", "source", "type")
+VALUE_TYPE = {"string": "STRING", "integer": "INTEGER", "boolean": "BOOLEAN", "date": "DATE"}
 
-errors: list[str] = []
-ran: dict[str, int] = {}
-
-
-def fail(msg: str) -> None:
-    errors.append(msg)
+results: list[bool] = []
 
 
-def ran_check(name: str) -> None:
-    ran[name] = ran.get(name, 0) + 1
+def check(name: str, ok: bool, detail: str = "") -> None:
+    results.append(ok)
+    print(f"{'PASS' if ok else 'FAIL'}  {name}" + (f"  ({detail})" if detail and not ok else ""))
 
 
-def load(path: Path):
+def load_yaml(path: Path):
     try:
         return yaml.safe_load(path.read_text())
-    except Exception as exc:  # malformed YAML or unreadable file
-        fail(f"{path.relative_to(ROOT)}: cannot parse: {exc}")
+    except Exception as exc:  # malformed or missing
+        check(f"{path.relative_to(ROOT)} is readable YAML", False, str(exc)[:100])
         return None
 
 
-def is_pending(entry: dict) -> bool:
-    return entry.get("status") == "pending"
+def kebab(value: str) -> str:
+    """CorporateOwner -> corporate-owner; already-kebab values are unchanged."""
+    return re.sub(r"(?<!^)(?=[A-Z])", "-", str(value)).lower()
 
 
-vocab = Graph()
-vocab.parse(ROOT / "vocabulary/watchline.ttl", format="turtle")
-concepts = {str(s)[len(str(VOCAB)):] for s in vocab.subjects(RDF.type, SKOS.Concept)}
-outcome_labels = {
-    str(vocab.value(s, SKOS.prefLabel))
-    for s in vocab.subjects(SKOS.inScheme, VOCAB["address-resolution-outcomes"])
-}
+def merge_schemas():
+    """Merge every profiles/qNN.yaml into one schema: the graph is shared, so labels, relationship types,
+    constraints and properties declared by different questions are checked as one set."""
+    files = sorted((ROOT / "profiles").glob("q[0-9][0-9].yaml"))
+    loaded = [load_yaml(f) for f in files]
+    check(f"{len(files)} question schemas are readable", all(loaded) and bool(files))
+    if not all(loaded):
+        return None
+    merged = {"concept_base": loaded[0]["concept_base"], "sources": [], "graph": {"constraints": [], "nodes": {}, "relationships": {}}, "answer": {}}
+    for q in loaded:
+        check(f"{q['question']}: concept_base matches", q["concept_base"] == merged["concept_base"])
+        for src in q["sources"]:
+            if src not in merged["sources"]:
+                merged["sources"].append(src)
+        merged["graph"]["constraints"] += q["graph"]["constraints"]
+        for lab, node in q["graph"]["nodes"].items():
+            have = merged["graph"]["nodes"].setdefault(lab, {**node, "properties": {}})
+            clash = set(have["properties"]) & set(node["properties"])
+            check(f"{q['question']}: {lab} redeclares no property of another question", not clash, f"redeclared: {sorted(clash)}")
+            have["properties"].update(node["properties"])
+        for name, rel in q["graph"]["relationships"].items():
+            check(f"{q['question']}: {name} is declared once", name not in merged["graph"]["relationships"])
+            merged["graph"]["relationships"][name] = rel
+        merged["answer"].update(q["answer"])
+    return merged
 
 
-def check_concept(where: str, slug) -> None:
-    ran_check("concept IRI in watchline.ttl")
-    if slug is None:
-        return
-    if slug not in concepts:
-        fail(f"{where}: concept '{slug}' is not in vocabulary/watchline.ttl")
-
-
-sources = load(ROOT / "data/sources.yaml")
-columns_used = {}
-if sources:
-    for key, src in sources["sources"].items():
-        columns_used[key] = {c.strip() for c in str(src.get("columns_used", "")).split(",") if c.strip()}
-
-# --- evidence profile and enums against the specs ---
-evidence = load(ROOT / "profiles/evidence.yaml")
-required_evidence = {
-    "source_key", "snapshot_id", "snapshot_date", "run_id", "source_category",
-    "assertion_type", "review_status", "source_record_locator", "mapping_git_revision",
-}
-if evidence:
-    ran_check("evidence profile fields")
-    missing = required_evidence - set(evidence.get("fields", {}))
+def main() -> int:
+    load_dotenv(ROOT / ".env")
+    missing = [k for k in REQUIRED_ENV if not os.environ.get(k)]
     if missing:
-        fail(f"profiles/evidence.yaml: missing fields {sorted(missing)}")
-    for name, f in evidence.get("fields", {}).items():
-        for k in ("type", "allowed", "maps_to"):
-            if k not in f:
-                fail(f"profiles/evidence.yaml:{name}: missing '{k}'")
-        check_concept(f"profiles/evidence.yaml:{name}", f.get("concept"))
+        print(f"missing in .env: {', '.join(missing)}", file=sys.stderr)
+        return 1
 
-    claude_md = (ROOT / "CLAUDE.md").read_text()
-    m = re.search(r"source category separately: (.+)", claude_md)
-    spec_cat = set(re.findall(r"`(\w+)`", m.group(1))) if m else set()
-    ran_check("enum equals spec")
-    if set(evidence["fields"]["source_category"]["allowed"]["values"]) != spec_cat:
-        fail(f"source_category enum differs from CLAUDE.md: {spec_cat}")
-    proc = (ROOT / "specs/stage2-procedure.md").read_text()
-    m = re.search(r"`review_status` \(([^)]+)\)", proc)
-    spec_rs = set(re.findall(r"`(\w+)`", m.group(1))) if m else set()
-    ran_check("enum equals spec")
-    if set(evidence["fields"]["review_status"]["allowed"]["values"]) != spec_rs:
-        fail(f"review_status enum differs from specs: {spec_rs}")
+    sources = load_yaml(ROOT / "data" / "sources.yaml")["sources"]
+    schema = merge_schemas()
+    if schema is None:
+        return 1
+    vocab = Graph()
+    vocab.parse(ROOT / "vocabulary" / "watchline.ttl")
+    base = Namespace(schema["concept_base"])
+    concepts = {str(c) for c in vocab.subjects(RDF.type, SKOS.Concept)}
+    schemes = {str(c) for c in vocab.subjects(RDF.type, SKOS.ConceptScheme)}
 
-# --- source profiles ---
-profile_fields: dict[str, dict] = {}
-for key in sorted(SOURCE_PROFILES):
-    path = ROOT / f"profiles/{key}.yaml"
-    prof = load(path) if path.exists() else None
-    if prof is None:
-        fail(f"profiles/{key}.yaml missing or unreadable")
-        continue
-    ran_check("source profile structure")
-    if prof.get("source_key") != key:
-        fail(f"{path.name}: source_key must be '{key}'")
-    if key not in columns_used:
-        fail(f"{path.name}: source key '{key}' not in data/sources.yaml")
-    for col, c in prof.get("columns", {}).items():
-        where = f"{path.name}:{col}"
-        missing = COLUMN_KEYS - set(c)
-        if missing:
-            fail(f"{where}: missing keys {sorted(missing)}")
-        if is_pending(c) and not c.get("pending_reason"):
-            fail(f"{where}: pending without pending_reason")
-        if not is_pending(c) and ("null_policy" not in c):
-            fail(f"{where}: missing null_policy")
-        check_concept(where, c.get("concept"))
-        profile_fields[f"{key}.{col}"] = c
+    # 1. required keys and source profiles
+    profiles = {}
+    for key in schema["sources"]:
+        p = load_yaml(ROOT / "profiles" / f"{key}.yaml")
+        check(f"profiles/{key}.yaml has source_key and columns", bool(p) and p.get("source_key") == key and bool(p.get("columns")))
+        profiles[key] = p or {"columns": []}
+        names = [c.get("name") for c in profiles[key]["columns"]]
+        check(f"profiles/{key}.yaml: every column has a name, type and used_by",
+              all(c.get("name") and c.get("physical_type") and c.get("used_by") for c in profiles[key]["columns"]))
+        if key in sources and "columns_used" in sources[key]:  # a service such as Geosupport has none
+            used = {c.strip() for c in str(sources[key]["columns_used"]).split(",")}
+            extra = [n for n in names if n not in used]
+            check(f"profiles/{key}.yaml columns are all in data/sources.yaml columns_used", not extra, f"not in columns_used: {extra}")
 
-# --- answer profile ---
-answer = load(ROOT / "profiles/q01-answer.yaml")
-if answer:
-    for name, f in answer.get("fields", {}).items():
-        where = f"q01-answer.yaml:{name}"
-        ran_check("answer field has source, type, allowed")
-        pending = is_pending(f)
-        if pending and not f.get("pending_reason"):
-            fail(f"{where}: pending without pending_reason")
-        missing = FIELD_KEYS - set(f)
-        if missing:
-            fail(f"{where}: missing keys {sorted(missing)}")
-        if not pending and f.get("allowed") in (None, {}, {"pending": True}):
-            fail(f"{where}: not pending but allowed values are empty")
-        src = f.get("source")
-        if src == "derived":
-            if not f.get("derivation"):
-                fail(f"{where}: derived field without derivation")
-        elif src not in profile_fields:
-            fail(f"{where}: source '{src}' is not a source-profile field")
-        check_concept(where, f.get("concept"))
-        if f.get("counting_unit") is None and f.get("concept") in {"parcel-count", "building-count", "unit-count"}:
-            fail(f"{where}: count without counting_unit")
-        allowed = f.get("allowed") or {}
-        if name == "resolution_outcome":
-            ran_check("enum equals spec")
-            if set(allowed.get("values", [])) != outcome_labels:
-                fail(f"{where}: outcome values differ from vocabulary scheme {sorted(outcome_labels)}")
+    nodes = schema["graph"]["nodes"]
+    rels = schema["graph"]["relationships"]
+    fields = [(q, n, f) for q, a in schema["answer"].items() for n, f in a["fields"].items()]
+    props = [(lab, n, p) for lab, node in nodes.items() for n, p in node["properties"].items()]
 
-# --- crosswalk ---
-cross = load(ROOT / "profiles/crosswalk-q01.yaml")
-if cross:
-    seen = set()
-    for row in cross.get("rows", []):
-        where = f"crosswalk-q01.yaml:{row.get('source_key')}.{row.get('column')}"
-        ran_check("crosswalk row")
-        for k in ("source_key", "column", "profile_field", "concept", "neo4j"):
-            if k not in row:
-                fail(f"{where}: missing '{k}'")
-        seen.add(row.get("profile_field"))
-        if row.get("profile_field") not in profile_fields:
-            fail(f"{where}: profile_field '{row.get('profile_field')}' not in a source profile")
-        check_concept(where, row.get("concept"))
-        src = sources["sources"].get(row.get("source_key")) if sources else None
-        if src is None:
-            fail(f"{where}: source key not in data/sources.yaml")
-        elif src.get("table") is not None:
-            ran_check("crosswalk column in columns_used")
-            if row.get("column") not in columns_used[row["source_key"]]:
-                fail(f"{where}: column missing from data/sources.yaml columns_used")
-        elif not is_pending(row):
-            fail(f"{where}: non-database source row must be pending")
-    ran_check("every profiled column crosswalked")
-    for pf in profile_fields:
-        if pf not in seen:
-            fail(f"{pf}: profiled column is not in the crosswalk")
+    for lab, n, p in props:
+        check(f"{lab}.{n} declares concept, type, source and null_policy", all(p.get(k) for k in PROPERTY_KEYS))
+    for q, n, f in fields:
+        check(f"{q} field {n} declares concept, source and type", all(f.get(k) for k in FIELD_KEYS))
 
-required_checks = {
-    "concept IRI in watchline.ttl", "evidence profile fields", "enum equals spec",
-    "source profile structure", "answer field has source, type, allowed",
-    "crosswalk row", "crosswalk column in columns_used", "every profiled column crosswalked",
-}
-for name in sorted(required_checks - set(ran)):
-    fail(f"check did not run: {name}")
+    # 2. concepts and enums
+    ids = {n["concept"] for n in nodes.values()} | {r["concept"] for r in rels.values()}
+    ids |= {p["concept"] for _, _, p in props} | {f["concept"] for _, _, f in fields}
+    rel_props = [(name, n, p) for name, r in rels.items() for n, p in r.get("properties", {}).items()]
+    ids |= {p["concept"] for _, _, p in rel_props}
+    for name, n, p in rel_props:
+        check(f"{name}.{n} declares concept, type, source and null_policy", all(p.get(k) for k in PROPERTY_KEYS))
+    bad = sorted(i for i in ids if str(base[i]) not in concepts)
+    check(f"all {len(ids)} concept IDs exist in vocabulary/watchline.ttl", not bad, f"unknown: {bad}")
+    for q, n, f in fields + [(lab, n, p) for lab, n, p in props]:
+        if "allowed_scheme" in f:
+            scheme = URIRef(base[f["allowed_scheme"]])
+            members = sorted(str(c).rsplit("/", 1)[-1] for c in vocab.subjects(SKOS.inScheme, scheme))
+            check(f"{q} {n}: scheme {f['allowed_scheme']} exists", str(scheme) in schemes)
+            check(f"{q} {n}: allowed values equal the scheme's concepts", sorted(kebab(v) for v in f["allowed"]) == members,
+                  f"schema {sorted(f['allowed'])} vs scheme {members}")
 
-for name in sorted(ran):
-    print(f"ran: {name} x{ran[name]}")
-if errors:
-    print(f"\nFAILED: {len(errors)} problem(s)", file=sys.stderr)
-    for e in errors:
-        print(f"  - {e}", file=sys.stderr)
-    sys.exit(1)
-pend = sum(1 for p in profile_fields.values() if is_pending(p))
-print(f"\nOK. {len(profile_fields)} source columns ({pend} pending), no skipped checks.")
+    # 3. source columns named in the schema
+    text = [str(p["source"]) for _, _, p in props] + [str(f["source"]) for _, _, f in fields]
+    text += [str(r["source"]) for r in rels.values()]
+    text += [str(p["source"]) for r in rels.values() for p in r.get("properties", {}).values()]
+    named = set()
+    for s in text:
+        named |= set(re.findall(r"\b(pluto|hpd_registrations|hpd_contacts)\.([a-z0-9_]+)", s))
+        named |= {("geosupport", c) for c in re.findall(r'geosupport\."([^"]+)"', s)}
+    for key, col in sorted(named):
+        in_profile = col in {c["name"] for c in profiles.get(key, {"columns": []})["columns"]}
+        in_sources = key == "geosupport" or col in {c.strip() for c in str(sources[key]["columns_used"]).split(",")}
+        check(f"{key}.{col} is in its source profile and columns_used", in_profile and in_sources)
+
+    # 4. referenced files
+    paths = [n["proved_by"] for n in nodes.values()] + [p["proved_by"] for _, _, p in props if "proved_by" in p]
+    paths += [r["proved_by"] for r in rels.values()]
+    paths += [p["proved_by"] for r in rels.values() for p in r.get("properties", {}).values() if "proved_by" in p]
+    paths += [a[k] for a in schema["answer"].values() for k in ("lookup", "recorded") if k in a]
+    gone = sorted({p for p in paths if not (ROOT / p).exists()})
+    check(f"all {len(set(paths))} referenced test files exist", not gone, f"missing: {gone}")
+
+    # 5. the live graph
+    driver = GraphDatabase.driver(os.environ["NEO4J_URI"], auth=(os.environ["NEO4J_USER"], os.environ["NEO4J_PASSWORD"]))
+    with driver, driver.session(database=os.environ["NEO4J_DATABASE"], default_access_mode="READ") as s:
+        labels = {r["l"] for r in s.run("MATCH (n) UNWIND labels(n) AS l RETURN DISTINCT l")}
+        check("graph labels equal the declared labels", labels == set(nodes), f"graph {sorted(labels)} vs schema {sorted(nodes)}")
+        types = {r["t"] for r in s.run("MATCH ()-[r]->() RETURN DISTINCT type(r) AS t")}
+        check("graph relationship types equal the declared types", types == set(rels), f"graph {sorted(types)} vs schema {sorted(rels)}")
+        for lab, node in nodes.items():
+            declared = node["properties"]
+            rows = s.run(f"MATCH (n:`{lab}`) UNWIND keys(n) AS k WITH k, n[k] AS v "
+                         "RETURN k, collect(DISTINCT valueType(v)) AS types, count(*) AS present").data()
+            in_graph = {r["k"]: r for r in rows}
+            check(f"{lab}: properties in the graph equal the declared properties", set(in_graph) == set(declared),
+                  f"undeclared {sorted(set(in_graph) - set(declared))}, missing {sorted(set(declared) - set(in_graph))}")
+            total = s.run(f"MATCH (n:`{lab}`) RETURN count(n) AS c").single()["c"]
+            for name, p in declared.items():
+                row = in_graph.get(name)
+                if row:
+                    want = VALUE_TYPE[p["type"]]
+                    got = {t.replace(" NOT NULL", "") for t in row["types"]}
+                    check(f"{lab}.{name} holds only {p['type']} values", got == {want}, f"graph types {sorted(got)}")
+                    if "never absent" in str(p["null_policy"]):
+                        check(f"{lab}.{name} is present on every node", row["present"] == total, f"{row['present']} of {total}")
+        for name, rel in rels.items():
+            declared_rp = rel.get("properties", {})
+            rows = s.run(f"MATCH ()-[r:`{name}`]->() UNWIND keys(r) AS k WITH k, r[k] AS v "
+                         "RETURN k, collect(DISTINCT valueType(v)) AS types").data()
+            in_graph = {r["k"]: r for r in rows}
+            check(f"{name}: properties in the graph equal the declared properties", set(in_graph) == set(declared_rp),
+                  f"undeclared {sorted(set(in_graph) - set(declared_rp))}, missing {sorted(set(declared_rp) - set(in_graph))}")
+            for pname, p in declared_rp.items():
+                if pname in in_graph:
+                    got = {t.replace(" NOT NULL", "") for t in in_graph[pname]["types"]}
+                    check(f"{name}.{pname} holds only {p['type']} values", got == {VALUE_TYPE[p["type"]]}, f"graph types {sorted(got)}")
+            wrong = s.run(f"MATCH (a)-[r:`{name}`]->(b) WHERE NOT (a:`{rel['from']}` AND b:`{rel['to']}`) RETURN count(r) AS c").single()["c"]
+            check(f"{name} runs only from {rel['from']} to {rel['to']}", wrong == 0, f"{wrong} edges elsewhere")
+        found = {r["name"]: r for r in s.run("SHOW CONSTRAINTS YIELD name, type, labelsOrTypes, properties")}
+        declared = {c["name"]: c for c in schema["graph"]["constraints"]}
+        check("graph constraints equal the declared constraints", set(found) == set(declared),
+              f"graph {sorted(found)} vs schema {sorted(declared)}")
+        for name, c in declared.items():
+            r = found.get(name)
+            check(f"constraint {name} is a uniqueness constraint on {c['label']}.{c['property']}",
+                  bool(r) and r["type"] == "NODE_PROPERTY_UNIQUENESS" and r["labelsOrTypes"] == [c["label"]] and r["properties"] == [c["property"]],
+                  f"graph reports type={r and r['type']!r}, labelsOrTypes={r and r['labelsOrTypes']!r}, properties={r and r['properties']!r}")
+
+    failed = results.count(False)
+    print(f"{len(results) - failed}/{len(results)} checks passed")
+    return 0 if failed == 0 else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

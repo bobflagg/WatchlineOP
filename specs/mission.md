@@ -13,7 +13,7 @@ An ontology pipeline in six stages, each producing a reviewed artifact that the 
 5. Ontology, in OWL 2.
 6. Knowledge graph, in Neo4j, validated with SHACL shapes.
 
-WatchlineOP delivers the graph, mappings, and acceptance fixtures and contracts. The research agent is a downstream consumer; implementing its browsing, extraction, and investigation orchestration is outside this project's scope. Graph readiness does not establish that the downstream agent passes its acceptance tests.
+WatchlineOP delivers the graph, loaders, and acceptance fixtures and contracts. The research agent is a downstream consumer; implementing its browsing, extraction, and investigation orchestration is outside this project's scope. Graph readiness does not establish that the downstream agent passes its acceptance tests.
 
 Stages, acceptance types, and exit criteria are in `roadmap.md`. Tools and sources are in `tech-stack.md`.
 

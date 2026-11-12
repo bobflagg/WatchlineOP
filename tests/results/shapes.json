@@ -1,0 +1,397 @@
+{
+  "neo4j": "Neo4j Kernel 2026.04.0 enterprise",
+  "shacl2cypher": "0.3.0",
+  "rules": 34,
+  "checks": [
+    {
+      "check": "all 34 rules compile in strict mode",
+      "passed": true,
+      "detail": "[] []"
+    },
+    {
+      "check": "the graph is loaded",
+      "passed": true,
+      "detail": "(811817, 606213)"
+    },
+    {
+      "check": "graph conforms to BuildingRegistrationShape.hasRegistration.class",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to BuildingShape.bin.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to BuildingShape.bin.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to BuildingShape.bin.not",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to BuildingShape.bin.pattern",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to BuildingShape.inv_hasBuilding.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotShape.assessedTotalValue.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotShape.assessedTotalValue.minInclusive",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotShape.bbl.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotShape.bbl.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotShape.bbl.pattern",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotShape.buildingClass.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotShape.buildingClass.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotShape.hasBuilding.class",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotShape.hpdRegistered.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotShape.hpdRegistered.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotShape.plutoBuildingCount.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotShape.plutoBuildingCount.minInclusive",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotShape.residentialUnits.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotShape.residentialUnits.minInclusive",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotShape.yearBuilt.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotShape.yearBuilt.minInclusive",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OwnerContactShape.contactType.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OwnerContactShape.contactType.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OwnerContactShape.contactType.pattern",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OwnerContactShape.inv_hasOwnerContact.maxCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OwnerContactShape.inv_hasOwnerContact.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OwnerContactShape.ownerName.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OwnerContactShape.ownerName.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RegistrationShape.hasOwnerContact.class",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RegistrationShape.inv_hasRegistration.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RegistrationShape.registrationId.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RegistrationShape.registrationId.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RegistrationShape.registrationId.minInclusive",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q02-duplicate-pair.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q02-end-before-last.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "every compiled rule is listed in coverage.yaml",
+      "passed": true,
+      "detail": "missing []"
+    },
+    {
+      "check": "every listed rule name exists",
+      "passed": true,
+      "detail": "unknown []"
+    },
+    {
+      "check": "native constraints named in coverage.yaml are installed",
+      "passed": true,
+      "detail": "missing []"
+    },
+    {
+      "check": "tests and checks named in coverage.yaml exist",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: bbl too short is flagged by LotShape.bbl.pattern",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: bbl first digit 9 is flagged by LotShape.bbl.pattern",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: bbl is a number is flagged by LotShape.bbl.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: lot without bbl is flagged by LotShape.bbl.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: lot without hpdRegistered is flagged by LotShape.hpdRegistered.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: hpdRegistered as text is flagged by LotShape.hpdRegistered.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: yearBuilt 0 is flagged by LotShape.yearBuilt.minInclusive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: negative units is flagged by LotShape.residentialUnits.minInclusive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: assessed value as text is flagged by LotShape.assessedTotalValue.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: negative building count is flagged by LotShape.plutoBuildingCount.minInclusive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: blank building class is flagged by LotShape.buildingClass.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: placeholder bin is flagged by BuildingShape.bin.not",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: bin too short is flagged by BuildingShape.bin.pattern",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: building without bin is flagged by BuildingShape.bin.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: building with no lot is flagged by BuildingShape.inv_hasBuilding.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: HAS_BUILDING ends on a lot is flagged by LotShape.hasBuilding.class",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate bbl is refused by a native constraint",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate bin is refused by a native constraint",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: registration id 0 is flagged by RegistrationShape.registrationId.minInclusive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: registration id as text is flagged by RegistrationShape.registrationId.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: registration without id is flagged by RegistrationShape.registrationId.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: registration with no building is flagged by RegistrationShape.inv_hasRegistration.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: HAS_REGISTRATION ends on a building is flagged by BuildingRegistrationShape.hasRegistration.class",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: HAS_OWNER_CONTACT ends on a registration is flagged by RegistrationShape.hasOwnerContact.class",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: contact type Agent is flagged by OwnerContactShape.contactType.pattern",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: contact type as number is flagged by OwnerContactShape.contactType.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: contact without type is flagged by OwnerContactShape.contactType.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: contact with empty name is flagged by OwnerContactShape.ownerName.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: contact with name as number is flagged by OwnerContactShape.ownerName.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: contact with no registration is flagged by OwnerContactShape.inv_hasOwnerContact.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: contact on two registrations is flagged by OwnerContactShape.inv_hasOwnerContact.maxCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: registration end before last is flagged by queries/checks/q02-end-before-last.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate building and registration pair is flagged by queries/checks/q02-duplicate-pair.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate registrationId is refused by a native constraint",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate contactKey is refused by a native constraint",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "seeded bad data left no trace (rolled back)",
+      "passed": true,
+      "detail": "(811817, 606213) -> (811817, 606213)"
+    }
+  ]
+}

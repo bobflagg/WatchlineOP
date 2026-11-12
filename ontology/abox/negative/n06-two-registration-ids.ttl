@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: registrationId is functional, so a registration has one id.
+id:bad-6 a onto:Registration ; onto:registrationId 316103, 316104 .

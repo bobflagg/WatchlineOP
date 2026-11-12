@@ -1,0 +1,46 @@
+# Source profile: HPD registration contacts. Facts about the source only.
+# Queried 2026-11-12 against the frozen database (information_schema and counts over the whole table).
+source_key: hpd_contacts
+table: public.hpd_contacts
+data_through: 2026-05-29
+row_count: 782024
+queried_on: 2026-11-12
+key: none
+key_notes: "registrationcontactid is NOT unique (733038 distinct values in 782024 rows), so it is not a key and is not read. Exact duplicate contacts exist (same registration, type and name; 686 registrations among owner types)."
+columns:
+  - name: registrationid
+    physical_type: integer
+    allowed: positive integer
+    sentinels: none
+    used_by: [Q2.2]
+    notes: "Never null. Every value is also in hpd_registrations. Joins a contact to a registration, not to one building."
+  - name: type
+    physical_type: text
+    allowed: [CorporateOwner, IndividualOwner, JointOwner, Agent, HeadOfficer, Officer, Shareholder, SiteManager, Lessee]
+    observed: {CorporateOwner: 121589, IndividualOwner: 47866, JointOwner: 44594, Agent: 155280, HeadOfficer: 127879, Officer: 73102, Shareholder: 40631, SiteManager: 162187, Lessee: 8896}
+    sentinels: none
+    used_by: [Q2.2]
+    notes: "Never null. Only the first three are read as the registered owner (decision 2026-11-12)."
+  - name: corporationname
+    physical_type: text
+    allowed: free text
+    sentinels: {null: "no corporation name; null on every non-corporate row", empty: "none (no empty strings)"}
+    used_by: [Q2.2]
+    notes: "Read for CorporateOwner only. 183 CorporateOwner rows have no name. No leading or trailing spaces."
+  - name: firstname
+    physical_type: text
+    allowed: free text
+    sentinels: {null: "no first name"}
+    used_by: [Q2.2]
+    notes: "Read for IndividualOwner and JointOwner. A personal name: stored in the graph, never printed in fixtures or examples."
+  - name: middleinitial
+    physical_type: text
+    allowed: free text
+    sentinels: {null: "no middle initial (all but 103530 rows)"}
+    used_by: [Q2.2]
+  - name: lastname
+    physical_type: text
+    allowed: free text
+    sentinels: {null: "no last name; null on CorporateOwner rows"}
+    used_by: [Q2.2]
+    notes: "239 IndividualOwner or JointOwner rows have no last name and no first name, so the owner name is absent."

@@ -1,8 +1,0 @@
-@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
-@prefix vocab: <https://watchline.example/vocab/> .
-@prefix onto:  <https://watchline.example/onto/> .
-@prefix id:    <https://watchline.example/id/> .
-
-# Must be inconsistent: one individual is both a TaxLot and a Building.
-# Enforces "a lot is not a building" (building counts and lot counts differ).
-id:neg-both a onto:TaxLot, onto:Building .

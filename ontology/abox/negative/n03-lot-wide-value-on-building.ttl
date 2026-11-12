@@ -1,0 +1,6 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+# Must be inconsistent: residentialUnits has domain TaxLot, so a building carrying it would also be a TaxLot,
+# which is disjoint from Building. Lot-wide values never sit on a building.
+id:bad-3 a onto:Building ; onto:bin "3324448" ; onto:residentialUnits 18 .

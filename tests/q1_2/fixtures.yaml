@@ -1,0 +1,29 @@
+# Q1.2 expected Buildings per Lot. Provisional until the frozen dump is identified (data/README.md).
+# Checked read-only on 2026-11-11. check_buildings.py re-derives each from the source, so a stale fixture fails.
+# mode: exact = the lot has exactly these buildings; includes = these buildings are among them.
+# plutoNumBuildings null = the property is absent (lot not in PLUTO). A building address of null = absent.
+
+lots:
+  - {bbl: "3008210012", plutoNumBuildings: 3, mode: exact, note: "anchor D, three buildings on one lot",
+     buildings: {"3324448": "218 54TH STREET", "3324450": "220 54TH STREET", "3324451": "224 54TH STREET"}}
+  - {bbl: "3008260002", plutoNumBuildings: 1, mode: exact, note: "anchor A; HPD spells it SEVENTH AVENUE",
+     buildings: {"3014788": "5413 SEVENTH AVENUE"}}
+  - {bbl: "3008970014", plutoNumBuildings: 1, mode: exact, note: "anchor F, no registration, so no recorded building",
+     buildings: {}}
+  - {bbl: "3008000009", plutoNumBuildings: 3, mode: exact, note: "PLUTO counts 3, registrations name 2",
+     buildings: {"3337249": "506 51ST STREET", "3337250": "5103 FIFTH AVENUE"}}
+  - {bbl: "1000157501", plutoNumBuildings: 2, mode: exact, note: "17 BATTERY PLACE: PLUTO counts 2, the one registration lists 1 BIN, under the address 1 WEST STREET",
+     buildings: {"1082634": "1 WEST STREET"}}
+  - {bbl: "3008360065", plutoNumBuildings: 1, mode: exact, note: "registered, but the only BIN is the placeholder 3000000",
+     buildings: {}}
+  - {bbl: "1002367504", plutoNumBuildings: 1, mode: exact, note: "BIN 1003074 is also on 1002360018",
+     buildings: {"1003074": "185 GRAND STREET"}}
+  - {bbl: "1002360018", plutoNumBuildings: null, mode: exact, note: "not in PLUTO; shares BIN 1003074",
+     buildings: {"1003074": "185 GRAND STREET"}}
+  - {bbl: "4087430102", plutoNumBuildings: 75, mode: includes, note: "BIN 4445478 is on 103 registrations with different house numbers, so the address is absent",
+     buildings: {"4445478": null}}
+
+totals:
+  buildings: 200408
+  pairs: 200648
+  excluded_rows: 761

@@ -1,0 +1,5 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: contactType has domain OwnerContact, which is disjoint with Registration,
+# so a contact type on a registration would also make it an owner contact.
+id:bad-7 a onto:Registration ; onto:registrationId 316103 ; onto:contactType "CorporateOwner" .

@@ -1,0 +1,20 @@
+# Q1.4 expected Lot characteristics (PLUTO 26v1). Absent values are null.
+# check_characteristics.py re-derives each from the source with expected.sql, so a stale fixture fails.
+lots:
+  - {bbl: "3008260002", yearBuilt: 1911, buildingClass: C1, unitsRes: 32, assessedTotal: 868950, note: "anchor A"}
+  - {bbl: "3008210012", yearBuilt: 1911, buildingClass: C1, unitsRes: 18, assessedTotal: 814500, note: "anchor D, lot-wide units across three BINs"}
+  - {bbl: "3008970014", yearBuilt: 2025, buildingClass: D7, unitsRes: 40, assessedTotal: 1451700, note: "anchor F, not HPD-registered"}
+  - {bbl: "1001337502", yearBuilt: null, buildingClass: R1, unitsRes: 5, assessedTotal: 6197400, note: "PLUTO year 0 means unknown: absent"}
+  - {bbl: "1000790004", yearBuilt: null, buildingClass: V1, unitsRes: 0, assessedTotal: 4643550, note: "vacant land, year 0 and 0 units"}
+  - {bbl: "1000080039", yearBuilt: 1950, buildingClass: H3, unitsRes: 0, assessedTotal: 5421150, note: "hotel: PLUTO records 0 residential units"}
+  - {bbl: "1000510014", yearBuilt: 2016, buildingClass: D8, unitsRes: 439, assessedTotal: 0, note: "assessed value 0 with 439 units: PLUTO records 0"}
+  - {bbl: "1001077502", yearBuilt: 1792, buildingClass: R1, unitsRes: 4, assessedTotal: 975149, note: "pre-1800 year kept"}
+  - {bbl: "1019107502", yearBuilt: 2021, buildingClass: R0, unitsRes: null, assessedTotal: 0, note: "PLUTO has no unit count"}
+  - {bbl: "2054220038", yearBuilt: null, buildingClass: null, unitsRes: null, assessedTotal: null, note: "PLUTO row with every field blank"}
+  - {bbl: "1005560059", yearBuilt: null, buildingClass: null, unitsRes: null, assessedTotal: null, note: "registered, not in PLUTO"}
+
+totals:   # lots with a value, over the 214,799 loaded lots (queried 2026-11-11)
+  yearBuilt: 212796
+  buildingClass: 213765
+  unitsRes: 213755
+  assessedTotal: 213765

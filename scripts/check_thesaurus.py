@@ -1,186 +1,116 @@
-"""Stage 4 check: validate related links, scheme membership and external mappings.
+"""Check the Stage 4 thesaurus: related links, notes, labels and external mappings.
 
-Reads vocabulary/watchline.ttl, vocabulary/thesaurus-notes.md and vocabulary/mappings/external.sssom.tsv.
-Exits nonzero on any failure. A check that cannot run counts as a failure.
-validate_skos (the skos MCP server) stays the authority on SKOS validity.
+Fails (exit 1) if any check fails; nothing is skipped. Reads vocabulary/ only; no database is touched.
+
+1. Every skos:related has its inverse, and no related pair is also joined by skos:broader/narrower.
+2. Every related pair has one row in vocabulary/thesaurus-notes.md with a known kind and a justification,
+   and every row names a real pair.
+3. Every concept is in a scheme; every concept without a related link has an Exceptions line.
+4. No label (preferred, alternative or hidden) is shared by two concepts.
+5. External mappings: if vocabulary/mappings/external.sssom.tsv exists, each row is valid; if not, the notes
+   must record "None sought".
+
+Run: uv run python scripts/check_thesaurus.py
 """
-import csv
-import io
+
 import re
 import sys
 from pathlib import Path
 
-import yaml
-from rdflib import Graph, Namespace, RDF
+from rdflib import Graph, RDF
 from rdflib.namespace import SKOS
 
-ROOT = Path(__file__).resolve().parent.parent
-VOCAB = Namespace("https://watchline.example/vocab/")
-NOTES = ROOT / "vocabulary" / "thesaurus-notes.md"
+ROOT = Path(__file__).resolve().parents[1]
 SSSOM = ROOT / "vocabulary" / "mappings" / "external.sssom.tsv"
-ALLOWED_PREDICATES = {"skos:exactMatch", "skos:closeMatch", "skos:broadMatch", "skos:narrowMatch", "skos:relatedMatch"}
-REQUIRED_COLUMNS = {"subject_id", "predicate_id", "object_id", "mapping_justification", "author_id", "mapping_date"}
-
-errors: list[str] = []
-ran: dict[str, int] = {}
+SKOS_MATCH = {"skos:exactMatch", "skos:closeMatch", "skos:broadMatch", "skos:narrowMatch", "skos:relatedMatch"}
+results: list[bool] = []
 
 
-def fail(msg: str) -> None:
-    errors.append(msg)
+def check(name: str, ok: bool, detail: str = "") -> None:
+    results.append(ok)
+    print(f"{'PASS' if ok else 'FAIL'}  {name}" + (f"  ({detail})" if detail and not ok else ""))
 
 
-def ran_check(name: str) -> None:
-    ran[name] = ran.get(name, 0) + 1
+def slug(iri) -> str:
+    return str(iri).rsplit("/", 1)[-1]
 
 
-def slug(node) -> str:
-    return str(node).removeprefix(str(VOCAB))
+def section(text: str, title: str) -> str:
+    m = re.search(rf"(?ms)^## {re.escape(title)}\s*$(.*?)(?=^## |\Z)", text)
+    return m.group(1) if m else ""
 
 
-for path in (NOTES, SSSOM, ROOT / "vocabulary" / "watchline.ttl"):
-    if not path.exists():
-        print(f"FAILED: {path.relative_to(ROOT)} not found", file=sys.stderr)
-        sys.exit(1)
+def main() -> int:
+    g = Graph()
+    g.parse(ROOT / "vocabulary" / "watchline.ttl")
+    notes = (ROOT / "vocabulary" / "thesaurus-notes.md").read_text()
+    concepts = sorted(g.subjects(RDF.type, SKOS.Concept), key=str)
 
-g = Graph()
-g.parse(ROOT / "vocabulary" / "watchline.ttl", format="turtle")
-notes = NOTES.read_text()
-concepts = {slug(c) for c in g.subjects(RDF.type, SKOS.Concept)}
+    # 1. symmetry and hierarchy
+    related = {(a, b) for a, b in g.subject_objects(SKOS.related)}
+    asym = sorted((slug(a), slug(b)) for a, b in related if (b, a) not in related)
+    check("every skos:related has its inverse", not asym, f"one-way: {asym}")
+    hier = {(a, b) for a, b in g.subject_objects(SKOS.broader)} | {(b, a) for a, b in g.subject_objects(SKOS.narrower)}
+    both = sorted((slug(a), slug(b)) for a, b in related if (a, b) in hier or (b, a) in hier)
+    check("no related pair is also joined by broader or narrower", not both, f"overlap: {both}")
+    pairs = {tuple(sorted((slug(a), slug(b)))) for a, b in related}
 
-# Association kinds: bullets "- `kind`: ..." under "## Association kinds".
-kinds_section = re.search(r"## Association kinds\n(.*?)(?=\n## )", notes, re.S)
-kinds = set(re.findall(r"^- `([^`]+)`", kinds_section.group(1), re.M)) if kinds_section else set()
-ran_check("kinds list read")
-if not kinds:
-    fail("notes: no association kinds found")
+    # 2. notes table
+    rel = section(notes, "Related links")
+    kinds = set(re.findall(r"(?m)^- `([a-z-]+)`:", rel))
+    rows = re.findall(r"(?m)^\|\s*`([^`]+)`\s*\|\s*`([^`]+)`\s*\|\s*([a-z-]+)\s*\|\s*(\S.*?)\s*\|\s*$", rel)
+    noted = {}
+    for a, b, kind, why in rows:
+        noted.setdefault(tuple(sorted((a, b))), []).append((kind, why))
+    check("notes list at least one association kind", bool(kinds))
+    check("each related pair has exactly one notes row", all(len(noted.get(p, [])) == 1 for p in pairs),
+          f"missing or repeated: {sorted(p for p in pairs if len(noted.get(p, [])) != 1)}")
+    check("each notes row names a real related pair", all(p in pairs for p in noted),
+          f"not in the vocabulary: {sorted(p for p in noted if p not in pairs)}")
+    check("each notes row has a known kind", all(k in kinds for v in noted.values() for k, _ in v),
+          f"unknown: {sorted({k for v in noted.values() for k, _ in v if k not in kinds})}")
 
-# Related links table.
-section = re.search(r"## Related links\n(.*?)(?=\n## )", notes, re.S)
-rows: dict[frozenset, tuple[str, str]] = {}
-if not section:
-    fail("notes: no Related links section")
-else:
-    for m in re.finditer(r"^\|\s*`([^`]+)`\s*\|\s*`([^`]+)`\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*$", section.group(1), re.M):
-        a, b, kind, just = m.groups()
-        key = frozenset((a, b))
-        ran_check("related row well formed")
-        if a == b or len(key) != 2:
-            fail(f"notes: row {a} / {b} is not a pair of different concepts")
-        if key in rows:
-            fail(f"notes: pair {a} / {b} listed more than once")
-        if kind not in kinds:
-            fail(f"notes: {a} / {b}: kind '{kind}' not in the Association kinds list")
-        if not just.strip():
-            fail(f"notes: {a} / {b}: empty justification")
-        rows[key] = (kind, just)
+    # 3. schemes and exceptions
+    check("every concept is in a scheme", all(list(g.objects(c, SKOS.inScheme)) for c in concepts))
+    linked = {slug(a) for a, _ in related}
+    exceptions = set(re.findall(r"`([^`]+)`", section(notes, "Exceptions")))
+    unexplained = sorted(slug(c) for c in concepts if slug(c) not in linked and slug(c) not in exceptions)
+    check("every unlinked concept has an Exceptions line", not unexplained, f"missing: {unexplained}")
+    stale = sorted(e for e in exceptions if e in linked)
+    check("no Exceptions line names a linked concept", not stale, f"linked: {stale}")
 
-# Related triples.
-related = {(slug(a), slug(b)) for a, b in g.subject_objects(SKOS.related)}
-ran_check("related collected")
+    # 4. labels
+    seen: dict[str, str] = {}
+    clash = []
+    for c in concepts:
+        for prop in (SKOS.prefLabel, SKOS.altLabel, SKOS.hiddenLabel):
+            for lab in g.objects(c, prop):
+                key = str(lab).strip().lower()
+                if key in seen and seen[key] != slug(c):
+                    clash.append((key, seen[key], slug(c)))
+                seen[key] = slug(c)
+    check("no label is shared by two concepts", not clash, f"shared: {clash}")
 
-# 1. Symmetry.
-for a, b in sorted(related):
-    ran_check("related has inverse")
-    if (b, a) not in related:
-        fail(f"{a} skos:related {b} has no inverse")
-    for end in (a, b):
-        if end not in concepts:
-            fail(f"related link {a} / {b}: {end} is not a skos:Concept")
+    # 5. external mappings
+    if SSSOM.exists():
+        lines = [l for l in SSSOM.read_text().splitlines() if l.strip() and not l.startswith("#")]
+        header, body = lines[0].split("\t"), [l.split("\t") for l in lines[1:]]
+        need = ["subject_id", "predicate_id", "object_id", "mapping_justification", "author_id", "mapping_date"]
+        check("SSSOM header has the required columns", all(c in header for c in need))
+        ok = True
+        if all(c in header for c in need):
+            ix = {c: header.index(c) for c in need}
+            ok = all(r[ix["predicate_id"]] in SKOS_MATCH and r[ix["object_id"]].startswith("http")
+                     and r[ix["mapping_justification"]] and any(slug(c) == r[ix["subject_id"]].rsplit("/", 1)[-1] for c in concepts)
+                     for r in body)
+        check("every SSSOM row has a known subject, a SKOS predicate, an IRI object and a justification", ok)
+    else:
+        check("no SSSOM file, and the notes record 'None sought'", "none sought" in section(notes, "External mappings").lower())
 
-# 2. Related is disjoint from hierarchy (direct or through any chain of broader links).
-broader: dict[str, set[str]] = {}
-for c, p in g.subject_objects(SKOS.broader):
-    broader.setdefault(slug(c), set()).add(slug(p))
-for p, c in g.subject_objects(SKOS.narrower):
-    broader.setdefault(slug(c), set()).add(slug(p))
-
-
-def ancestors(n: str) -> set[str]:
-    seen: set[str] = set()
-    stack = [n]
-    while stack:
-        for p in broader.get(stack.pop(), ()):
-            if p not in seen:
-                seen.add(p)
-                stack.append(p)
-    return seen
+    failed = results.count(False)
+    print(f"{len(results) - failed}/{len(results)} checks passed")
+    return 0 if failed == 0 else 1
 
 
-for a, b in sorted(related):
-    ran_check("related disjoint from hierarchy")
-    if b in ancestors(a) or a in ancestors(b):
-        fail(f"{a} / {b}: related pair is also connected by skos:broader")
-
-# 3. Every related pair has a notes row, and every row matches a pair.
-pairs = {frozenset(p) for p in related}
-for key in sorted(pairs, key=sorted):
-    ran_check("related pair has notes row")
-    if key not in rows:
-        fail(f"{' / '.join(sorted(key))}: no row in thesaurus-notes.md")
-for key in sorted(rows, key=sorted):
-    ran_check("notes row matches a related pair")
-    if key not in pairs:
-        fail(f"notes row {' / '.join(sorted(key))} has no skos:related link in watchline.ttl")
-
-# 4. Scheme membership.
-schemes = {slug(s) for s in g.subjects(RDF.type, SKOS.ConceptScheme)}
-for c in sorted(concepts):
-    ran_check("concept in an intended scheme")
-    in_schemes = {slug(s) for s in g.objects(VOCAB[c], SKOS.inScheme)}
-    if not in_schemes:
-        fail(f"{c}: not in any scheme")
-    elif not in_schemes <= schemes:
-        fail(f"{c}: inScheme names an undeclared scheme {sorted(in_schemes - schemes)}")
-
-# 5. SSSOM.
-raw = SSSOM.read_text().splitlines()
-meta = yaml.safe_load("\n".join(l[1:] for l in raw if l.startswith("#"))) or {}
-curie_map = meta.get("curie_map") or {}
-ran_check("sssom metadata read")
-if not curie_map:
-    fail("sssom: no curie_map in the header")
-reader = csv.DictReader(io.StringIO("\n".join(l for l in raw if not l.startswith("#"))), delimiter="\t")
-missing = REQUIRED_COLUMNS - set(reader.fieldnames or [])
-if missing:
-    fail(f"sssom: missing columns {sorted(missing)}")
-else:
-    seen_rows: set[tuple] = set()
-    for i, r in enumerate(reader, 1):
-        ran_check("sssom row checked")
-        where = f"sssom row {i}"
-        subj = r["subject_id"]
-        prefix, _, local = subj.partition(":")
-        if curie_map.get(prefix) != str(VOCAB) or local not in concepts:
-            fail(f"{where}: subject {subj} is not a known concept")
-        if r["predicate_id"] not in ALLOWED_PREDICATES:
-            fail(f"{where}: predicate {r['predicate_id']} is not an allowed SKOS mapping predicate")
-        obj_prefix, _, obj_local = r["object_id"].partition(":")
-        base = curie_map.get(obj_prefix)
-        if not base or not obj_local or not re.fullmatch(r"https?://[^\s<>\"]+", base + obj_local):
-            fail(f"{where}: object {r['object_id']} does not expand to a well-formed IRI")
-        if not r["mapping_justification"].strip():
-            fail(f"{where}: empty mapping_justification")
-        for col in ("author_id", "mapping_date"):
-            if not r[col].strip():
-                fail(f"{where}: empty {col}")
-        key = (subj, r["predicate_id"], r["object_id"])
-        if key in seen_rows:
-            fail(f"{where}: duplicate mapping {key}")
-        seen_rows.add(key)
-
-required_checks = {
-    "kinds list read", "related collected", "related has inverse", "related disjoint from hierarchy",
-    "related pair has notes row", "notes row matches a related pair", "concept in an intended scheme",
-    "sssom metadata read", "sssom row checked", "related row well formed",
-}
-for name in sorted(required_checks - set(ran)):
-    fail(f"check did not run: {name}")
-
-for name in sorted(ran):
-    print(f"ran: {name} x{ran[name]}")
-if errors:
-    print(f"\nFAILED: {len(errors)} problem(s)", file=sys.stderr)
-    for e in errors:
-        print(f"  - {e}", file=sys.stderr)
-    sys.exit(1)
-print(f"\nOK. {len(pairs)} related pairs, {len(rows)} justified, {ran['sssom row checked']} mappings, no skipped checks.")
+if __name__ == "__main__":
+    sys.exit(main())

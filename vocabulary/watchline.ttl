@@ -8,298 +8,328 @@ vocab:watchline a skos:ConceptScheme ;
     dct:title "Watchline vocabulary"@en ;
     dct:created "2026-11-11"^^xsd:date ;
     dct:description "Controlled vocabulary for the WatchlineOP landlord research ontology pipeline."@en ;
-    skos:hasTopConcept vocab:tax-lot, vocab:bbl, vocab:building, vocab:bin, vocab:addressed-building, vocab:street-address,
-        vocab:address-resolution, vocab:address-resolution-outcome, vocab:address-candidate,
-        vocab:street-name-variant, vocab:hpd-registration,
-        vocab:inferred-resolution, vocab:geosupport-return-code,
-        vocab:geosupport-reason-code, vocab:source-reported-characteristic,
-        vocab:reported-count, vocab:source-snapshot, vocab:source-record .
+    skos:hasTopConcept vocab:tax-lot, vocab:building, vocab:has-building, vocab:bbl, vocab:bin, vocab:address, vocab:hpd-registered, vocab:pluto-building-count, vocab:year-built, vocab:building-class, vocab:residential-units, vocab:assessed-total-value, vocab:address-resolution-outcome, vocab:candidate-street-name, vocab:related-lot, vocab:in-graph, vocab:registration, vocab:has-registration, vocab:registration-id, vocab:last-registered-date, vocab:registration-end-date, vocab:owner-contact, vocab:has-owner-contact, vocab:contact-type, vocab:owner-name .
 
 vocab:address-resolution-outcomes a skos:ConceptScheme ;
     skos:prefLabel "Address resolution outcomes"@en ;
     dct:title "Address resolution outcomes"@en ;
     dct:created "2026-11-11"^^xsd:date ;
-    dct:description "Controlled values for the outcome of resolving an input address."@en ;
-    skos:hasTopConcept vocab:matched-exactly, vocab:matched-by-variant,
-        vocab:ambiguous, vocab:not-found .
+    dct:description "Controlled values for the outcome of resolving a typed address."@en ;
+    skos:hasTopConcept vocab:matched-exactly, vocab:matched-by-variant, vocab:ambiguous, vocab:not-found, vocab:service-unavailable .
 
-# --- Places and identifiers (Q1.1, Q1.2) ---
+vocab:owner-contact-types a skos:ConceptScheme ;
+    skos:prefLabel "Owner contact types"@en ;
+    dct:title "Owner contact types"@en ;
+    dct:created "2026-11-12"^^xsd:date ;
+    dct:description "Controlled values for the type of an HPD owner contact."@en ;
+    skos:hasTopConcept vocab:corporate-owner, vocab:individual-owner, vocab:joint-owner .
+
+# --- Q1 graph and answer terms ---
 
 vocab:tax-lot a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:topConceptOf vocab:watchline ;
     skos:prefLabel "tax lot"@en ;
     skos:altLabel "parcel"@en, "lot"@en ;
-    skos:definition "A parcel of land recorded as one unit for NYC property tax purposes."@en ;
-    skos:scopeNote "A tax lot is not necessarily one building. Lot counts and building counts differ."@en ;
-    skos:related vocab:bbl, vocab:building, vocab:parcel-count, vocab:source-reported-characteristic ;
-    dct:source "specs/questions/q01.md" .
-
-# Top concept by intent: an identifier is not a kind of tax lot (is-a test fails).
-vocab:bbl a skos:Concept ;
-    skos:inScheme vocab:watchline ;
-    skos:topConceptOf vocab:watchline ;
-    skos:prefLabel "BBL"@en ;
-    skos:altLabel "borough-block-lot"@en ;
-    skos:definition "The NYC identifier of a tax lot: borough, block and lot number."@en ;
-    skos:scopeNote "Identifies a tax lot; it is not the tax lot itself."@en ;
-    skos:related vocab:tax-lot ;
+    skos:definition "A parcel of land identified by its borough-block-lot (BBL) number. The graph holds only rental-market lots: lots with an HPD registration, plus unregistered lots with 3 or more residential units in PLUTO."@en ;
+    skos:scopeNote "A tax lot is not necessarily one building, so lot counts and building counts differ."@en ;
+    skos:related vocab:bbl, vocab:in-graph, vocab:related-lot ;
     dct:source "specs/questions/q01.md" .
 
 vocab:building a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:topConceptOf vocab:watchline ;
     skos:prefLabel "building"@en ;
-    skos:hiddenLabel "structure"@en ;
-    skos:definition "A structure recorded by the city under its own building identifier."@en ;
-    skos:scopeNote "In Q1, buildings are known only through HPD registrations. A lot with no registration has no recorded building, which is not the same as having none."@en ;
-    skos:related vocab:addressed-building, vocab:bin, vocab:building-count, vocab:hpd-registration, vocab:source-reported-characteristic, vocab:tax-lot ;
+    skos:altLabel "structure"@en ;
+    skos:definition "A structure identified by its Building Identification Number (BIN). The graph holds only buildings named in HPD registrations, so a lot's building list is complete only for registered buildings."@en ;
+    skos:scopeNote "A lot can have several buildings, and a BIN can appear on more than one lot (for example, condominiums)."@en ;
+    skos:related vocab:bin, vocab:pluto-building-count ;
     dct:source "specs/questions/q01.md" .
 
-# Top concept by intent: an identifier is not a kind of building (is-a test fails).
+vocab:has-building a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "has building"@en ;
+    skos:definition "Links a tax lot to a building registered on it."@en ;
+    skos:scopeNote "A lot can have several buildings, and a BIN can appear on more than one lot. Absence of a link means no HPD-registered building is recorded, not that the lot has no building."@en ;
+    dct:source "specs/questions/q01.md" .
+
+vocab:bbl a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "BBL"@en ;
+    skos:altLabel "borough-block-lot"@en ;
+    skos:definition "Borough-block-lot: the 10-character tax lot identifier, stored as text."@en ;
+    skos:scopeNote "One digit for the borough (1 to 5), five for the block and four for the lot. Stored as text to keep leading zeros."@en ;
+    skos:related vocab:tax-lot ;
+    dct:source "data/sources.yaml" .
+
 vocab:bin a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:topConceptOf vocab:watchline ;
     skos:prefLabel "BIN"@en ;
     skos:altLabel "building identification number"@en ;
-    skos:definition "The NYC identifier of a building."@en ;
-    skos:scopeNote "Identifies a building; it is not the building itself."@en ;
-    skos:related vocab:building, vocab:hpd-registration ;
-    dct:source "specs/questions/q01.md" .
+    skos:definition "Building Identification Number: the 7-character building identifier, stored as text."@en ;
+    skos:scopeNote "Placeholder BINs ending in 000000 are excluded. BINs come only from HPD registrations."@en ;
+    skos:related vocab:building, vocab:related-lot ;
+    dct:source "data/sources.yaml" .
 
-# Top concept by intent: a role a building plays in one answer, not a kind of building (is-a test fails).
-vocab:addressed-building a skos:Concept ;
+vocab:address a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:topConceptOf vocab:watchline ;
-    skos:prefLabel "addressed building"@en ;
-    skos:definition "The building at the input street address, as distinguished from the other buildings on the same tax lot."@en ;
-    skos:scopeNote "A role a building plays in one answer, not a kind of building."@en ;
+    skos:prefLabel "address"@en ;
+    skos:definition "A street address of a tax lot or building. For a lot it is the PLUTO address, or the most recent registration's address when the lot is not in PLUTO. For a building it is the most recent registration's address."@en ;
+    skos:scopeNote "Absent when registrations tied for most recent name different addresses. The graph never picks one."@en ;
+    skos:related vocab:address-resolution-outcome ;
+    dct:source "data/sources.yaml" .
+
+vocab:hpd-registered a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "HPD registered"@en ;
+    skos:definition "True when HPD has at least one multiple-dwelling registration for the tax lot."@en ;
+    skos:scopeNote "A lot that is not registered can still be in the graph if PLUTO records 3 or more residential units."@en ;
+    skos:related vocab:registration ;
+    dct:source "data/sources.yaml" .
+
+vocab:pluto-building-count a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "PLUTO building count"@en ;
+    skos:hiddenLabel "numbldgs"@en ;
+    skos:definition "The number of buildings PLUTO records on the tax lot."@en ;
+    skos:scopeNote "It can differ from the number of buildings HPD lists for the lot. Report both counts, labelled by source."@en ;
     skos:related vocab:building ;
-    dct:source "specs/questions/q01.md" .
+    dct:source "data/sources.yaml" .
 
-vocab:street-address a skos:Concept ;
+vocab:year-built a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:topConceptOf vocab:watchline ;
-    skos:prefLabel "street address"@en ;
-    skos:altLabel "input address"@en ;
-    skos:hiddenLabel "address"@en ;
-    skos:definition "A house number and street name, in a borough, that names a place."@en ;
-    skos:scopeNote "Sources spell street names differently (7 AVENUE, SEVENTH AVENUE). An input address is a street address in the role of question input."@en ;
-    skos:related vocab:address-resolution ;
-    dct:source "specs/questions/q01.md" .
+    skos:prefLabel "year built"@en ;
+    skos:hiddenLabel "yearbuilt"@en ;
+    skos:definition "PLUTO's year built for the tax lot."@en ;
+    skos:scopeNote "Absent when PLUTO has none. PLUTO uses 0 for unknown, which the graph stores as absent."@en ;
+    dct:source "data/sources.yaml" .
 
-vocab:alternate-address a skos:Concept ;
-    skos:inScheme vocab:watchline ;
-    skos:prefLabel "alternate address"@en ;
-    skos:definition "A different street address, such as a street-name variant or corner address, under which the same tax lot is recorded."@en ;
-    skos:scopeNote "Used only when the input address is absent from the lot data. The resolution is then inferred."@en ;
-    skos:broader vocab:street-address ;
-    skos:related vocab:inferred-resolution ;
-    dct:source "specs/questions/q01.md", "specs/questions/q01.md#scenarios" .
-
-# --- Address resolution (Q1.3) ---
-
-vocab:address-resolution a skos:Concept ;
+vocab:building-class a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:topConceptOf vocab:watchline ;
-    skos:prefLabel "address resolution"@en ;
-    skos:definition "The act of mapping an input street address to a tax lot."@en ;
-    skos:scopeNote "Its result is an address resolution outcome. The service evidence is the Geosupport return code and reason code."@en ;
-    skos:related vocab:address-resolution-outcome, vocab:geosupport-reason-code, vocab:geosupport-return-code, vocab:street-address ;
-    dct:source "specs/questions/q01.md", "specs/questions/q01.md#address-resolution-outcomes" .
+    skos:prefLabel "building class"@en ;
+    skos:altLabel "building class code"@en ;
+    skos:hiddenLabel "bldgclass"@en ;
+    skos:definition "PLUTO's building class code for the tax lot."@en ;
+    skos:scopeNote "Absent when PLUTO's value is blank."@en ;
+    dct:source "data/sources.yaml" .
 
-vocab:street-name-variant a skos:Concept ;
+vocab:residential-units a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:topConceptOf vocab:watchline ;
-    skos:prefLabel "street-name variant"@en ;
-    skos:definition "An alternative spelling or form of the same street name, such as 7 AVENUE and SEVENTH AVENUE, or 54 STREET and 54TH STREET."@en ;
-    skos:scopeNote "Not the outcome matched by variant, which is the classification of a whole resolution."@en ;
-    skos:related vocab:matched-by-variant ;
-    dct:source "specs/questions/q01.md" .
+    skos:prefLabel "residential units"@en ;
+    skos:altLabel "unit count"@en ;
+    skos:hiddenLabel "unitsres"@en ;
+    skos:definition "PLUTO's count of residential units for the whole tax lot."@en ;
+    skos:scopeNote "Lot-wide. Do not copy it to each building or sum it across a lot's BINs. 0 means PLUTO records none, not that no one lives there."@en ;
+    dct:source "data/sources.yaml" .
 
-vocab:hpd-registration a skos:Concept ;
+vocab:assessed-total-value a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:topConceptOf vocab:watchline ;
-    skos:prefLabel "HPD registration"@en ;
-    skos:definition "A multiple-dwelling registration filed with the city's housing agency (HPD), associating a street address with a tax lot and a building."@en ;
-    skos:scopeNote "In Q1 it is the only source of BINs, so a lot with no registration has no recorded building. Q2 extends this concept with the parties a registration discloses."@en ;
-    skos:related vocab:bin, vocab:building ;
-    dct:source "specs/questions/q01.md", "data/sources.yaml" .
+    skos:prefLabel "assessed total value"@en ;
+    skos:altLabel "assessed value"@en ;
+    skos:hiddenLabel "assesstot"@en ;
+    skos:definition "PLUTO's total assessed value of the tax lot, in whole dollars."@en ;
+    skos:scopeNote "0 means PLUTO records none, which usually reflects an exempt or unassessed lot."@en ;
+    dct:source "data/sources.yaml" .
 
 vocab:address-resolution-outcome a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:topConceptOf vocab:watchline ;
     skos:prefLabel "address resolution outcome"@en ;
-    skos:altLabel "match outcome"@en ;
-    skos:definition "The classification of an input address's resolution, taking one value from the address resolution outcomes scheme."@en ;
-    skos:scopeNote "Decided by the Geosupport return code and a comparison of the returned address with the input, never by message text."@en ;
-    skos:related vocab:address-resolution, vocab:geosupport-return-code ;
-    dct:source "specs/questions/q01.md", "specs/questions/q01.md#address-resolution-outcomes" .
+    skos:definition "The result of resolving a typed address to a tax lot, as decided by Geosupport. Its values are in the scheme address resolution outcomes."@en ;
+    skos:scopeNote "The graph does not store outcomes. They are part of the answer."@en ;
+    skos:related vocab:address, vocab:candidate-street-name ;
+    dct:source "specs/questions/q01.md" .
+
+vocab:candidate-street-name a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "candidate street name"@en ;
+    skos:definition "A similar street name offered when an address is ambiguous."@en ;
+    skos:scopeNote "Candidates are returned for the user to choose from. No lot is chosen for them."@en ;
+    skos:related vocab:address-resolution-outcome ;
+    dct:source "specs/questions/q01.md" .
+
+vocab:related-lot a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "related lot"@en ;
+    skos:definition "Another tax lot in the graph that shares the resolved BIN, for example the second lot of a condominium building."@en ;
+    skos:scopeNote "Found through shared BINs only. A condominium unit lot with a different BIN is not found this way."@en ;
+    skos:related vocab:bin, vocab:tax-lot ;
+    dct:source "specs/questions/q01.md" .
+
+vocab:in-graph a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "in graph"@en ;
+    skos:definition "Whether the resolved BBL is a tax lot the graph holds."@en ;
+    skos:scopeNote "A real lot outside the rental scope resolves to a BBL but is not in the graph."@en ;
+    skos:related vocab:tax-lot ;
+    dct:source "specs/questions/q01.md" .
+
+# --- Address resolution outcome values ---
 
 vocab:matched-exactly a skos:Concept ;
     skos:inScheme vocab:address-resolution-outcomes ;
     skos:topConceptOf vocab:address-resolution-outcomes ;
     skos:prefLabel "matched exactly"@en ;
-    skos:definition "The address resolved to a tax lot and the returned house number and street equal the input after case and whitespace normalization only."@en ;
-    dct:source "specs/questions/q01.md", "specs/questions/q01.md#address-resolution-outcomes" .
+    skos:definition "Geosupport accepted the address as typed."@en ;
+    skos:scopeNote "The returned house number and street equal the typed ones apart from case and whitespace."@en ;
+    dct:source "specs/questions/q01.md" .
 
 vocab:matched-by-variant a skos:Concept ;
     skos:inScheme vocab:address-resolution-outcomes ;
     skos:topConceptOf vocab:address-resolution-outcomes ;
     skos:prefLabel "matched by variant"@en ;
-    skos:definition "The address resolved to a tax lot, but the returned address differs from the input beyond case and whitespace, or the service returned a warning."@en ;
-    skos:scopeNote "Not the same as a street-name spelling variant. The answer reports the returned address and reason code."@en ;
-    skos:related vocab:street-name-variant ;
-    dct:source "specs/questions/q01.md", "specs/questions/q01.md#address-resolution-outcomes" .
+    skos:definition "Geosupport matched a respelled address, or returned a warning."@en ;
+    skos:scopeNote "The answer reports the spelling used and says the resolution is inferred when the client respelled the address."@en ;
+    dct:source "specs/questions/q01.md" .
 
 vocab:ambiguous a skos:Concept ;
     skos:inScheme vocab:address-resolution-outcomes ;
     skos:topConceptOf vocab:address-resolution-outcomes ;
     skos:prefLabel "ambiguous"@en ;
-    skos:definition "The address matched several similar street names and no tax lot was chosen."@en ;
-    skos:scopeNote "The answer returns the address candidates and never silently selects one."@en ;
-    skos:related vocab:address-candidate ;
-    dct:source "specs/questions/q01.md", "specs/questions/q01.md#address-resolution-outcomes" .
+    skos:definition "The street is not recognized and the city offers similar names."@en ;
+    skos:scopeNote "No lot is chosen. The candidate street names are returned."@en ;
+    dct:source "specs/questions/q01.md" .
 
 vocab:not-found a skos:Concept ;
     skos:inScheme vocab:address-resolution-outcomes ;
     skos:topConceptOf vocab:address-resolution-outcomes ;
     skos:prefLabel "not found"@en ;
-    skos:altLabel "no match"@en ;
-    skos:definition "No tax lot was returned for the address."@en ;
-    skos:scopeNote "The answer reports the codes and variants tried and does not guess a nearby lot."@en ;
-    dct:source "specs/questions/q01.md", "specs/questions/q01.md#address-resolution-outcomes" .
-
-vocab:address-candidate a skos:Concept ;
-    skos:inScheme vocab:watchline ;
-    skos:topConceptOf vocab:watchline ;
-    skos:prefLabel "address candidate"@en ;
-    skos:definition "One of several street names or addresses returned for an ambiguous input address."@en ;
-    skos:scopeNote "A candidate is not a match. A match is the single result of an unambiguous resolution."@en ;
-    skos:related vocab:ambiguous ;
-    dct:source "specs/questions/q01.md", "specs/questions/q01.md#address-resolution-outcomes" .
-
-vocab:inferred-resolution a skos:Concept ;
-    skos:inScheme vocab:watchline ;
-    skos:topConceptOf vocab:watchline ;
-    skos:prefLabel "inferred resolution"@en ;
-    skos:definition "A resolution reached through an alternate address because the input address was absent from the lot data."@en ;
-    skos:scopeNote "A derived conclusion, to be labelled as inferred in the answer."@en ;
-    skos:related vocab:alternate-address ;
-    dct:source "specs/questions/q01.md", "specs/questions/q01.md#scenarios" .
-
-vocab:geosupport-return-code a skos:Concept ;
-    skos:inScheme vocab:watchline ;
-    skos:topConceptOf vocab:watchline ;
-    skos:prefLabel "Geosupport return code"@en ;
-    skos:altLabel "GRC"@en ;
-    skos:definition "The code with which the Geosupport address service reports the result of a request."@en ;
-    skos:scopeNote "Separate from the reason code. Classification is based on codes, not message text."@en ;
-    skos:related vocab:address-resolution, vocab:address-resolution-outcome, vocab:geosupport-reason-code ;
-    dct:source "specs/questions/q01.md", "specs/questions/q01.md#address-resolution-outcomes" .
-
-vocab:geosupport-reason-code a skos:Concept ;
-    skos:inScheme vocab:watchline ;
-    skos:topConceptOf vocab:watchline ;
-    skos:prefLabel "Geosupport reason code"@en ;
-    skos:definition "The code with which the Geosupport address service qualifies a return code."@en ;
-    skos:scopeNote "Separate from the return code."@en ;
-    skos:related vocab:address-resolution, vocab:geosupport-return-code ;
-    dct:source "specs/questions/q01.md", "specs/questions/q01.md#address-resolution-outcomes" .
-
-# --- Characteristics and counts (Q1.4) ---
-
-vocab:source-reported-characteristic a skos:Concept ;
-    skos:inScheme vocab:watchline ;
-    skos:topConceptOf vocab:watchline ;
-    skos:prefLabel "source-reported characteristic"@en ;
-    skos:definition "A property of a tax lot or building as stated by a source record."@en ;
-    skos:scopeNote "A recorded assertion. It says what the source states, not that the value is correct."@en ;
-    skos:related vocab:building, vocab:source-record, vocab:tax-lot ;
+    skos:definition "No tax lot exists for the address."@en ;
+    skos:scopeNote "Includes an unrecognized street with no similar names, a house number out of range and invalid input. The answer does not guess a nearby lot."@en ;
     dct:source "specs/questions/q01.md" .
 
-vocab:year-built a skos:Concept ;
-    skos:inScheme vocab:watchline ;
-    skos:prefLabel "year built"@en ;
-    skos:altLabel "construction year"@en ;
-    skos:definition "The year of construction as reported by the source."@en ;
-    skos:broader vocab:source-reported-characteristic ;
-    dct:source "specs/questions/q01.md", "data/sources.yaml" .
-
-vocab:building-class a skos:Concept ;
-    skos:inScheme vocab:watchline ;
-    skos:prefLabel "building class"@en ;
-    skos:definition "The city's code classifying the primary use and type of the buildings on a tax lot."@en ;
-    skos:broader vocab:source-reported-characteristic ;
-    dct:source "specs/questions/q01.md", "data/sources.yaml" .
-
-vocab:residential-units a skos:Concept ;
-    skos:inScheme vocab:watchline ;
-    skos:prefLabel "residential units"@en ;
-    skos:altLabel "dwelling units"@en ;
-    skos:hiddenLabel "apartments"@en ;
-    skos:definition "The number of residential units on a tax lot as reported by the source."@en ;
-    skos:scopeNote "Lot-wide. Must not be copied to each building or summed across a lot's buildings."@en ;
-    skos:broader vocab:source-reported-characteristic ;
-    skos:related vocab:unit-count ;
-    dct:source "specs/questions/q01.md", "data/sources.yaml" .
-
-vocab:assessed-value a skos:Concept ;
-    skos:inScheme vocab:watchline ;
-    skos:prefLabel "assessed value"@en ;
-    skos:altLabel "assessed total value"@en ;
-    skos:definition "The total value the city assigns to a tax lot for property tax, in dollars."@en ;
-    skos:broader vocab:source-reported-characteristic ;
-    dct:source "specs/questions/q01.md", "data/sources.yaml" .
-
-vocab:reported-count a skos:Concept ;
-    skos:inScheme vocab:watchline ;
-    skos:topConceptOf vocab:watchline ;
-    skos:prefLabel "reported count"@en ;
-    skos:definition "A tally given in an answer, always with its counting unit named."@en ;
-    skos:scopeNote "Parcel, building and unit counts are reported separately and never converted into one another."@en ;
+vocab:service-unavailable a skos:Concept ;
+    skos:inScheme vocab:address-resolution-outcomes ;
+    skos:topConceptOf vocab:address-resolution-outcomes ;
+    skos:prefLabel "service unavailable"@en ;
+    skos:definition "The address service could not be reached."@en ;
+    skos:scopeNote "An outage, not a statement about the address. It is never reported as not found."@en ;
     dct:source "specs/questions/q01.md" .
 
-vocab:parcel-count a skos:Concept ;
-    skos:inScheme vocab:watchline ;
-    skos:prefLabel "parcel count"@en ;
-    skos:definition "A reported count whose counting unit is the tax lot."@en ;
-    skos:broader vocab:reported-count ;
-    skos:related vocab:tax-lot ;
-    dct:source "specs/questions/q01.md" .
+# --- Q2 graph terms ---
 
-vocab:building-count a skos:Concept ;
-    skos:inScheme vocab:watchline ;
-    skos:prefLabel "building count"@en ;
-    skos:definition "A reported count whose counting unit is the building."@en ;
-    skos:scopeNote "Complete only for registered buildings."@en ;
-    skos:broader vocab:reported-count ;
-    skos:related vocab:building ;
-    dct:source "specs/questions/q01.md", "data/sources.yaml" .
-
-vocab:unit-count a skos:Concept ;
-    skos:inScheme vocab:watchline ;
-    skos:prefLabel "unit count"@en ;
-    skos:definition "A reported count whose counting unit is the residential unit."@en ;
-    skos:scopeNote "The tally given in an answer. The source characteristic it draws on is residential units."@en ;
-    skos:broader vocab:reported-count ;
-    skos:related vocab:residential-units ;
-    dct:source "specs/questions/q01.md" .
-
-# --- Provenance ---
-
-vocab:source-snapshot a skos:Concept ;
+vocab:registration a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:topConceptOf vocab:watchline ;
-    skos:prefLabel "source snapshot"@en ;
-    skos:definition "A specific, identified version of a source dataset from which values were taken."@en ;
-    skos:related vocab:source-record ;
-    dct:source "specs/questions/q01.md", "data/README.md" .
+    skos:prefLabel "HPD registration"@en ;
+    skos:altLabel "registration"@en, "multiple dwelling registration"@en ;
+    skos:definition "A multiple-dwelling registration filed with HPD, identified by its registration id. One registration can cover several buildings."@en ;
+    skos:scopeNote "An HPD registrant is who registered, not proof of title. The registration period start is not in the source; a registration is current only relative to a stated date."@en ;
+    skos:related vocab:registration-id, vocab:hpd-registered ;
+    dct:source "specs/questions/q02.md" .
 
-vocab:source-record a skos:Concept ;
+vocab:has-registration a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:topConceptOf vocab:watchline ;
-    skos:prefLabel "source record"@en ;
-    skos:definition "A single row or entry in a source snapshot from which a value was taken."@en ;
-    skos:related vocab:source-reported-characteristic, vocab:source-snapshot ;
-    dct:source "specs/questions/q01.md", "specs/physical-implementation.md" .
+    skos:prefLabel "has registration"@en ;
+    skos:definition "Links a building to an HPD registration that lists it. Carries the last-registered date and the registration end date for that building and registration."@en ;
+    skos:scopeNote "A building can have more than one registration (1,059 do); all are shown and none is chosen. A building with no link has no HPD registration recorded."@en ;
+    dct:source "specs/questions/q02.md" .
+
+vocab:registration-id a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "registration id"@en ;
+    skos:definition "HPD's identifier for a registration."@en ;
+    skos:scopeNote "Repeats across the buildings a registration covers; it identifies the registration, not the building. The value 0 is a placeholder shared by unrelated buildings and is never a registration id."@en ;
+    skos:hiddenLabel "registrationid"@en ;
+    skos:related vocab:registration ;
+    dct:source "specs/questions/q02.md" .
+
+vocab:last-registered-date a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "last registered date"@en ;
+    skos:altLabel "last registration date"@en, "date last registered"@en ;
+    skos:definition "The date the registration was last filed, as HPD records it for the building and registration."@en ;
+    skos:scopeNote "Absent when the source has no date (3,237 source rows) or when the source rows for the building and registration disagree (9 pairs); a conflict is never resolved by picking one."@en ;
+    skos:hiddenLabel "lastregistrationdate"@en ;
+    skos:related vocab:registration-end-date ;
+    dct:source "specs/questions/q02.md" .
+
+vocab:registration-end-date a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "registration end date"@en ;
+    skos:altLabel "registration expiry date"@en, "period end date"@en ;
+    skos:definition "The date the registration period ends, as HPD records it. A registration whose end date is before the date asked about had ended then."@en ;
+    skos:scopeNote "The source has no period start date. 51,713 source rows ended before the snapshot date (2026-05-29); the answer reports the dates and does not present such a registration as current."@en ;
+    skos:hiddenLabel "registrationenddate"@en ;
+    skos:related vocab:last-registered-date ;
+    dct:source "specs/questions/q02.md" .
+
+vocab:owner-contact a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "registered owner contact"@en ;
+    skos:altLabel "registered owner"@en, "owner of record"@en ;
+    skos:definition "A contact HPD records on a registration with an owner type: corporate owner, individual owner or joint owner. Holds the contact type and the name as recorded."@en ;
+    skos:scopeNote "Not proof of title and not interchangeable with the deed grantee, a process contact or the managing agent. Other contact types (agent, head officer, officer, shareholder, site manager, lessee) are not owner contacts. A registration can have several; a registration can have none (12,827 have no owner contact), and then the answer says none is recorded."@en ;
+    dct:source "specs/questions/q02.md" .
+
+vocab:has-owner-contact a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "has owner contact"@en ;
+    skos:definition "Links a registration to an owner contact recorded on it."@en ;
+    skos:scopeNote "Contacts belong to the registration, not to one building. All owner contacts of a registration are listed; none is chosen as the owner."@en ;
+    dct:source "specs/questions/q02.md" .
+
+vocab:contact-type a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "contact type"@en ;
+    skos:definition "The type HPD gives an owner contact: corporate owner, individual owner or joint owner."@en ;
+    skos:scopeNote "Controlled values are in the scheme owner-contact-types."@en ;
+    dct:source "specs/questions/q02.md" .
+
+vocab:owner-name a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "owner name"@en ;
+    skos:altLabel "name as recorded"@en ;
+    skos:definition "The name of an owner contact as HPD records it: the corporation name, or the first name, middle initial and last name joined."@en ;
+    skos:scopeNote "Reported exactly as recorded; spellings of one entity differ across registrations (for example a trailing period). Absent when the source name is blank (422 contacts). Two spellings are not evidence that the owners differ or are the same."@en ;
+    skos:hiddenLabel "corporationname"@en ;
+    dct:source "specs/questions/q02.md" .
+
+vocab:corporate-owner a skos:Concept ;
+    skos:inScheme vocab:owner-contact-types ;
+    skos:topConceptOf vocab:owner-contact-types ;
+    skos:prefLabel "corporate owner"@en ;
+    skos:definition "The owner is a corporation or other business entity; the name is its corporation name."@en ;
+    skos:scopeNote "HPD contact type value as recorded. Not proof of title."@en ;
+    skos:hiddenLabel "CorporateOwner"@en ;
+    dct:source "specs/questions/q02.md" .
+
+vocab:individual-owner a skos:Concept ;
+    skos:inScheme vocab:owner-contact-types ;
+    skos:topConceptOf vocab:owner-contact-types ;
+    skos:prefLabel "individual owner"@en ;
+    skos:definition "The owner is a person; the name is first name, middle initial and last name."@en ;
+    skos:scopeNote "HPD contact type value as recorded. Not proof of title."@en ;
+    skos:hiddenLabel "IndividualOwner"@en ;
+    dct:source "specs/questions/q02.md" .
+
+vocab:joint-owner a skos:Concept ;
+    skos:inScheme vocab:owner-contact-types ;
+    skos:topConceptOf vocab:owner-contact-types ;
+    skos:prefLabel "joint owner"@en ;
+    skos:definition "One of several persons recorded as joint owners of a registration; the name is first name, middle initial and last name."@en ;
+    skos:scopeNote "HPD contact type value as recorded. Not proof of title."@en ;
+    skos:hiddenLabel "JointOwner"@en ;
+    dct:source "specs/questions/q02.md" .
+

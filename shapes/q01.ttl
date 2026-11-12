@@ -1,0 +1,46 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix s2c:  <https://w3id.org/shacl2cypher#> .
+@prefix shp:  <https://watchline.example/shapes/> .
+
+# Q1 shapes: the rules OWL cannot express (ontology/ontology-notes.md, "Rules for Stage 6 shapes").
+# The s2c: lines say which graph label, property or relationship type each ontology element has
+# (names from ontology/concept-mapping.csv). shacl2cypher runs in strict mode and needs every one.
+
+# --- Graph names ---
+onto:TaxLot s2c:label "Lot" .
+onto:Building s2c:label "Building" .
+onto:hasBuilding s2c:relationship "HAS_BUILDING" ; s2c:direction "out" .
+onto:bbl s2c:property "bbl" .
+onto:bin s2c:property "bin" .
+onto:hpdRegistered s2c:property "hpdRegistered" .
+onto:plutoBuildingCount s2c:property "plutoNumBuildings" .
+onto:yearBuilt s2c:property "yearBuilt" .
+onto:buildingClass s2c:property "buildingClass" .
+onto:residentialUnits s2c:property "unitsRes" .
+onto:assessedTotalValue s2c:property "assessedTotal" .
+
+# --- Rules ---
+shp:LotShape a sh:NodeShape ;
+    s2c:key "bbl" ;
+    sh:targetClass onto:TaxLot ;
+    # R1 identifier format, R2 required
+    sh:property [ sh:path onto:bbl ; sh:minCount 1 ; sh:datatype xsd:string ; sh:pattern "^[1-5][0-9]{9}$" ] ;
+    sh:property [ sh:path onto:hpdRegistered ; sh:minCount 1 ; sh:datatype xsd:boolean ] ;
+    # R4 value rules: year 0 is never stored; units and value of 0 mean "PLUTO records none" and are kept
+    sh:property [ sh:path onto:yearBuilt ; sh:datatype xsd:integer ; sh:minInclusive 1 ] ;
+    sh:property [ sh:path onto:residentialUnits ; sh:datatype xsd:integer ; sh:minInclusive 0 ] ;
+    sh:property [ sh:path onto:assessedTotalValue ; sh:datatype xsd:integer ; sh:minInclusive 0 ] ;
+    sh:property [ sh:path onto:plutoBuildingCount ; sh:datatype xsd:integer ; sh:minInclusive 0 ] ;
+    sh:property [ sh:path onto:buildingClass ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:hasBuilding ; sh:class onto:Building ] .
+
+shp:BuildingShape a sh:NodeShape ;
+    s2c:key "bin" ;
+    sh:targetClass onto:Building ;
+    # R1 + R2: seven digits, first digit 1 to 5, not a placeholder ending 000000
+    sh:property [ sh:path onto:bin ; sh:minCount 1 ; sh:datatype xsd:string ; sh:pattern "^[1-5][0-9]{6}$" ;
+                  sh:not [ sh:pattern "^[1-5]000000$" ] ] ;
+    # R3 every building is linked to at least one lot
+    sh:property [ sh:path [ sh:inversePath onto:hasBuilding ] ; sh:minCount 1 ] .

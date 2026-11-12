@@ -1,182 +1,47 @@
-@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
-@prefix vocab: <https://watchline.example/vocab/> .
-@prefix onto:  <https://watchline.example/onto/> .
-@prefix id:    <https://watchline.example/id/> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
 
-# Q1 example data (anchors D and A), PROVISIONAL until verified against the frozen snapshot
-# (specs/questions/q01.md, "Local snapshot check", queried 2026-11-10). No individuals' names.
-# Geosupport codes and returned addresses are omitted: no cached response exists yet (profiles/geosupport.yaml).
-# Two synthetic cases at the end (ambiguous, inferred) use placeholder values, not real records.
+# Q1 example data. Values come from the verified fixtures in tests/q1_*/fixtures.yaml
+# (frozen snapshot: PLUTO 26v1, HPD registrations 2026-05-29). Values a fixture does not hold are omitted.
 
-# --- Snapshots and records ---
+# Anchor D: three buildings on one lot, lot-wide units.
+id:lot-3008210012 a onto:TaxLot ;
+    onto:bbl "3008210012" ; onto:address "224 54 STREET" ; onto:hpdRegistered true ;
+    onto:plutoBuildingCount 3 ; onto:yearBuilt 1911 ; onto:buildingClass "C1" ;
+    onto:residentialUnits 18 ; onto:assessedTotalValue 814500 ;
+    onto:hasBuilding id:building-3324448, id:building-3324450, id:building-3324451 .
+id:building-3324448 a onto:Building ; onto:bin "3324448" ; onto:address "218 54TH STREET" .
+id:building-3324450 a onto:Building ; onto:bin "3324450" ; onto:address "220 54TH STREET" .
+id:building-3324451 a onto:Building ; onto:bin "3324451" ; onto:address "224 54TH STREET" .
 
-id:snapshot-pluto-26v1 a onto:SourceSnapshot ;
-    onto:snapshotId "pluto-26v1" .      # PLUTO has no record date: snapshotDate stays absent.
+# Anchor A: one building; HPD spells the street differently from PLUTO.
+id:lot-3008260002 a onto:TaxLot ;
+    onto:bbl "3008260002" ; onto:address "5413 7 AVENUE" ; onto:hpdRegistered true ;
+    onto:plutoBuildingCount 1 ; onto:yearBuilt 1911 ; onto:buildingClass "C1" ;
+    onto:residentialUnits 32 ; onto:assessedTotalValue 868950 ;
+    onto:hasBuilding id:building-3014788 .
+id:building-3014788 a onto:Building ; onto:bin "3014788" ; onto:address "5413 SEVENTH AVENUE" .
 
-id:snapshot-hpd-registrations-2026-05-29 a onto:SourceSnapshot ;
-    onto:snapshotId "hpd-registrations-2026-05-29" ;
-    onto:snapshotDate "2026-05-29"^^xsd:date .
+# Anchor F: not registered, so no building is recorded.
+id:lot-3008970014 a onto:TaxLot ;
+    onto:bbl "3008970014" ; onto:address "259 22 STREET" ; onto:hpdRegistered false ;
+    onto:plutoBuildingCount 1 ; onto:yearBuilt 2025 ; onto:buildingClass "D7" ;
+    onto:residentialUnits 40 ; onto:assessedTotalValue 1451700 .
 
-id:record-pluto-3008210012 a onto:SourceRecord ;
-    onto:sourceKey "pluto" ;
-    onto:sourceRecordLocator "public.pluto_latest:bbl=3008210012" ;
-    onto:sourceCategory "public_record" ;
-    onto:inSnapshot id:snapshot-pluto-26v1 .
+# 17 Battery Place: PLUTO counts 2 buildings, HPD lists 1.
+id:lot-1000157501 a onto:TaxLot ;
+    onto:bbl "1000157501" ; onto:address "17 BATTERY PLACE" ; onto:hpdRegistered true ;
+    onto:plutoBuildingCount 2 ; onto:yearBuilt 1902 ; onto:buildingClass "RM" ; onto:residentialUnits 500 ;
+    onto:hasBuilding id:building-1082634 .
+id:building-1082634 a onto:Building ; onto:bin "1082634" ; onto:address "1 WEST STREET" .
 
-id:record-pluto-3008260002 a onto:SourceRecord ;
-    onto:sourceKey "pluto" ;
-    onto:sourceRecordLocator "public.pluto_latest:bbl=3008260002" ;
-    onto:sourceCategory "public_record" ;
-    onto:inSnapshot id:snapshot-pluto-26v1 .
-
-# --- Anchor D: multi-building lot, 224 54 Street ---
-
-id:address-224-54-street a onto:StreetAddress ;
-    onto:addressText "224 54 Street" .
-
-id:address-pluto-224-54-street a onto:StreetAddress ;
-    onto:addressText "224 54 STREET" .
-
-id:taxlot-3008210012 a onto:TaxLot ;
-    onto:hasBbl "3008210012" ;
-    onto:hasRecordedAddress id:address-pluto-224-54-street ;
-    onto:reportedYearBuilt 1911 ;
-    onto:reportedBuildingClass "C1" ;
-    onto:reportedResidentialUnits 18 ;
-    onto:reportedAssessedValue 814500 ;
-    onto:hasSourceRecord id:record-pluto-3008210012 .
-
-id:building-3324448 a onto:Building ; onto:hasBin "3324448" .
-id:building-3324450 a onto:Building ; onto:hasBin "3324450" .
-id:building-3324451 a onto:Building ; onto:hasBin "3324451" .
-
-id:hpd-registration-bin-3324448 a onto:HpdRegistration ;
-    onto:registeredOnTaxLot id:taxlot-3008210012 ;
-    onto:registersBuilding id:building-3324448 ;
-    onto:hasSourceRecord id:record-hpd-bin-3324448 .
-id:hpd-registration-bin-3324450 a onto:HpdRegistration ;
-    onto:registeredOnTaxLot id:taxlot-3008210012 ;
-    onto:registersBuilding id:building-3324450 ;
-    onto:hasSourceRecord id:record-hpd-bin-3324450 .
-id:hpd-registration-bin-3324451 a onto:HpdRegistration ;
-    onto:registeredOnTaxLot id:taxlot-3008210012 ;
-    onto:registersBuilding id:building-3324451 ;
-    onto:hasSourceRecord id:record-hpd-bin-3324451 .
-
-id:record-hpd-bin-3324448 a onto:SourceRecord ;
-    onto:sourceKey "hpd_registrations" ;
-    onto:sourceRecordLocator "public.hpd_registrations:bin=3324448" ;
-    onto:sourceCategory "public_record" ;
-    onto:inSnapshot id:snapshot-hpd-registrations-2026-05-29 .
-id:record-hpd-bin-3324450 a onto:SourceRecord ;
-    onto:sourceKey "hpd_registrations" ;
-    onto:sourceRecordLocator "public.hpd_registrations:bin=3324450" ;
-    onto:sourceCategory "public_record" ;
-    onto:inSnapshot id:snapshot-hpd-registrations-2026-05-29 .
-id:record-hpd-bin-3324451 a onto:SourceRecord ;
-    onto:sourceKey "hpd_registrations" ;
-    onto:sourceRecordLocator "public.hpd_registrations:bin=3324451" ;
-    onto:sourceCategory "public_record" ;
-    onto:inSnapshot id:snapshot-hpd-registrations-2026-05-29 .
-
-# Outcome per q01.md "Stage 1 pilot". The addressed building (224 54 Street = BIN 3324451) is
-# provisional: the profile field addressed_building is pending until name normalization is settled.
-id:resolution-d a onto:AddressResolution ;
-    onto:hasInputAddress id:address-224-54-street ;
-    onto:hasOutcome vocab:matched-by-variant ;
-    onto:resolvedToTaxLot id:taxlot-3008210012 ;
-    onto:hasAddressedBuilding id:building-3324451 ;
-    onto:assertionType "type_i" .
-
-id:count-d-parcel a onto:ParcelCount ;
-    onto:countValue 1 ; onto:countingUnit "tax lot" ;
-    onto:countedForTaxLot id:taxlot-3008210012 ;
-    onto:assertionType "type_i" .
-id:count-d-building-hpd a onto:BuildingCount ;
-    onto:countValue 3 ; onto:countingUnit "building" ;
-    onto:countedForTaxLot id:taxlot-3008210012 ;
-    onto:countedFromRecord id:record-hpd-bin-3324448, id:record-hpd-bin-3324450, id:record-hpd-bin-3324451 ;
-    onto:assertionType "type_i" .
-id:count-d-building-pluto a onto:BuildingCount ;
-    onto:countValue 3 ; onto:countingUnit "building" ;
-    onto:countedForTaxLot id:taxlot-3008210012 ;
-    onto:countedFromRecord id:record-pluto-3008210012 ;
-    onto:assertionType "type_i" .
-id:count-d-units a onto:UnitCount ;
-    onto:countValue 18 ; onto:countingUnit "residential unit" ;
-    onto:countedForTaxLot id:taxlot-3008210012 ;
-    onto:countedFromRecord id:record-pluto-3008210012 ;
-    onto:assertionType "type_i" .
-
-# --- Anchor A: single-building lot, 5413 7 Avenue ---
-
-id:address-5413-7-avenue a onto:StreetAddress ;
-    onto:addressText "5413 7 Avenue" .
-
-id:address-pluto-5413-7-avenue a onto:StreetAddress ;
-    onto:addressText "5413 7 AVENUE" .
-
-id:taxlot-3008260002 a onto:TaxLot ;
-    onto:hasBbl "3008260002" ;
-    onto:hasRecordedAddress id:address-pluto-5413-7-avenue ;
-    onto:reportedYearBuilt 1911 ;
-    onto:reportedBuildingClass "C1" ;
-    onto:reportedResidentialUnits 32 ;
-    onto:reportedAssessedValue 868950 ;
-    onto:hasSourceRecord id:record-pluto-3008260002 .
-
-id:building-3014788 a onto:Building ; onto:hasBin "3014788" .
-
-id:hpd-registration-bin-3014788 a onto:HpdRegistration ;
-    onto:registeredOnTaxLot id:taxlot-3008260002 ;
-    onto:registersBuilding id:building-3014788 ;
-    onto:hasSourceRecord id:record-hpd-bin-3014788 .
-
-id:record-hpd-bin-3014788 a onto:SourceRecord ;
-    onto:sourceKey "hpd_registrations" ;
-    onto:sourceRecordLocator "public.hpd_registrations:bin=3014788" ;
-    onto:sourceCategory "public_record" ;
-    onto:inSnapshot id:snapshot-hpd-registrations-2026-05-29 .
-
-id:resolution-a a onto:AddressResolution ;
-    onto:hasInputAddress id:address-5413-7-avenue ;
-    onto:hasOutcome vocab:matched-by-variant ;
-    onto:resolvedToTaxLot id:taxlot-3008260002 ;
-    onto:hasAddressedBuilding id:building-3014788 ;
-    onto:assertionType "type_i" .
-
-id:count-a-parcel a onto:ParcelCount ;
-    onto:countValue 1 ; onto:countingUnit "tax lot" ;
-    onto:countedForTaxLot id:taxlot-3008260002 ; onto:assertionType "type_i" .
-id:count-a-building-hpd a onto:BuildingCount ;
-    onto:countValue 1 ; onto:countingUnit "building" ;
-    onto:countedForTaxLot id:taxlot-3008260002 ;
-    onto:countedFromRecord id:record-hpd-bin-3014788 ; onto:assertionType "type_i" .
-id:count-a-units a onto:UnitCount ;
-    onto:countValue 32 ; onto:countingUnit "residential unit" ;
-    onto:countedForTaxLot id:taxlot-3008260002 ;
-    onto:countedFromRecord id:record-pluto-3008260002 ; onto:assertionType "type_i" .
-
-# --- Synthetic cases (placeholder values, not records) ---
-
-# Ambiguous: candidates are returned and no lot is chosen.
-id:resolution-synthetic-ambiguous a onto:AddressResolution ;
-    rdfs:comment "Synthetic placeholder: ambiguous input, two candidates, no lot chosen."@en ;
-    onto:hasInputAddress id:address-synthetic-ambiguous ;
-    onto:hasOutcome vocab:ambiguous ;
-    onto:hasAddressCandidate id:candidate-synthetic-1, id:candidate-synthetic-2 .
-id:address-synthetic-ambiguous a onto:StreetAddress ; onto:addressText "1 Example St" .
-id:candidate-synthetic-1 a onto:AddressCandidate ; onto:candidateText "EXAMPLE STREET" .
-id:candidate-synthetic-2 a onto:AddressCandidate ; onto:candidateText "EXAMPLE AVENUE" .
-
-# Inferred: not asserted as InferredResolution; the reasoner must classify it from the alternate address.
-id:resolution-synthetic-inferred a onto:AddressResolution ;
-    rdfs:comment "Synthetic placeholder: the lot was reached through an alternate address."@en ;
-    onto:hasInputAddress id:address-synthetic-corner ;
-    onto:usedAlternateAddress id:address-synthetic-alternate ;
-    onto:hasOutcome vocab:matched-by-variant ;
-    onto:resolvedToTaxLot id:taxlot-synthetic .
-id:address-synthetic-corner a onto:StreetAddress ; onto:addressText "2 Example St (corner)" .
-id:address-synthetic-alternate a onto:StreetAddress ; onto:addressText "2 Example Ave" .
-id:taxlot-synthetic a onto:TaxLot ; onto:hasBbl "3000000000" .
+# BIN 1003074 sits on two lots (hasBuilding is many to many). The second lot is not in PLUTO.
+id:lot-1002367504 a onto:TaxLot ;
+    onto:bbl "1002367504" ; onto:hpdRegistered true ; onto:plutoBuildingCount 1 ;
+    onto:hasBuilding id:building-1003074 .
+id:lot-1002360018 a onto:TaxLot ;
+    onto:bbl "1002360018" ; onto:hpdRegistered true ;
+    onto:hasBuilding id:building-1003074 .
+id:building-1003074 a onto:Building ; onto:bin "1003074" ; onto:address "185 GRAND STREET" .

@@ -6,7 +6,7 @@ The first use case for the knowledge graph: an AI agent that helps NYC tenants, 
 
 ## Project boundary and acceptance
 
-This document describes the end-to-end use case. WatchlineOP delivers the ontology pipeline, graph, mappings, and acceptance fixtures/contracts that support it. The AI research agent is a downstream consumer, responsible for executing retrieval/extraction and investigation workflows with human review.
+This document describes the end-to-end use case. WatchlineOP delivers the ontology pipeline, graph, loaders, and acceptance fixtures/contracts that support it. The AI research agent is a downstream consumer, responsible for executing retrieval/extraction and investigation workflows with human review.
 
 Question files declare graph, retrieval/extraction, and/or investigation acceptance as defined in [the roadmap](roadmap.md#acceptance-types-and-responsibility). A graph release can be ready while downstream tests are pending. The full dossier scenario (Q20) is accepted only after its component tests and the downstream investigation test pass.
 

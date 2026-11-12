@@ -1,0 +1,21 @@
+# Each case creates bad data inside a transaction that is always rolled back, then checks that the named
+# rule reports a violation. `error: constraint` means the native constraint must refuse the write.
+cases:
+  - {name: bbl too short,            create: "CREATE (:Lot {bbl: '123', hpdRegistered: true})",                         rule: LotShape.bbl.pattern}
+  - {name: bbl first digit 9,        create: "CREATE (:Lot {bbl: '9000000001', hpdRegistered: true})",                  rule: LotShape.bbl.pattern}
+  - {name: bbl is a number,          create: "CREATE (:Lot {bbl: 1000000001, hpdRegistered: true})",                    rule: LotShape.bbl.datatype}
+  - {name: lot without bbl,          create: "CREATE (:Lot {hpdRegistered: true})",                                      rule: LotShape.bbl.minCount}
+  - {name: lot without hpdRegistered, create: "CREATE (:Lot {bbl: '1999999999'})",                                      rule: LotShape.hpdRegistered.minCount}
+  - {name: hpdRegistered as text,    create: "CREATE (:Lot {bbl: '1999999999', hpdRegistered: 'yes'})",                 rule: LotShape.hpdRegistered.datatype}
+  - {name: yearBuilt 0,              create: "CREATE (:Lot {bbl: '1999999999', hpdRegistered: true, yearBuilt: 0})",     rule: LotShape.yearBuilt.minInclusive}
+  - {name: negative units,           create: "CREATE (:Lot {bbl: '1999999999', hpdRegistered: true, unitsRes: -1})",     rule: LotShape.residentialUnits.minInclusive}
+  - {name: assessed value as text,   create: "CREATE (:Lot {bbl: '1999999999', hpdRegistered: true, assessedTotal: '5'})", rule: LotShape.assessedTotalValue.datatype}
+  - {name: negative building count,  create: "CREATE (:Lot {bbl: '1999999999', hpdRegistered: true, plutoNumBuildings: -2})", rule: LotShape.plutoBuildingCount.minInclusive}
+  - {name: blank building class,     create: "CREATE (:Lot {bbl: '1999999999', hpdRegistered: true, buildingClass: ''})", rule: LotShape.buildingClass.minLength}
+  - {name: placeholder bin,          create: "MATCH (l:Lot) WITH l LIMIT 1 CREATE (l)-[:HAS_BUILDING]->(:Building {bin: '1000000'})", rule: BuildingShape.bin.not}
+  - {name: bin too short,            create: "MATCH (l:Lot) WITH l LIMIT 1 CREATE (l)-[:HAS_BUILDING]->(:Building {bin: '12345'})", rule: BuildingShape.bin.pattern}
+  - {name: building without bin,     create: "MATCH (l:Lot) WITH l LIMIT 1 CREATE (l)-[:HAS_BUILDING]->(:Building {address: 'x'})", rule: BuildingShape.bin.minCount}
+  - {name: building with no lot,     create: "CREATE (:Building {bin: '1999999'})",                                      rule: BuildingShape.inv_hasBuilding.minCount}
+  - {name: HAS_BUILDING ends on a lot, create: "MATCH (a:Lot), (b:Lot) WHERE a <> b WITH a, b LIMIT 1 CREATE (a)-[:HAS_BUILDING]->(b)", rule: LotShape.hasBuilding.class}
+  - {name: duplicate bbl,            create: "MATCH (l:Lot) WITH l LIMIT 1 CREATE (:Lot {bbl: l.bbl, hpdRegistered: true})", error: constraint}
+  - {name: duplicate bin,            create: "MATCH (b:Building) WITH b LIMIT 1 CREATE (:Building {bin: b.bin})",       error: constraint}

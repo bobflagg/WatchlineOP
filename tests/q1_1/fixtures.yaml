@@ -1,0 +1,17 @@
+# Q1.1 expected Lot nodes. Provisional until the frozen dump is identified (data/README.md).
+# Values checked read-only against pluto_latest (26v1) and hpd_registrations (2026-05-29) on 2026-11-11.
+# check_lots.py re-derives each one from the source, so a stale fixture fails.
+
+in_graph:
+  - {bbl: "3008210012", address: "224 54 STREET", hpdRegistered: true,  note: "anchor D, three buildings on one lot"}
+  - {bbl: "3008260002", address: "5413 7 AVENUE", hpdRegistered: true,  note: "anchor A"}
+  - {bbl: "3008970014", address: "259 22 STREET", hpdRegistered: false, note: "anchor F, 40 units, no HPD registration"}
+  - {bbl: "1005560059", address: "76 THIRD AVENUE", hpdRegistered: true, note: "registered, not in PLUTO; address from the most recent of two same-date registrations"}
+
+not_in_graph:
+  - {bbl: "3008260011", note: "712 54 STREET, 1 unit, not registered: a lot, but outside the rental scope"}
+
+totals:
+  registered_bbl: 181863
+  unregistered_3plus: 32936
+  total_lots: 214799

@@ -49,18 +49,18 @@ Follow [the SKOS-to-ontology mapping policy](roadmap.md#skos-to-ontology-mapping
 ## Adaptations to the pipeline
 
 - **SPARQL becomes Cypher.** The stage 6 graph query language and graph acceptance test queries are Cypher. Retrieval/extraction and investigation acceptance use separate fixture-based tests, as defined in `roadmap.md`; they are not replaced by Cypher queries.
-- **R2RML becomes mapping files.** Use Git-tracked YAML mappings in `mappings/`, following [the physical implementation contract](physical-implementation.md). Each mapping specifies identities, source joins, transformations, missingness, evidence, and verification.
+- **R2RML becomes profiles and loaders.** The graph schema per question is `profiles/qNN.yaml`; loader scripts in `scripts/` do the joins and transformations, as in [the physical implementation contract](physical-implementation.md). There are no separate mapping files.
 - **SHACL compatibility.** Pin the compiler version and verify its supported constructs with a small compatibility fixture. Compile strictly. Required constraints must be executed, guaranteed by the installed schema, or covered by named supplemental checks; unsupported or skipped rules cannot silently disappear. Semantic-to-physical differences use a documented derived profile.
-- **Native Neo4j schema is explicit.** Identity uniqueness constraints, indexes, and loader integrity checks are required independently of shacl2cypher. Store schema Cypher in `scripts/neo4j-schema.cypher` when implemented. Graph Type remains optional and is not a POC prerequisite.
+- **Native Neo4j schema is explicit.** Identity uniqueness constraints, indexes, and loader integrity checks are required independently of shacl2cypher. The loaders create their constraints. Graph Type remains optional and is not a POC prerequisite.
 - **Derived layers are imported, not computed.** Operational Networks and Owner Portfolios come from BOR/NLR releases and are modelled with run, snapshot and method version.
 
 ## Physical implementation
 
 Follow [physical-implementation.md](physical-implementation.md) for mapping content, Q1 scalar encodings and provenance, native schema, rebuild behavior, environment pins, and complete validation. The contract requires bounded citywide verification and source-value reconciliation in addition to shape conformance.
 
-## Repository layout (planned)
+## Repository layout
 
-`vocabulary/` (SKOS), `profiles/`, `ontology/`, `shapes/`, `mappings/`, `queries/` (for graph acceptance), `tests/`, `scripts/`.
+`vocabulary/` (SKOS), `profiles/`, `ontology/`, `shapes/`, `tests/` (per-sub-question checks, negative cases, results), `scripts/`, `data/`, `specs/`.
 
 ## Open decisions
 

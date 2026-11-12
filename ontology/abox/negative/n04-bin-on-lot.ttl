@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: bin has domain Building, so a lot carrying a BIN would also be a Building.
+id:bad-4 a onto:TaxLot ; onto:bbl "3008210012" ; onto:bin "3324448" .

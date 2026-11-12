@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: a registration is not a building (disjoint classes).
+id:bad-5 a onto:Registration, onto:Building ; onto:registrationId 316103 ; onto:bin "3014788" .

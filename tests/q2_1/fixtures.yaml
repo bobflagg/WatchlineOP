@@ -1,0 +1,19 @@
+# Q2.1 expected registrations per Building. Provisional until the frozen dump is identified (data/README.md).
+# Checked read-only 2026-11-12. check_registrations.py re-derives each from the source, so a stale fixture fails.
+# A date of null means absent. mode: exact = exactly these registrations; count = this many registrations.
+buildings:
+  - {bin: "3014788", mode: exact, note: "anchor A", registrations: {316103: ["2025-09-30", "2026-09-01"]}}
+  - {bin: "3013901", mode: exact, note: "anchor C, co-op", registrations: {350423: ["2025-10-23", "2026-09-01"]}}
+  - {bin: "3324448", mode: exact, note: "anchor D, 218 54 St", registrations: {302437: ["2025-07-16", "2026-09-01"]}}
+  - {bin: "3324450", mode: exact, note: "anchor D, 220 54 St", registrations: {344220: ["2025-07-16", "2026-09-01"]}}
+  - {bin: "3324451", mode: exact, note: "anchor D, 224 54 St", registrations: {331116: ["2025-07-16", "2026-09-01"]}}
+  - {bin: "3014490", mode: exact, note: "registration period ended 2021-09-01, before the snapshot", registrations: {306882: ["2020-08-31", "2021-09-01"]}}
+  - {bin: "3014601", mode: exact, note: "last-registered date null in the source", registrations: {345930: [null, "2025-09-01"]}}
+  - {bin: "5114047", mode: exact, note: "rows of one pair disagree on both dates, so both are absent", registrations: {15905: [null, null]}}
+  - {bin: "1056989", mode: exact, note: "its only registration id is the placeholder 0, so it has no registration in the graph", registrations: {}}
+  - {bin: "4147320", mode: count, count: 12, note: "twelve registrations on one building; none is chosen"}
+  # Out of scope, must be absent: the lot of anchor F has no HPD registration, so no Building exists for it.
+absent_bins: ["3000000"]   # placeholder BIN, excluded in Q1.2
+
+totals: {registrations: 192808, pairs: 201763, with_last: 198525, with_end: 201755, bins_multi: 1059}
+excluded_placeholder_pairs: 3   # registrationid 0

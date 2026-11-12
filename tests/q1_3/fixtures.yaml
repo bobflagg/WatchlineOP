@@ -1,0 +1,28 @@
+# Q1.3 expectations. Inputs and raw Geosupport responses are in recorded.json (scripts/record_geosupport.py).
+# bbl/bin/outcome come from those recordings; in_graph and related_lots from the frozen source (hpd_registrations
+# BINs, rental scope), checked live against the graph by check_resolution.py.
+release: 25b
+cases:
+  exact_D1: {outcome: exact, bbl: "3008210012", bin: "3324448", in_graph: true, related_lots: [], grc: "00"}
+  exact_D2: {outcome: exact, bbl: "3008210012", bin: "3324450", in_graph: true, related_lots: [], grc: "00"}
+  exact_D3: {outcome: exact, bbl: "3008210012", bin: "3324451", in_graph: true, related_lots: [], grc: "00"}
+  exact_A: {outcome: exact, bbl: "3008260002", bin: "3014788", in_graph: true, related_lots: [], grc: "00"}
+  # Geosupport accepts SEVENTH AVENUE unchanged, so the returned street equals the typed one: exact.
+  variant_A_named: {outcome: exact, bbl: "3008260002", bin: "3014788", in_graph: true, related_lots: [], grc: "00"}
+  variant_D_suffix: {outcome: variant, bbl: "3008210012", bin: "3324451", in_graph: true, related_lots: [], grc: "00"}
+  # EE on the spelled name, then the client retries with digits: inferred.
+  variant_D_spelled: {outcome: variant, bbl: "3008210012", bin: "3324451", in_graph: true, related_lots: [], grc: "00", inferred: true, tried: 2}
+  variant_D_abbrev: {outcome: variant, bbl: "3008210012", bin: "3324451", in_graph: true, related_lots: [], grc: "00"}
+  # Condominium: Geosupport returns the billing lot. The unit lot 1005560059 shares no BIN with it, so it is NOT found.
+  exact_manhattan: {outcome: exact, bbl: "1005567502", bin: "1088780", in_graph: true, related_lots: [], grc: "00"}
+  # Two lots share BIN 1003074.
+  shared_bin_185: {outcome: exact, bbl: "1002367504", bin: "1003074", in_graph: true, related_lots: ["1002360018"], grc: "00"}
+  # A real lot outside the rental scope: resolved, not in the graph.
+  non_rental_lot: {outcome: exact, bbl: "3008260011", bin: "3014790", in_graph: false, related_lots: [], grc: "00"}
+  misspelled_street: {outcome: ambiguous, bbl: null, candidates: ["54 STREET"], in_graph: null, grc: "EE"}
+  similar_names: {outcome: variant, bbl: "1000100001", bin: "1000022", in_graph: false, related_lots: [], grc: "00"}
+  unknown_street: {outcome: not_found, bbl: null, in_graph: null, grc: "11"}
+  house_out_of_range: {outcome: not_found, bbl: null, in_graph: null, grc: "42"}
+  no_tax_lot_candidate: {outcome: not_found, bbl: null, in_graph: null, grc: "00"}
+  blank_house: {outcome: not_found, bbl: null, in_graph: null, grc: "13"}
+  zip_instead_of_borough: {outcome: exact, bbl: "3008210012", bin: "3324451", in_graph: true, related_lots: [], grc: "00"}

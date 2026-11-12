@@ -1,72 +1,60 @@
-# Application profile: PLUTO (source key `pluto`, table public.pluto_latest, release 26v1).
-# Inspected with postgres-justfix on 2026-11-11 (row count 858,602; 858,602 distinct bbl).
-# Only columns used by a question are profiled; each column lists the questions using it.
-profile: pluto
+# Source profile: PLUTO. Facts about the source only. Graph rules live in profiles/qNN.yaml.
+# Queried 2026-11-12 against the frozen database (information_schema and counts over the whole table).
 source_key: pluto
-snapshot: {snapshot_id: pluto-26v1, snapshot_date: null, note: PLUTO has no record date}
+table: public.pluto_latest
+version: 26v1
+row_count: 858602
+queried_on: 2026-11-12
 columns:
-  bbl:
-    semantic_type: tax lot identifier (BBL)
-    physical_type: "character(10)"
-    allowed: {pattern: '^[1-5][0-9]{9}$', unique: true}
-    null_policy: "no nulls (checked 2026-11-11). Keep as a string; never numeric."
-    observed: "0 nulls, 0 malformed, borough digit agrees with borough/block/lot in all rows"
-    concept: bbl
-    used_by: [Q1.1, Q1.2, Q1.4]
-  address:
-    semantic_type: street address (one per lot)
+  - name: bbl
+    physical_type: "char(10)"
+    allowed: "10 digits; first digit 1 to 5 (borough)"
+    sentinels: none
+    unique: true
+    used_by: [Q1.1, Q1.2, Q1.3, Q1.4]
+    notes: "Never null, no duplicates, no malformed values."
+  - name: address
     physical_type: text
-    allowed: {format: "house number, space, street name as PLUTO spells it (for example 5413 7 AVENUE, 224 54 STREET)"}
-    null_policy: "468 nulls; null means no PLUTO address, not an unmatched lot"
-    observed: "One address per lot; other buildings' addresses on the lot are absent. Street spelling differs from HPD (7 AVENUE vs SEVENTH AVENUE; 54 STREET vs 54TH STREET)."
-    concept: street-address
-    used_by: [Q1.1, Q1.3]
-  bldgclass:
-    semantic_type: building class code (lot-level, PLUTO classification system)
-    physical_type: "character(2)"
-    allowed: {pattern: '^[A-Z][A-Z0-9]$', note: "Letter plus letter or digit (C1, RM, QG)"}
-    null_policy: "0 SQL nulls. 355 rows are two blanks (whitespace): treat as missing and omit. 7,077 rows do not match letter+digit, most are valid letter+letter codes (RM 4,351; QG 874; RC 280)."
-    observed: "Trim before testing. No padded valid codes found."
-    concept: building-class
+    allowed: free text, upper case, house number first
+    sentinels: {null_or_blank: "no address recorded (468 rows)"}
+    used_by: [Q1.1]
+  - name: bldgclass
+    physical_type: "char(2)"
+    allowed: "2-character building class code"
+    sentinels: {null_or_blank: "no class recorded (355 rows)"}
     used_by: [Q1.4]
-  unitsres:
-    semantic_type: residential unit count, lot-wide
+  - name: unitsres
     physical_type: integer
-    units: residential units
-    allowed: {range: [0, 10914], observed_max: 10914, note: "zero is valid and distinct from missing"}
-    null_policy: "430 nulls = missing (omit). 90,301 zeros = valid zero."
-    concept: residential-units
+    units: residential units, whole lot
+    allowed: "0 to 10914"
+    sentinels:
+      null: "no unit count (430 rows)"
+      0: "PLUTO records no residential units (90301 rows); not evidence that no one lives there"
+    used_by: [Q1.1, Q1.4]
+    notes: "Q1.1 also uses it for the lot scope rule (3 or more units)."
+  - name: assesstot
+    physical_type: bigint
+    units: whole US dollars
+    allowed: "0 to 8496376200"
+    sentinels:
+      null: "no assessed value (358 rows)"
+      0: "no assessed value recorded (4262 rows); typically an exempt or unassessed lot"
     used_by: [Q1.4]
-  yearbuilt:
-    semantic_type: source-reported year built, lot-level
+  - name: yearbuilt
     physical_type: smallint
     units: calendar year
-    allowed: {range: [914, 2025], observed: true}
-    null_policy: "358 nulls and 39,880 zeros: both mean unknown, omit (physical-implementation section 3)."
-    concept: year-built
+    allowed: "914 to 2025 for real values"
+    sentinels:
+      null: "no year (358 rows)"
+      0: "year unknown (39880 rows)"
     used_by: [Q1.4]
-  assesstot:
-    semantic_type: total assessed value in whole US dollars
-    physical_type: bigint
-    units: USD, whole dollars (no cents in source)
-    allowed: {range: [0, 8496376200], observed: true}
-    null_policy: "358 nulls = missing (omit). 4,262 zeros: valid source value, report as given. Assessment period is not in the table; do not guess it."
-    concept: assessed-value
-    physical_encoding: "exact integer cents (value * 100) per physical-implementation section 3"
-    used_by: [Q1.4]
-  numbldgs:
-    semantic_type: building count reported by PLUTO for the lot
+    notes: "Pre-1800 years exist and are real (for example 1789, 1792)."
+  - name: numbldgs
     physical_type: integer
-    units: buildings
-    allowed: {range: [0, 1862], observed: true}
-    null_policy: "639 nulls = missing. 33,775 zeros = valid zero in PLUTO."
-    observed: "Of 180,831 PLUTO lots with an HPD registration, numbldgs equals the number of distinct HPD BINs for 155,839 and differs for 24,990. Use as a cross-check, never as the building count (BINs come only from HPD registrations)."
-    concept: building-count
+    units: buildings, as PLUTO counts them
+    allowed: "0 to 1862"
+    sentinels:
+      null: "no count (639 rows)"
+      0: "PLUTO counts no buildings (33775 rows)"
     used_by: [Q1.2]
-  version:
-    semantic_type: PLUTO release label
-    physical_type: text
-    allowed: {values: ["26v1"]}
-    null_policy: "single value in pluto_latest"
-    concept: source-snapshot
-    used_by: [Q1.4]
+    notes: "Can differ from the number of BINs HPD lists for the same lot."

@@ -106,26 +106,43 @@ sources:
     publisher: NYC Department of Housing Preservation and Development
     table: hpd_registrations
     schema: public
-    key: registrationid
+    key: null # no single-column key: registrationid repeats (193,567 distinct in 203,236 rows)
     row_count: 203236
     used_for: registered buildings (3+ units), registration dates
     columns_used: registrationid, buildingid, boroid, boro, housenumber, streetname, zip, block, lot, bin, lastregistrationdate, registrationenddate, bbl
     data_through: 2026-05-29 # max lastregistrationdate
     reliability: I
     retrieved_at: null
+    notes: >-
+      One registration can cover many buildings, so registrationid repeats and (registrationid,
+      buildingid) is not unique either (203,232 distinct pairs in 203,236 rows). Rows tie on
+      lastregistrationdate and registrationid. Placeholder or invalid BINs (0, blank, x000000,
+      short values) appear on 761 rows. A BIN can sit on several BBLs (238) and one BIN can be
+      on many buildings (4445478: 103 rows). Mapping rules that pick a value from the most
+      recent registrations must handle ties; ties that disagree leave the value absent.
+      Q2 profile (queried 2026-11-12): registrationid 0 is a placeholder on 3 rows (3 unrelated buildings) and is excluded. Dates belong to the (BIN, registrationid) row, not to the
+      registrationid (23 registration ids carry different dates on different rows; 9 valid-BIN pairs
+      disagree). 3,237 rows have no lastregistrationdate; registrationenddate is never null and never
+      before lastregistrationdate. 1,059 valid BINs have more than one registration.
 
   hpd_contacts:
     name: Registration Contacts
     publisher: NYC Department of Housing Preservation and Development
     table: hpd_contacts
     schema: public
-    key: registrationcontactid
+    key: null # registrationcontactid is NOT unique (733,038 distinct in 782,024 rows); do not use it as a key
     row_count: 782024
     used_for: owners, head officers, officers, managing agents and business addresses
     columns_used: registrationcontactid, registrationid, type, contactdescription, corporationname, title, firstname, middleinitial, lastname, businesshousenumber, businessstreetname, businessapartment, businesscity, businessstate, businesszip
     data_through: 2026-05-29 # no date column; same snapshot as hpd_registrations
     reliability: I
     retrieved_at: null
+    notes: >-
+      Q2 profile (queried 2026-11-12). Owner types are CorporateOwner, IndividualOwner and JointOwner.
+      Exact duplicate contacts (same registration, type, name) occur (686 registrations). 422 owner
+      contacts have a blank name (183 corporate, 239 individual or joint). A registration can have
+      several owner contacts (joint owners; an LLC and an LP). 12,827 of 193,567 registrations have no
+      owner contact. Every contact's registrationid is in hpd_registrations.
 
   hpd_violations:
     name: Housing Maintenance Code Violations

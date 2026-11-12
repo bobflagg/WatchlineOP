@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: a lot is not a building (TaxLot and Building are disjoint).
+id:bad-1 a onto:TaxLot, onto:Building ; onto:bbl "3008210012" ; onto:bin "3324448" .

@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: bbl is functional, so a lot has one BBL.
+id:bad-2 a onto:TaxLot ; onto:bbl "3008210012", "3008210013" .

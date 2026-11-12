@@ -1,78 +1,86 @@
 # Thesaurus notes
 
-Stage 4 record for `vocabulary/watchline.ttl`. Prefix `vocab:` is `https://watchline.example/vocab/`. Procedure: [stage4-procedure.md](../specs/stage4-procedure.md); policy: [taxonomy review policy](../specs/roadmap.md#taxonomy-review-policy).
-
-`scripts/check_thesaurus.py` (`make thesaurus`) reads the **Related links** table and the **Association kinds** list below. Each row is `| concept | concept | kind | justification |`, concepts as backticked slugs, each unordered pair once. In the file every pair is written in both directions with plain `skos:related`; the kind lives only here (ISO 25964 style). A related link is an association, not a hierarchy and not equivalence.
-
-## Association kinds
-
-- `identifier-of`: the identifier and the thing it identifies.
-- `output-of`: a result and the act or classification that produces it.
-- `input-to`: a thing used by a process or classification.
-- `source-of`: a record, code or document that evidences or supplies another concept.
-- `contrasts-with`: look-alike concepts the question insists on keeping apart.
-- `same-subject-different-role`: the same real-world thing in a different role.
-- `tally-of`: a reported count and what it counts or draws on.
-- `part-of`: a component and its whole (not a hierarchy here).
-- `characteristic-of`: a kind of characteristic and the thing it describes.
-- `qualifies`: a code that refines another code.
+Records the cross-branch associations, label review and external mappings. Related links are written in both directions in `watchline.ttl`; each unordered pair appears once below. A related link earns its place only where the schema (`profiles/qNN.yaml`) does not already connect the two concepts. Stage 4 procedure: `specs/stage4-procedure.md`. Checked by `scripts/check_thesaurus.py` (`make thesaurus`).
 
 ## Related links
 
-| Concept | Concept | Kind | Justification |
+Association kinds:
+
+- `identifier-of`: one concept is the identifier of the other.
+- `contrasts-with`: look-alike concepts that must be kept apart in an answer.
+- `reported-with`: an answer term that is reported only together with another.
+- `output-of`: a result produced by an action on the other concept.
+- `found-through`: one concept is located by means of the other.
+- `same-subject-different-role`: the same thing, seen in a different role in an answer.
+- `summary-of`: a flag or count on one concept that summarizes records held under the other.
+
+| concept | concept | kind | justification |
 | --- | --- | --- | --- |
-| `bbl` | `tax-lot` | identifier-of | The BBL identifies a tax lot; it is not the lot. (Stage 1 link.) |
-| `bin` | `building` | identifier-of | The BIN identifies a building; it is not the building. (Stage 1 link.) |
-| `addressed-building` | `building` | same-subject-different-role | The addressed building is a building playing a role in one answer. (Stage 1 link, kept as related at Stage 3.) |
-| `address-resolution` | `address-resolution-outcome` | output-of | The outcome classifies the result of a resolution. (Stage 1 link.) |
-| `street-name-variant` | `matched-by-variant` | contrasts-with | Scope notes insist these differ: a spelling of one street name versus the classification of a whole resolution. (Stage 1 link.) |
-| `hpd-registration` | `bin` | source-of | In Q1 an HPD registration is the only source of BINs. (Stage 1 link.) |
-| `unit-count` | `residential-units` | tally-of | The tally given in an answer versus the source characteristic it draws on. (Stage 1 link.) |
-| `tax-lot` | `building` | contrasts-with | Q1 requires that a lot is not necessarily one building; lot and building counts differ. |
-| `source-record` | `source-snapshot` | part-of | A record is a row of a snapshot. Whole-part, not is-a, so not a hierarchy. |
-| `address-candidate` | `ambiguous` | output-of | Candidates are what an ambiguous outcome returns instead of a chosen lot. |
-| `inferred-resolution` | `alternate-address` | input-to | An inferred resolution is reached through an alternate address. |
-| `geosupport-return-code` | `address-resolution` | source-of | The return code is service evidence of how a resolution went. |
-| `geosupport-reason-code` | `address-resolution` | source-of | The reason code is service evidence qualifying a resolution. |
-| `geosupport-return-code` | `geosupport-reason-code` | qualifies | The reason code qualifies the return code; the two are kept separate. |
-| `geosupport-return-code` | `address-resolution-outcome` | input-to | The outcome is decided from the return code (never message text). |
-| `street-address` | `address-resolution` | input-to | An input street address is what a resolution maps to a tax lot. |
-| `hpd-registration` | `building` | source-of | A registration is how a building is known in Q1. |
-| `source-reported-characteristic` | `tax-lot` | characteristic-of | Characteristics are stated about a tax lot (residential units are lot-wide). |
-| `source-reported-characteristic` | `building` | characteristic-of | Characteristics may also be stated about a building. |
-| `parcel-count` | `tax-lot` | tally-of | The counting unit of a parcel count is the tax lot. |
-| `building-count` | `building` | tally-of | The counting unit of a building count is the building. |
-| `source-reported-characteristic` | `source-record` | source-of | Each characteristic value is tied to the source record it came from. |
+| `bbl` | `tax-lot` | identifier-of | The BBL identifies the lot. Users ask for "the BBL of" an address, and the schema holds it only as a property name. |
+| `bin` | `building` | identifier-of | The BIN identifies the building. Same reason as the BBL. |
+| `building` | `pluto-building-count` | contrasts-with | HPD's list of buildings and PLUTO's count disagree on about 27% of lots. The answer reports both, labelled by source. |
+| `address` | `address-resolution-outcome` | output-of | The outcome is the result of resolving a typed address. |
+| `address-resolution-outcome` | `candidate-street-name` | reported-with | Candidate street names are returned only when the outcome is ambiguous. |
+| `related-lot` | `bin` | found-through | Related lots are the other lots that share the resolved BIN. |
+| `related-lot` | `tax-lot` | same-subject-different-role | A related lot is another tax lot, reported next to the resolved one. |
+| `in-graph` | `tax-lot` | same-subject-different-role | In graph says whether the resolved lot is one the graph holds. |
+| `registration-id` | `registration` | identifier-of | The id identifies the registration, not the building it covers. Users quote the id from a notice. |
+| `hpd-registered` | `registration` | summary-of | The lot flag says some HPD registration exists on the lot. The registrations themselves are reached from the building, which the schema does not connect to the lot flag. |
+| `last-registered-date` | `registration-end-date` | contrasts-with | Users read "registered" as "valid until". One is when HPD last received the filing; the other is when the period ends. The answer gives both and does not call the registration current. |
 
 ## Labels
 
-All alternative labels were checked against every label in the vocabulary. No label is shared by two concepts.
+Reviewed 2026-11-12 across the whole vocabulary: no label (preferred, alternative or hidden) is shared by two concepts.
 
-| Label | Concept | Decision |
-| --- | --- | --- |
-| `parcel`, `lot` | `tax-lot` | Kept as alternative labels. `parcel` was decided 2026-11-11; `lot` is the specs' own shorthand. Neither collides with another label (`parcel count` is a different concept). `lot` is also the last component of a BBL, which is not a concept here. |
-| `structure` | `building` | Moved to a hidden label. Too generic to display (lot improvements, constructions). Still finds `building` in search. |
-| `address` | `street-address` | Moved to a hidden label. Q2 adds business and registered addresses, so a bare "address" would become ambiguous. Still finds the concept in search. |
-| `apartments` | `residential-units` | Moved to a hidden label. Colloquial and easily read as a kind of building. Still finds the concept in search. |
-| `borough-block-lot`, `building identification number`, `GRC`, `construction year`, `dwelling units`, `assessed total value`, `input address`, `match outcome`, `no match` | various | Reviewed; unambiguous, kept. `no match` (alt of `not found`) is not an outcome of its own. |
+- `number of buildings` was removed as an alternative label of `pluto-building-count`. It would send "number of buildings" to PLUTO's count alone, but an answer must give both counts (PLUTO's and HPD's list).
+- `assessed value` stays an alternative label of `assessed-total-value` because Q1.4 uses that wording. PLUTO also holds a land-only assessed value. If a question adds it, qualify this label.
+- `lot` (of `tax-lot`) can also mean a vacant lot in everyday use. The definition and scope note settle it; kept.
+- `parcel`, `structure`, `unit count`, `building class code`, `borough-block-lot` and `building identification number` are plain synonyms; kept.
+- Hidden labels hold source column spellings, so a schema or query that says them finds the concept without displaying them: `numbldgs`, `unitsres`, `yearbuilt`, `bldgclass`, `assesstot`.
 
-The label changes alter no concept ID.
+### Q2 label review (2026-11-12)
+
+No label (preferred, alternative or hidden) is shared by two concepts (`make thesaurus` checks this).
+
+- `registered owner` and `owner of record` are alternative labels of `owner-contact`, the wording the question uses. The definition says it is a contact HPD records, not proof of title.
+- Bare `owner` is deliberately not a label of any concept. It would send users to the HPD contact when they may mean the deed grantee or an Owner Portfolio.
+- `registration` is an alternative label of `registration` (HPD registration). It can also mean a rent registration or a business registration; the preferred label carries "HPD".
+- Hidden labels hold the source spellings: `registrationid`, `lastregistrationdate`, `registrationenddate`, `corporationname`, and the stored contact types `CorporateOwner`, `IndividualOwner`, `JointOwner`.
+
+## Navigation pilot
+
+Reviewed 2026-11-12 against Q1's worked examples. No gaps.
+
+| Example | Route |
+| --- | --- |
+| Lot with three buildings (anchor D) | `tax-lot` to `building` through the schema's `has-building`; `building` to `bin` |
+| PLUTO counts more buildings than HPD lists | `building` to `pluto-building-count` (contrasts-with) |
+| Ambiguous address | `address` to `address-resolution-outcome` to `candidate-street-name` |
+| Condominium or shared BIN | `bin` to `related-lot` to `tax-lot` |
+| A lot outside the rental scope | `in-graph` to `tax-lot` |
+| "What is the year built?" | `tax-lot` property `yearBuilt`, through the schema; no thesaurus link needed |
+
+### Q2 navigation pilot (2026-11-12)
+
+| Example | Route |
+| --- | --- |
+| Single registration (anchor A) | `building` to `registration` through `has-registration`; `registration` to `owner-contact` through `has-owner-contact` (both schema) |
+| Co-op owner (anchor C) | `owner-contact` to `owner-name`, schema; spelling differs from PLUTO's, reported as recorded |
+| Multi-building lot (anchor D) | `tax-lot` to `building` (Q1) to `registration`; the lot flag `hpd-registered` to `registration` (summary-of) |
+| Registration ended before the snapshot | `last-registered-date` to `registration-end-date` (contrasts-with) |
+| Quoted registration number | `registration-id` to `registration` (identifier-of) |
+| No registration found | `hpd-registered` false; no route to a registration, by design |
+
+No gaps.
 
 ## External mappings
 
-Schemes checked, definitions read: schema.org, PROV-O, W3C ORG. Wikidata was not chosen. The SSSOM file `mappings/external.sssom.tsv` is the record.
-
-| Concept | Result |
-| --- | --- |
-| `street-address` | `skos:closeMatch` schema:PostalAddress (not exact: a mailing address need not name a place; ours has no postal code). |
-| `source-snapshot`, `source-record` | `skos:broadMatch` prov:Entity. Not closer: PROV-O has no snapshot or record term. `prov:Collection` was considered for a snapshot and rejected (a snapshot is a version of a dataset, not defined as a collection of constituents here). |
-| `alternate-address` | None found in schema.org. |
-| All other concepts | None found in schema.org, PROV-O or W3C ORG. ORG has `org:Site` and `org:siteAddress` but no term for a building, tax lot, BBL, BIN or source record. ORG becomes relevant from Q2. |
+None sought for Q1 (decided 2026-11-12). Nothing in Q1's answers needs an external scheme. Revisit when party, organization or provenance questions arrive (W3C ORG, PROV-O). Q2 (2026-11-12): none sought either. HPD registration, owner contact and owner name have no true equivalent in W3C ORG, PROV-O or schema.org that the agent needs; a mapping would be a guess. No SSSOM file exists yet; it is created with the first mapping.
 
 ## Exceptions
 
-- `matched-exactly`: no related link; it is a value of the outcome scheme, reachable through that scheme.
-- `not-found`: no related link; as `matched-exactly`.
-- `year-built`, `building-class`, `assessed-value`, `residential-units` (apart from `unit-count`): no direct related link; each is reached through its parent `source-reported-characteristic`.
-- `address-resolution-outcome` to its four values: not linked with related; the scheme carries that relation.
-- `street-address` and `street-name-variant`: not linked directly; the variant concept is reached through `matched-by-variant`. No defensible extra association.
+Concepts with no related link, left unlinked on purpose:
+
+- `has-building`, `year-built`, `building-class`, `residential-units`, `assessed-total-value`: the schema already declares the node, property or relationship they belong to, and the check enforces it.
+- `matched-exactly`, `matched-by-variant`, `ambiguous`, `not-found`, `service-unavailable`: a flat value set in `address-resolution-outcomes`; they relate to the outcome by scheme membership, not by an association.
+- Q2: `has-registration`, `has-owner-contact`, `owner-contact`, `contact-type`, `owner-name`: the schema declares the node, property or relationship they belong to. `corporate-owner`, `individual-owner`, `joint-owner`: a flat value set in `owner-contact-types`; they relate to `contact-type` by scheme membership.

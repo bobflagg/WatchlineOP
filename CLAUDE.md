@@ -11,7 +11,7 @@ Accepted decisions in `specs/decisions.md` override anything else. Source invent
 - `specs/roadmap.md`: the pipeline stages, exit criteria, acceptance types, expected-answer policy, order of work and open decisions.
 - `specs/stage1-procedure.md`: the per-question procedure for stage 1 (CLaRO-style cleanup, then vocabulary).
 - `specs/tech-stack.md`: data sources and ingestion, tools by stage, the SKOS MCP server, adaptations to the pipeline, planned layout.
-- `specs/physical-implementation.md`: mappings, Neo4j schema, validation, access rules, rebuild and environment.
+- `specs/physical-implementation.md`: where mappings live (profiles, loaders), Q1 encodings, validation, access rules, rebuild and environment.
 - `specs/dependencies.md`: external references (PESP guide, BOR releases).
 - `specs/decisions.md`: dated log of accepted decisions.
 - `specs/competency-questions.md`: the 28 competency questions, their vocabulary, and how examples were chosen.
@@ -35,7 +35,7 @@ Use `make help`. Steps are Make targets, and unbuilt steps fail on purpose ("not
 The controlled vocabulary is managed with [Intentional Arrangement SKOS](https://github.com/jesstalisman-ia/intentional-arrangement-skos). Its MCP server is registered in Claude Code as `skos` (see `specs/tech-stack.md`).
 
 - Tools: `validate_skos`, `convert_skos`, `skos_profile`, `parse_skos_vocabulary`.
-- Use `validate_skos` after every change to a file in `vocabulary/`, and report its findings before moving on.
+- Use `validate_skos` after every change to a file in `vocabulary/`, and report its findings before moving on. From the command line, `make vocab` runs the same validator (set `SKOS_REPO` if the clone is not at `~/git-alt/intentional-arrangement-skos`).
 - Turtle is the committed format. Use `convert_skos` for other serializations; do not commit converted copies.
 - If the `skos` tools are not listed, say so. Do not validate by hand or claim a vocabulary is valid without running the tool.
 - The server is third-party code. Do not modify it, and do not send anything other than vocabulary files to it.
@@ -125,12 +125,21 @@ Stopping rules:
 
 ## Open points
 
-- Dump identifier and checksum for the frozen snapshot are not yet recorded (`data/README.md`).
+- Dump identifier and checksum for the frozen snapshot are not yet recorded (`data/README.md`). Q1 was restarted on 2026-11-11 with a minimal graph (`Lot`, `Building`, `HAS_BUILDING`); Q1.1 to Q1.4 pass `make test`. Re-run `make test` and re-verify the fixtures once the dump is recorded.
 - BOR release v0.2.1 and run `2026-05-29-149e871f` are provisional; edge-level evidence is not yet exported.
-- Name-normalization rules, the `mail_drop_list`, ACRIS document-type descriptions (`acris_document_codes` is unusable locally) and which HPD contact types count as "registered owner" are undefined. Settle each when the first question needing it is started.
+- Name-normalization rules, the `mail_drop_list`, ACRIS document-type descriptions (`acris_document_codes` is unusable locally) are undefined (HPD contact types for "registered owner" were settled for Q2 on 2026-11-12). Settle each when the first question needing it is started.
+- Q1 restart: the old Q1 stage 1-6 artifacts were archived to `ignore-this-directory/old-q1-artifacts-2026-11-11.tar.gz` and deleted. All six stage procedures (`specs/stage1-procedure.md` to `stage6-procedure.md`) are rewritten for the minimal model and were run for Q1. Q1 acceptance is pending only on the frozen dump identity (`data/README.md`). To start the next question, run one stage at a time: "Execute specs/stage1-procedure.md for Q2", then stage 2, and so on.
+- Q1 stage 1 is complete: `validate_skos` reports 0 violations and 0 warnings (21 concepts, 100% documented). Two info notes remain: neither scheme names a `dcterms:publisher`. Set it when the vocabulary is first published.
+- Q1 stage 2 is complete: `make profiles` passes 78/78 (source profiles for PLUTO, HPD registrations and Geosupport; `profiles/q01.yaml`). Per-record evidence fields are not defined yet; add them when a question first stores derived edges, claims, documents or cached responses.
+- Q1 stage 3 is complete: no hierarchy needed (see `vocabulary/taxonomy-notes.md`). Add `scripts/check_taxonomy.py` and implement `make taxonomy` when the first question has a link or collection to check.
+- Q1 stage 4 is complete: 8 related pairs and the label review are written (`vocabulary/thesaurus-notes.md`); `make thesaurus` passes 11/11. `validate_skos` (via `skoslib.validate_rdf`, 2026-11-12): 0 violations, 0 warnings; the only SHACL notes are the optional `dcterms:publisher` info items. Stage 4 is complete for Q1. No external mappings sought.
+- Q1 stage 5 is complete: `make ontology` passes 28/28; the OOPS! rescan (`make oops`) shows only P13 (minor, accepted: no inverse for `hasBuilding`). Stage 6 procedure is rewritten for the minimal model (`specs/stage6-procedure.md`); next is running it for Q1.
+- Q1 stage 6: shapes written and passing (`make shapes` 46/46). Results in `tests/results/q01-2026-11-12.yaml`: graph, retrieval/extraction and investigation acceptance all `pending` until the frozen dump is identified in `data/README.md` (and, for the last two, until the downstream consumer runs them).
+- Q2 stages 1 and 2 are complete: `make test` passes Q2.1 (22) and Q2.2 (26) alongside Q1; `make profiles` passes 136/136 over Q1 and Q2 (`profiles/q02.yaml`, `profiles/hpd_contacts.yaml`). Registered owner = the contact types `CorporateOwner`, `IndividualOwner`, `JointOwner` (decision 2026-11-12). `registrationcontactid` is not unique in the snapshot. Q2 stage 3 is complete: no hierarchy needed (`vocabulary/taxonomy-notes.md`). Q2 stage 4 is complete: 3 related pairs, label review, no external mappings; `make thesaurus` passes 11/11. Q2 stage 5 is complete: `make ontology` passes 41/41; `make oops` shows only P13 (minor, accepted: now 3 properties lack inverses). Q2 stage 6 is complete: after a full rebuild, `make graph` passes (shapes 78/78 over Q1 and Q2), `make ontology` 41/41, `make thesaurus` 11/11; results in `tests/results/q02-2026-11-12.yaml`. Stage 6 found `registrationid` 0 is a placeholder on 3 unrelated buildings; it is excluded and counted. Q2 acceptance is pending on the frozen dump identity.
 - Q26 says anchor C is excluded from the Owner Portfolio as a co-op; Q9 and Q19 say it is in one. Resolve before Q9, Q19 or Q26.
 - Q20's list of required component questions is incomplete.
-- Q1 stage 2: Geosupport fields and the answer fields depending on them are `pending` until the first cached responses are recorded (`profiles/geosupport.yaml`, `profiles/q01-answer.yaml`).
-- Q1 stage 4 is done (22 related pairs, 3 external mappings; see `vocabulary/thesaurus-notes.md`). Later questions extend the notes and the SSSOM file.
-- Q1 stage 3 is done. Neither scheme names a `dcterms:publisher` (an info-level `validate_skos` note). Set it when the vocabulary is first published. Later questions add their hierarchies to `vocabulary/taxonomy-notes.md`.
-- Q1 stage 5: ontology passes the reasoner, ROBOT report and OOPS! (no critical pitfalls). Open: the ontology license (set `dc:license`; `ontology/report-profile.txt` keeps the ROBOT license rule at INFO), and vocabulary concepts for run, source category, assertion type and review status (mapped today as "no concept:").
+
+
+# IMPORTANT!!
+
+Make your responses concise.  Don't throw a wall of text at me!!
