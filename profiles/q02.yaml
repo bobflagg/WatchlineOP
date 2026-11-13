@@ -118,6 +118,6 @@ diagnostics: []
 not_stored:   # deliberately absent from the graph
   - {term: registration period start, reason: not in the source; the answer says so}
   - {term: whether a registration is current, reason: the agent's reading of registrationEnd against a stated date}
-  - {term: other contact types (Agent, HeadOfficer, Officer, Shareholder, SiteManager, Lessee), reason: different roles; belong to later questions}
-  - {term: contact business address and title, reason: not needed for Q2}
+  - {term: other contact types (Agent, HeadOfficer, Officer, Shareholder, SiteManager, Lessee), reason: different roles; loaded as RoleContact for Q4}
+  - {term: contact title, reason: not needed for Q2; role contacts carry it (Q4)}
   - {term: hpd_contacts.registrationcontactid, reason: not unique in the snapshot}

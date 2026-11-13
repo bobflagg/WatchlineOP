@@ -1,17 +1,17 @@
 {
   "neo4j": "Neo4j Kernel 2026.04.0 enterprise",
   "shacl2cypher": "0.3.0",
-  "rules": 64,
+  "rules": 82,
   "checks": [
     {
-      "check": "all 64 rules compile in strict mode",
+      "check": "all 82 rules compile in strict mode",
       "passed": true,
       "detail": "[] []"
     },
     {
       "check": "the graph is loaded",
       "passed": true,
-      "detail": "(3336386, 3207572)"
+      "detail": "(3863275, 3734461)"
     },
     {
       "check": "graph conforms to BuildingRegistrationShape.hasRegistration.class",
@@ -309,6 +309,11 @@
       "detail": "0 violations"
     },
     {
+      "check": "graph conforms to RegistrationRoleShape.hasRoleContact.class",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
       "check": "graph conforms to RegistrationShape.hasOwnerContact.class",
       "passed": true,
       "detail": "0 violations"
@@ -334,6 +339,91 @@
       "detail": "0 violations"
     },
     {
+      "check": "graph conforms to RoleContactShape.addressLineTwo.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RoleContactShape.addressLineTwo.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RoleContactShape.contactTitle.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RoleContactShape.contactTitle.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RoleContactShape.contactType.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RoleContactShape.contactType.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RoleContactShape.contactType.pattern",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RoleContactShape.corporationName.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RoleContactShape.corporationName.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RoleContactShape.inv_hasRoleContact.maxCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RoleContactShape.inv_hasRoleContact.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RoleContactShape.mailingAddress.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RoleContactShape.mailingAddress.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RoleContactShape.personName.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RoleContactShape.personName.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RoleContactShape.zipCode.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RoleContactShape.zipCode.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
       "check": "graph conforms to queries/checks/q02-duplicate-pair.cypher",
       "passed": true,
       "detail": "0 violations"
@@ -345,6 +435,16 @@
     },
     {
       "check": "graph conforms to queries/checks/q03-duplicate-deed-pair.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q04-corporation-name-types.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q04-site-manager-address.cypher",
       "passed": true,
       "detail": "0 violations"
     },
@@ -654,9 +754,84 @@
       "detail": ""
     },
     {
+      "check": "negative: role contact without type is flagged by RoleContactShape.contactType.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: role contact with owner type is flagged by RoleContactShape.contactType.pattern",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: role contact type as number is flagged by RoleContactShape.contactType.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: role contact with no registration is flagged by RoleContactShape.inv_hasRoleContact.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: role contact on two registrations is flagged by RoleContactShape.inv_hasRoleContact.maxCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: HAS_ROLE_CONTACT ends on a registration is flagged by RegistrationRoleShape.hasRoleContact.class",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: role contact with empty title is flagged by RoleContactShape.contactTitle.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: role contact with empty corporation name is flagged by RoleContactShape.corporationName.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: role contact with empty person name is flagged by RoleContactShape.personName.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: person name as number is flagged by RoleContactShape.personName.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: role contact with empty address is flagged by RoleContactShape.mailingAddress.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: role contact with empty zip is flagged by RoleContactShape.zipCode.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: corporation name on a head officer is flagged by queries/checks/q04-corporation-name-types.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: site manager with an address is flagged by queries/checks/q04-site-manager-address.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate contactKey is refused by a native constraint",
+      "passed": true,
+      "detail": ""
+    },
+    {
       "check": "seeded bad data left no trace (rolled back)",
       "passed": true,
-      "detail": "(3336386, 3207572) -> (3336386, 3207572)"
+      "detail": "(3863275, 3734461) -> (3863275, 3734461)"
     }
   ]
 }

@@ -1,0 +1,33 @@
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q4 example data. Values come from the verified fixtures in tests/q4_*/fixtures.yaml
+# (HPD contacts through 2026-05-29). Person names are not repeated: personName is left out here.
+
+# Anchor A: four roles beside the owner. The owner contact is Q2.2.
+id:reg-316103 a onto:Registration ; onto:registrationId 316103 ;
+    onto:hasRoleContact id:role-316103-agent, id:role-316103-head, id:role-316103-share, id:role-316103-site .
+id:role-316103-agent a onto:RoleContact ; onto:contactType "Agent" ; onto:mailingAddress "746 61ST STREET" ; onto:zipCode "11220" .
+id:role-316103-head  a onto:RoleContact ; onto:contactType "HeadOfficer" ; onto:contactTitle "PRESIDENT" ; onto:mailingAddress "746 61ST STREET" ; onto:zipCode "11220" .
+id:role-316103-share a onto:RoleContact ; onto:contactType "Shareholder" ; onto:mailingAddress "746 61ST STREET" ; onto:zipCode "11220" .
+# A site manager has no address in the source.
+id:role-316103-site  a onto:RoleContact ; onto:contactType "SiteManager" .
+
+# Anchor C: the agent is a corporation (and a person is recorded too); a different head officer title.
+id:reg-350423 a onto:Registration ; onto:registrationId 350423 ;
+    onto:hasRoleContact id:role-350423-agent, id:role-350423-head, id:role-350423-site .
+id:role-350423-agent a onto:RoleContact ; onto:contactType "Agent" ; onto:corporationName "438 52 ST. OWNERS CORP" .
+id:role-350423-head  a onto:RoleContact ; onto:contactType "HeadOfficer" ; onto:contactTitle "PRESIDENT OF CO" .
+id:role-350423-site  a onto:RoleContact ; onto:contactType "SiteManager" .
+
+# An Officer with no name recorded: none is invented.
+id:reg-386590 a onto:Registration ; onto:registrationId 386590 ; onto:hasRoleContact id:role-386590-officer .
+id:role-386590-officer a onto:RoleContact ; onto:contactType "Officer" .
+
+# A Lessee beside joint owners.
+id:reg-10067 a onto:Registration ; onto:registrationId 10067 ; onto:hasRoleContact id:role-10067-lessee .
+id:role-10067-lessee a onto:RoleContact ; onto:contactType "Lessee" .
+
+# No contact other than the owner: no role contact is inferred.
+id:reg-10061 a onto:Registration ; onto:registrationId 10061 .

@@ -12,6 +12,10 @@ Run after scripts/load_buildings.py. Rules (see tests/q2_1/expected.sql and test
   - OwnerContact: contacts of type CorporateOwner, IndividualOwner or JointOwner on a loaded registration.
     Exact duplicates (same registration, type and name) are one contact. registrationcontactid is not
     unique in the snapshot, so the key is contactKey = registrationid|type|name. name = corporationname, or first, middle initial and last name joined; blank is absent.
+  - RoleContact (Q4): contacts of every other type (Agent, HeadOfficer, Officer, Shareholder, SiteManager, Lessee) on a
+    loaded registration. Exact duplicates (same registration, type, corporation name, person name and title) are one
+    contact: contactKey = registrationid|type|corporation|person|title. A name part, the title or an address part
+    that is blank is absent; if duplicates disagree on an address part it is absent, never picked.
   - Both endpoints must already exist; a missing Building is an error.
 
 Safe to rerun (MERGE). Reads the source read-only and writes only to the POC database.
@@ -60,7 +64,28 @@ WHERE c.type IN {OWNER_TYPES}
   AND c.registrationid IN (SELECT registrationid FROM hpd_registrations WHERE bbl IS NOT NULL AND {VALID_BIN})
 GROUP BY c.registrationid, c.type, 3 ORDER BY 1, 2, 3
 """
+ADDR = "nullif(btrim(concat_ws(' ', nullif(btrim(c.businesshousenumber), ''), nullif(btrim(c.businessstreetname), ''))), '')"
+
+
+def agree(expr):
+    return (f"CASE WHEN count(DISTINCT {expr}) = 1 AND count({expr}) = count(*) THEN min({expr}) END")
+
+
+ROLES_SQL = f"""
+SELECT c.registrationid::bigint, c.type, nullif(btrim(c.corporationname), '') AS corp,
+       nullif(btrim(concat_ws(' ', nullif(btrim(c.firstname), ''), nullif(btrim(c.middleinitial), ''),
+                                    nullif(btrim(c.lastname), ''))), '') AS person,
+       nullif(btrim(c.title), '') AS title,
+       {agree(ADDR)} AS mailing_address,
+       {agree("nullif(btrim(c.businessapartment), '')")} AS address_line2,
+       {agree("nullif(btrim(c.businesszip), '')")} AS zip
+FROM hpd_contacts c
+WHERE c.type NOT IN {OWNER_TYPES}
+  AND c.registrationid IN (SELECT registrationid FROM hpd_registrations WHERE bbl IS NOT NULL AND {VALID_BIN})
+GROUP BY c.registrationid, c.type, 3, 4, 5 ORDER BY 1, 2, 3, 4, 5
+"""
 CONSTRAINTS = [
+    "CREATE CONSTRAINT role_contact_key_unique IF NOT EXISTS FOR (c:RoleContact) REQUIRE c.contactKey IS UNIQUE",
     "CREATE CONSTRAINT registration_id_unique IF NOT EXISTS FOR (r:Registration) REQUIRE r.registrationId IS UNIQUE",
     "CREATE CONSTRAINT owner_contact_key_unique IF NOT EXISTS FOR (c:OwnerContact) REQUIRE c.contactKey IS UNIQUE",
 ]
@@ -82,12 +107,22 @@ SET c.contactType = row.type, c.name = row.name, c.mailingAddress = row.addr,
 MERGE (r)-[:HAS_OWNER_CONTACT]->(c)
 RETURN count(*) AS linked
 """
+LOAD_ROLES = """
+UNWIND $rows AS row
+MATCH (r:Registration {registrationId: row.rid})
+MERGE (c:RoleContact {contactKey: row.key})
+SET c.contactType = row.type, c.corporationName = row.corp, c.personName = row.person, c.title = row.title,
+    c.mailingAddress = row.addr, c.addressLine2 = row.line2, c.zip = row.zip
+MERGE (r)-[:HAS_ROLE_CONTACT]->(c)
+RETURN count(*) AS linked
+"""
 COUNTS = """
 CALL () { MATCH (r:Registration) RETURN count(r) AS regs }
 CALL () { MATCH (:Building)-[h:HAS_REGISTRATION]->(:Registration) RETURN count(h) AS pairs,
           count(h.lastRegistered) AS lasts, count(h.registrationEnd) AS ends }
 CALL () { MATCH (c:OwnerContact) RETURN count(c) AS contacts, count(c.name) AS named }
-RETURN regs, pairs, lasts, ends, contacts, named
+CALL () { MATCH (c:RoleContact) RETURN count(c) AS roles, count(c.title) AS titled, count(c.mailingAddress) AS addressed }
+RETURN regs, pairs, lasts, ends, contacts, named, roles, titled, addressed
 """
 
 
@@ -109,9 +144,9 @@ def main() -> int:
         print(f"refusing: NEO4J_DATABASE is not the POC database '{POC_DATABASE}'", file=sys.stderr)
         return 1
 
-    staged = {"pairs": 0, "lasts": 0, "ends": 0, "contacts": 0, "named": 0}
+    staged = {"pairs": 0, "lasts": 0, "ends": 0, "contacts": 0, "named": 0, "roles": 0, "titled": 0, "addressed": 0}
     regs = set()
-    linked_pairs = linked_contacts = 0
+    linked_pairs = linked_contacts = linked_roles = 0
     driver = GraphDatabase.driver(os.environ["NEO4J_URI"], auth=(os.environ["NEO4J_USER"], os.environ["NEO4J_PASSWORD"]))
     try:
         driver.verify_connectivity()
@@ -123,7 +158,7 @@ def main() -> int:
         for c in CONSTRAINTS:
             session.run(c).consume()
         # registrationid 0 was loaded before it was found to be a placeholder; remove it and its contacts
-        session.run("MATCH (r:Registration) WHERE r.registrationId < 1 OPTIONAL MATCH (r)-[:HAS_OWNER_CONTACT]->(c) DETACH DELETE c, r").consume()
+        session.run("MATCH (r:Registration) WHERE r.registrationId < 1 OPTIONAL MATCH (r)-[:HAS_OWNER_CONTACT|HAS_ROLE_CONTACT]->(c) DETACH DELETE c, r").consume()
         with psycopg.connect(os.environ["JUSTFIX_DATABASE_URL"]) as pg:
             pg.read_only = True
             for rows in batches(pg, "pairs", PAIRS_SQL):
@@ -145,13 +180,24 @@ def main() -> int:
                 staged["contacts"] += len(batch)
                 staged["named"] += sum(1 for r in batch if r["name"])
                 linked_contacts += session.execute_write(lambda tx, b=batch: tx.run(LOAD_CONTACTS, rows=b).single()["linked"])
+            for rows in batches(pg, "roles", ROLES_SQL):
+                batch = [{"key": f"{r}|{t}|{co or ''}|{pe or ''}|{ti or ''}", "rid": r, "type": t, "corp": co, "person": pe,
+                          "title": ti, "addr": a, "line2": l, "zip": z} for r, t, co, pe, ti, a, l, z in rows]
+                staged["roles"] += len(batch)
+                staged["titled"] += sum(1 for r in batch if r["title"])
+                staged["addressed"] += sum(1 for r in batch if r["addr"])
+                linked_roles += session.execute_write(lambda tx, b=batch: tx.run(LOAD_ROLES, rows=b).single()["linked"])
         g = session.run(COUNTS).single()
 
     print(f"staged: registrations {len(regs):,}, pairs {staged['pairs']:,} (dates {staged['lasts']:,}/{staged['ends']:,}), "
           f"owner contacts {staged['contacts']:,} (named {staged['named']:,})")
     print(f"graph:  registrations {g['regs']:,}, pairs {g['pairs']:,} (dates {g['lasts']:,}/{g['ends']:,}), "
           f"owner contacts {g['contacts']:,} (named {g['named']:,})")
-    ok = (linked_pairs == staged["pairs"] and linked_contacts == staged["contacts"]
+    print(f"role contacts: staged {staged['roles']:,} (titled {staged['titled']:,}, addressed {staged['addressed']:,}), "
+          f"graph {g['roles']:,} ({g['titled']:,}, {g['addressed']:,})")
+    ok = (linked_roles == staged["roles"] and (staged["roles"], staged["titled"], staged["addressed"])
+          == (g["roles"], g["titled"], g["addressed"])
+          and linked_pairs == staged["pairs"] and linked_contacts == staged["contacts"]
           and (len(regs), staged["pairs"], staged["lasts"], staged["ends"], staged["contacts"], staged["named"])
           == (g["regs"], g["pairs"], g["lasts"], g["ends"], g["contacts"], g["named"]))
     print("reconciled" if ok else "MISMATCH between staged and graph counts", file=sys.stdout if ok else sys.stderr)

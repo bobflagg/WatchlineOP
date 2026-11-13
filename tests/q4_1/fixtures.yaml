@@ -1,0 +1,11 @@
+# Q4.1 expected non-owner contacts per registration. Provisional until the frozen dump is identified (data/README.md).
+# Checked read-only 2026-11-12. check_roles.py re-derives each from the source, so a stale fixture fails.
+# Person names are not repeated: only the role, title and whether a corporation / person name is recorded are compared.
+# contacts: [contactType, title, corporation recorded, person recorded]
+registrations:
+  - {bin: "3014788", registrationId: 316103, note: "anchor A: four roles beside the owner", contacts: [[Agent, null, false, true], [HeadOfficer, PRESIDENT, false, true], [Shareholder, null, false, true], [SiteManager, null, false, true]]}
+  - {bin: "3013901", registrationId: 350423, note: "anchor C: the agent is a corporation and a person", contacts: [[Agent, null, true, true], [HeadOfficer, "PRESIDENT OF CO", false, true], [SiteManager, null, false, true]]}
+  - {bin: "3346270", registrationId: 386590, note: "an Officer with no name recorded", contacts_include: [[Officer, null, false, false]]}
+  - {bin: "5032172", registrationId: 10067, note: "a Lessee beside joint owners", contacts_include: [[Lessee, null, null, null]]}
+  - {bin: "5048404", registrationId: 10061, note: "no contact other than the owner", contacts: []}
+totals: {contacts: 526889, unnamed: 1497, titled: 119312, regs: 176618}

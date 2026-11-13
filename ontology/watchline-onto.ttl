@@ -11,7 +11,7 @@
 
 <https://watchline.example/onto/watchline> a owl:Ontology ;
     dct:title "Watchline ontology"@en ;
-    dct:description "Classes and properties for the WatchlineOP landlord research graph. Q1 covers tax lots, buildings and their source-reported characteristics. Q2 adds HPD registrations and their owner contacts. Q3 adds deeds, their grantees and the mailing addresses of grantees and owner contacts."@en .
+    dct:description "Classes and properties for the WatchlineOP landlord research graph. Q1 covers tax lots, buildings and their source-reported characteristics. Q2 adds HPD registrations and their owner contacts. Q3 adds deeds, their grantees and the mailing addresses of grantees and owner contacts. Q4 adds the non-owner contacts HPD lists on a registration (managing agent, head officer, site manager and other roles)."@en .
 
 onto:question a owl:AnnotationProperty ;
     rdfs:label "question"@en ;
@@ -114,7 +114,7 @@ onto:Registration a owl:Class ;
     rdfs:label "HPD registration"@en ;
     rdfs:comment "A multiple-dwelling registration filed with HPD, identified by its registration id. One registration can cover several buildings, and a building can have several registrations. An HPD registrant is who registered, not proof of title."@en ;
     onto:question "Q2.1", "Q2.2" ;
-    owl:disjointWith onto:Building, onto:OwnerContact .
+    owl:disjointWith onto:Building, onto:OwnerContact, onto:RoleContact .
 
 onto:OwnerContact a owl:Class ;
     rdfs:label "registered owner contact"@en ;
@@ -162,9 +162,9 @@ onto:registrationEnd a owl:DatatypeProperty ;
 
 onto:contactType a owl:DatatypeProperty, owl:FunctionalProperty ;
     rdfs:label "contact type"@en ;
-    rdfs:comment "The type HPD gives an owner contact: CorporateOwner, IndividualOwner or JointOwner. Stored as HPD spells it."@en ;
-    onto:question "Q2.2" ;
-    rdfs:domain onto:OwnerContact ;
+    rdfs:comment "The type HPD gives a contact, stored as HPD spells it. An owner contact has CorporateOwner, IndividualOwner or JointOwner; a role contact has Agent, HeadOfficer, Officer, Shareholder, SiteManager or Lessee. The type is the role; a title never changes it."@en ;
+    onto:question "Q2.2", "Q4.1" ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( onto:OwnerContact onto:RoleContact ) ] ;
     rdfs:range xsd:string .
 
 onto:ownerName a owl:DatatypeProperty, owl:FunctionalProperty ;
@@ -254,21 +254,190 @@ onto:granteeName a owl:DatatypeProperty, owl:FunctionalProperty ;
 
 onto:mailingAddress a owl:DatatypeProperty, owl:FunctionalProperty ;
     rdfs:label "mailing address"@en ;
-    rdfs:comment "The street line of the address a party gives: for a grantee the first address line on the deed, for an owner contact the business house number and street name. Can hold a care-of line. Absent when blank, or for an owner contact when exact duplicate rows disagree."@en ;
-    onto:question "Q3.2", "Q3.5" ;
-    rdfs:domain [ a owl:Class ; owl:unionOf ( onto:Grantee onto:OwnerContact ) ] ;
+    rdfs:comment "The street line of the address a party gives: for a grantee the first address line on the deed, for an owner or role contact the business house number and street name. Can hold a care-of line. Absent when blank, or for an owner or role contact when exact duplicate rows disagree (always absent for a site manager)."@en ;
+    onto:question "Q3.2", "Q3.5", "Q4.2" ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( onto:Grantee onto:OwnerContact onto:RoleContact ) ] ;
     rdfs:range xsd:string .
 
 onto:addressLineTwo a owl:DatatypeProperty, owl:FunctionalProperty ;
     rdfs:label "address line two"@en ;
     rdfs:comment "The second address line a party gives (a unit, suite, floor or another street line), as recorded. Reported apart and never compared. Absent when blank."@en ;
-    onto:question "Q3.2", "Q3.5" ;
-    rdfs:domain [ a owl:Class ; owl:unionOf ( onto:Grantee onto:OwnerContact ) ] ;
+    onto:question "Q3.2", "Q3.5", "Q4.2" ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( onto:Grantee onto:OwnerContact onto:RoleContact ) ] ;
     rdfs:range xsd:string .
 
 onto:zipCode a owl:DatatypeProperty, owl:FunctionalProperty ;
     rdfs:label "ZIP code"@en ;
     rdfs:comment "The ZIP code of the mailing address a party gives, as recorded (five digits, nine digits or non-US text). Absent when blank."@en ;
-    onto:question "Q3.2", "Q3.5" ;
-    rdfs:domain [ a owl:Class ; owl:unionOf ( onto:Grantee onto:OwnerContact ) ] ;
+    onto:question "Q3.2", "Q3.5", "Q4.2" ;
+    rdfs:domain [ a owl:Class ; owl:unionOf ( onto:Grantee onto:OwnerContact onto:RoleContact ) ] ;
+    rdfs:range xsd:string .
+
+# --- Q4 class ---
+
+onto:RoleContact a owl:Class ;
+    rdfs:label "role contact"@en ;
+    rdfs:comment "A contact of a non-owner type (managing agent, head officer, officer, shareholder, site manager or lessee) recorded on one HPD registration, in the role HPD records. A managing agent is a management relationship, not ownership. Not an owner contact, a deed grantee or a registrant."@en ;
+    onto:question "Q4.1", "Q4.2" ;
+    owl:disjointWith onto:OwnerContact, onto:Grantee .
+
+# --- Q4 object property ---
+
+onto:hasRoleContact a owl:ObjectProperty ;
+    rdfs:label "has role contact"@en ;
+    rdfs:comment "Links an HPD registration to a role contact recorded on it. Contacts belong to the registration, not to one building."@en ;
+    onto:question "Q4.1" ;
+    rdfs:domain onto:Registration ;
+    rdfs:range onto:RoleContact .
+
+# --- Q4 datatype properties on RoleContact ---
+
+onto:contactTitle a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "contact title"@en ;
+    rdfs:comment "The title HPD records for a role contact (for example PRESIDENT), trimmed and never normalized. Absent when blank. It does not change the contact's type."@en ;
+    onto:question "Q4.1" ;
+    rdfs:domain onto:RoleContact ;
+    rdfs:range xsd:string .
+
+onto:corporationName a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "corporation name"@en ;
+    rdfs:comment "The corporation name HPD records for a role contact, trimmed. Present on agents and lessees only; absent when blank."@en ;
+    onto:question "Q4.1" ;
+    rdfs:domain onto:RoleContact ;
+    rdfs:range xsd:string .
+
+onto:personName a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "person name"@en ;
+    rdfs:comment "The person name HPD records for a role contact: first name, middle initial and last name joined by single spaces, as recorded. Absent when blank. Shown only with the role it was recorded in; never repeated outside the answer."@en ;
+    onto:question "Q4.1" ;
+    rdfs:domain onto:RoleContact ;
+    rdfs:range xsd:string .
+
+# --- Q5 class ---
+
+onto:DosEntity a owl:Class ;
+    rdfs:label "DOS entity"@en ;
+    rdfs:comment "A record in the NY Department of State active-entity dataset: one filed business entity, identified by its DOS id. Present in the graph only when its name matches an owner or grantee name. Not an HPD owner contact or a deed grantee, and a name match is a lead, never identity."@en ;
+    onto:question "Q5.1", "Q5.2", "Q5.3" ;
+    owl:disjointWith onto:OwnerContact, onto:Grantee, onto:RoleContact .
+
+# --- Q5 datatype properties on DosEntity ---
+
+onto:dosId a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "DOS id"@en ;
+    rdfs:comment "The Department of State's identifier for a filed entity, unique in the dataset. Identifies the filing, not a person."@en ;
+    onto:question "Q5.1" ;
+    rdfs:domain onto:DosEntity ;
+    rdfs:range xsd:integer .
+
+onto:dosEntityName a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "DOS entity name"@en ;
+    rdfs:comment "The current entity name exactly as the Department of State records it (trimmed; periods, commas and apostrophes kept). Never normalized in the graph; the comparison with an owner or grantee name is computed at answer time."@en ;
+    onto:question "Q5.1" ;
+    rdfs:domain onto:DosEntity ;
+    rdfs:range xsd:string .
+
+onto:entityType a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "entity type"@en ;
+    rdfs:comment "The kind of entity in the Department's own wording (for example DOMESTIC LIMITED LIABILITY COMPANY). Not a controlled list here; it does not say whether the entity holds one property."@en ;
+    onto:question "Q5.1" ;
+    rdfs:domain onto:DosEntity ;
+    rdfs:range xsd:string .
+
+onto:jurisdiction a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "jurisdiction"@en ;
+    rdfs:comment "The place of formation the Department records, as written. Absent when blank."@en ;
+    onto:question "Q5.1" ;
+    rdfs:domain onto:DosEntity ;
+    rdfs:range xsd:string .
+
+onto:initialFilingDate a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "initial filing date"@en ;
+    rdfs:comment "The date the entity was first filed with the Department of State. Not a later amendment and not any property purchase."@en ;
+    onto:question "Q5.1" ;
+    rdfs:domain onto:DosEntity ;
+    rdfs:range xsd:date .
+
+onto:processName a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "DOS process name"@en ;
+    rdfs:comment "The name to which the Department forwards legal papers, as recorded. The statutory defaults THE COMPANY and THE LIMITED LIABILITY COMPANY are kept. Where service goes, not who runs the entity. Absent when blank."@en ;
+    onto:question "Q5.2" ;
+    rdfs:domain onto:DosEntity ;
+    rdfs:range xsd:string .
+
+onto:processAddress a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "DOS process address"@en ;
+    rdfs:comment "The street line of the address to which the Department forwards legal papers, as recorded. Absent when blank."@en ;
+    onto:question "Q5.2" ;
+    rdfs:domain onto:DosEntity ;
+    rdfs:range xsd:string .
+
+onto:processAddressLineTwo a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "DOS process address"@en ;
+    rdfs:comment "The second line of the process address (unit, suite, floor), as recorded. Reported apart, never compared. Absent when blank."@en ;
+    onto:question "Q5.2" ;
+    rdfs:domain onto:DosEntity ;
+    rdfs:range xsd:string .
+
+onto:processCity a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "DOS process address"@en ;
+    rdfs:comment "The city of the process address, as recorded. Absent when blank."@en ;
+    onto:question "Q5.2" ;
+    rdfs:domain onto:DosEntity ;
+    rdfs:range xsd:string .
+
+onto:processState a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "DOS process address"@en ;
+    rdfs:comment "The state of the process address, as recorded (not forced to two-letter codes). Absent when blank."@en ;
+    onto:question "Q5.2" ;
+    rdfs:domain onto:DosEntity ;
+    rdfs:range xsd:string .
+
+onto:processZip a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "DOS process address"@en ;
+    rdfs:comment "The ZIP of the process address, as recorded, not normalized. Absent when blank."@en ;
+    onto:question "Q5.2" ;
+    rdfs:domain onto:DosEntity ;
+    rdfs:range xsd:string .
+
+onto:registeredAgentName a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "registered agent name"@en ;
+    rdfs:comment "The registered agent the entity lists, as recorded. Can be a commercial service company; absent means none is listed and none is inferred."@en ;
+    onto:question "Q5.3" ;
+    rdfs:domain onto:DosEntity ;
+    rdfs:range xsd:string .
+
+onto:registeredAgentAddress a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "registered agent address"@en ;
+    rdfs:comment "The street line of the registered agent's address, as recorded. Shared by every client of a commercial agent. Absent when blank."@en ;
+    onto:question "Q5.3" ;
+    rdfs:domain onto:DosEntity ;
+    rdfs:range xsd:string .
+
+onto:registeredAgentAddressLineTwo a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "registered agent address"@en ;
+    rdfs:comment "The second line of the registered agent's address, as recorded. Reported apart. Absent when blank."@en ;
+    onto:question "Q5.3" ;
+    rdfs:domain onto:DosEntity ;
+    rdfs:range xsd:string .
+
+onto:registeredAgentCity a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "registered agent address"@en ;
+    rdfs:comment "The city of the registered agent's address, as recorded. Absent when blank."@en ;
+    onto:question "Q5.3" ;
+    rdfs:domain onto:DosEntity ;
+    rdfs:range xsd:string .
+
+onto:registeredAgentState a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "registered agent address"@en ;
+    rdfs:comment "The state of the registered agent's address, as recorded. Can be present when no agent name is. Absent when blank."@en ;
+    onto:question "Q5.3" ;
+    rdfs:domain onto:DosEntity ;
+    rdfs:range xsd:string .
+
+onto:registeredAgentZip a owl:DatatypeProperty, owl:FunctionalProperty ;
+    rdfs:label "registered agent address"@en ;
+    rdfs:comment "The ZIP of the registered agent's address, as recorded, not normalized. Absent when blank."@en ;
+    onto:question "Q5.3" ;
+    rdfs:domain onto:DosEntity ;
     rdfs:range xsd:string .

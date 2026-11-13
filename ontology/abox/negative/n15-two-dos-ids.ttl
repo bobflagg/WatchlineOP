@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: dosId is functional. A name shared by two filings is two DosEntity records, never one with two ids.
+id:bad-dos-3 a onto:DosEntity ; onto:dosId 1, 2 .

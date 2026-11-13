@@ -8,7 +8,7 @@ vocab:watchline a skos:ConceptScheme ;
     dct:title "Watchline vocabulary"@en ;
     dct:created "2026-11-11"^^xsd:date ;
     dct:description "Controlled vocabulary for the WatchlineOP landlord research ontology pipeline."@en ;
-    skos:hasTopConcept vocab:tax-lot, vocab:building, vocab:has-building, vocab:bbl, vocab:bin, vocab:address, vocab:hpd-registered, vocab:pluto-building-count, vocab:year-built, vocab:building-class, vocab:residential-units, vocab:assessed-total-value, vocab:address-resolution-outcome, vocab:candidate-street-name, vocab:related-lot, vocab:in-graph, vocab:registration, vocab:has-registration, vocab:registration-id, vocab:last-registered-date, vocab:registration-end-date, vocab:owner-contact, vocab:has-owner-contact, vocab:contact-type, vocab:owner-name, vocab:deed, vocab:has-deed, vocab:document-id, vocab:document-type, vocab:document-date, vocab:recorded-date, vocab:document-amount, vocab:grantee, vocab:has-grantee, vocab:grantee-name, vocab:mailing-address, vocab:address-line-two, vocab:zip-code, vocab:name-agreement, vocab:address-agreement, vocab:comparison-rule .
+    skos:hasTopConcept vocab:tax-lot, vocab:building, vocab:has-building, vocab:bbl, vocab:bin, vocab:address, vocab:hpd-registered, vocab:pluto-building-count, vocab:year-built, vocab:building-class, vocab:residential-units, vocab:assessed-total-value, vocab:address-resolution-outcome, vocab:candidate-street-name, vocab:related-lot, vocab:in-graph, vocab:registration, vocab:has-registration, vocab:registration-id, vocab:last-registered-date, vocab:registration-end-date, vocab:owner-contact, vocab:has-owner-contact, vocab:contact-type, vocab:owner-name, vocab:deed, vocab:has-deed, vocab:document-id, vocab:document-type, vocab:document-date, vocab:recorded-date, vocab:document-amount, vocab:grantee, vocab:has-grantee, vocab:grantee-name, vocab:mailing-address, vocab:address-line-two, vocab:zip-code, vocab:name-agreement, vocab:address-agreement, vocab:comparison-rule, vocab:role-contact, vocab:has-role-contact, vocab:contact-title, vocab:corporation-name, vocab:person-name, vocab:dos-entity, vocab:dos-id, vocab:dos-entity-name, vocab:entity-type, vocab:jurisdiction, vocab:initial-filing-date, vocab:dos-process-name, vocab:dos-process-address, vocab:registered-agent-name, vocab:registered-agent-address .
 
 vocab:address-resolution-outcomes a skos:ConceptScheme ;
     skos:prefLabel "Address resolution outcomes"@en ;
@@ -23,6 +23,13 @@ vocab:owner-contact-types a skos:ConceptScheme ;
     dct:created "2026-11-12"^^xsd:date ;
     dct:description "Controlled values for the type of an HPD owner contact."@en ;
     skos:hasTopConcept vocab:corporate-owner, vocab:individual-owner, vocab:joint-owner .
+
+vocab:role-contact-types a skos:ConceptScheme ;
+    skos:prefLabel "Role contact types"@en ;
+    dct:title "Role contact types"@en ;
+    dct:created "2026-11-12"^^xsd:date ;
+    dct:description "Controlled values for the recorded role of an HPD contact other than a registered owner."@en ;
+    skos:hasTopConcept vocab:agent, vocab:head-officer, vocab:officer, vocab:shareholder, vocab:site-manager, vocab:lessee .
 
 # --- Q1 graph and answer terms ---
 
@@ -278,7 +285,7 @@ vocab:owner-contact a skos:Concept ;
     skos:altLabel "registered owner"@en, "owner of record"@en ;
     skos:definition "A contact HPD records on a registration with an owner type: corporate owner, individual owner or joint owner. Holds the contact type and the name as recorded."@en ;
     skos:scopeNote "Not proof of title and not interchangeable with the deed grantee, a process contact or the managing agent. Other contact types (agent, head officer, officer, shareholder, site manager, lessee) are not owner contacts. A registration can have several; a registration can have none (12,827 have no owner contact), and then the answer says none is recorded."@en ;
-    skos:related vocab:grantee ;
+    skos:related vocab:grantee, vocab:role-contact, vocab:agent, vocab:dos-entity ;
     dct:source "specs/questions/q02.md" .
 
 vocab:has-owner-contact a skos:Concept ;
@@ -293,8 +300,8 @@ vocab:contact-type a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:topConceptOf vocab:watchline ;
     skos:prefLabel "contact type"@en ;
-    skos:definition "The type HPD gives an owner contact: corporate owner, individual owner or joint owner."@en ;
-    skos:scopeNote "Controlled values are in the scheme owner-contact-types."@en ;
+    skos:definition "The type HPD gives a contact on a registration: for an owner contact corporate owner, individual owner or joint owner; for a role contact managing agent, head officer, officer, shareholder, site manager or lessee."@en ;
+    skos:scopeNote "Controlled values are in the schemes owner-contact-types and role-contact-types. A person is shown only in the role HPD records, and the role is not inferred from a title."@en ;
     dct:source "specs/questions/q02.md" .
 
 vocab:owner-name a skos:Concept ;
@@ -304,8 +311,7 @@ vocab:owner-name a skos:Concept ;
     skos:altLabel "name as recorded"@en ;
     skos:definition "The name of an owner contact as HPD records it: the corporation name, or the first name, middle initial and last name joined."@en ;
     skos:scopeNote "Reported exactly as recorded; spellings of one entity differ across registrations (for example a trailing period). Absent when the source name is blank (422 contacts). Two spellings are not evidence that the owners differ or are the same."@en ;
-    skos:hiddenLabel "corporationname"@en ;
-    skos:related vocab:name-agreement ;
+    skos:related vocab:name-agreement, vocab:corporation-name, vocab:dos-entity-name ;
     dct:source "specs/questions/q02.md" .
 
 vocab:corporate-owner a skos:Concept ;
@@ -436,7 +442,7 @@ vocab:grantee-name a skos:Concept ;
     skos:hiddenLabel "name"@en ;
     skos:definition "The name of a grantee exactly as the deed records it."@en ;
     skos:scopeNote "Not normalized in the graph. Absent when the party row has no name (a few deed rows hold a person's name in the address field instead). Compared with an owner name only at answer time, under a stated rule."@en ;
-    skos:related vocab:name-agreement ;
+    skos:related vocab:name-agreement, vocab:dos-entity-name ;
     dct:source "specs/questions/q03.md" .
 
 vocab:mailing-address a skos:Concept ;
@@ -445,7 +451,7 @@ vocab:mailing-address a skos:Concept ;
     skos:prefLabel "mailing address"@en ;
     skos:altLabel "address line one"@en, "business address"@en ;
     skos:hiddenLabel "address1"@en, "businessstreetname"@en ;
-    skos:definition "The street line of the address a party gives: for a grantee the first address line on the deed, for an owner contact the business house number and street name from the HPD registration, as recorded."@en ;
+    skos:definition "The street line of the address a party gives: for a grantee the first address line on the deed, for an owner contact or role contact the business house number and street name from the HPD registration, as recorded."@en ;
     skos:scopeNote "Not the address of the property. Can be a care-of line, a person's name or a mail drop. Equal addresses at a mail drop are not evidence of anything. Reported as recorded; abbreviations (AVE and AVENUE) are different strings."@en ;
     skos:related vocab:address-agreement, vocab:address ;
     dct:source "specs/questions/q03.md" .
@@ -478,7 +484,7 @@ vocab:name-agreement a skos:Concept ;
     skos:prefLabel "name agreement"@en ;
     skos:definition "The result of comparing a grantee name with a recorded owner name under a stated rule: exact normalized, normalization match, different or not comparable."@en ;
     skos:scopeNote "A recorded comparison of strings. It is not a finding that the parties are the same, and a near match is not a finding. The rule is stated with the result. Computed at answer time; not stored."@en ;
-    skos:related vocab:grantee-name, vocab:owner-name, vocab:comparison-rule, vocab:address-agreement ;
+    skos:related vocab:grantee-name, vocab:owner-name, vocab:comparison-rule, vocab:address-agreement, vocab:dos-entity-name ;
     dct:source "specs/questions/q03.md" .
 
 vocab:address-agreement a skos:Concept ;
@@ -494,9 +500,9 @@ vocab:comparison-rule a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:topConceptOf vocab:watchline ;
     skos:prefLabel "comparison rule"@en ;
-    skos:definition "The identifier of the rule that produced an agreement: N1, N2 or A1."@en ;
-    skos:scopeNote "N1: uppercase, trim, collapse spaces. N2: N1, then remove periods and turn commas into spaces. Spaces inside a name are never removed. A1: street line equal after N1 and the first five ZIP digits equal."@en ;
-    skos:related vocab:name-agreement, vocab:address-agreement ;
+    skos:definition "The identifier of the rule that produced an agreement: N1, N2, N3 or A1."@en ;
+    skos:scopeNote "N1: uppercase, trim, collapse spaces. N2: N1, then remove periods and turn commas into spaces. Spaces inside a name are never removed. N3 (owner name against a DOS entity name only): N2, then remove apostrophes. A1: street line equal after N1 and the first five ZIP digits equal."@en ;
+    skos:related vocab:name-agreement, vocab:address-agreement, vocab:dos-entity-name ;
     dct:source "specs/questions/q03.md" .
 
 vocab:name-agreement-outcomes a skos:ConceptScheme ;
@@ -569,3 +575,191 @@ vocab:address-absent a skos:Concept ;
     skos:scopeNote "Not the same as differs."@en ;
     dct:source "specs/questions/q03.md" .
 
+vocab:role-contact a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "role contact"@en ;
+    skos:altLabel "HPD contact role"@en ;
+    skos:definition "A contact HPD records on a registration with a role other than owner: managing agent, head officer, officer, shareholder, site manager or lessee. Holds the role, the corporation name and person name as recorded, the title and the business address."@en ;
+    skos:scopeNote "Not an owner contact and not proof of title or control. A managing agent is a management relationship, not ownership. A registration can have several, or none (16,190 of 192,808 loaded registrations have no role contact). The same person or corporation can hold two roles; roles are reported separately and never merged."@en ;
+    skos:related vocab:owner-contact ;
+    dct:source "specs/questions/q04.md" .
+
+vocab:has-role-contact a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "has role contact"@en ;
+    skos:definition "Links a registration to a role contact recorded on it."@en ;
+    skos:scopeNote "Contacts belong to the registration, not to one building. All are listed; none is chosen as the contact to reach."@en ;
+    dct:source "specs/questions/q04.md" .
+
+vocab:contact-title a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "contact title"@en ;
+    skos:hiddenLabel "title"@en ;
+    skos:definition "The title HPD records beside a head officer, officer or (rarely) shareholder, as recorded, for example PRESIDENT or PRESIDENT OF CO."@en ;
+    skos:scopeNote "Free text with inconsistent spellings (PRES, President, PRESIDENT). Reported as recorded, never normalized and never used to change the role. Absent on 78% of role contacts, and always absent for managing agent, site manager and lessee."@en ;
+    skos:related vocab:head-officer ;
+    dct:source "specs/questions/q04.md" .
+
+vocab:corporation-name a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "corporation name"@en ;
+    skos:hiddenLabel "corporationname"@en ;
+    skos:definition "The corporation name HPD records on a role contact, as recorded."@en ;
+    skos:scopeNote "Present on about half of managing agents and on most lessees; a managing agent can carry both a corporation name and a person name. Reported as recorded; the corporation can be the owner itself."@en ;
+    skos:related vocab:owner-name ;
+    dct:source "specs/questions/q04.md" .
+
+vocab:person-name a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "person name"@en ;
+    skos:definition "The first name, middle initial and last name of a role contact joined by single spaces, as recorded."@en ;
+    skos:scopeNote "A personal name: stored in the graph, never repeated in fixtures, examples or logs. Absent when blank (1,497 role contacts have neither name). Two spellings are not evidence of two people."@en ;
+    dct:source "specs/questions/q04.md" .
+
+vocab:agent a skos:Concept ;
+    skos:inScheme vocab:role-contact-types ;
+    skos:topConceptOf vocab:role-contact-types ;
+    skos:prefLabel "managing agent"@en ;
+    skos:definition "The contact is the agent for the registration. HPD type Agent."@en ;
+    skos:scopeNote "A management relationship, not ownership. Shared management does not establish shared ownership. The agent can be the owners corporation itself."@en ;
+    skos:hiddenLabel "Agent"@en ;
+    skos:related vocab:owner-contact, vocab:registered-agent-name ;
+    dct:source "specs/questions/q04.md" .
+
+vocab:head-officer a skos:Concept ;
+    skos:inScheme vocab:role-contact-types ;
+    skos:topConceptOf vocab:role-contact-types ;
+    skos:prefLabel "head officer"@en ;
+    skos:definition "The contact is the head officer of the registered entity. HPD type HeadOfficer."@en ;
+    skos:scopeNote "The title, if any, is a separate field (contact title)."@en ;
+    skos:hiddenLabel "HeadOfficer"@en ;
+    skos:related vocab:contact-title ;
+    dct:source "specs/questions/q04.md" .
+
+vocab:officer a skos:Concept ;
+    skos:inScheme vocab:role-contact-types ;
+    skos:topConceptOf vocab:role-contact-types ;
+    skos:prefLabel "officer"@en ;
+    skos:definition "The contact is another officer of the registered entity. HPD type Officer."@en ;
+    skos:scopeNote "Distinct from head officer; the title says more."@en ;
+    skos:hiddenLabel "Officer"@en ;
+    dct:source "specs/questions/q04.md" .
+
+vocab:shareholder a skos:Concept ;
+    skos:inScheme vocab:role-contact-types ;
+    skos:topConceptOf vocab:role-contact-types ;
+    skos:prefLabel "shareholder"@en ;
+    skos:definition "The contact is a shareholder of the registered entity. HPD type Shareholder."@en ;
+    skos:scopeNote "Shareholding recorded on a registration is not a finding of beneficial ownership."@en ;
+    skos:hiddenLabel "Shareholder"@en ;
+    dct:source "specs/questions/q04.md" .
+
+vocab:site-manager a skos:Concept ;
+    skos:inScheme vocab:role-contact-types ;
+    skos:topConceptOf vocab:role-contact-types ;
+    skos:prefLabel "site manager"@en ;
+    skos:definition "The contact is the site manager listed on the registration. HPD type SiteManager."@en ;
+    skos:scopeNote "HPD records no business address for any site manager (all 162,187 rows), so the address is always absent."@en ;
+    skos:hiddenLabel "SiteManager"@en ;
+    dct:source "specs/questions/q04.md" .
+
+vocab:lessee a skos:Concept ;
+    skos:inScheme vocab:role-contact-types ;
+    skos:topConceptOf vocab:role-contact-types ;
+    skos:prefLabel "lessee"@en ;
+    skos:definition "The contact is a lessee of the property as registered. HPD type Lessee."@en ;
+    skos:scopeNote "Rare (8,896 rows). Not a tenant of an apartment."@en ;
+    skos:hiddenLabel "Lessee"@en ;
+    dct:source "specs/questions/q04.md" .
+
+vocab:dos-entity a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "DOS entity"@en ;
+    skos:definition "A record in the NY Department of State active-entity dataset: one filed business entity (corporation, LLC, partnership) with its type, jurisdiction, initial filing date, process name and address and registered agent."@en ;
+    skos:scopeNote "Only active entities are present: a dissolved entity is absent, which is not evidence it never existed. Loaded only when its name matches an owner or grantee name already in the graph. A name match is a lead, not a finding that the owner and the entity are the same. No officers, managers or members are carried."@en ;
+    skos:related vocab:dos-id, vocab:owner-contact ;
+    dct:source "specs/questions/q05.md" .
+
+vocab:dos-id a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "DOS id"@en ;
+    skos:definition "The identifier the Department of State assigns to a filed entity. Unique in the dataset."@en ;
+    skos:scopeNote "Identifies the filing, not a person. Different entities can share one name, so a name can match more than one DOS id."@en ;
+    skos:related vocab:dos-entity ;
+    dct:source "specs/questions/q05.md" .
+
+vocab:dos-entity-name a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "DOS entity name"@en ;
+    skos:definition "The current entity name as recorded by the Department of State."@en ;
+    skos:scopeNote "Compared with an owner name under the stated rule (N1, N2 or N3); spellings in HPD, ACRIS and PLUTO differ from it."@en ;
+    skos:related vocab:name-agreement, vocab:comparison-rule, vocab:owner-name, vocab:grantee-name ;
+    dct:source "specs/questions/q05.md" .
+
+vocab:entity-type a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "entity type"@en ;
+    skos:definition "The kind of entity the Department of State records, for example domestic limited liability company or domestic business corporation."@en ;
+    skos:scopeNote "As recorded, in the Department's wording. Does not say whether the entity holds a single property."@en ;
+    dct:source "specs/questions/q05.md" .
+
+vocab:jurisdiction a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "jurisdiction"@en ;
+    skos:definition "The place of formation recorded for the entity, for example New York for a domestic entity."@en ;
+    skos:scopeNote "Absent for a small number of records. A foreign entity is registered to do business in New York but was formed elsewhere."@en ;
+    dct:source "specs/questions/q05.md" .
+
+vocab:initial-filing-date a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "initial filing date"@en ;
+    skos:definition "The date the entity was first filed with the Department of State."@en ;
+    skos:scopeNote "Some dates reach back to 1861. The date of the original filing, not of a later amendment or of any property purchase."@en ;
+    dct:source "specs/questions/q05.md" .
+
+vocab:dos-process-name a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "DOS process name"@en ;
+    skos:definition "The name to which the Department of State forwards legal papers served on the entity."@en ;
+    skos:scopeNote "Where service goes, not who runs the entity. The statutory defaults THE COMPANY and THE LIMITED LIABILITY COMPANY name no one. A person named here is a recorded fact, not a finding about control. Absent when none is recorded."@en ;
+    skos:related vocab:dos-process-address, vocab:registered-agent-name ;
+    dct:source "specs/questions/q05.md" .
+
+vocab:dos-process-address a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "DOS process address"@en ;
+    skos:definition "The address to which the Department of State forwards legal papers: street line, second line, city, state and ZIP."@en ;
+    skos:scopeNote "Where papers are forwarded. It can be the entity's own premises, a lawyer's office or a service company, so sharing it is not evidence of common ownership."@en ;
+    skos:related vocab:dos-process-name ;
+    dct:source "specs/questions/q05.md" .
+
+vocab:registered-agent-name a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "registered agent name"@en ;
+    skos:definition "The registered agent the entity lists with the Department of State, when one is listed."@en ;
+    skos:scopeNote "Most records list none (3.4 million of 4.2 million). A commercial registered agent is a service company, not a person and not a lead. An individual agent is a recorded fact only."@en ;
+    skos:related vocab:registered-agent-address, vocab:dos-process-name, vocab:agent ;
+    dct:source "specs/questions/q05.md" .
+
+vocab:registered-agent-address a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "registered agent address"@en ;
+    skos:definition "The address recorded for the registered agent: street line, second line, city, state and ZIP."@en ;
+    skos:scopeNote "Absent when no agent is listed or when none is recorded for the agent. Shared by every client of a commercial agent."@en ;
+    skos:related vocab:registered-agent-name ;
+    dct:source "specs/questions/q05.md" .

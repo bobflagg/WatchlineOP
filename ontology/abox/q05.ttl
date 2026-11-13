@@ -1,0 +1,37 @@
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q5 example data. Values come from the verified fixtures in tests/q5_*/fixtures.yaml
+# (NY DOS active entities through 2026-07-06). Person names are not repeated and are left out here.
+
+# Anchor A: the entity is its own process name; no registered agent is listed (none is inferred).
+id:dos-5857246 a onto:DosEntity ; onto:dosId 5857246 ; onto:dosEntityName "5413 PLAZA LLC" ;
+    onto:entityType "DOMESTIC LIMITED LIABILITY COMPANY" ; onto:jurisdiction "New York" ; onto:initialFilingDate "2020-10-14"^^xsd:date ;
+    onto:processName "5413 PLAZA LLC" ; onto:processAddress "5 CROMWELL CIRCLE" ; onto:processCity "STATEN ISLAND" ;
+    onto:processState "NY" ; onto:processZip "10304" .
+
+# Statutory default process name: kept as recorded.
+id:dos-6691492 a onto:DosEntity ; onto:dosId 6691492 ; onto:dosEntityName "606 56TH ST LLC" ;
+    onto:entityType "DOMESTIC LIMITED LIABILITY COMPANY" ; onto:initialFilingDate "2023-01-06"^^xsd:date ;
+    onto:processName "THE COMPANY" ; onto:processAddress "606 56TH ST" ; onto:processCity "BROOKLYN" ;
+    onto:processState "NY" ; onto:processZip "11220" .
+
+# Anchor G: a person receives service (name not repeated, so processName is left out).
+id:dos-3574572 a onto:DosEntity ; onto:dosId 3574572 ; onto:dosEntityName "K S TURNPIKE LLC" ;
+    onto:entityType "DOMESTIC LIMITED LIABILITY COMPANY" ; onto:jurisdiction "New York" ; onto:initialFilingDate "2007-10-01"^^xsd:date ;
+    onto:processAddress "6 STEVEN LANE" ; onto:processCity "GREAT NECK" ; onto:processState "NY" ; onto:processZip "11024" .
+
+# Anchor C: the DOS spelling keeps its periods and apostrophe.
+id:dos-2733264 a onto:DosEntity ; onto:dosId 2733264 ; onto:dosEntityName "438 52ND ST. OWNERS' CORP." ;
+    onto:entityType "DOMESTIC BUSINESS CORPORATION" ; onto:jurisdiction "New York" ; onto:initialFilingDate "2002-02-20"^^xsd:date .
+
+# A commercial registered agent with a second address line, mixed case as recorded: a service company, not a lead.
+id:dos-151265 a onto:DosEntity ; onto:dosId 151265 ;
+    onto:registeredAgentName "REGISTERED AGENT SOLUTIONS, INC." ; onto:registeredAgentAddress "99 WASHINGTON AVENUE" ;
+    onto:registeredAgentAddressLineTwo "suite 700" ; onto:registeredAgentCity "ALBANY" ; onto:registeredAgentState "NEW YORK" ;
+    onto:registeredAgentZip "12260" .
+
+# Two records share one name: both are kept, none is chosen (the dosId differs).
+id:dos-1917183 a onto:DosEntity ; onto:dosId 1917183 ; onto:dosEntityName "2010 NEWKIRK REALTY LLC" .
+id:dos-5298391 a onto:DosEntity ; onto:dosId 5298391 ; onto:dosEntityName "2010 NEWKIRK REALTY LLC" .

@@ -149,3 +149,60 @@ Name agreement values (scheme `name-agreement-outcomes`): `exact-normalized`, `n
 
 No gaps: every domain term resolves to a concept above.
 
+## Q4 trace
+
+| Concept ID | Preferred label | Lives as | Sub-questions | Source |
+| --- | --- | --- | --- | --- |
+| `role-contact` | role contact | `RoleContact` node | Q4.1 | `hpd_contacts` |
+| `has-role-contact` | has role contact | `HAS_ROLE_CONTACT` relationship | Q4.1 | `hpd_contacts` |
+| `contact-type` | contact type | `RoleContact.contactType` (scheme `role-contact-types`) | Q4.1 | `hpd_contacts` |
+| `contact-title` | contact title | `RoleContact.title` | Q4.1 | `hpd_contacts` |
+| `corporation-name` | corporation name | `RoleContact.corporationName` | Q4.1 | `hpd_contacts` |
+| `person-name` | person name | `RoleContact.personName` | Q4.1 | `hpd_contacts` |
+| `mailing-address`, `address-line-two`, `zip-code` | (Q3 concepts, reused) | `RoleContact.mailingAddress`, `.addressLine2`, `.zip` | Q4.2 | `hpd_contacts` |
+
+Role values (scheme `role-contact-types`): `agent` (label managing agent), `head-officer`, `officer`, `shareholder`, `site-manager`, `lessee`. Tagged not in the graph: `contactdescription`, business city and state, `registrationcontactid`.
+
+## Q4 pilot restatement
+
+| Question | Restated with approved terms |
+| --- | --- |
+| Q4 | For each **registration** of the **building**, list the **role contacts** (**contact type**, **contact title**, **corporation name**, **person name**) and their **mailing address**, **address line two** and **ZIP code**; the **registered owner contacts** come from Q2.2. |
+| Q4.1 | Which **role contacts** does each **registration** have, with **contact type** and **contact title**? |
+| Q4.2 | What **mailing address** does each **role contact** have? |
+| Anchor A | Four role contacts beside the owner; three share one **mailing address**, the **site manager** has none: a record link, not identity. |
+| Anchor C | The **managing agent** carries a **corporation name** and a **person name**; the **head officer** title is `PRESIDENT OF CO`. |
+
+No gaps.
+
+# Term trace: Q5
+
+| Concept ID | Preferred label | Lives as | Sub-questions | Source |
+| --- | --- | --- | --- | --- |
+| `dos-entity` | DOS entity | `DosEntity` node | Q5.1 | `nys_corporations` |
+| `dos-id` | DOS id | `DosEntity.dosId` | Q5.1 | `nys_corporations` |
+| `dos-entity-name` | DOS entity name | `DosEntity.name` | Q5.1 | `nys_corporations` |
+| `entity-type` | entity type | `DosEntity.entityType` | Q5.1 | `nys_corporations` |
+| `jurisdiction` | jurisdiction | `DosEntity.jurisdiction` | Q5.1 | `nys_corporations` |
+| `initial-filing-date` | initial filing date | `DosEntity.filingDate` | Q5.1 | `nys_corporations` |
+| `dos-process-name` | DOS process name | `DosEntity.processName` | Q5.2 | `nys_corporations` |
+| `dos-process-address` | DOS process address | `DosEntity.processAddress`, `.processAddressLine2`, `.processCity`, `.processState`, `.processZip` | Q5.2 | `nys_corporations` |
+| `registered-agent-name` | registered agent name | `DosEntity.agentName` | Q5.3 | `nys_corporations` |
+| `registered-agent-address` | registered agent address | `DosEntity.agentAddress`, `.agentAddressLine2`, `.agentCity`, `.agentState`, `.agentZip` | Q5.3 | `nys_corporations` |
+| `comparison-rule` | (Q3 concept, extended) | rule N3 added; computed, not stored | Q5.1 | `src/watchline/compare.py` |
+
+Tagged not in the graph: `ceoname`, `locationname` (empty for LLCs; contract says "not carried"), county, `nameKey` (a loader lookup key, not an answer field), any link from OwnerContact or Grantee to DosEntity (a name match is computed at answer time), officers and managers (not carried; Q5.4 retrieval).
+
+## Q5 pilot restatement
+
+| Question | Restated with approved terms |
+| --- | --- |
+| Q5 | For an owner name, list each **DOS entity** whose name agrees under a stated **comparison rule**, with **entity type**, **jurisdiction**, **initial filing date**, **DOS process name** and **address**, and **registered agent name** and **address**; otherwise "no record". |
+| Anchor A | The **DOS process name** is the entity's own name; no **registered agent**. |
+| Anchor G | The **DOS process name** is a person: where service goes, not who runs it. |
+| Anchor C | The deed spelling matches the **DOS entity name** under rule N3; the HPD spelling has no record. |
+| Anchor D | No record under the HPD spelling; the long form is a Q22 candidate. |
+
+No gaps.
+
+Q5 stage 4 (2026-11-13): related links added or dropped only; no concept, ID or label changed. See `thesaurus-notes.md`.

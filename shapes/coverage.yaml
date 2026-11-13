@@ -109,3 +109,41 @@ rules:
     rule: "One Deed per documentId, one Grantee per partyKey. Single-valued properties (including dates) hold by the Neo4j property model"
     covered_by: native
     names: [deed_document_id_unique, grantee_key_unique]
+  # --- Q4 (ontology/ontology-notes.md, Q4 "Rules for Stage 6 shapes") ---
+  - id: Q4-R1
+    question: Q4
+    rule: "contactType is present on every role contact and one of Agent, HeadOfficer, Officer, Shareholder, SiteManager, Lessee; owner types are rejected"
+    covered_by: compiled
+    names: [RoleContactShape.contactType.minCount, RoleContactShape.contactType.datatype, RoleContactShape.contactType.pattern]
+  - id: Q4-R2
+    question: Q4
+    rule: "Every role contact is linked to exactly one registration; HAS_ROLE_CONTACT ends on a role contact"
+    covered_by: compiled
+    names: [RoleContactShape.inv_hasRoleContact.minCount, RoleContactShape.inv_hasRoleContact.maxCount, RegistrationRoleShape.hasRoleContact.class]
+  - id: Q4-R3
+    question: Q4
+    rule: "A blank title, corporation name, person name or address part is absent, never an empty string"
+    covered_by: compiled
+    names: [RoleContactShape.contactTitle.datatype, RoleContactShape.contactTitle.minLength, RoleContactShape.corporationName.datatype, RoleContactShape.corporationName.minLength, RoleContactShape.personName.datatype, RoleContactShape.personName.minLength, RoleContactShape.mailingAddress.datatype, RoleContactShape.mailingAddress.minLength, RoleContactShape.addressLineTwo.datatype, RoleContactShape.addressLineTwo.minLength, RoleContactShape.zipCode.datatype, RoleContactShape.zipCode.minLength]
+  - id: Q4-R4
+    question: Q4
+    rule: "corporationName appears only on agents and lessees"
+    covered_by: check
+    names: [queries/checks/q04-corporation-name-types.cypher]
+    note: "Conditional on another property; outside what shacl2cypher compiles."
+  - id: Q4-R5
+    question: Q4
+    rule: "A site manager has no mailingAddress, addressLine2 or zip"
+    covered_by: check
+    names: [queries/checks/q04-site-manager-address.cypher]
+  - id: Q4-R6
+    question: Q4
+    rule: "Titles and names are stored as recorded (trimmed only); a title never changes the type. An empty set of role contacts means none is recorded"
+    covered_by: test
+    names: [tests/q4_1/check_roles.py]
+    note: "Answer rules: the fixtures hold anchor C (PRESIDENT OF CO stays HeadOfficer, agent is the owners corporation) and a building with no role contact."
+  - id: Q4-N1
+    question: Q4
+    rule: "One RoleContact per contactKey"
+    covered_by: native
+    names: [role_contact_key_unique]

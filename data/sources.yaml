@@ -162,6 +162,10 @@ sources:
       contacts have a blank name (183 corporate, 239 individual or joint). A registration can have
       several owner contacts (joint owners; an LLC and an LP). 12,827 of 193,567 registrations have no
       owner contact. Every contact's registrationid is in hpd_registrations.
+      Q4 profile (queried 2026-11-12): the other six types are role contacts. 526,889 distinct role contacts on loaded
+      registrations; 1,497 have no name; agent rows carry a corporation name on 83,587 of 155,280; site managers never have a
+      business address; title is recorded on head officers, officers and 39 shareholders; 360 contacts have duplicates that
+      disagree on the street line.
 
   hpd_violations:
     name: Housing Maintenance Code Violations
@@ -227,7 +231,10 @@ sources:
     data_through: 2026-07-06 # max initialdosfilingdate
     reliability: I
     retrieved_at: null
-    notes: Active entities only. A dissolved entity is absent, which is not evidence it never existed.
+    notes: >-
+      Active entities only. A dissolved entity is absent, which is not evidence it never existed.
+      Q5 loads only records whose name (rule N3) matches a CorporateOwner or Grantee name in the graph (scripts/load_dos.py).
+      CEO and location are empty for LLCs and are not loaded. Names repeat (998), so a name can match several dosids.
 
   # Non-database inputs. No table; keys are used in specs/questions/.
   bor_layers:

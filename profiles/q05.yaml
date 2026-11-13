@@ -1,0 +1,187 @@
+# Question schema: Q5 "What does the NY DOS active-entity record show for this owner entity: type, filing date, DOS process name
+# and address, and registered agent?" (sub-questions Q5.1 to Q5.3; Q5.4 retrieval is later and stores nothing in the graph).
+# Extends the Q1 to Q4 graph; declares only what Q5 adds. Name comparison is computed at answer time (src/watchline/compare.py).
+question: Q5
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [nys_corporations]
+
+graph:
+  constraints:
+    - {name: dos_entity_id_unique, label: DosEntity, property: dosId, kind: unique}
+
+  nodes:
+    DosEntity:
+      concept: dos-entity
+      key: dosId
+      scope: >-
+        One DosEntity per NY DOS active-entity record whose name key (rule N3) equals the key of a CorporateOwner OwnerContact name or a
+        Grantee name in the graph (119999 records, queried 2026-11-13). Every record sharing a key is loaded; none is chosen.
+        Decision 2026-11-12 counted 55694 against HPD owner names only; Grantee names widen the scope.
+      proved_by: tests/q5_1/expected.sql
+      properties:
+        dosId:
+          concept: dos-id
+          type: integer
+          source: nys_corporations.dosid
+          rule: The DOS id, unique in the source.
+          null_policy: never absent
+          proved_by: tests/q5_1/expected.sql
+        name:
+          concept: dos-entity-name
+          type: string
+          source: nys_corporations.currententityname
+          rule: Trimmed, otherwise as recorded (periods, commas and apostrophes kept).
+          null_policy: never absent
+          proved_by: tests/q5_1/expected.sql
+        nameKey:
+          concept: dos-entity-name
+          type: string
+          source: nys_corporations.currententityname
+          rule: "Lookup key only: rule N3 applied to the name. Not an answer field; the comparison outcome is computed at answer time."
+          identity_only: true
+          null_policy: never absent
+        entityType:
+          concept: entity-type
+          type: string
+          source: nys_corporations.entitytype
+          rule: Trimmed, as DOS spells it (54 types). No scheme; DOS owns the list.
+          null_policy: never absent
+          proved_by: tests/q5_1/expected.sql
+        jurisdiction:
+          concept: jurisdiction
+          type: string
+          source: nys_corporations.jurisdiction
+          rule: Trimmed, as recorded.
+          null_policy: "absent when blank (273 of 119999 records)"
+          proved_by: tests/q5_1/expected.sql
+        filingDate:
+          concept: initial-filing-date
+          type: date
+          source: nys_corporations.initialdosfilingdate
+          rule: Date part, as recorded. Not a formation date of the business in any other sense.
+          null_policy: never absent
+          proved_by: tests/q5_1/expected.sql
+        processName:
+          concept: dos-process-name
+          type: string
+          source: nys_corporations.dosprocessname
+          rule: "Trimmed, as recorded. 'THE COMPANY' and 'THE LIMITED LIABILITY COMPANY' are the statutory default and are kept, not dropped."
+          null_policy: "absent when blank (168 of 119999 records)"
+          proved_by: tests/q5_2/expected.sql
+        processAddress:
+          concept: dos-process-address
+          type: string
+          source: nys_corporations.dosprocessaddress1
+          rule: Trimmed, as recorded.
+          null_policy: "absent when blank (169 of 119999 records)"
+          proved_by: tests/q5_2/expected.sql
+        processAddressLine2:
+          concept: dos-process-address
+          type: string
+          source: nys_corporations.dosprocessaddress2
+          rule: Trimmed, as recorded. Reported apart, never compared.
+          null_policy: "absent when blank (91212 of 119999 records)"
+          proved_by: tests/q5_2/expected.sql
+        processCity:
+          concept: dos-process-address
+          type: string
+          source: nys_corporations.dosprocesscity
+          rule: Trimmed, as recorded.
+          null_policy: "absent when blank (168 of 119999 records)"
+          proved_by: tests/q5_2/expected.sql
+        processState:
+          concept: dos-process-address
+          type: string
+          source: nys_corporations.dosprocessstate
+          rule: Trimmed, as recorded; not forced to two-letter codes.
+          null_policy: "absent when blank (184 of 119999 records)"
+          proved_by: tests/q5_2/expected.sql
+        processZip:
+          concept: dos-process-address
+          type: string
+          source: nys_corporations.dosprocesszip
+          rule: Trimmed, as recorded, not normalized.
+          null_policy: "absent when blank (216 of 119999 records)"
+          proved_by: tests/q5_2/expected.sql
+        agentName:
+          concept: registered-agent-name
+          type: string
+          source: nys_corporations.registeredagentname
+          rule: Trimmed, as recorded. Can be a commercial service company; never inferred when absent.
+          null_policy: "absent when blank (109904 of 119999 records list no agent)"
+          proved_by: tests/q5_3/expected.sql
+        agentAddress:
+          concept: registered-agent-address
+          type: string
+          source: nys_corporations.registeredagentaddress1
+          rule: Trimmed, as recorded.
+          null_policy: "absent when blank (110040 of 119999 records)"
+          proved_by: tests/q5_3/expected.sql
+        agentAddressLine2:
+          concept: registered-agent-address
+          type: string
+          source: nys_corporations.registeredagentaddress2
+          rule: Trimmed, as recorded. Reported apart.
+          null_policy: "absent when blank (117422 of 119999 records)"
+          proved_by: tests/q5_3/expected.sql
+        agentCity:
+          concept: registered-agent-address
+          type: string
+          source: nys_corporations.registeredagentcity
+          rule: Trimmed, as recorded.
+          null_policy: "absent when blank (110040 of 119999 records)"
+          proved_by: tests/q5_3/expected.sql
+        agentState:
+          concept: registered-agent-address
+          type: string
+          source: nys_corporations.registeredagentstate
+          rule: Trimmed, as recorded. Present on more records (10284) than the agent name (10095); kept as recorded.
+          null_policy: "absent when blank (109715 of 119999 records)"
+          proved_by: tests/q5_3/expected.sql
+        agentZip:
+          concept: registered-agent-address
+          type: string
+          source: nys_corporations.registeredagentzip
+          rule: Trimmed, as recorded, not normalized.
+          null_policy: "absent when blank (110080 of 119999 records)"
+          proved_by: tests/q5_3/expected.sql
+
+  relationships: {}
+
+answer:
+  Q5.1:
+    lookup: tests/q5_1/lookup.cypher
+    fields:
+      dosId:        {concept: dos-id, source: DosEntity.dosId, type: integer}
+      name:         {concept: dos-entity-name, source: DosEntity.name, type: string}
+      entityType:   {concept: entity-type, source: DosEntity.entityType, type: string}
+      jurisdiction: {concept: jurisdiction, source: DosEntity.jurisdiction, type: string, null_policy: "absent when blank"}
+      filingDate:   {concept: initial-filing-date, source: DosEntity.filingDate, type: date}
+      candidates:   {concept: dos-entity, source: "DosEntity nodes whose nameKey equals compare.n3(input)", type: "list of records", counting_unit: "one entry per DOS id", null_policy: "empty list means 'no record in the active-entity snapshot', answered with the spellings tried; never 'does not exist'. Several candidates are all returned, none chosen"}
+      nameAgreement: {concept: name-agreement, source: "derived: src/watchline/compare.py dos_name_agreement(input, DosEntity.name)", type: "list of {dosId, outcome, rule}", allowed_scheme: name-agreement-outcomes, allowed: [exact-normalized, normalization-match, different, not-comparable], counting_unit: "one entry per candidate", null_policy: "rule is N1, N2 or N3 for a match, absent otherwise. Not a finding of the same party"}
+      rule:         {concept: comparison-rule, source: "derived: compare.py", type: string, allowed: [N1, N2, N3]}
+      snapshotDate: {concept: initial-filing-date, source: "dataset provenance: data_through in data/sources.yaml for the DOS source", type: date, null_policy: "always stated (2026-07-06)"}
+    note: "A name match is a lead, not common identity. An abbreviation (HDFC) or a spacing difference gives no candidate under the stated rules (Q22 holds the candidate)."
+  Q5.2:
+    lookup: tests/q5_2/lookup.cypher
+    fields:
+      processName:         {concept: dos-process-name, source: DosEntity.processName, type: string, null_policy: "absent when blank; the statutory default is kept and flagged in the answer"}
+      processAddress:      {concept: dos-process-address, source: "DosEntity.processAddress, .processAddressLine2, .processCity, .processState, .processZip", type: "address parts", null_policy: "each part absent when blank; second line reported apart"}
+    note: "Where the state forwards legal service. It does not say who runs the entity. A service company or the default name is not a lead."
+  Q5.3:
+    lookup: tests/q5_3/lookup.cypher
+    fields:
+      agentName:    {concept: registered-agent-name, source: DosEntity.agentName, type: string, null_policy: "absent means none listed (3378013 of 4242054 records); never inferred"}
+      agentAddress: {concept: registered-agent-address, source: "DosEntity.agentAddress, .agentAddressLine2, .agentCity, .agentState, .agentZip", type: "address parts", null_policy: "each part absent when blank"}
+    note: "A commercial registered agent is a service company, not a person and not a lead."
+
+diagnostics: []
+
+not_stored:   # deliberately absent from the graph
+  - {term: nys_corporations.ceoname and ceo address, reason: "empty for every LLC; the answer says 'not carried for this entity type'"}
+  - {term: nys_corporations.locationname and location address, reason: "empty for every LLC; not needed for Q5"}
+  - {term: nys_corporations.county, reason: not needed for Q5}
+  - {term: link from OwnerContact or Grantee to DosEntity, reason: "a name match is a lead; the comparison is computed at answer time"}
+  - {term: officers, managers and members, reason: "not carried in the dataset; Q5.4 retrieval (later) reports them from filings as session evidence"}
+  - {term: name-agreement outcome and rule, reason: computed by compare.py at answer time}

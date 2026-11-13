@@ -37,3 +37,30 @@ https://watchline.example/vocab/address-line-two,https://watchline.example/onto/
 https://watchline.example/vocab/address-line-two,https://watchline.example/onto/addressLineTwo,datatype_property,OwnerContact.addressLine2,Q3.5,one property for grantees and owner contacts
 https://watchline.example/vocab/zip-code,https://watchline.example/onto/zipCode,datatype_property,Grantee.zip,Q3.2,one property for grantees and owner contacts
 https://watchline.example/vocab/zip-code,https://watchline.example/onto/zipCode,datatype_property,OwnerContact.zip,Q3.5,one property for grantees and owner contacts
+https://watchline.example/vocab/role-contact,https://watchline.example/onto/RoleContact,class,RoleContact,Q4.1;Q4.2,
+https://watchline.example/vocab/has-role-contact,https://watchline.example/onto/hasRoleContact,object_property,HAS_ROLE_CONTACT,Q4.1,
+https://watchline.example/vocab/contact-type,https://watchline.example/onto/contactType,datatype_property,RoleContact.contactType,Q4.1,one property for owner and role contacts; values are the role-contact-types concepts as HPD spells them
+https://watchline.example/vocab/contact-title,https://watchline.example/onto/contactTitle,datatype_property,RoleContact.title,Q4.1,
+https://watchline.example/vocab/corporation-name,https://watchline.example/onto/corporationName,datatype_property,RoleContact.corporationName,Q4.1,
+https://watchline.example/vocab/person-name,https://watchline.example/onto/personName,datatype_property,RoleContact.personName,Q4.1,
+https://watchline.example/vocab/mailing-address,https://watchline.example/onto/mailingAddress,datatype_property,RoleContact.mailingAddress,Q4.2,one property for grantees and owner and role contacts
+https://watchline.example/vocab/address-line-two,https://watchline.example/onto/addressLineTwo,datatype_property,RoleContact.addressLine2,Q4.2,one property for grantees and owner and role contacts
+https://watchline.example/vocab/zip-code,https://watchline.example/onto/zipCode,datatype_property,RoleContact.zip,Q4.2,one property for grantees and owner and role contacts
+https://watchline.example/vocab/dos-entity,https://watchline.example/onto/DosEntity,class,DosEntity,Q5.1;Q5.2;Q5.3,
+https://watchline.example/vocab/dos-id,https://watchline.example/onto/dosId,datatype_property,DosEntity.dosId,Q5.1,
+https://watchline.example/vocab/dos-entity-name,https://watchline.example/onto/dosEntityName,datatype_property,DosEntity.name,Q5.1,
+https://watchline.example/vocab/entity-type,https://watchline.example/onto/entityType,datatype_property,DosEntity.entityType,Q5.1,
+https://watchline.example/vocab/jurisdiction,https://watchline.example/onto/jurisdiction,datatype_property,DosEntity.jurisdiction,Q5.1,
+https://watchline.example/vocab/initial-filing-date,https://watchline.example/onto/initialFilingDate,datatype_property,DosEntity.filingDate,Q5.1,
+https://watchline.example/vocab/dos-process-name,https://watchline.example/onto/processName,datatype_property,DosEntity.processName,Q5.2,
+https://watchline.example/vocab/dos-process-address,https://watchline.example/onto/processAddress,datatype_property,DosEntity.processAddress,Q5.2,address part; the concept covers all parts, so the label repeats
+https://watchline.example/vocab/dos-process-address,https://watchline.example/onto/processAddressLineTwo,datatype_property,DosEntity.processAddressLine2,Q5.2,address part; the concept covers all parts, so the label repeats
+https://watchline.example/vocab/dos-process-address,https://watchline.example/onto/processCity,datatype_property,DosEntity.processCity,Q5.2,address part; the concept covers all parts, so the label repeats
+https://watchline.example/vocab/dos-process-address,https://watchline.example/onto/processState,datatype_property,DosEntity.processState,Q5.2,address part; the concept covers all parts, so the label repeats
+https://watchline.example/vocab/dos-process-address,https://watchline.example/onto/processZip,datatype_property,DosEntity.processZip,Q5.2,address part; the concept covers all parts, so the label repeats
+https://watchline.example/vocab/registered-agent-name,https://watchline.example/onto/registeredAgentName,datatype_property,DosEntity.agentName,Q5.3,
+https://watchline.example/vocab/registered-agent-address,https://watchline.example/onto/registeredAgentAddress,datatype_property,DosEntity.agentAddress,Q5.3,address part; the concept covers all parts, so the label repeats
+https://watchline.example/vocab/registered-agent-address,https://watchline.example/onto/registeredAgentAddressLineTwo,datatype_property,DosEntity.agentAddressLine2,Q5.3,address part; the concept covers all parts, so the label repeats
+https://watchline.example/vocab/registered-agent-address,https://watchline.example/onto/registeredAgentCity,datatype_property,DosEntity.agentCity,Q5.3,address part; the concept covers all parts, so the label repeats
+https://watchline.example/vocab/registered-agent-address,https://watchline.example/onto/registeredAgentState,datatype_property,DosEntity.agentState,Q5.3,address part; the concept covers all parts, so the label repeats
+https://watchline.example/vocab/registered-agent-address,https://watchline.example/onto/registeredAgentZip,datatype_property,DosEntity.agentZip,Q5.3,address part; the concept covers all parts, so the label repeats

@@ -142,7 +142,7 @@ def main() -> int:
     text += [str(p["source"]) for r in rels.values() for p in r.get("properties", {}).values()]
     named = set()
     for s in text:
-        named |= set(re.findall(r"\b(pluto|hpd_registrations|hpd_contacts|acris_master|acris_parties|acris_legals)\.([a-z0-9_]+)", s))
+        named |= set(re.findall(r"\b(pluto|hpd_registrations|hpd_contacts|acris_master|acris_parties|acris_legals|nys_corporations)\.([a-z0-9_]+)", s))
         named |= {("geosupport", c) for c in re.findall(r'geosupport\."([^"]+)"', s)}
     for key, col in sorted(named):
         in_profile = col in {c["name"] for c in profiles.get(key, {"columns": []})["columns"]}

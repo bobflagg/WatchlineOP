@@ -91,3 +91,63 @@ One section per question. Records which concepts nest, why, and which stay flat 
 
 - `grantee` and `owner-contact`: a deed party is not an HPD contact. Candidate only.
 - `deed` and `registration`: a recorded document is not a registration. Candidate only.
+
+## Q4
+
+**Result: no hierarchy needed.** Still no `skos:broader`, `skos:narrower` or collections. Reviewed 2026-11-12; `watchline.ttl` was not changed in this stage.
+
+### Concepts left flat, and why
+
+| Concepts | Reason |
+| --- | --- |
+| `role-contact`, `owner-contact` | Both are HPD contacts, but the project keeps owner and non-owner roles apart (Q2 rule). A common "contact" parent would invite treating them as one. |
+| `role-contact`, `registration` | A registration has role contacts (`has-role-contact`), a relationship. |
+| `contact-type` | One property for both owner and role contacts; its values live in two schemes. Not merged. |
+| `contact-title`, `corporation-name`, `person-name` | Single recorded facts of a role contact. `corporation-name` and `person-name` are not kinds of `owner-name`, which belongs to owner contacts. |
+
+### Value set (flat by intent)
+
+| Scheme | Values | Reason |
+| --- | --- | --- |
+| `role-contact-types` | `agent` (managing agent), `head-officer`, `officer`, `shareholder`, `site-manager`, `lessee` | HPD lists them as separate types. `head-officer` is not narrower than `officer`: HPD records them as different types and a title never changes the role. Grouping officers apart from agent or site manager would add a layer no field uses, and could read as ranking or control. `agent` stays distinct from ownership: a managing agent is a management relationship. |
+| `role-contact-types`, `owner-contact-types` | (two schemes) | Not nested or merged. The owner types are the registered owner (Q2); the role types are every other recorded role. |
+
+### Groupings the question asks for
+
+| Grouping | Where it appears | Expressed as |
+| --- | --- | --- |
+| "Managing agent, head officer or site manager" | Q4 | Not a grouping. Three of the six values of `role-contact-types`; the answer lists every role contact with its type and does not filter. |
+| The business address parts of a role contact | Q4.2 | No collection. Separate fields, as in Q3.2. |
+| Owner and role contacts together on a registration | Q4 | Not a vocabulary grouping. The answer combines Q2.2 and Q4.1 through `registration`. |
+
+### Disjointness candidates for Stage 5
+
+- `role-contact` and `owner-contact`: a contact is one or the other by type. Candidate only; the decision is Stage 5's.
+
+## Q5
+
+**Result: no hierarchy needed.** Still no `skos:broader`, `skos:narrower` or collections. Reviewed 2026-11-13; `watchline.ttl` was not changed in this stage.
+
+### Concepts left flat, and why
+
+| Concepts | Reason |
+| --- | --- |
+| `dos-entity`, `owner-contact`, `grantee` | A DOS entity is a state filing record. An owner contact and a grantee are names on other records. A name match is a lead, not a kind-of; grouping them under "party" or "owner" would suggest identity. |
+| `dos-id` | An identifier is not a kind of the thing it identifies. |
+| `dos-entity-name`, `owner-name`, `grantee-name` | Names on different records. Not kinds of one another. |
+| `entity-type`, `jurisdiction`, `initial-filing-date` | Single recorded facts of a DOS entity. The entity types are free-text DOS values (a property, not concepts); no answer filters or groups by kind of entity. Not made a scheme. Revisit if a question needs LLC versus corporation. |
+| `dos-process-name`, `dos-process-address` | Where the state forwards legal papers. Neither is a kind of `registered-agent-name` or `mailing-address`; the project keeps these roles apart. |
+| `registered-agent-name`, `registered-agent-address` | A registered agent is a DOS role, distinct from a managing agent (`role-contact-types` `agent`). Not nested under it or under any "agent" parent. |
+| `dos-process-address`, `registered-agent-address`, `mailing-address`, `address` | Addresses of different parties and purposes. Parts of an address are part-whole at most. No "address" parent: it would invite treating co-location as identity. |
+
+### Groupings the question asks for
+
+| Grouping | Where it appears | Expressed as |
+| --- | --- | --- |
+| Record attributes (type, jurisdiction, filing date) | Q5.1 | No collection. Each is its own field, as in Q1.4. |
+| Process name and address; registered agent name and address | Q5.2, Q5.3 | No collection. Separate answer fields in separate sub-questions. |
+| Name agreement outcomes and rules | Q5.1 | Reuse the flat scheme `name-agreement-outcomes` (Q3). N3 is a value of `comparison-rule`; no change. |
+
+### Disjointness candidates for Stage 5
+
+- `dos-entity` and `owner-contact`, `grantee`: a state filing record is not an HPD contact or a deed party. Candidate only (already separate classes; no edge between them by decision 2026-11-12).

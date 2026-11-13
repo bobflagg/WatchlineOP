@@ -1,0 +1,7 @@
+# Q5.2 expected process name and address. Provisional until the frozen dump is identified (data/README.md).
+# Checked read-only 2026-11-12. check_process.py re-derives each from the source. "<person>" = a person's name is recorded (not repeated).
+records:
+  - {dosId: 5857246, note: "anchor A: the entity is its own process name", expect: {processName: "5413 PLAZA LLC", processAddress: "5 CROMWELL CIRCLE", processCity: "STATEN ISLAND", processState: NY, processZip: "10304"}}
+  - {dosId: 6691492, note: "statutory default", expect: {processName: "THE COMPANY", processAddress: "606 56TH ST", processCity: BROOKLYN, processState: NY, processZip: "11220"}}
+  - {dosId: 3574572, note: "anchor G: a person receives service, not who runs the entity", expect: {processName: "<person>", processAddress: "6 STEVEN LANE", processCity: "GREAT NECK", processState: NY, processZip: "11024"}}
+absent: [5463118]

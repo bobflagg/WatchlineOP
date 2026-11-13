@@ -72,6 +72,7 @@ load: check-env ## Load Lot, Building and HAS_BUILDING, then Registration, HAS_R
 	uv run python scripts/load_buildings.py
 	uv run python scripts/load_registrations.py
 	uv run python scripts/load_deeds.py
+	uv run python scripts/load_dos.py
 
 test: check-env ## Run every sub-question check (tests/q*_*/check_*.py); all must pass
 	@for f in tests/q*_*/check_*.py; do echo "== $$f"; uv run python $$f || exit 1; done

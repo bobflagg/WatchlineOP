@@ -1,0 +1,17 @@
+# Q5.1 expected DOS candidates per owner-entity name. Provisional until the frozen dump is identified (data/README.md).
+# Checked read-only 2026-11-12. check_dos.py re-derives each candidate set with SQL and with compare.n3 and compares the graph.
+# names: [input name, where it comes from, candidates]; candidate: [dosId, outcome, rule]. Outcomes are the name-agreement-outcomes scheme.
+names:
+  - {name: "5413 PLAZA LLC", note: "anchor A: HPD and deed spelling", candidates: [[5857246, exact-normalized, N1]]}
+  - {name: "606 56TH ST LLC", note: "statutory default process name", candidates: [[6691492, exact-normalized, N1]]}
+  - {name: "K S TURNPIKE LLC", note: "anchor G, deed spelling", candidates: [[3574572, exact-normalized, N1]]}
+  - {name: "KS TURNPIKE LLC", note: "anchor G, HPD spelling: a space is a difference, so no record", candidates: []}
+  - {name: "438 52ND ST OWNERS CORP", note: "anchor C, deed and PLUTO spelling: matches only after N3 (periods and apostrophe)", candidates: [[2733264, normalization-match, N3]]}
+  - {name: "438 52 ST OWNERS CORP", note: "anchor C, HPD spelling: 52 against 52ND, no record", candidates: []}
+  - {name: "HP SUNSET PARK I HDFC INC.", note: "anchor D, HPD spelling: abbreviation, no record (Q22 holds the candidate)", candidates: []}
+  - {name: "2010 NEWKIRK REALTY LLC", note: "two DOS records share the name: both returned, none chosen", candidates: [[1917183, normalization-match, N2], [5298391, normalization-match, N2]]}
+records:   # [dosId, entity type, jurisdiction, filing date]
+  - {dosId: 5857246, entityType: DOMESTIC LIMITED LIABILITY COMPANY, jurisdiction: New York, filingDate: "2020-10-14"}
+  - {dosId: 2733264, entityType: DOMESTIC BUSINESS CORPORATION, jurisdiction: New York, filingDate: "2002-02-20"}
+  - {dosId: 3574572, entityType: DOMESTIC LIMITED LIABILITY COMPANY, jurisdiction: New York, filingDate: "2007-10-01"}
+absent: [5463118]   # ZZYZX STUDIO LLC: in DOS, named by no owner or grantee in the graph

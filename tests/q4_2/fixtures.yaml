@@ -1,0 +1,8 @@
+# Q4.2 expected business addresses. Provisional until the frozen dump is identified (data/README.md).
+# Checked read-only 2026-11-12. check_addresses.py re-derives each from the source. Street lines are as recorded (not normalized).
+# contacts: [contactType, street line, zip]
+registrations:
+  - {bin: "3014788", registrationId: 316103, note: "anchor A: three roles share one address, the site manager has none", contacts: [[Agent, "746 61ST STREET", "11220"], [HeadOfficer, "746 61ST STREET", "11220"], [Shareholder, "746 61ST STREET", "11220"], [SiteManager, null, null]]}
+  - {bin: "3013901", registrationId: 350423, note: "anchor C: HPD spells the agent's street differently from the head officer's", contacts: [[Agent, "300 EAST2ND STREET", "11218"], [HeadOfficer, "300 EAST 2ND STREET", "11218"], [SiteManager, null, null]]}
+  - {bin: "5023962", registrationId: 10258, note: "duplicates of one contact disagree, so its street line is absent", conflicting_street_present: false}
+totals: {contacts: 526889, with_addr: 369472, conflicting: 360}

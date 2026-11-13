@@ -3,6 +3,7 @@
 Names are compared as recorded strings, never as a finding of "same party" (a name match is a lead).
   N1  uppercase, trim, collapse every run of whitespace to one space.
   N2  N1, then remove periods and turn commas into spaces (re-collapsed).
+  N3  N2, then remove apostrophes. Used only to match an owner name to a NY DOS entity name (Q5, dos_name_agreement).
 Spaces inside a name are never removed, so "K S TURNPIKE LLC" and "KS TURNPIKE LLC" are different.
 
 Outcomes (scheme name-agreement-outcomes):
@@ -23,6 +24,7 @@ import re
 
 N1_RULE = "N1"
 N2_RULE = "N2"
+N3_RULE = "N3"
 A1_RULE = "A1"
 
 
@@ -38,6 +40,22 @@ def n2(value: str | None) -> str | None:
     if text is None:
         return None
     return n1(text.replace(".", "").replace(","," "))  # a comma may separate words; a period never does
+
+
+def n3(value: str | None) -> str | None:
+    """N3 (Q5, owner name against NY DOS entity name): N2, then remove apostrophes. Spaces inside a name stay."""
+    text = n2(value)
+    if text is None:
+        return None
+    return n1(text.replace("'", ""))
+
+
+def dos_name_agreement(a: str | None, b: str | None) -> dict:
+    """Compare an owner name with a DOS entity name. Like name_agreement, plus rule N3 (apostrophes)."""
+    out = name_agreement(a, b)
+    if out["outcome"] == "different" and n3(a) == n3(b):
+        return {"outcome": "normalization-match", "rule": N3_RULE}
+    return out
 
 
 def name_agreement(a: str | None, b: str | None) -> dict:

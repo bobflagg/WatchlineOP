@@ -1,0 +1,114 @@
+# Question schema: Q4 "Who is the managing agent, head officer or site manager HPD lists for this building?"
+# (sub-questions Q4.1 and Q4.2). Extends the Q1 to Q3 graph; declares only what Q4 adds.
+question: Q4
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [hpd_contacts]
+
+graph:
+  constraints:
+    - {name: role_contact_key_unique, label: RoleContact, property: contactKey, kind: unique}
+
+  nodes:
+    RoleContact:
+      concept: role-contact
+      key: contactKey
+      scope: >-
+        One RoleContact per distinct (registrationid, type, corporation name, person name, title) of a contact whose type is not an
+        owner type, on a loaded Registration (526889 contacts, queried 2026-11-12). Exact duplicates are one contact.
+      proved_by: tests/q4_1/expected.sql
+      properties:
+        contactKey:
+          concept: role-contact
+          type: string
+          source: hpd_contacts.registrationid, hpd_contacts.type, hpd_contacts.corporationname, hpd_contacts.firstname, hpd_contacts.lastname, hpd_contacts.title
+          rule: "Identity only, joined as registrationid|type|corporation|person|title with blanks empty. registrationcontactid is not unique and is not used. Not an answer field."
+          identity_only: true
+          null_policy: never absent
+        contactType:
+          concept: contact-type
+          type: string
+          source: hpd_contacts.type
+          allowed_scheme: role-contact-types
+          allowed: [Agent, HeadOfficer, Officer, Shareholder, SiteManager, Lessee]
+          rule: The six non-owner types, as HPD spells them. The role is the type; a title never changes it.
+          null_policy: never absent
+          proved_by: tests/q4_1/expected.sql
+        title:
+          concept: contact-title
+          type: string
+          source: hpd_contacts.title
+          rule: Trimmed, as recorded, never normalized.
+          null_policy: "absent when blank (119312 of 526889 contacts have a title)"
+          proved_by: tests/q4_1/expected.sql
+        corporationName:
+          concept: corporation-name
+          type: string
+          source: hpd_contacts.corporationname
+          rule: Trimmed, as recorded.
+          null_policy: "absent when blank; present on agents and lessees only"
+          proved_by: tests/q4_1/expected.sql
+        personName:
+          concept: person-name
+          type: string
+          source: hpd_contacts.firstname, hpd_contacts.middleinitial, hpd_contacts.lastname
+          rule: First name, middle initial and last name joined by single spaces, blank parts left out. As recorded.
+          null_policy: "absent when blank; 1497 contacts have neither a corporation nor a person name"
+          proved_by: tests/q4_1/expected.sql
+        mailingAddress:
+          concept: mailing-address
+          type: string
+          source: hpd_contacts.businesshousenumber, hpd_contacts.businessstreetname
+          rule: House number and street name joined by one space, blank parts left out. Absent when exact duplicates disagree (360 contacts).
+          null_policy: "absent when blank or when duplicates disagree; always absent for site managers; 369472 of 526889 have a value"
+          proved_by: tests/q4_2/expected.sql
+        addressLine2:
+          concept: address-line-two
+          type: string
+          source: hpd_contacts.businessapartment
+          rule: Trimmed, as recorded. Reported apart. Absent when exact duplicates disagree.
+          null_policy: absent when blank or when duplicates disagree
+          proved_by: tests/q4_2/expected.sql
+        zip:
+          concept: zip-code
+          type: string
+          source: hpd_contacts.businesszip
+          rule: Trimmed, as recorded, not normalized. Absent when exact duplicates disagree.
+          null_policy: absent when blank or when duplicates disagree
+          proved_by: tests/q4_2/expected.sql
+
+  relationships:
+    HAS_ROLE_CONTACT:
+      concept: has-role-contact
+      from: Registration
+      to: RoleContact
+      source: hpd_contacts.registrationid
+      rule: One relationship per RoleContact, from the registration it was recorded on. Contacts belong to the registration, not to one building.
+      proved_by: tests/q4_1/expected.sql
+
+answer:
+  Q4.1:
+    lookup: tests/q4_1/lookup.cypher
+    fields:
+      registrationId:  {concept: registration-id, source: Registration.registrationId, type: integer}
+      contacts:        {concept: role-contact, source: "Registration-[:HAS_ROLE_CONTACT]->RoleContact", type: "list of {contactType, title, corporationName, personName}", null_policy: "empty list means no role contact is recorded; none is inferred"}
+      contactType:     {concept: contact-type, source: RoleContact.contactType, type: string, allowed_scheme: role-contact-types, allowed: [Agent, HeadOfficer, Officer, Shareholder, SiteManager, Lessee]}
+      title:           {concept: contact-title, source: RoleContact.title, type: string, null_policy: "absent when blank; as recorded"}
+      corporationName: {concept: corporation-name, source: RoleContact.corporationName, type: string, null_policy: "absent when blank"}
+      personName:      {concept: person-name, source: RoleContact.personName, type: string, null_policy: "absent when blank; never repeated outside the answer"}
+    note: "Owner contacts come from Q2.2. A managing agent is a management relationship, not ownership. Roles are reported separately; one party can hold two."
+  Q4.2:
+    lookup: tests/q4_2/lookup.cypher
+    fields:
+      mailingAddress: {concept: mailing-address, source: RoleContact.mailingAddress, type: string, null_policy: "absent when none is recorded or duplicates disagree; always absent for site managers"}
+      addressLine2:   {concept: address-line-two, source: RoleContact.addressLine2, type: string, null_policy: "absent when blank"}
+      zip:            {concept: zip-code, source: RoleContact.zip, type: string, null_policy: "absent when blank"}
+    note: "A shared address between roles is a record link, not evidence of identity or common ownership."
+
+diagnostics: []
+
+not_stored:   # deliberately absent from the graph
+  - {term: hpd_contacts.contactdescription, reason: kind of entity (CORP, INDIV, CO-OP, GEN.PART); not needed for Q4}
+  - {term: whether a contact is current, reason: contacts have no date of their own; the registration dates are Q2.1}
+  - {term: business city and state, reason: not needed for Q4}
+  - {term: hpd_contacts.registrationcontactid, reason: not unique in the snapshot}

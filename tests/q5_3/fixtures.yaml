@@ -1,0 +1,7 @@
+# Q5.3 expected registered agent. Provisional until the frozen dump is identified (data/README.md).
+# Checked read-only 2026-11-12. check_agent.py re-derives each from the source.
+records:
+  - {dosId: 151265, note: "a commercial agent with a suite line, mixed case as recorded: a service company, not a lead", expect: {agentName: "REGISTERED AGENT SOLUTIONS, INC.", agentAddress: "99 WASHINGTON AVENUE", agentAddressLine2: "suite 700", agentCity: ALBANY, agentState: "NEW YORK", agentZip: "12260"}}
+  - {dosId: 128518, note: "an individual as agent (name not repeated)", expect: {agentName: "<person>", agentAddress: "1527 62ND STREET", agentCity: BROOKLYN, agentState: "NEW YORK", agentZip: "11219"}}
+  - {dosId: 5857246, note: "anchor A: no agent listed", expect: {}}
+absent: [5463118]

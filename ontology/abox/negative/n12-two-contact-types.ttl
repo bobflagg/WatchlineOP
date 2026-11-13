@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: contactType is functional. A contact has one type; a title or a second row never adds a role.
+id:bad-contact-2 a onto:RoleContact ; onto:contactType "Agent", "HeadOfficer" .
