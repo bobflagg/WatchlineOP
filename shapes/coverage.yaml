@@ -147,3 +147,42 @@ rules:
     rule: "One RoleContact per contactKey"
     covered_by: native
     names: [role_contact_key_unique]
+  # --- Q5 (ontology/ontology-notes.md, Q5 "Rules for Stage 6 shapes") ---
+  - id: Q5-R1
+    question: Q5
+    rule: "dosId is a positive integer and present; dosEntityName, entityType and initialFilingDate are present on every DOS entity"
+    covered_by: compiled
+    names: [DosEntityShape.dosId.minCount, DosEntityShape.dosId.datatype, DosEntityShape.dosId.minInclusive, DosEntityShape.dosEntityName.minCount, DosEntityShape.dosEntityName.datatype, DosEntityShape.dosEntityName.minLength, DosEntityShape.entityType.minCount, DosEntityShape.entityType.datatype, DosEntityShape.entityType.minLength, DosEntityShape.initialFilingDate.minCount, DosEntityShape.initialFilingDate.datatype]
+  - id: Q5-R2
+    question: Q5
+    rule: "A blank jurisdiction, process part or agent part is absent, never an empty string"
+    covered_by: compiled
+    names: [DosEntityShape.jurisdiction.datatype, DosEntityShape.jurisdiction.minLength, DosEntityShape.processName.datatype, DosEntityShape.processName.minLength, DosEntityShape.processAddress.datatype, DosEntityShape.processAddress.minLength, DosEntityShape.processAddressLineTwo.datatype, DosEntityShape.processAddressLineTwo.minLength, DosEntityShape.processCity.datatype, DosEntityShape.processCity.minLength, DosEntityShape.processState.datatype, DosEntityShape.processState.minLength, DosEntityShape.processZip.datatype, DosEntityShape.processZip.minLength, DosEntityShape.registeredAgentName.datatype, DosEntityShape.registeredAgentName.minLength, DosEntityShape.registeredAgentAddress.datatype, DosEntityShape.registeredAgentAddress.minLength, DosEntityShape.registeredAgentAddressLineTwo.datatype, DosEntityShape.registeredAgentAddressLineTwo.minLength, DosEntityShape.registeredAgentCity.datatype, DosEntityShape.registeredAgentCity.minLength, DosEntityShape.registeredAgentState.datatype, DosEntityShape.registeredAgentState.minLength, DosEntityShape.registeredAgentZip.datatype, DosEntityShape.registeredAgentZip.minLength]
+  - id: Q5-R3
+    question: Q5
+    rule: "initialFilingDate is not after the snapshot date (2026-07-06)"
+    covered_by: check
+    names: [queries/checks/q05-filing-date-not-future.cypher]
+    note: "Date comparison against a constant; outside what shacl2cypher compiles."
+  - id: Q5-R4
+    question: Q5
+    rule: "A DOS entity has no relationship to an owner contact, grantee, registration or anything else"
+    covered_by: check
+    names: [queries/checks/q05-no-relationships.cypher]
+  - id: Q5-R5
+    question: Q5
+    rule: "nameKey is rule N3 of the name, and every DOS entity's key equals the N3 key of a CorporateOwner owner name or a grantee name (scope)"
+    covered_by: check
+    names: [queries/checks/q05-name-key-scope.cypher]
+    note: "N3 is re-implemented in Cypher here; tests/q5_1 compares with compare.py."
+  - id: Q5-R6
+    question: Q5
+    rule: "Statutory default process names are kept as recorded; address parts and agent state are stored as recorded (an agent state without an agent name is allowed); records sharing a key are all kept"
+    covered_by: test
+    names: [tests/q5_1/check_dos.py, tests/q5_2/check_process.py, tests/q5_3/check_agent.py]
+    note: "Answer rules: the fixtures hold THE COMPANY, the person process name, anchor C/D/G spellings and the two-id name."
+  - id: Q5-N1
+    question: Q5
+    rule: "One DosEntity per dosId"
+    covered_by: native
+    names: [dos_entity_id_unique]

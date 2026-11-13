@@ -19,7 +19,7 @@ endef
 
 .PHONY: shapes oops help setup dirs versions check-env \
         vocab profiles taxonomy thesaurus ontology \
-        load test graph rebuild clean
+        load test graph rebuild rebuild-all clean
 
 help: ## Show this help
 	@awk 'BEGIN{FS=":.*## "} /^[a-zA-Z_-]+:.*## /{printf "  %-12s %s\n",$$1,$$2}' $(MAKEFILE_LIST)
@@ -85,6 +85,12 @@ graph: load profiles test shapes ## Full graph build and validation
 rebuild: ## Destructive: reset the POC graph (needs CONFIRM=<database name>)
 	@test "$(CONFIRM)" = "$(NEO4J_DB)" || { echo "refusing: run 'make rebuild CONFIRM=$(NEO4J_DB)' to reset database '$(NEO4J_DB)'" >&2; exit 1; }
 	uv run python scripts/reset_graph.py
+
+rebuild-all: ## Destructive: rebuild, then graph, ontology and thesaurus in order (needs CONFIRM=<database name>)
+	$(MAKE) rebuild CONFIRM=$(CONFIRM)
+	$(MAKE) graph
+	$(MAKE) ontology
+	$(MAKE) thesaurus
 
 clean: ## Remove Python caches
 	find . -name __pycache__ -type d -not -path './.venv/*' -prune -exec rm -rf {} +

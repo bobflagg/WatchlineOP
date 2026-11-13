@@ -1,0 +1,26 @@
+# Q5 acceptance results, 2026-11-13. Shapes compile and the three new supplemental checks were run read-only on the loaded graph (checked here).
+# After a full rebuild, `make graph` (including the seeded negative cases), `make ontology` and `make thesaurus` all passed (user-reported 2026-11-13; counts not captured).
+question: Q5
+fixture_version: provisional (not yet verified against an identified frozen dump)
+baseline: "Pending: dump filename and SHA-256 are not recorded in data/README.md. No result below is 'passed' for acceptance."
+tools:
+  neo4j: "Neo4j Kernel 2026.04.0 enterprise (tests/results/shapes.json from the Q4 run)"
+  shacl2cypher: "0.3.0 (strict mode; all 119 rules of Q1 to Q5 compile, no static diagnostics; coverage names match)"
+acceptance:
+  graph:
+    status: pending
+    reason: "baseline not identified (checks themselves passed, user-reported)"
+    evidence:
+      shapes_compile: "passed (compile only, no database)"
+      supplemental_checks_on_loaded_graph: "119999 DosEntity: filing date after snapshot 0, relationships 0, nameKey not N3 of name 0, outside scope 0 (read-only query via Neo4j MCP; make shapes will repeat it)"
+      negative_cases: "30 (tests/negative/q05/cases.yaml), all flagged or refused (user-reported)"
+      sub_question_checks: "q5_1 to q5_3 passed in make graph (user-reported)"
+  retrieval_extraction:
+    status: pending
+    reason: "Q5.1 to Q5.3 fixtures delivered; Q5.4 retrieved-filing cache not yet recorded"
+    fixtures: [tests/q5_1/fixtures.yaml, tests/q5_2/fixtures.yaml, tests/q5_3/fixtures.yaml]
+    contract: "profiles/q05.yaml, section answer (candidates, nameAgreement, process and agent fields, null policies, 'no record in the active-entity snapshot' with spellings tried)"
+    missing: "Q5.4 needs cached state filings or attachments for a case where the DOS record is silent (replayable, with retrieval time). Record these on the user's machine; until then Q5.4 stays pending."
+  investigation:
+    status: pending
+    reason: "not declared for Q5"

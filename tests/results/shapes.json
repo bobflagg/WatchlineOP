@@ -1,17 +1,17 @@
 {
   "neo4j": "Neo4j Kernel 2026.04.0 enterprise",
   "shacl2cypher": "0.3.0",
-  "rules": 82,
+  "rules": 119,
   "checks": [
     {
-      "check": "all 82 rules compile in strict mode",
+      "check": "all 119 rules compile in strict mode",
       "passed": true,
       "detail": "[] []"
     },
     {
       "check": "the graph is loaded",
       "passed": true,
-      "detail": "(3863275, 3734461)"
+      "detail": "(3983274, 3734461)"
     },
     {
       "check": "graph conforms to BuildingRegistrationShape.hasRegistration.class",
@@ -105,6 +105,191 @@
     },
     {
       "check": "graph conforms to DeedShape.recordedDate.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.dosEntityName.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.dosEntityName.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.dosEntityName.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.dosId.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.dosId.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.dosId.minInclusive",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.entityType.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.entityType.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.entityType.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.initialFilingDate.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.initialFilingDate.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.jurisdiction.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.jurisdiction.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.processAddress.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.processAddress.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.processAddressLineTwo.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.processAddressLineTwo.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.processCity.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.processCity.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.processName.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.processName.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.processState.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.processState.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.processZip.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.processZip.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.registeredAgentAddress.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.registeredAgentAddress.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.registeredAgentAddressLineTwo.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.registeredAgentAddressLineTwo.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.registeredAgentCity.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.registeredAgentCity.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.registeredAgentName.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.registeredAgentName.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.registeredAgentState.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.registeredAgentState.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.registeredAgentZip.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosEntityShape.registeredAgentZip.minLength",
       "passed": true,
       "detail": "0 violations"
     },
@@ -445,6 +630,21 @@
     },
     {
       "check": "graph conforms to queries/checks/q04-site-manager-address.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q05-filing-date-not-future.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q05-no-relationships.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q05-name-key-scope.cypher",
       "passed": true,
       "detail": "0 violations"
     },
@@ -829,9 +1029,134 @@
       "detail": ""
     },
     {
+      "check": "negative: DOS id zero is flagged by DosEntityShape.dosId.minInclusive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: DOS id as text is flagged by DosEntityShape.dosId.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: DOS entity without name is flagged by DosEntityShape.dosEntityName.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: DOS entity with empty name is flagged by DosEntityShape.dosEntityName.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: DOS entity without type is flagged by DosEntityShape.entityType.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: DOS entity without filing date is flagged by DosEntityShape.initialFilingDate.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: filing date as text is flagged by DosEntityShape.initialFilingDate.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: empty jurisdiction is flagged by DosEntityShape.jurisdiction.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: empty process name is flagged by DosEntityShape.processName.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: empty process address is flagged by DosEntityShape.processAddress.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: empty process address line 2 is flagged by DosEntityShape.processAddressLineTwo.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: empty process city is flagged by DosEntityShape.processCity.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: empty process state is flagged by DosEntityShape.processState.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: empty process zip is flagged by DosEntityShape.processZip.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: empty agent name is flagged by DosEntityShape.registeredAgentName.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: empty agent address is flagged by DosEntityShape.registeredAgentAddress.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: empty agent address line 2 is flagged by DosEntityShape.registeredAgentAddressLineTwo.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: empty agent city is flagged by DosEntityShape.registeredAgentCity.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: empty agent state is flagged by DosEntityShape.registeredAgentState.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: empty agent zip is flagged by DosEntityShape.registeredAgentZip.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: filing date after the snapshot is flagged by queries/checks/q05-filing-date-not-future.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: DOS entity linked to an owner contact is flagged by queries/checks/q05-no-relationships.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: name key not N3 of the name is flagged by queries/checks/q05-name-key-scope.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: DOS entity outside the scope is flagged by queries/checks/q05-name-key-scope.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate dosId is refused by a native constraint",
+      "passed": true,
+      "detail": ""
+    },
+    {
       "check": "seeded bad data left no trace (rolled back)",
       "passed": true,
-      "detail": "(3863275, 3734461) -> (3863275, 3734461)"
+      "detail": "(3983274, 3734461) -> (3983274, 3734461)"
     }
   ]
 }

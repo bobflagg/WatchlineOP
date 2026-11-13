@@ -1,0 +1,53 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix s2c:  <https://w3id.org/shacl2cypher#> .
+@prefix shp:  <https://watchline.example/shapes/> .
+
+# Q5 shapes: the rules OWL cannot express (ontology/ontology-notes.md, Q5 "Rules for Stage 6 shapes").
+# Rules that need a date comparison, a relationship absence or an N3 key comparison are named Cypher checks.
+
+# --- Graph names ---
+onto:DosEntity s2c:label "DosEntity" .
+onto:dosId s2c:property "dosId" .
+onto:dosEntityName s2c:property "name" .
+onto:entityType s2c:property "entityType" .
+onto:jurisdiction s2c:property "jurisdiction" .
+onto:initialFilingDate s2c:property "filingDate" .
+onto:processName s2c:property "processName" .
+onto:processAddress s2c:property "processAddress" .
+onto:processAddressLineTwo s2c:property "processAddressLine2" .
+onto:processCity s2c:property "processCity" .
+onto:processState s2c:property "processState" .
+onto:processZip s2c:property "processZip" .
+onto:registeredAgentName s2c:property "agentName" .
+onto:registeredAgentAddress s2c:property "agentAddress" .
+onto:registeredAgentAddressLineTwo s2c:property "agentAddressLine2" .
+onto:registeredAgentCity s2c:property "agentCity" .
+onto:registeredAgentState s2c:property "agentState" .
+onto:registeredAgentZip s2c:property "agentZip" .
+
+# --- Rules ---
+shp:DosEntityShape a sh:NodeShape ;
+    s2c:key "dosId" ;
+    sh:targetClass onto:DosEntity ;
+    # R1 DOS id is a positive integer and present
+    sh:property [ sh:path onto:dosId ; sh:minCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 1 ] ;
+    # R1 name, type and filing date present
+    sh:property [ sh:path onto:dosEntityName ; sh:minCount 1 ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:entityType ; sh:minCount 1 ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:initialFilingDate ; sh:minCount 1 ; sh:datatype xsd:date ] ;
+    # R2 a blank jurisdiction, process part or agent part is absent, never an empty string
+    sh:property [ sh:path onto:jurisdiction ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:processName ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:processAddress ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:processAddressLineTwo ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:processCity ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:processState ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:processZip ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:registeredAgentName ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:registeredAgentAddress ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:registeredAgentAddressLineTwo ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:registeredAgentCity ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:registeredAgentState ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:registeredAgentZip ; sh:datatype xsd:string ; sh:minLength 1 ] .
