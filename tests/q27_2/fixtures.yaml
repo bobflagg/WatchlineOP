@@ -1,0 +1,6 @@
+# Q27.2 fixtures. hpd_complaints_and_problems, hpd_registrations, pluto_latest 26v1 (frozen baseline, data/README.md). check_rate.py re-derives each.
+buildings:
+  - {bin: "3013901", start: "2023-01-01", end: "2025-12-31", label: "anchor C, 2023 to 2025: 27 problems, 32 units, rate 0.84375", rows: [{bbl: "3008070024", units: 32, problems: 27, rate: 0.84375}]}
+  - {bin: "1052551", start: "2021-01-01", end: "2026-12-31", label: "PLUTO records 0 units: rate unavailable, not 0", derived: true}
+  - {bin: "3343256", start: "2021-01-01", end: "2026-12-31", label: "lot not in PLUTO: no unit count, rate unavailable", derived: true}
+  - {bin: "3042334", start: "2021-01-01", end: "2026-12-31", label: "BIN on two lots: one row per lot, never summed", lots: 2}

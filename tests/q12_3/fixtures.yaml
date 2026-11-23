@@ -1,0 +1,8 @@
+# Q12.3 fixtures. HPD registrations and contacts (2026-05-29) against ACRIS deeds (frozen baseline, data/README.md). check_attribution.py
+# re-derives each from the source with tests/q12_3/expected.sql, so a stale fixture fails. Names are entities, never people.
+lots:
+  - {bbls: ["3008260002"], start: "2015-01-01", deeds: 2, attributable: 2, label: "anchor A: the owner is grantee on the 2021 deed and on both sides of the 2025 deed (the same name as grantor and grantee)"}
+  - {bbls: ["3067510012"], start: null, deeds: 5, attributable: 1, label: "anchor C portfolio lot: the 2022 deed names the registered owner as grantee; four earlier deeds do not match (current membership is not historical ownership)"}
+  - {bbls: ["3008070024"], start: null, deeds: 3, attributable: 0, label: "anchor C: no deed matches under N3; HPD spells the owner '438 52 ST OWNERS CORP' and ACRIS spells it differently (a name-lead limit, not a finding)"}
+  - {bbls: ["2033260069", "2033280064", "2033280097"], start: null, deeds: 6, attributable: 0, label: "a three-lot portfolio: no deed matches the registered owner"}
+  - {bbls: ["1011420120"], start: "2018-01-01", deeds: 1, attributable: 0, owner_not_comparable: true, label: "only an individual owner is registered: not comparable by name, so not attributable"}

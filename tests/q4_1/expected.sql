@@ -1,8 +1,8 @@
--- Q4.1 expected answers for RoleContact nodes and HAS_ROLE_CONTACT, from the frozen JustFix/WoW snapshot.
+-- Q4.1 expected answers for non-owner Contact nodes and HAS_CONTACT, from the frozen JustFix/WoW snapshot.
 -- Independent of the loader. hpd_contacts (2026-05-29), profiled read-only 2026-11-12.
--- Provisional until the dump is identified (data/README.md).
+-- verified against the frozen baseline recorded in data/README.md (2026-11-16).
 --
--- Rules: a RoleContact exists for each distinct (registrationid, type, corporation name, person name, title) of a
+-- Rules: a Contact exists for each distinct (registrationid, type, corporation name, person name, title) of a
 -- contact whose type is NOT CorporateOwner/IndividualOwner/JointOwner, on a registration loaded in Q2.1.
 -- Blank name parts and blank titles are absent. Person name = first, middle initial, last joined by single spaces.
 -- Agent and Lessee rows can carry both a corporation and a person (83,526 of 155,280 agents); both are kept, neither dropped.

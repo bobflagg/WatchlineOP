@@ -1,0 +1,57 @@
+# Question schema: Q20 "Given an address, what is the traced dossier: title and registration facts, management relationship, Owner Portfolio,
+# Operational Network, then any parent or control lead, each with a cited record, run and limits, and where does the trail stop?"
+# (sub-questions Q20.1 to Q20.4). Integration scenario: adds no graph element (stage 1, 2026-11-19). Everything is assembled at answer time from
+# the component answers (Q1 to Q7, Q9 to Q13, Q15, Q16, Q19); the fields below are the dossier-level contract. Q20.4 and the investigation part of
+# Q20.3 are pending a versioned retrieval cache.
+question: Q20
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: []   # no column of its own; each section uses the sources of its component question
+
+graph:
+  constraints: []
+  nodes: {}
+  relationships: {}
+
+answer:
+  Q20.1:
+    lookup: tests/q20_1/lookup.cypher
+    proved_by: tests/q20_1/check_trail.py
+    fields:
+      section: {concept: dossier, source: "answer contract: input_and_resolution, recorded_facts, groupings, transactions_and_conditions, retrieved_items, conflicts_and_gaps, run_and_stop", type: string, allowed: [input_and_resolution, recorded_facts, groupings, transactions_and_conditions, retrieved_items, conflicts_and_gaps, run_and_stop], null_policy: "never absent; a section with nothing says what was searched, never 'none found' where a source is not loaded (complaints, litigation)"}
+      componentAnswer: {concept: dossier, source: "derived: the lookup of the component question (Q1.2, Q2.2, Q3.1, Q5.1, Q5.2, Q11.1, Q7.1, Q10.1)", type: string, null_policy: "never merged or re-derived; each fact keeps its own source, date and caveats"}
+    note: "A recorded trail is a chain of record links, not a finding of common ownership. Computed at answer time, not stored."
+  Q20.2:
+    lookup: tests/q10_1/lookup.cypher
+    proved_by: tests/q20_2/check_layers.py
+    fields:
+      networkId: {concept: network-group-id, source: "OperationalNetwork.groupId", type: string, null_policy: "absent when the lot is in no network; run-local, a lead to verify"}
+      portfolioId: {concept: portfolio-group-id, source: "OwnerPortfolio.groupId", type: string, null_policy: "absent when the lot is in no portfolio; run-local, a lead to verify"}
+    note: "The two layers are returned apart with the run and release. No statement of ownership rests on either, or on a group's person anchor."
+  Q20.3:
+    proved_by: tests/q20_3/check_leads.py
+    pending: "the investigation part (following leads on retrieved sources) waits on a retrieval cache; the graph part is checked on the recorded trail"
+    fields:
+      leadStatus: {concept: lead, source: "derived at answer time by the lead rule: a name or address from a recorded or retrieved source that is not masked, not a service address and within budget", type: string, allowed: [lead, logged], null_policy: "never absent for a name or address in the trail; logged items are kept in the log, not followed, and carry a reason"}
+      reason: {concept: stop-reason, source: "derived: why a lead was not followed or not resolved", type: string, allowed_scheme: stop-reasons, allowed: [reached_service_address, no_further_link, needs_payment, budget_reached, unresolved_conflict], null_policy: "absent for a lead still open"}
+      stopReason: {concept: stop-reason, source: "derived: the single reason the investigation stopped", type: string, allowed_scheme: stop-reasons, allowed: [reached_service_address, no_further_link, needs_payment, budget_reached, unresolved_conflict], null_policy: "never absent; exactly one; never an absolute statement of completeness"}
+    note: "A mail-drop list miss is not a clearance (the list is preliminary). Computed, not stored."
+  Q20.4:
+    pending: "no retrieval cache supplied; acceptance waits on it"
+    fields:
+      label: {concept: affiliation, source: "answer contract: how each claim was obtained", type: string, allowed_scheme: evidence-statuses, allowed: [documented, hypothesized, reported], null_policy: "never absent; documented is recorded (Type I), hypothesized a derived lead (Type II), reported a publication's claim"}
+      sourceCategory: {concept: source-category, source: "answer contract: assigned at retrieval", type: string, allowed_scheme: source-categories, allowed: [public-record, published-reporting, web-content, project-derived], null_policy: "never absent"}
+      reviewStatus: {concept: review-status, source: "answer contract: starts item-unreviewed", type: string, allowed_scheme: review-statuses, allowed: [item-unreviewed, confirmed, refuted, inconclusive, contested], null_policy: "never absent; the project never sets confirmed or refuted itself"}
+      sourceRecordOrUrl: {concept: dossier, source: "answer contract: the source record id or URL behind the claim", type: string, null_policy: "never absent; a claim without one is not stated"}
+      retrievedAt: {concept: dossier, source: "answer contract: retrieval time (a snapshot date for a recorded fact)", type: string, null_policy: "never absent"}
+      run: {concept: dossier, source: "answer contract: run, snapshot dates, release and retrieval log", type: string, null_policy: "always stated, so the investigation can be replayed from the cache"}
+    note: "Web and document findings are session evidence by default; promoting them into the graph needs a separately governed process."
+
+diagnostics: []
+
+not_stored:   # deliberately absent from the graph
+  - {term: dossier, reason: assembled at answer time from the component answers; it adds no fact}
+  - {term: lead, reason: computed at answer time by the lead rule from recorded and retrieved names and addresses}
+  - {term: stop reason, reason: chosen once per investigation at answer time; one of five values}
+  - {term: claim label, reason: lives with each claim in the dossier, not the graph}
+  - {term: retrieval log, reason: kept with the cache for replay, not in the graph}

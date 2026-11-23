@@ -1,0 +1,35 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q27 example data. Values follow the fixtures in tests/q27_1/fixtures.yaml (hpd_complaints_and_problems through 2026-07-07).
+# Entities only; no names. Counts by type, category and status, the open count and the rate are computed at answer time.
+
+# Anchor C (438 52 Street): one building, one lot with 32 residential units (PLUTO). Two of its problems shown: a closed emergency problem and a
+# closed non-emergency problem that HPD flags as a duplicate. Problems hang on the building, never on the lot.
+id:lot-3008070024 a onto:TaxLot ; onto:bbl "3008070024" ; onto:residentialUnits 32 ; onto:hasBuilding id:bldg-3013901 .
+id:bldg-3013901 a onto:Building ; onto:bin "3013901" ;
+    onto:hasProblem id:problem-example-emergency, id:problem-example-duplicate .
+id:problem-example-emergency a onto:Problem ; onto:problemId 2000001 ; onto:complaintId 3000001 ;
+    onto:problemType "EMERGENCY" ; onto:majorCategory "HEAT/HOT WATER" ; onto:problemStatus "CLOSE" ;
+    onto:receivedDate "2024-01-15"^^xsd:date ; onto:duplicateFlag false .
+id:problem-example-duplicate a onto:Problem ; onto:problemId 2000002 ; onto:complaintId 3000001 ;
+    onto:problemType "EMERGENCY" ; onto:majorCategory "HEAT/HOT WATER" ; onto:problemStatus "CLOSE" ;
+    onto:receivedDate "2024-01-15"^^xsd:date ; onto:duplicateFlag true .
+
+# Q27.3 (pest extension, tests/q27_3/fixtures.yaml): problems carry a minor category and a problem code. Anchor C has seven closed pest problems since 2021
+# (MICE 1, ROACHES 3, OTHER 2, FLIES 1); three are shown. The pest is read from the code at answer time, not stored. OTHER is not mice.
+id:problem-example-mice a onto:Problem ; onto:problemId 2000003 ; onto:complaintId 3000002 ;
+    onto:problemType "NON EMERGENCY" ; onto:majorCategory "UNSANITARY CONDITION" ; onto:minorCategory "PESTS" ; onto:problemCode "MICE" ;
+    onto:problemStatus "CLOSE" ; onto:receivedDate "2022-01-24"^^xsd:date ; onto:duplicateFlag false .
+id:problem-example-other-pest a onto:Problem ; onto:problemId 2000004 ; onto:complaintId 3000003 ;
+    onto:problemType "NON EMERGENCY" ; onto:majorCategory "UNSANITARY CONDITION" ; onto:minorCategory "PESTS" ; onto:problemCode "OTHER" ;
+    onto:problemStatus "CLOSE" ; onto:receivedDate "2023-05-02"^^xsd:date ; onto:duplicateFlag false .
+id:problem-example-radiator a onto:Problem ; onto:problemId 2000005 ; onto:complaintId 3000004 ;
+    onto:problemType "NON EMERGENCY" ; onto:majorCategory "PAINT/PLASTER" ; onto:minorCategory "RADIATOR" ; onto:problemCode "OTHER" ;
+    onto:problemStatus "CLOSE" ; onto:receivedDate "2023-11-09"^^xsd:date ; onto:duplicateFlag false .
+id:bldg-3013901 onto:hasProblem id:problem-example-mice, id:problem-example-other-pest, id:problem-example-radiator .
+
+# A building with no problem in the loaded window: no hasProblem edge. An empty result, not evidence of good conditions.
+id:bldg-3324448 a onto:Building ; onto:bin "3324448" .

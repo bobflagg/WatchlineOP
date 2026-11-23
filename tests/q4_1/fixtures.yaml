@@ -1,4 +1,4 @@
-# Q4.1 expected non-owner contacts per registration. Provisional until the frozen dump is identified (data/README.md).
+# Q4.1 expected non-owner contacts per registration. verified against the frozen baseline recorded in data/README.md (2026-11-16).
 # Checked read-only 2026-11-12. check_roles.py re-derives each from the source, so a stale fixture fails.
 # Person names are not repeated: only the role, title and whether a corporation / person name is recorded are compared.
 # contacts: [contactType, title, corporation recorded, person recorded]

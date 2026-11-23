@@ -1,0 +1,8 @@
+# Q21.1 fixtures: groups whose member lots are re-derived from the pinned BOR release (v0.3.0, run 2026-05-29-869bd299);
+# open counts by class and units are re-derived from the source (expected.sql). check_ranking.py fails on a stale fixture.
+groups:
+  - {layer: network,   groupId: ON-18742, note: "anchor D's network: 35 lots, 18 open violations expected; lot 3008210012 has three buildings"}
+  - {layer: portfolio, groupId: OP-53559, note: "anchor D's portfolio: 33 rental lots"}
+  - {layer: network,   groupId: ON-98617, note: "anchor C's network: five lots"}
+  - {layer: network,   groupId: ON-16213, note: "lot 3022117501 has no PLUTO units: rate unavailable, ranked last"}
+  - {layer: network,   groupId: ON-1,     note: "two lots: smallest ordinary case"}

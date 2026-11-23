@@ -30,7 +30,7 @@ columns:
     sentinels:
       null: "no unit count (430 rows)"
       0: "PLUTO records no residential units (90301 rows); not evidence that no one lives there"
-    used_by: [Q1.1, Q1.4]
+    used_by: [Q1.1, Q1.4, Q15.2, Q17.4, Q27.2]
     notes: "Q1.1 also uses it for the lot scope rule (3 or more units)."
   - name: assesstot
     physical_type: bigint
@@ -47,7 +47,7 @@ columns:
     sentinels:
       null: "no year (358 rows)"
       0: "year unknown (39880 rows)"
-    used_by: [Q1.4]
+    used_by: [Q1.4, Q17.4]
     notes: "Pre-1800 years exist and are real (for example 1789, 1792)."
   - name: numbldgs
     physical_type: integer
@@ -56,5 +56,5 @@ columns:
     sentinels:
       null: "no count (639 rows)"
       0: "PLUTO counts no buildings (33775 rows)"
-    used_by: [Q1.2]
+    used_by: [Q1.2, Q17.1]
     notes: "Can differ from the number of BINs HPD lists for the same lot."

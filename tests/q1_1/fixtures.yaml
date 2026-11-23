@@ -1,4 +1,4 @@
-# Q1.1 expected Lot nodes. Provisional until the frozen dump is identified (data/README.md).
+# Q1.1 expected Lot nodes. verified against the frozen baseline recorded in data/README.md (2026-11-16).
 # Values checked read-only against pluto_latest (26v1) and hpd_registrations (2026-05-29) on 2026-11-11.
 # check_lots.py re-derives each one from the source, so a stale fixture fails.
 

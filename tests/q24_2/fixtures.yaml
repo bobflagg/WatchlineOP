@@ -1,0 +1,9 @@
+# Q24.2 fixtures: person names are never stored here. Each case is a rule that check_person.py applies to the frozen source; the name is held
+# in memory and never printed. Every person row is a lead. ACRIS records people last name first, HPD first name first (profiled 2026-11-19:
+# of 18,141 two-word HPD individual owners, 1,696 equal a grantee name as given and 13,003 equal one reversed).
+persons:
+  - {rule: most_frequent_two_word_individual_owner, note: "the most common two-word individual owner name: many registrations; leads only, with the count"}
+  - {rule: first_individual_owner_found_reversed_in_deeds, note: "the lowest registration id whose two-word owner name appears reversed on a deed: the reversed order must be searched"}
+  - {rule: first_individual_owner_with_one_registration, note: "a name carried by one contact: the smallest lead set"}
+absent:
+  - {person: "ZZQX NOSUCH", reversed: "NOSUCH ZZQX", note: "no row: 'no match in these sources', never 'does not exist'"}

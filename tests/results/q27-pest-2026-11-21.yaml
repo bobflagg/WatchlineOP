@@ -1,0 +1,24 @@
+# Q27 pest extension (Q27.3) acceptance results, 2026-11-21. Stage 6 accepted; shapes compile offline (270 rules over Q1 to Q28).
+question: Q27.3
+fixture_version: verified against the frozen baseline (2026-11-16) by the checks once run
+baseline: "Frozen baseline recorded 2026-11-16 in data/README.md: justfixwow-poc-baseline_2026-11-16.sql.gz, SHA-256 9124f6c0d0f0d2e453f1971247ed29c217d3d4b5f55338d95344e04a617b6278."
+tools:
+  shacl2cypher: "0.3.0, strict mode; all 270 rules compile, no static diagnostics; coverage names and negative-case rules match (offline)"
+acceptance:
+  graph:
+    status: passed
+    reason: "After reloading problems, make profiles, make test K=q27, make shapes, make ontology and make thesaurus all passed (user-reported 2026-11-21; counts not given)."
+    evidence:
+      shapes: "shapes/q27.ttl: ProblemShape gains minorCategory and problemCode (exactly one each, string, starting with an uppercase letter or digit): 6 compiled rules"
+      supplemental_checks: "queries/checks/q27-problems.cypher now allows minorCategory and problemCode, rejects a stored pest kind or pest count, and requires a PESTS problem to carry one of the seven pest codes"
+      negative_cases: "30 in tests/negative/q27/cases.yaml (6 added: no minor category, minor category as a number, no problem code, lower-case problem code, PESTS with a non-pest code, pest kind stored)"
+      sub_question_checks: "tests/q27_3 compares pest complaint problems by problem code and status with independent SQL, loaded, open and duplicate totals per pest code, and that no pest kind, apartment or coordinate is stored. tests/q27_1 no longer bans minorCategory."
+  retrieval_extraction:
+    status: pending
+    reason: "not declared for Q27"
+  investigation:
+    status: pending
+    reason: "not declared for Q27"
+open_points:
+  - "Only the problem code MICE says mice; OTHER is a catch-all and never means mice."
+  - "A pest complaint is a tenant's report, not a finding; the count is per building, never per unit. A pest violation (Q15.3) is counted apart."

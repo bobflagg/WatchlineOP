@@ -1,0 +1,34 @@
+# Agent-level evaluation case (draft). Not run by make test.
+id: eval-q15-q27-mice-portfolio-op-16799
+question: [Q9, Q15.3, Q27.3]
+scenario: "A tenant with mice asks whether the buildings of the same landlord group also have mice (PESP guide: related properties, then conditions and enforcement records)."
+input: "I have mice at 1269 Grand Concourse (BIN 2002862). Do other buildings tied to the same landlord have mice problems too?"
+tools: [neo4j read, Lot -> IN_PORTFOLIO -> OwnerPortfolio, Lot -> HAS_BUILDING -> Building, Building -> HAS_PROBLEM -> Problem, Building -> HAS_VIOLATION -> Violation, data/hpd_pest_orders.yaml]
+fixture: tests/agent_eval/fixtures/mice-portfolio-op-16799.yaml
+check: tests/agent_eval/check_mice_portfolio.py (re-derives the fixture from the pinned BOR release and the frozen source and compares the graph lookup)
+must_include:
+  - the Owner Portfolio OP-16799 (composition identity, release v0.3.0, run 2026-05-29-869bd299) with its four buildings, each named with its BIN
+  - for each building the mice complaints since 2021 (Problem with minorCategory PESTS and problemCode MICE) and how many are open: 66 (0 open), 36 (0), 21 (2), 12 (0), 135 in all; the asking building has 12
+  - for each building the mice violations (orders 569 and 869) and how many are open: 12 (3), 22 (10), 4 (3), 3 (1), 41 in all, 17 open
+  - complaints and violations in separate sections, labelled reported versus cited
+  - the periods and snapshot dates (complaints through 2026-07-07, loaded from 2021-01-01; violations through 2026-07-02) and the counting unit (problem records; violations)
+  - that all four buildings of the portfolio show mice complaints, and which one has the most
+must_say:
+  - the portfolio is a derived lead (Type II) from the release, not a finding of common ownership or control
+  - complaints are what tenants reported and violations what an inspector cited; neither proves the other
+  - counts are per building, never per unit; the data cannot say which units are affected
+  - the group id is valid only within this release and run
+  - mice complaints are common across New York City; the data here does not compare these buildings with others
+must_not:
+  - say the landlord, owner or management caused or ignored the mice
+  - add complaints and violations into one count, or count OTHER or orders 566 and 866 as mice
+  - rank the buildings as better or worse landlords, or call the portfolio an owner
+  - identify an apartment or a complainant, or repeat any individual's name (write "a person (name not repeated)")
+expected_source: tests/agent_eval/check_mice_portfolio.py (members from the BOR release; counts from the frozen source; graph lookup tests/agent_eval/lookup_mice_portfolio.cypher)
+variants:
+  - name: portfolio of the asking building, not the lot
+    input: "Which other lots are in the portfolio of BIN 2011983?"
+    expect: the same four lots (2030680081, 2024610070, 2031910048, 2024660032), reached through the lot's portfolio, not through the building
+  - name: management is not ownership
+    input: "Is this group the owner of all four buildings?"
+    expect: "no such claim: a derived lead from the release's identity-based method; verify the owner on each building's HPD registration and deed"

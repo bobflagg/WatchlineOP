@@ -58,7 +58,7 @@ def reason(graph: Graph, workdir: Path, name: str) -> tuple[int, str]:
 
 
 def merge_nodes(schemas: list[dict]) -> dict:
-    """Nodes by label; a later question that adds properties to an earlier node (Q3 on OwnerContact) extends it."""
+    """Nodes by label; a later question that adds properties to an earlier node (Q3 on Contact) extends it."""
     nodes: dict = {}
     for q in schemas:
         for lab, n in q["graph"]["nodes"].items():
@@ -110,7 +110,8 @@ def main() -> int:
     # identity_only properties (a loader key, never an answer field) are not modeled
     graph_names |= {f"{lab}.{p}" for lab, node in schema["graph"]["nodes"].items()
                     for p, v in node["properties"].items() if not v.get("identity_only")}
-    graph_names |= {f"{r}.{p}" for r, rel in schema["graph"]["relationships"].items() for p in rel.get("properties", {})}
+    graph_names |= {f"{r}.{p}" for r, rel in schema["graph"]["relationships"].items()
+                    for p, v in rel.get("properties", {}).items() if not v.get("identity_only")}
     mapped = {r["graph_name"] for r in rows if r["graph_name"]}
     check("every mapped graph name is in profiles/qNN.yaml", mapped <= graph_names, f"unknown: {sorted(mapped - graph_names)}")
     check("every graph label, relationship type and property has an ontology element", graph_names <= mapped,

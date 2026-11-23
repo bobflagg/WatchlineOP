@@ -1,0 +1,71 @@
+# Question schema: Q19 "Why are these two buildings grouped together, or left unlinked, in each layer? Give the supporting records, linkage stages,
+# connecting path, exclusions and the run." (sub-questions Q19.1 to Q19.4).
+# Adds no graph element (stage 1, 2026-11-19). Answered from Lot, IN_NETWORK, IN_PORTFOLIO, the absence properties, COVERS and the
+# CONNECTED_BY_* links (Q8, Q9). The pair state, the path, connectivity before subdivision and stage precision are computed at answer
+# time. Group ids are run-local (run 2026-05-29-869bd299). Stage precision comes from the release's method_metrics, not the graph.
+question: Q19
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [bor_layers]
+
+graph:
+  constraints: []
+  nodes: {}
+  relationships: {}
+
+answer:
+  Q19.1:
+    lookup: tests/q19_1/lookup.cypher
+    proved_by: tests/q19_1/check_pair_state.py
+    fields:
+      bbl: {"concept": "tax-lot", "source": "Lot.bbl", "type": "string", "null_policy": "never absent; a lot with no Lot node has no row and is outside the rental graph"}
+      networkGroupId: {"concept": "network-group-id", "source": "OperationalNetwork.groupId", "type": "string", "null_policy": "absent when the lot is in no network; run-local"}
+      networkSplit: {"concept": "network-split", "source": "OperationalNetwork.split", "type": "string", "allowed_scheme": "network-splits", "allowed": ["wcc", "louvain"], "null_policy": "absent when the lot is in no network"}
+      networkAbsence: {"concept": "network-absence", "source": "Lot.networkAbsence", "type": "string", "allowed_scheme": "network-absence-reasons", "allowed_level": "top", "allowed": ["no_qualifying_linkage", "excluded_by_policy", "below_eligibility_rule", "outside_source_coverage", "outside_method_input"], "null_policy": "absent when the lot is in a network or has no BOR status row"}
+      networkAbsenceDetail: {"concept": "network-absence-detail", "source": "Lot.networkAbsenceDetail", "type": "string", "allowed_scheme": "network-absence-reasons", "allowed_level": "detail", "allowed_subset": true, "allowed": ["no_linkage", "no_registration", "no_owner_contact", "aggregator_address_masked", "address_evidence_masked", "first_name_veto", "common_name_veto", "shared_company_degree_unknown", "shared_company_name_not_rare", "shared_company_first_name_conflict", "shared_company_degree_cap"], "null_policy": "absent exactly when networkAbsence is absent"}
+      portfolioGroupId: {"concept": "portfolio-group-id", "source": "OwnerPortfolio.groupId", "type": "string", "null_policy": "absent when the lot is in no portfolio; run-local"}
+      portfolioComposition: {"concept": "portfolio-composition", "source": "OwnerPortfolio.composition", "type": "string", "allowed_scheme": "portfolio-compositions", "allowed": ["identity", "deed_only", "deed_bridged"], "null_policy": "absent when the lot is in no portfolio"}
+      portfolioAbsence: {"concept": "portfolio-absence", "source": "Lot.portfolioAbsence", "type": "string", "allowed_scheme": "network-absence-reasons", "allowed_level": "top", "allowed": ["no_qualifying_linkage", "excluded_by_policy", "below_eligibility_rule", "outside_source_coverage", "outside_method_input"], "null_policy": "absent when the lot is in a portfolio or has no BOR status row"}
+      portfolioAbsenceDetail: {"concept": "portfolio-absence-detail", "source": "Lot.portfolioAbsenceDetail", "type": "string", "allowed_scheme": "network-absence-reasons", "allowed_level": "detail", "allowed_subset": true, "allowed": ["no_linkage", "no_registration", "no_owner_contact", "unmatched_node", "address_evidence_masked", "coop_condo_excluded", "coop_condo_dominated", "institutional_screen", "first_name_veto", "common_name_veto", "shared_company_degree_unknown", "shared_company_name_not_rare", "shared_company_first_name_conflict", "shared_company_degree_cap", "deed_not_latest", "deed_parcels_out_of_range", "successor_not_shell", "successor_transfer_not_nominal"], "null_policy": "absent exactly when portfolioAbsence is absent"}
+      state: {"concept": "pair-layer-state", "source": "derived per layer: both group ids present and equal then same; present and different then different; otherwise ungrouped", "type": "string", "allowed": ["same", "different", "ungrouped"], "null_policy": "never absent for two lots in the graph; computed, not stored. Different or ungrouped is not a finding of different owners"}
+    note: "Run-scoped and per layer. Absence of a link is not evidence of different owners. A lot outside the graph has no row; the answer says why it is outside."
+  Q19.2:
+    lookups: [tests/q19_2/lookup_portfolio.cypher, tests/q19_2/lookup_network.cypher]
+    proved_by: tests/q19_2/check_path.py
+    fields:
+      steps: {"concept": "representative-path", "source": "derived: the fewest links of a path inside the group between a landlord record covering one lot and one covering the other", "type": "integer", "counting_unit": "links on one fewest-link path", "null_policy": "absent when there is no path inside the group; other paths of the same length may exist"}
+      nodeIds: {"concept": "landlord", "source": "Landlord.nodeId along the path", "type": "list of integer", "null_policy": "run-local landlord record ids; a record is not a verified person or owner"}
+      linkType: {"concept": "connected-by-identity", "source": "type of each link: CONNECTED_BY_IDENTITY, CONNECTED_BY_DEED, CONNECTED_BY_NAME, CONNECTED_BY_ADDRESS", "type": "string", "allowed": ["CONNECTED_BY_IDENTITY", "CONNECTED_BY_DEED", "CONNECTED_BY_NAME", "CONNECTED_BY_ADDRESS"], "null_policy": "never absent for a link"}
+      stage: {"concept": "ownership-signal", "source": "CONNECTED_BY_IDENTITY.stage|CONNECTED_BY_DEED.stage", "type": "string", "allowed_scheme": "ownership-signals", "allowed": ["identity.splink_base", "identity.splink_feedback", "identity.curated", "identity.registered_llc", "deed.held_since", "deed.linked_successor"], "null_policy": "absent on a name or address link"}
+      evidenceType: {"concept": "evidence-type", "source": "CONNECTED_BY_IDENTITY.evidenceType|CONNECTED_BY_DEED.evidenceType", "type": "string", "allowed_scheme": "link-evidence-types", "allowed": ["identity_cluster", "link_set", "evidence_item"], "null_policy": "absent on a name or address link"}
+      evidenceId: {"concept": "evidence-id", "source": "CONNECTED_BY_IDENTITY.evidenceId|CONNECTED_BY_DEED.evidenceId", "type": "string", "null_policy": "absent on a name or address link; run-local, names the release's evidence item, read on request"}
+      weight: {"concept": "link-weight", "source": "CONNECTED_BY_NAME.weight|CONNECTED_BY_ADDRESS.weight|CONNECTED_BY_IDENTITY.weight", "type": "float", "null_policy": "absent on a deed link and on an identity link the network did not use"}
+    note: "A path is a record chain, not a direct record between the lots and not a finding of common ownership. Supporting registrations, contacts and deeds come from Q2 to Q4, Q11 and Q12. Where edges are not exported, only membership is shown."
+  Q19.3:
+    lookup: tests/q19_3/lookup.cypher
+    proved_by: tests/q19_3/check_subdivision.py
+    fields:
+      connected: {"concept": "pre-subdivision-connectivity", "source": "derived: a path exists over the links with a networkEdgeId; bor_layers.network_membership.component_id is the release's check", "type": "boolean", "null_policy": "never absent for two lots in the graph; computed, not stored. False means no path over the network's links, not a finding about owners"}
+      steps: {"concept": "representative-path", "source": "derived: the fewest links of that path", "type": "integer", "counting_unit": "links", "null_policy": "absent when not connected"}
+      crossesCut: {"concept": "pre-subdivision-connectivity", "source": "derived: a link on the path has no networkGroupId", "type": "boolean", "null_policy": "absent when not connected; true means the path leaves the network"}
+      sameNetwork: {"concept": "pair-layer-state", "source": "derived: both lots have one OperationalNetwork.groupId", "type": "boolean", "null_policy": "never absent; connected before subdivision is not membership"}
+      split: {"concept": "network-split", "source": "OperationalNetwork.split", "type": "string", "allowed_scheme": "network-splits", "allowed": ["wcc", "louvain"], "null_policy": "absent when the lot is in no network"}
+    note: "Only Operational Networks are subdivided (components over 300 lots are cut into Louvain communities). A pair connected before the cut can lie in different networks."
+  Q19.4:
+    lookup: tests/q19_4/lookup.cypher
+    proved_by: tests/q19_4/check_method.py
+    fields:
+      stage: {"concept": "ownership-signal", "source": "CONNECTED_BY_IDENTITY.stage|CONNECTED_BY_DEED.stage", "type": "string", "allowed_scheme": "ownership-signals", "allowed": ["identity.splink_base", "identity.splink_feedback", "identity.curated", "identity.registered_llc", "deed.held_since", "deed.linked_successor"]}
+      evaluated: {"concept": "stage-precision", "source": "derived: bor_layers.method_metrics.precision is present for the stage", "type": "boolean", "null_policy": "never absent for a stage that joined the pair"}
+      precision: {"concept": "stage-precision", "source": "bor_layers.method_metrics.precision", "type": "float", "null_policy": "absent when the release did not evaluate the stage (all six identity and deed stages in v0.3.0); a figure is a method property of the stage on its sample, never the probability that this link is correct"}
+      provisional: {"concept": "stage-precision", "source": "bor_layers.method_metrics.provisional", "type": "boolean", "null_policy": "never absent; true on every row in v0.3.0"}
+    note: "Stated per stage, never per link. Not stored in the graph."
+
+diagnostics: []
+
+not_stored:   # deliberately absent from the graph
+  - {term: pair state, reason: computed at answer time from group membership and absence properties}
+  - {term: representative path, reason: computed at answer time from COVERS and the CONNECTED_BY_* links}
+  - {term: connectivity before subdivision, reason: "computed at answer time from the links that carry a networkEdgeId; no component id is stored"}
+  - {term: stage precision, reason: "a method property of the release (method_metrics), stated per stage at answer time"}
+  - {term: evidence behind an edge, reason: "the release's evidence items are read by evidence id on request; supporting records come from Q2 to Q4, Q11 and Q12"}

@@ -5,35 +5,15 @@
 @prefix shp:  <https://watchline.example/shapes/> .
 
 # Q4 shapes: the rules OWL cannot express (ontology/ontology-notes.md, Q4 "Rules for Stage 6 shapes").
-# Compiled together with shapes/q02.ttl (Registration, contactType) and shapes/q03.ttl (address properties).
-# Conditional rules (corporation name only on agents and lessees; site managers have no address) are named Cypher checks.
+# Compiled together with shapes/q02.ttl (Contact, names, type) and shapes/q03.ttl (address properties).
+# Conditional rules (corporation name only on corporate owners, agents and lessees; site managers have no address) are named Cypher checks.
 
 # --- Graph names ---
-onto:RoleContact s2c:label "RoleContact" .
-onto:hasRoleContact s2c:relationship "HAS_ROLE_CONTACT" ; s2c:direction "out" .
 onto:contactTitle s2c:property "title" .
-onto:corporationName s2c:property "corporationName" .
-onto:personName s2c:property "personName" .
 
 # --- Rules ---
-shp:RoleContactShape a sh:NodeShape ;
+shp:ContactTitleShape a sh:NodeShape ;
     s2c:key "contactKey" ;
-    sh:targetClass onto:RoleContact ;
-    # R1 type present and one of the six non-owner types (owner types are rejected)
-    sh:property [ sh:path onto:contactType ; sh:minCount 1 ; sh:datatype xsd:string ;
-                  sh:pattern "^(Agent|HeadOfficer|Officer|Shareholder|SiteManager|Lessee)$" ] ;
-    # R2 every role contact is linked to exactly one registration
-    sh:property [ sh:path [ sh:inversePath onto:hasRoleContact ] ; sh:minCount 1 ; sh:maxCount 1 ] ;
-    # R3 a blank title, name or address part is absent, never an empty string
-    sh:property [ sh:path onto:contactTitle ; sh:datatype xsd:string ; sh:minLength 1 ] ;
-    sh:property [ sh:path onto:corporationName ; sh:datatype xsd:string ; sh:minLength 1 ] ;
-    sh:property [ sh:path onto:personName ; sh:datatype xsd:string ; sh:minLength 1 ] ;
-    sh:property [ sh:path onto:mailingAddress ; sh:datatype xsd:string ; sh:minLength 1 ] ;
-    sh:property [ sh:path onto:addressLineTwo ; sh:datatype xsd:string ; sh:minLength 1 ] ;
-    sh:property [ sh:path onto:zipCode ; sh:datatype xsd:string ; sh:minLength 1 ] .
-
-# HAS_ROLE_CONTACT ends on a role contact
-shp:RegistrationRoleShape a sh:NodeShape ;
-    s2c:key "registrationId" ;
-    sh:targetClass onto:Registration ;
-    sh:property [ sh:path onto:hasRoleContact ; sh:class onto:RoleContact ] .
+    sh:targetClass onto:Contact ;
+    # R3 a blank title is absent, never an empty string
+    sh:property [ sh:path onto:contactTitle ; sh:datatype xsd:string ; sh:minLength 1 ] .

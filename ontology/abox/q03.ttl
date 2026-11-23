@@ -20,7 +20,7 @@ id:deed-2021022201130003 a onto:Deed ; onto:documentId "2021022201130003" ; onto
 id:grantee-2021022201130003-1 a onto:Grantee ; onto:granteeName "5413 PLAZA LLC" ;
     onto:mailingAddress "5 CROMWELL CIRCLE" ; onto:zipCode "10304" .
 # The Q2 owner contact on this lot, with the business address Q3.5 adds.
-id:owner-316103-a a onto:OwnerContact ; onto:mailingAddress "746 61ST STREET" ; onto:zipCode "11220" .
+id:owner-316103-a a onto:Contact ; onto:mailingAddress "746 61ST STREET" ; onto:zipCode "11220" .
 
 # Anchor D: two deeds recorded the same day. Both stay; none is chosen. One deed has three grantees
 # (AVE and AVENUE spelled both ways); the other has a second address line holding a floor.

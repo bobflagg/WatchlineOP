@@ -1,0 +1,7 @@
+# Q10.3 expected release-wide disagreement (BOR release v0.3.0, run 2026-05-29-869bd299).
+# check_release_wide.py re-derives every count from the release, so a stale fixture fails.
+totals:
+  networks_with_many_portfolios: 476      # rental lots
+  portfolios_spanning_all_lots: 14        # co-op and condo lots counted
+spanning_only_via_non_rental: [OP-51862]  # reaches a second network only through five non-rental lots; not in the graph's 13
+spanning_portfolios: [OP-10150, OP-13058, OP-14738, OP-18878, OP-22191, OP-45233, OP-45751, OP-50218, OP-5346, OP-7128, OP-76819, OP-78388, OP-90344]

@@ -1,0 +1,9 @@
+# Q24.1 fixtures: entity names, found by rule N3. check_entity.py re-derives each from the frozen source (q24_support.py), so a stale fixture fails.
+# Counting units: distinct registrations, deeds (document ids), DOS ids. A name matches records; every match is a lead, never a link.
+names:
+  - {name: "5413 PLAZA LLC", note: "anchor A: one HPD registered owner (CorporateOwner), the 2021 deed grantee, and the DOS record 5857246; each source has its own role"}
+  - {name: "BRIGHTON MANAGEMENT", note: "an agent name: role Agent on 40 registrations; spelling variants `Brighton Management` match under N3 (basis normalized)"}
+  - {name: "702 plaza llc", note: "given in lower case: matches `702 PLAZA LLC` (anchor B grantee) with basis normalized, never exact"}
+  - {name: "438 52ND ST. OWNERS' CORP.", note: "anchor C deed spelling: periods and an apostrophe differ from the HPD spelling; same N3 key"}
+absent:
+  - {name: "NO SUCH ENTITY LLC", note: "no row: the answer is 'no match in these sources' with rule N3"}

@@ -1,7 +1,7 @@
 -- Q5.1 expected answers for DosEntity, from the frozen JustFix/WoW snapshot. Independent of the loader.
--- dos_active_corporations (data through 2026-07-06), profiled read-only 2026-11-12. Provisional until the dump is identified (data/README.md).
+-- dos_active_corporations (data through 2026-07-06), profiled read-only 2026-11-12. verified against the frozen baseline recorded in data/README.md (2026-11-16).
 --
--- Rules: a record is loaded when its name key equals the key of a CorporateOwner OwnerContact name or a Grantee name in the graph.
+-- Rules: a record is loaded when its name key equals the key of a CorporateOwner Contact corporation name or a Grantee name in the graph.
 -- Key (rule N3) = uppercase, periods removed, commas to spaces, apostrophes removed, whitespace collapsed; spaces inside a name stay.
 -- dosid is unique (4,242,054 rows). Name, jurisdiction and entity type are never blank except jurisdiction (119 of the scoped rows are null:
 -- kept absent). Filing dates run 1861-01-01 to 2026-07-01 and none is in the future; they are kept as recorded.

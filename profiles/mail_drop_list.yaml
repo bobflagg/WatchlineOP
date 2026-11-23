@@ -1,0 +1,15 @@
+# Source profile: curated mail-drop and registered-agent address list. Facts about the source only.
+# Profiled 2026-11-13 from data/mail_drop_addresses.csv (sha256 in data/sources.yaml). Preliminary: every row is unreviewed.
+source_key: mail_drop_list
+kind: file
+data_through: 2026-05-29
+queried_on: 2026-11-13
+row_count: 122
+key: "address_key, zip5"
+key_notes: "Unique. One row (120 BROADWAY) has no ZIP, and 120 BROADWAY also has a row with ZIP 10271. Keys follow the list's own normalizer (street types abbreviated, ordinals as 116TH, hyphens as spaces, no unit or floor), not HPD's spelling."
+columns:
+  - {name: address_key, physical_type: text, allowed: "uppercase street line in the list's spelling", sentinels: none, used_by: [Q6.4], notes: "Not HPD's spelling: the list has 575 FIFTH AVE, HPD has 575 FIFTH AVENUE."}
+  - {name: zip5, physical_type: text, allowed: "5 digits", sentinels: {blank: "1 row (120 BROADWAY)"}, used_by: [Q6.4], notes: "A row with no ZIP matches any ZIP."}
+  - {name: kind, physical_type: text, allowed: [registered_agent, law_firm, management_office, unknown], observed: {management_office: 64, registered_agent: 28, unknown: 29, law_firm: 1}, sentinels: none, used_by: [Q6.4], notes: "A project classification of the address."}
+  - {name: basis, physical_type: text, allowed: free text, sentinels: none, used_by: [Q6.4], notes: "The evidence in the list's words: top process names with counts, or an HPD agent count."}
+  - {name: review_status, physical_type: text, allowed: [unreviewed], observed: {unreviewed: 122}, sentinels: none, used_by: [Q6.4], notes: "No row has been reviewed."}

@@ -7,32 +7,85 @@
   <rdf:Description rdf:about="http://oops.linkeddata.es/def#warning">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
+  <rdf:Description rdf:about="http://oops.linkeddata.es/data/c21f621a-ce6a-4ab6-98f4-4247ccd9f76b">
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/connectedByName</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/connectedByAddress</oops:hasAffectedElement>
+    <rdf:type rdf:resource="http://oops.linkeddata.es/def#inverseProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://oops.linkeddata.es/data/b9c8a802-e8d0-46da-9e66-7a3710697d03">
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/connectedByIdentity</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/connectedByName</oops:hasAffectedElement>
+    <rdf:type rdf:resource="http://oops.linkeddata.es/def#inverseProperty"/>
+  </rdf:Description>
   <rdf:Description rdf:about="http://oops.linkeddata.es/def#pitfall">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://oops.linkeddata.es/data/079ce86f-6878-41c5-b728-d886995ba6ba">
+    <rdf:type rdf:resource="http://oops.linkeddata.es/def#noSuggestionProperty"/>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/hasParty</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/hasRegistration</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/covers</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/hasBuilding</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/hasLitigation</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/hasFinancingDocument</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/hasDeed</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/inPortfolio</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/hasGrantor</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/hasProblem</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/hasViolation</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/inNetwork</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/basedOnContact</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/anchoredBy</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/hasContact</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/hasGrantee</oops:hasAffectedElement>
   </rdf:Description>
   <rdf:Description rdf:about="http://oops.linkeddata.es/def#suggestion">
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
   </rdf:Description>
-  <rdf:Description rdf:about="http://oops.linkeddata.es/data/4c6b9cda-fbc7-458c-b753-f246295ff89d">
-    <oops:hasPitfall rdf:resource="http://oops.linkeddata.es/data/c2ee538d-7f2b-4ce5-a53d-145a8706b827"/>
+  <rdf:Description rdf:about="http://oops.linkeddata.es/data/2cdeb906-a1c6-4244-8f2a-e6863558c399">
+    <oops:hasSuggestion rdf:resource="http://oops.linkeddata.es/data/11892791-d795-4795-a1e1-d957c9e449bc"/>
+    <oops:hasPitfall rdf:resource="http://oops.linkeddata.es/data/66d7a00e-b46e-443c-8d38-996498bec650"/>
+    <oops:hasPitfall rdf:resource="http://oops.linkeddata.es/data/03328063-0422-4aab-90f5-439d9284f657"/>
     <rdf:type rdf:resource="http://oops.linkeddata.es/def#response"/>
   </rdf:Description>
-  <rdf:Description rdf:about="http://oops.linkeddata.es/data/c2ee538d-7f2b-4ce5-a53d-145a8706b827">
+  <rdf:Description rdf:about="http://oops.linkeddata.es/data/66d7a00e-b46e-443c-8d38-996498bec650">
+    <oops:hasNumberAffectedElements rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">22</oops:hasNumberAffectedElements>
     <oops:hasImportanceLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Minor</oops:hasImportanceLevel>
-    <oops:noSuggestion rdf:resource="http://oops.linkeddata.es/data/a7ca8941-82f1-47be-beb6-abee08859be2"/>
-    <oops:hasNumberAffectedElements rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</oops:hasNumberAffectedElements>
+    <oops:mightBeInverseRelationship rdf:resource="http://oops.linkeddata.es/data/b9c8a802-e8d0-46da-9e66-7a3710697d03"/>
+    <oops:mightBeInverseRelationship rdf:resource="http://oops.linkeddata.es/data/c21f621a-ce6a-4ab6-98f4-4247ccd9f76b"/>
     <oops:hasDescription rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This pitfall appears when any relationship (except for those that are defined as symmetric properties using owl:SymmetricProperty) does not have an inverse relationship (owl:inverseOf) defined within the ontology.	</oops:hasDescription>
+    <oops:noSuggestion rdf:resource="http://oops.linkeddata.es/data/079ce86f-6878-41c5-b728-d886995ba6ba"/>
     <oops:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Inverse relationships not explicitly declared</oops:hasName>
+    <oops:mightBeInverseRelationship rdf:resource="http://oops.linkeddata.es/data/28d14bde-e665-4831-a1d6-2757f8618446"/>
     <oops:hasCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">P13</oops:hasCode>
     <rdf:type rdf:resource="http://oops.linkeddata.es/def#pitfall"/>
   </rdf:Description>
-  <rdf:Description rdf:about="http://oops.linkeddata.es/data/a7ca8941-82f1-47be-beb6-abee08859be2">
-    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/hasRoleContact</oops:hasAffectedElement>
-    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/hasOwnerContact</oops:hasAffectedElement>
-    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/hasDeed</oops:hasAffectedElement>
-    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/hasGrantee</oops:hasAffectedElement>
-    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/hasRegistration</oops:hasAffectedElement>
-    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/hasBuilding</oops:hasAffectedElement>
-    <rdf:type rdf:resource="http://oops.linkeddata.es/def#noSuggestionProperty"/>
+  <rdf:Description rdf:about="http://oops.linkeddata.es/data/28d14bde-e665-4831-a1d6-2757f8618446">
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/connectedByAddress</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/connectedByDeed</oops:hasAffectedElement>
+    <rdf:type rdf:resource="http://oops.linkeddata.es/def#inverseProperty"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://oops.linkeddata.es/data/11892791-d795-4795-a1e1-d957c9e449bc">
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/connectedByIdentity</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/connectedByName</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/connectedByAddress</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/connectedByDeed</oops:hasAffectedElement>
+    <oops:hasNumberAffectedElements rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</oops:hasNumberAffectedElements>
+    <oops:hasDescription rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The domain and range axioms are equal for each of the following object properties. Could they be symmetric or transitive?</oops:hasDescription>
+    <oops:hasCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SUGGESTION: symmetric or transitive object properties.</oops:hasCode>
+    <rdf:type rdf:resource="http://oops.linkeddata.es/def#suggestion"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://oops.linkeddata.es/data/03328063-0422-4aab-90f5-439d9284f657">
+    <oops:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Missing domain or range in properties</oops:hasName>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/ownershipSignal</oops:hasAffectedElement>
+    <rdf:type rdf:resource="http://oops.linkeddata.es/def#pitfall"/>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/linkWeight</oops:hasAffectedElement>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/evidenceType</oops:hasAffectedElement>
+    <oops:hasImportanceLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Important</oops:hasImportanceLevel>
+    <oops:hasCode rdf:datatype="http://www.w3.org/2001/XMLSchema#string">P11</oops:hasCode>
+    <oops:hasDescription rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Object and/or datatype properties without domain or range (or none of them) are included in the ontology. 	</oops:hasDescription>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/anchoredBy</oops:hasAffectedElement>
+    <oops:hasNumberAffectedElements rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</oops:hasNumberAffectedElements>
+    <oops:hasAffectedElement rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://watchline.example/onto/partyRole</oops:hasAffectedElement>
   </rdf:Description>
 </rdf:RDF>

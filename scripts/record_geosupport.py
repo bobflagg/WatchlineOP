@@ -30,6 +30,13 @@ CASES = [
     ("house_out_of_range", "99999", "54 STREET", "Brooklyn", "street exists, number does not"),
     ("no_tax_lot_candidate", "1", "54 STREET", "Brooklyn", "number may fall between lots"),
     ("blank_house", "", "54 STREET", "Brooklyn", "invalid input"),
+    ("apostrophe_typed", "10", "Hallett's Pt", "Queens", "apostrophe the city's name lacks (client retries without it)"),
+    ("apostrophe_stripped", "10", "Halletts Pt", "Queens", "the retry request, also an input"),
+    ("apostrophe_locality", "10", "Hallett's Pt, Astoria", "Queens", "neighborhood after a comma is dropped from the street"),
+    ("apostrophe_wrong_borough", "10", "Hallett's Pt", "Brooklyn", "right street, wrong borough: stays ambiguous"),
+    ("apostrophe_wrong_borough_stripped", "10", "Halletts Pt", "Brooklyn", "the retry request for the wrong borough"),
+    ("apostrophe_zip", "10", "Hallett's Pt", "zip:11102", "ZIP instead of borough (resolve_text with a ZIP in the text)"),
+    ("apostrophe_zip_stripped", "10", "Halletts Pt", "zip:11102", "the retry request for the ZIP"),
     ("zip_instead_of_borough", "224", "54 STREET", None, "uses zip_code 11220"),
 ]
 
@@ -46,7 +53,9 @@ def main():
     rows = []
     for _id, house, street, borough, _why in CASES:
         row = {"house_number": house, "street_name": street}
-        if borough:
+        if borough and borough.startswith("zip:"):
+            row["zip_code"] = borough[4:]
+        elif borough:
             row["borough"] = borough
         else:
             row["zip_code"] = "11220"

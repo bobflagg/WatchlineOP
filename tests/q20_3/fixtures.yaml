@@ -1,0 +1,11 @@
+# Q20.3 expected lead classification and stop reason for the anchor A trail (computed, never stored).
+# check_leads.py applies the lead rule to the recorded names and addresses and compares.
+# kinds: lead (followed within budget), logged (kept in the log, not followed). reasons use the unresolved-lead vocabulary of Q20.
+trail:
+  entities:
+    - {name: "702 PLAZA LLC", from: "joint mortgage 2021031601183001 and HPD owner record", expect: lead}
+    - {name: "CONNECTONE BANK", from: "lender on the joint mortgage", expect: logged, why: "a financing relationship, not an ownership or control link"}
+  addresses:
+    - {street: "746 61ST STREET", zip5: "11220", from: "shared HPD business address", role: business, expect: lead, masked: false, listed: false, why: "not masked and not on the list; a list miss is not a clearance, so the mail-drop check is still needed"}
+    - {street: "5 CROMWELL CIRCLE", zip5: "10304", from: "DOS process address of 5413 PLAZA LLC", role: service, expect: logged, why: "the entity is its own process name; this is where papers are forwarded, not a business link"}
+stop_reason: reached_service_address   # one of: reached_service_address, no_further_link, needs_payment, budget_reached, unresolved_conflict

@@ -1,4 +1,4 @@
-# Q3.1 expected deeds per Lot. Provisional until the frozen dump is identified (data/README.md).
+# Q3.1 expected deeds per Lot. verified against the frozen baseline recorded in data/README.md (2026-11-16).
 # Checked read-only 2026-11-12. check_deeds.py re-derives each from the source, so a stale fixture fails.
 # latest = the deeds that tie on the newest recordedDate, as {documentId: [docType, docDate, recordedDate, amount, otherLots]}.
 # deed_count = how many deeds the lot has in all.

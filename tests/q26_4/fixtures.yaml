@@ -1,0 +1,8 @@
+# Q26.4 fixtures (hpd_violations through 2026-07-02, hpd_registrations frozen baseline). check_violation_absence.py re-derives each from the source.
+# outcome: present | none-in-snapshot (registered, none) | not-loaded (lot not registered: violations are not in the graph).
+cases:
+  - {bbl: "1000160180", outcome: none-in-snapshot, label: "20 River Terrace: registered, no violation in the source"}
+  - {bbl: "3008260002", outcome: present, label: "anchor A"}
+  - {bbl: "3008210019", outcome: present, label: "anchor E"}
+  - {bbl: "3008970014", outcome: not-loaded, label: "anchor F: unregistered; the source also holds none"}
+  - {bbl: "4064820003", outcome: not-loaded, label: "unregistered lot whose source holds 219 violations: not loaded, not none"}

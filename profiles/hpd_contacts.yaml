@@ -12,20 +12,20 @@ columns:
     physical_type: integer
     allowed: positive integer
     sentinels: none
-    used_by: [Q2.2, Q4.1]
+    used_by: [Q2.2, Q4.1, Q14.2]
     notes: "Never null. Every value is also in hpd_registrations. Joins a contact to a registration, not to one building."
   - name: type
     physical_type: text
     allowed: [CorporateOwner, IndividualOwner, JointOwner, Agent, HeadOfficer, Officer, Shareholder, SiteManager, Lessee]
     observed: {CorporateOwner: 121589, IndividualOwner: 47866, JointOwner: 44594, Agent: 155280, HeadOfficer: 127879, Officer: 73102, Shareholder: 40631, SiteManager: 162187, Lessee: 8896}
     sentinels: none
-    used_by: [Q2.2, Q4.1]
+    used_by: [Q2.2, Q4.1, Q14.2]
     notes: "Never null. The first three are the registered owner (decision 2026-11-12); the other six are role contacts (Q4)."
   - name: corporationname
     physical_type: text
     allowed: free text
     sentinels: {null: "no corporation name; null on every non-corporate row", empty: "none (no empty strings)"}
-    used_by: [Q2.2, Q4.1]
+    used_by: [Q2.2, Q4.1, Q14.2]
     notes: "Owners: read for CorporateOwner only; 183 have no name. Role contacts: present on 83,587 of 155,280 agents (83,526 also have a person name) and 7,352 of 8,896 lessees; never on site manager, head officer, officer or shareholder."
   - name: firstname
     physical_type: text
@@ -44,8 +44,8 @@ columns:
     sentinels: {null: "no last name; null on CorporateOwner rows"}
     used_by: [Q2.2, Q4.1]
     notes: "239 IndividualOwner or JointOwner rows have no last name and no first name, so the owner name is absent."
-  - {name: businesshousenumber, physical_type: text, allowed: free text, sentinels: {null_or_blank: "957 of 214049 owner-type rows; every site manager row"}, used_by: [Q3.5, Q4.2], notes: "With businessstreetname forms the mailing street line (joined by one space). Blank parts are left out."}
-  - {name: businessstreetname, physical_type: text, allowed: free text, sentinels: {null_or_blank: "961 of 214049 owner-type rows"}, used_by: [Q3.5, Q4.2], notes: "See businesshousenumber."}
-  - {name: businessapartment, physical_type: text, allowed: free text, sentinels: {null_or_blank: "132048 of 214049 owner-type rows"}, used_by: [Q3.5, Q4.2], notes: "Unit or suite; reported apart, never compared."}
-  - {name: businesszip, physical_type: text, allowed: "5 digits", observed: {"5 digits": 212313, "other text": 742}, sentinels: {null_or_blank: "994 owner-type rows"}, used_by: [Q3.5, Q4.2], notes: "No 9-digit values. Exact duplicate contacts that disagree on an address part leave that part absent in the graph."}
+  - {name: businesshousenumber, physical_type: text, allowed: free text, sentinels: {null_or_blank: "957 of 214049 owner-type rows; every site manager row"}, used_by: [Q3.5, Q4.2, Q6.1, Q6.2], notes: "With businessstreetname forms the mailing street line (joined by one space). Blank parts are left out."}
+  - {name: businessstreetname, physical_type: text, allowed: free text, sentinels: {null_or_blank: "961 of 214049 owner-type rows"}, used_by: [Q3.5, Q4.2, Q6.1, Q6.2], notes: "See businesshousenumber."}
+  - {name: businessapartment, physical_type: text, allowed: free text, sentinels: {null_or_blank: "132048 of 214049 owner-type rows"}, used_by: [Q3.5, Q4.2, Q6.1, Q6.2], notes: "Unit or suite; reported apart, never compared."}
+  - {name: businesszip, physical_type: text, allowed: "5 digits", observed: {"5 digits": 212313, "other text": 742}, sentinels: {null_or_blank: "994 owner-type rows"}, used_by: [Q3.5, Q4.2, Q6.1, Q6.2], notes: "No 9-digit values. Exact duplicate contacts that disagree on an address part leave that part absent in the graph."}
   - {name: title, physical_type: text, allowed: free text, sentinels: {null: "no title; null on all agent, site manager and lessee rows"}, used_by: [Q4.1], notes: "Recorded on 82,846 of 127,879 head officers, 52,303 of 73,102 officers and 39 shareholders. Spellings vary (PRESIDENT, PRES, Member, MEMBER); kept as recorded. Never changes the role."}

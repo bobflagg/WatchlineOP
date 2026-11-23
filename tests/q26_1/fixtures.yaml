@@ -1,0 +1,8 @@
+# Q26.1 fixtures (hpd_registrations, pluto_latest: frozen baseline, data/README.md). check_registration.py re-derives each from the source.
+cases:
+  - {bbl: "3008970014", present: false, reason: outside_source_coverage, detail: no_registration, label: "anchor F: 40 units, built 2025; exempt or unregistered is not known"}
+  - {bbl: "3008260002", present: true, label: "anchor A: registered"}
+  - {bbl: "1000160180", present: true, label: "20 River Terrace: registered co-op"}
+  - {bbl: "4064820003", present: false, reason: outside_source_coverage, detail: no_registration, label: "unregistered, 210 units"}
+absent:
+  - {bbl: "4161690058", label: "unregistered lot with 2 units: outside the rental scope, not in the graph"}

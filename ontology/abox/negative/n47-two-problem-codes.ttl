@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: problemCode is functional, so one problem carries one code (the string values are distinct).
+id:bad-problem-8 a onto:Problem ; onto:problemId 5 ; onto:problemCode "MICE", "ROACHES" .

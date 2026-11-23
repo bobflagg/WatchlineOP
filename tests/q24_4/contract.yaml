@@ -1,0 +1,21 @@
+# Q24 answer contract (computed at answer time; nothing here is stored in the graph). Assembled from Q24.1 to Q24.3 by tests/q24_support.assemble.
+inputs: [name as given, kind (entity or person)]
+normalization: {entity: "rule N3 (uppercase, no periods or apostrophes, commas to spaces, single spaces); stated with the key", person: "uppercase and single spaces, in HPD's order (first, middle initial, last); ACRIS deed parties also searched last name first, and each row says which order"}
+matches:   # entity names only (Q24.1)
+  fields: [source, role, record, building, lot, basis]
+  basis: [exact, normalized]
+  roles: {hpd_contacts: "the recorded contact type (CorporateOwner, IndividualOwner, JointOwner, Agent, HeadOfficer, Officer, Shareholder, SiteManager, Lessee)", acris_parties: [grantee, grantor], nys_corporations: ["filed entity"]}
+leads:     # always leads: a name alone (Q24.2 person rows; Q24.3 near names)
+  person: {fields: [source, role, order, records, buildings, lots, sample], rule: "never a match: common personal names return unrelated people; the count is returned with the sample"}
+  near: {fields: [name, source, records, kind], kinds: [normalization-match, abbreviation-match, differs-by-numeral-or-word, legal-suffix-only]}
+outcome: [matches, leads-only, no-match-in-these-sources]
+snapshot: {hpd_contacts: "2026-05-29", hpd_registrations: "2026-05-29", acris_parties: "2026-05-31", nys_corporations: "2026-07-06"}
+caveats:
+  - "A name match is a lead, not a link. Common personal names return unrelated people."
+  - "Roles are as recorded. A name in a role is not a finding about ownership, and shared management is not shared ownership."
+  - "No match is 'no match in these sources' with the normalization used, never 'does not exist'."
+  - "DOS records are loaded only when their name equals an HPD owner or deed grantee name, so no DOS row is not 'no filing'."
+  - "Near names are found by a shared core (the key without legal-form words); spacing variants, abbreviations and misspellings are not found."
+  - "A building on two lots counts toward both lots."
+uncertain:
+  - "Whether two records with the same name are the same person or entity is not in the records."

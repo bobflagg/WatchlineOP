@@ -1,0 +1,28 @@
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q18 example data. Values come from the verified fixtures in tests/q18_*/fixtures.yaml (ACRIS through 2026-05-31, frozen baseline in
+# data/README.md). Q18 adds no ontology element: it reads the Q1, Q3 and Q12 elements. Entities only; a person is never named.
+# The classification (zero-transfer, priced), the four signals and the uncertainty are computed at answer time and are not in the graph.
+
+# Anchor B: a $0 deed from a person (name not shown) to an LLC, then a $6,800,000 deed from that LLC to a second LLC, recorded the same day.
+id:lot-3008260005-q18 a onto:TaxLot ; onto:bbl "3008260005" ; onto:hasDeed id:deed-2021022201130001-q18, id:deed-2021022201130002-q18 .
+id:deed-2021022201130001-q18 a onto:Deed ; onto:documentId "2021022201130001" ; onto:documentType "DEED" ;
+    onto:recordedDate "2021-02-26"^^xsd:date ; onto:documentAmount 0 ;
+    onto:hasGrantor id:grantor-2021022201130001-q18 ; onto:hasGrantee id:grantee-2021022201130001-q18 .
+id:grantor-2021022201130001-q18 a onto:Grantor .
+id:grantee-2021022201130001-q18 a onto:Grantee ; onto:granteeName "702 54 STREET LLC" .
+id:deed-2021022201130002-q18 a onto:Deed ; onto:documentId "2021022201130002" ; onto:documentType "DEED" ;
+    onto:recordedDate "2021-02-26"^^xsd:date ; onto:documentAmount 6800000 ;
+    onto:hasGrantor id:grantor-2021022201130002-q18 ; onto:hasGrantee id:grantee-2021022201130002-q18 .
+id:grantor-2021022201130002-q18 a onto:Grantor ; onto:grantorName "702 54 STREET LLC" .
+id:grantee-2021022201130002-q18 a onto:Grantee ; onto:granteeName "702 PLAZA LLC" .
+
+# Anchor A: the 2025 $0 deed names the same entity on both sides (two nodes, never merged).
+id:lot-3008260002-q18 a onto:TaxLot ; onto:bbl "3008260002" ; onto:hasDeed id:deed-2025032100031001-q18 .
+id:deed-2025032100031001-q18 a onto:Deed ; onto:documentId "2025032100031001" ; onto:documentType "DEED" ;
+    onto:recordedDate "2025-04-02"^^xsd:date ; onto:documentAmount 0 ;
+    onto:hasGrantor id:grantor-2025032100031001-q18 ; onto:hasGrantee id:grantee-2025032100031001-q18 .
+id:grantor-2025032100031001-q18 a onto:Grantor ; onto:grantorName "5413 PLAZA LLC" .
+id:grantee-2025032100031001-q18 a onto:Grantee ; onto:granteeName "5413 PLAZA LLC" .

@@ -1,0 +1,24 @@
+# Q6.2 expected Operational Network address masks (BOR release v0.3.0, run 2026-05-29-869bd299, masked_addresses.csv).
+# verified against the frozen baseline recorded in data/README.md (2026-11-16). check_masked.py re-derives each from the release and the source.
+# degree counts landlord nodes (Who Owns What records) at the address; the mask applies at more than 25.
+masked:
+  - {address: "455 PARK AVENUE", addressId: A0000011, degree: 99, hpdContacts: 658, hpdZips: ["11205"], note: "masked; one ZIP in HPD"}
+  - {address: "909 THIRD AVENUE", addressId: A0000025, degree: 125, hpdContacts: 566, hpdZips: ["10017", "10022"], note: "the release has no ZIP, so two HPD ZIPs carry the text"}
+  - {address: "4205 EIGHTH AVENUE", addressId: A0000012, degree: 30, hpdContacts: 211, hpdZips: ["11204", "11214", "11220", "11232"], note: "four ZIPs: the text names several addresses"}
+  - {address: "188 PULASKI", addressId: A0000047, degree: 27, hpdContacts: 199, hpdZips: ["11206"], note: "street text without a street type"}
+  - {address: "244 WEST 54 STREET 702", addressId: A0000001, degree: 53, hpdContacts: 0, hpdZips: [], note: "masked, but no HPD contact carries this street plus second line"}
+  - {address: "254 WEST 31 STREET", addressId: A0000043, degree: 64, hpdContacts: 0, hpdZips: [], note: "one of four masks for the same building (floor variants are separate masked addresses)"}
+not_masked:
+  - {address: "746 61ST STREET", note: "anchors A and B: not among the masked addresses"}
+  - {address: "418 BROADWAY", note: "on the mail-drop list only; not masked by the method"}
+totals:
+  masked_addresses: 73
+  method: network_address_edge_mask
+  normalizer_version: c92693351768
+  threshold: 25
+  degree_unit: "landlords (lwc nodes)"
+  degree_min: 26
+  degree_max: 216
+  masked_with_hpd_contacts: 31   # masked addresses that at least one HPD contact carries (street plus second line)
+  masked_edges: 230305           # address edges BOR set aside at the 73 masked addresses (graph_edges, release v0.3.0); cited per address, none loaded as a relationship
+  masked_nodes: 4117             # rows of masked_address_nodes.csv

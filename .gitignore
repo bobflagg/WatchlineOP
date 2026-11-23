@@ -29,3 +29,4 @@ wheels/
 
 # Local tools (ROBOT jar and wrapper; see ontology/ontology-notes.md)
 /tools/
+.test-last-failed

@@ -1,0 +1,23 @@
+# Q12.2 fixtures (BOR release v0.3.0, run 2026-05-29-869bd299; deeds from the frozen baseline). check_portfolio_deeds.py re-derives each from
+# the release (rental members) and the source (deeds), so a stale fixture fails.
+lots:
+  - bbl: "3008070024"
+    label: "anchor C: a five-lot portfolio, 33 deeds in all (one since 2015, $7,000,000)"
+    portfolioId: OP-98617
+    portfolioLots: 5
+    periods:
+      - {start: null, end: null, deeds: 33, not_sales: 30}
+      - {start: "2015-01-01", end: null, deeds: 1, not_sales: 0, documents: ["2022061500577001"]}
+  - bbl: "2033260069"
+    label: "a three-lot portfolio with six deeds, none since 1984: an empty period is not a finding"
+    portfolioId: OP-102335
+    portfolioLots: 3
+    periods:
+      - {start: null, end: null, deeds: 6, not_sales: 6}
+      - {start: "2015-01-01", end: null, deeds: 0, not_sales: 0}
+  - bbl: "3008260002"
+    label: "anchor A: in no portfolio, so only its own deeds are returned"
+    portfolioId: null
+    portfolioLots: 1
+    periods:
+      - {start: "2015-01-01", end: null, deeds: 2, not_sales: 1}

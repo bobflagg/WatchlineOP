@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: a landlord record is not an HPD contact (Landlord and Contact are disjoint).
+id:bad-1 a onto:Landlord, onto:Contact .

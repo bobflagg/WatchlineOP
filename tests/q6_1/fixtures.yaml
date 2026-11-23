@@ -1,0 +1,12 @@
+# Q6.1 expected counts for one business address. verified against the frozen baseline recorded in data/README.md (2026-11-16).
+# Checked read-only 2026-11-13. check_address_counts.py re-derives each from the source with expected.sql.
+addresses:
+  - {street: "746 61ST STREET", zip5: "11220", contacts: 8, ownerContacts: 2, roleContacts: 6, registrations: 2, buildings: 2, note: "anchors A and B: a shared address that is not a masked or listed hub"}
+  - {street: "418 BROADWAY", zip5: "12207", contacts: 66, ownerContacts: 27, roleContacts: 39, registrations: 32, buildings: 32, note: "a registered-agent address on the mail-drop list"}
+  - {street: "418 BROADWAY", zip5: "11207", contacts: 8, ownerContacts: 2, roleContacts: 6, registrations: 3, buildings: 3, note: "same street text, different ZIP: a different address"}
+  - {street: "300 EAST 2ND STREET", zip5: "11218", contacts: 2, ownerContacts: 1, roleContacts: 1, registrations: 1, buildings: 1, note: "anchor C: the head officer's spelling"}
+  - {street: "300 EAST2ND STREET", zip5: "11218", contacts: 1, ownerContacts: 0, roleContacts: 1, registrations: 1, buildings: 1, note: "anchor C: HPD's other spelling of the agent; reported apart, never merged"}
+  - {street: "1 NOWHERE LANE", zip5: "99999", contacts: 0, ownerContacts: 0, roleContacts: 0, registrations: 0, buildings: 0, note: "no HPD contact carries it: zeros, not an error"}
+totals:
+  contacts_with_street_and_zip: 571890   # owner plus role contacts with both parts present (572198 have a street line; 310 lack a usable ZIP)
+  distinct_addresses: 143413

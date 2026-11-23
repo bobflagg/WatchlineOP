@@ -1,0 +1,137 @@
+# Question schema: Q12 "Transfers of a lot": the deeds recorded for a lot in a period, the same for the lots of its Owner Portfolio, and
+# whether each deed can be attributed to the lot's currently registered owner (sub-questions Q12.1 to Q12.3).
+# Extends the Q3 deed layer: adds Grantor, HAS_GRANTOR and nameKey on Grantee (Q3 stored none). The period, the counts, the not-a-sale flag and the
+# attribution are computed at answer time and not stored. Owner Portfolio and Contact are declared by Q9 and Q2.
+question: Q12
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [acris_master, acris_parties, acris_legals, hpd_contacts]
+
+graph:
+  constraints:
+    - {name: grantor_key_unique, label: Grantor, property: partyKey, kind: unique}
+
+  nodes:
+    Grantor:
+      concept: grantor
+      key: partyKey
+      scope: >-
+        One Grantor per distinct party row of partytype 1 on a loaded Deed (same document, name, street line, second line and ZIP are one).
+        1619378 grantors on the 1003931 deeds, 164 with no name (queried 2026-11-16 from the graph; profile in scripts/profile_q12_scope.py).
+      proved_by: tests/q12_1/expected.sql
+      properties:
+        partyKey:
+          concept: grantor
+          type: string
+          source: acris_parties.documentid, acris_parties.name, acris_parties.address1, acris_parties.address2, acris_parties.zip
+          rule: "Identity only, joined as documentid|name|address1|address2|zip with blanks empty. Not an answer field."
+          identity_only: true
+          null_policy: never absent
+        name:
+          concept: grantor-name
+          type: string
+          source: acris_parties.name
+          rule: Trimmed, otherwise as recorded. Never normalized in the graph; the comparison key is `nameKey`. A person's name is returned for the answer only.
+          null_policy: "absent when blank (164 grantor rows)"
+          proved_by: tests/q12_1/expected.sql
+        nameKey:
+          concept: grantor-name
+          type: string
+          source: acris_parties.name
+          rule: "Lookup key only: rule N3 applied to the name (as Q5 DosEntity.nameKey). Not an answer field."
+          identity_only: true
+          null_policy: "absent when the name is blank or only periods, commas and apostrophes (7 grantor rows)"
+          proved_by: tests/q12_1/check_deeds.py
+        mailingAddress:
+          concept: mailing-address
+          type: string
+          source: acris_parties.address1
+          rule: Trimmed, as recorded. Can hold a care-of line or a person's name.
+          null_policy: "absent when blank"
+          proved_by: tests/q12_1/expected.sql
+        addressLine2:
+          concept: address-line-two
+          type: string
+          source: acris_parties.address2
+          rule: Trimmed, as recorded. Reported apart, never compared.
+          null_policy: "absent when blank"
+          proved_by: tests/q12_1/expected.sql
+        zip:
+          concept: zip-code
+          type: string
+          source: acris_parties.zip
+          rule: Trimmed, as recorded (5 digits, 9 digits or non-US text).
+          null_policy: "absent when blank"
+          proved_by: tests/q12_1/expected.sql
+
+    Grantee:   # property Q12 adds to the Q3 node
+      concept: grantee
+      key: partyKey
+      scope: Same nodes as Q3 (1520638 grantees); Q12.3 compares the grantee with the registered owner by name key.
+      proved_by: tests/q12_1/check_deeds.py
+      properties:
+        nameKey:
+          concept: grantee-name
+          type: string
+          source: acris_parties.name
+          rule: "Lookup key only: rule N3 applied to the name (as Q5 DosEntity.nameKey). Not an answer field."
+          identity_only: true
+          null_policy: "absent when the name is blank or only periods, commas and apostrophes (3 grantee rows beyond the 182 blank)"
+          proved_by: tests/q12_1/check_deeds.py
+
+  relationships:
+    HAS_GRANTOR:
+      concept: has-grantor
+      from: Deed
+      to: Grantor
+      source: acris_parties.documentid
+      rule: One per Grantor, from the deed it was recorded on.
+      proved_by: tests/q12_1/expected.sql
+
+answer:
+  Q12.1:
+    lookup: tests/q12_1/lookup.cypher
+    fields:
+      documentId:   {concept: document-id, source: Deed.documentId, type: string, counting_unit: "distinct documents; a deed covering several lots is one deed"}
+      docType:      {concept: document-type, source: Deed.docType, type: string}
+      docDate:      {concept: document-date, source: Deed.docDate, type: date, null_policy: "absent when ACRIS has none"}
+      recordedDate: {concept: recorded-date, source: Deed.recordedDate, type: date, null_policy: "the period filter applies to this date; a deed with none (rare) is in no bounded period"}
+      amount:       {concept: document-amount, source: Deed.amount, type: integer, counting_unit: "whole US dollars", null_policy: "0 reported as recorded, never as a free sale"}
+      notSale:      {concept: not-a-sale, source: "derived: Deed.amount = 0 or Deed.docType in (CORRD, CONDEED)", type: boolean, null_policy: "never absent; true means the deed is not reported as a sale, false says nothing about intent"}
+      otherLots:    {concept: has-deed, source: "count of other Lots on HAS_DEED to the same Deed", type: integer, counting_unit: "other graph lots", null_policy: "0 when the deed names no other graph lot"}
+      grantors:     {concept: grantor, source: "Deed-[:HAS_GRANTOR]->Grantor", type: "list of {name, nameKey, mailingAddress, addressLine2, zip}", null_policy: "empty list means none is recorded; all are listed; the same name can appear on both sides"}
+      grantees:     {concept: grantee, source: "Deed-[:HAS_GRANTEE]->Grantee", type: "list of {name, nameKey, mailingAddress, addressLine2, zip}", null_policy: "empty list means none is recorded; all are listed"}
+      deedCount:    {concept: deed, source: "derived: count of distinct returned documents", type: integer, counting_unit: "distinct documents in the period", null_policy: "0 means no deed in the snapshot for the period, not that the lot never changed hands"}
+      notSaleCount: {concept: not-a-sale, source: "derived: count of returned deeds with notSale", type: integer, counting_unit: "distinct documents", null_policy: "0 when none"}
+    note: "The period is on the recorded date (inclusive bounds, either open). Names are returned for the answer only, never repeated in logs or fixtures."
+  Q12.2:
+    lookup: tests/q12_2/lookup.cypher
+    fields:
+      portfolioGroupId:     {concept: portfolio-group-id, source: OwnerPortfolio.groupId, type: string, null_policy: "absent when the lot is in no portfolio; then only its own deeds are returned. Run 2026-05-29-869bd299"}
+      portfolioComposition: {concept: portfolio-composition, source: OwnerPortfolio.composition, type: string, allowed_scheme: portfolio-compositions, allowed: [identity, deed_only, deed_bridged], null_policy: "absent when the lot is in no portfolio"}
+      portfolioLots:        {concept: in-portfolio, source: "Lot-[:IN_PORTFOLIO]->OwnerPortfolio, the member lots", type: "list of string (BBL)", counting_unit: "rental lots in the graph", null_policy: "the asked lot alone when it is in no portfolio"}
+      deeds:                {concept: deed, source: "Deed of any member lot", type: "list of {documentId, docType, recordedDate, amount, notSale, lots, grantors, grantees}", counting_unit: "distinct documents; a deed on several member lots is one deed", null_policy: "empty list means no deed in the snapshot for the period"}
+      lots:                 {concept: has-deed, source: "member BBLs the deed covers", type: "list of string (BBL)", null_policy: "never empty for a listed deed"}
+    note: "A portfolio is an apparent-owner lead from the BOR/NLR release, never legal ownership; current membership is not historical ownership. Deed fields as in Q12.1."
+  Q12.3:
+    lookup: tests/q12_3/lookup.cypher
+    fields:
+      documentId:         {concept: document-id, source: Deed.documentId, type: string, counting_unit: "one row per deed and lot; count distinct documents"}
+      bbl:                {concept: bbl, source: Lot.bbl, type: string}
+      corporateOwners:    {concept: owner-contact, source: "count of distinct Contact.nameKey among CorporateOwner contacts of the lot's registrations", type: integer, counting_unit: "distinct name keys", null_policy: "0 means none is registered or only individuals"}
+      ownerNotComparable: {concept: attributable-transfer, source: "derived: corporateOwners = 0", type: boolean, null_policy: "true means the deed is not attributable by name and the answer says so; individuals are not compared (HPD and ACRIS spell a person's name differently)"}
+      granteeMatches:     {concept: grantee-name, source: "derived: Grantee.name where Grantee.nameKey equals an owner's nameKey (rule N3)", type: "list of string", null_policy: "empty list means no grantee matches; a name lead, never a finding of the same party"}
+      grantorMatches:     {concept: grantor-name, source: "derived: Grantor.name where Grantor.nameKey equals an owner's nameKey (rule N3)", type: "list of string", null_policy: "empty list means no grantor matches"}
+      attributable:       {concept: attributable-transfer, source: "derived: a grantee or grantor of the deed matches an owner of a lot it covers", type: boolean, null_policy: "never absent; false is not a finding that the deed is unrelated (a spelling gap hides it, e.g. anchor C)"}
+    note: "Evidence Type II, a name lead. The registration is current, so an old deed matching the present owner says nothing about who owned the lot then."
+
+diagnostics: []
+
+not_stored:   # deliberately absent from the graph
+  - {term: period, reason: a recorded-date filter in the lookup}
+  - {term: deed and not-a-sale counts, reason: computed from the returned deeds (counting unit named per field)}
+  - {term: not-a-sale flag, reason: derived from amount and document type at answer time (decision 2026-11-16)}
+  - {term: attribution (attributable, matches, owner not comparable), reason: derived at answer time from nameKey; evidence Type II}
+  - {term: portfolio deed set, reason: computed from IN_PORTFOLIO and HAS_DEED}
+  - {term: assignments, satisfactions and other document types, reason: not loaded; Q12 reads deeds only}
+  - {term: sale price or buyer intent, reason: the recorded amount is reported as recorded and says nothing about intent}

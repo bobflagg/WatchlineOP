@@ -1,0 +1,37 @@
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q20 example data. Values come from the verified fixtures in tests/q20_1/fixtures.yaml (frozen baseline in data/README.md; BOR release v0.3.0).
+# Q20 adds no ontology element: the dossier is assembled at answer time from the Q1 to Q13 elements. The anchor A recorded trail is a chain of
+# record links, not a finding of common ownership. Leads, the stop reason, claim labels and the run are computed or returned at answer time and
+# are not in the graph. Entities only; no person is named.
+
+id:lot-3008260002-q20 a onto:TaxLot ; onto:bbl "3008260002" ;
+    onto:hasBuilding id:building-3014788-q20 ;
+    onto:hasDeed id:deed-2025032100031001-q20, id:deed-2021022201130003-q20 ;
+    onto:hasFinancingDocument id:mtge-2021031601183001-q20 ;
+    onto:networkAbsence "no_qualifying_linkage" ; onto:networkAbsenceDetail "no_linkage" ;
+    onto:portfolioAbsence "no_qualifying_linkage" ; onto:portfolioAbsenceDetail "no_linkage" .
+
+id:building-3014788-q20 a onto:Building ; onto:bin "3014788" ; onto:hasRegistration id:reg-316103-q20 .
+id:reg-316103-q20 a onto:Registration ; onto:registrationId 316103 ; onto:hasContact id:owner-316103-q20 .
+id:owner-316103-q20 a onto:Contact ; onto:contactType "CorporateOwner" ; onto:corporationName "5413 PLAZA LLC" .
+
+id:deed-2025032100031001-q20 a onto:Deed ; onto:documentId "2025032100031001" ; onto:documentType "DEED" ;
+    onto:recordedDate "2025-04-02"^^xsd:date ; onto:documentAmount 0 .
+id:deed-2021022201130003-q20 a onto:Deed ; onto:documentId "2021022201130003" ; onto:documentType "DEED" ;
+    onto:recordedDate "2021-02-26"^^xsd:date ; onto:documentAmount 5000000 .
+
+# The entity is its own DOS process name: where papers are forwarded, not a business link.
+id:dos-5857246-q20 a onto:DosEntity ; onto:dosId 5857246 ; onto:dosEntityName "5413 PLAZA LLC" ;
+    onto:processName "5413 PLAZA LLC" ; onto:processAddress "5 CROMWELL CIRCLE" ; onto:processCity "STATEN ISLAND" ;
+    onto:processState "NY" ; onto:processZip "10304" .
+
+# The joint mortgage: a shared-borrower record and a lender, a financing relationship, not common control.
+id:mtge-2021031601183001-q20 a onto:Document ; onto:documentId "2021031601183001" ; onto:documentType "MTGE" ;
+    onto:recordedDate "2021-03-22"^^xsd:date ; onto:documentAmount 8750000 ;
+    onto:hasParty id:mtge-party-5413-q20, id:mtge-party-702-q20, id:mtge-party-lender-q20 .
+id:mtge-party-5413-q20 a onto:DocumentParty ; onto:partyName "5413 PLAZA LLC" ; onto:partyRole 1 .
+id:mtge-party-702-q20 a onto:DocumentParty ; onto:partyName "702 PLAZA LLC" ; onto:partyRole 1 .
+id:mtge-party-lender-q20 a onto:DocumentParty ; onto:partyName "CONNECTONE BANK" ; onto:partyRole 2 .

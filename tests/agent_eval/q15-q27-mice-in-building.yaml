@@ -1,0 +1,37 @@
+# Agent-level evaluation case (draft). Not run by make test.
+id: eval-q15-q27-mice-anchor-c
+question: [Q15.3, Q27.3]
+scenario: "PESP guide: 'Maybe you've been experiencing mice in your space and you want to know if this is a problem other people are having in their units.'"
+input: "I have mice in my apartment at 438 52 Street (BIN 3013901). Are other people in this building having the same problem?"
+tools: [neo4j read, Building -> HAS_PROBLEM -> Problem, Building -> HAS_VIOLATION -> Violation, data/hpd_pest_orders.yaml]
+must_include:
+  - complaints, from Problem nodes with minorCategory PESTS, by problemCode and status, for 2021 onward; anchor C has 7 closed pest problems since 2021 (MICE 1, ROACHES 3, OTHER 2, FLIES 1), none open
+  - mice complaints counted only from problemCode MICE (1); OTHER reported as an unspecified pest, never as mice
+  - violations, from Violation.orderNumber on the pest list, by kind and status; anchor C has one open roach violation (order 568, oldest open 2023-03-25) and no mice violation (orders 569 and 869)
+  - the period (complaints loaded from 2021-01-01), the snapshot dates (complaints through 2026-07-07, violations through 2026-07-02) and the counting unit (problem records; violations)
+  - the two sources in separate sections, labelled reported versus cited
+must_say:
+  - the answer is for the building; the data cannot say which units are affected, so it cannot confirm that other tenants have mice in their units
+  - a complaint is what a tenant reported, not a finding that mice are present; a violation is what an inspector cited
+  - orders 566 and 866 are unspecified vermin, not mice (relevant if the building had any)
+  - zero mice violations is not evidence that there are no mice
+must_not:
+  - add complaints and violations into one count
+  - call OTHER, or orders 566 and 866, mice
+  - say or imply the apartment, the complainant or any unit is identified
+  - repeat any individual's name (write "a person (name not repeated)")
+  - call the building free of mice, or infested
+expected_source: tests/q27_3/expected.sql and tests/q15_3/expected.sql (graph answer must equal the SQL answers); fixtures tests/q27_3/fixtures.yaml and tests/q15_3/fixtures.yaml; code list data/hpd_pest_orders.yaml
+variants:
+  - name: mice-only building (complaints and violations)
+    input: "Do other tenants in BIN 3018581 have mice?"
+    expect: 4 MICE complaint problems, 1 open (Q27.3 fixture); violations re-derived from the source; both reported apart
+  - name: OTHER-only building
+    input: "Do other tenants in BIN 3000820 have mice?"
+    expect: 2 pest complaints coded OTHER, no MICE; reported as an unspecified pest, not mice
+  - name: vermin-only violations
+    input: "Does BIN 3324358 have mice violations?"
+    expect: 2 violations under orders 566 or 866, reported as unspecified vermin, never mice
+  - name: building with no loaded problems
+    input: "Do other tenants in BIN 3324448 have mice?"
+    expect: empty answer, stated as no complaint or violation in the snapshot, not as no mice

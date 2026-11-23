@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: caseStatus is functional, so one case carries one status (the string values are distinct).
+id:bad-case-14 a onto:Litigation ; onto:litigationId 3 ; onto:caseStatus "CLOSED", "PENDING" .

@@ -1,0 +1,40 @@
+# Q19.1 expected state of a pair of lots per layer (BOR release v0.3.0, run 2026-05-29-869bd299).
+# check_pair_state.py re-derives each from the release (groups, group_bbls, bbl_status), so a stale fixture fails.
+# state: same | different | ungrouped (one or both lots in no group). Reasons are BOR's detail codes.
+pairs:
+  - id: identity-link
+    a: "3008070024"   # anchor C, 438 52 Street
+    b: "3067970008"   # 1704 East 15 Street
+    operational_network: {state: same, groupA: ON-98617, groupB: ON-98617}
+    owner_portfolio: {state: same, groupA: OP-98617, groupB: OP-98617}
+    note: "worked example: one portfolio and one network"
+  - id: no-path
+    a: "3008260002"   # anchor A, 5413 7 Avenue
+    b: "3008260005"   # anchor B, 702 54 Street
+    operational_network: {state: ungrouped, reasonA: no_linkage, reasonB: no_linkage}
+    owner_portfolio: {state: ungrouped, reasonA: no_linkage, reasonB: no_linkage}
+    note: "worked example: a non-link is not a finding"
+  - id: different-groups
+    a: "3008070024"   # anchor C
+    b: "3008210012"   # anchor D, 224 54 Street
+    operational_network: {state: different, groupA: ON-98617, groupB: ON-18742}
+    owner_portfolio: {state: different, groupA: OP-98617, groupB: OP-53559}
+    note: "both grouped, in different groups in each layer: still not a finding of different owners"
+  - id: deed-only-portfolio
+    a: "4019660080"
+    b: "4019660083"
+    operational_network: {state: ungrouped, reasonA: shared_company_degree_unknown, reasonB: shared_company_degree_unknown}
+    owner_portfolio: {state: same, groupA: OP-10201, groupB: OP-10201}
+    note: "the layers disagree: a deed ties the pair in a portfolio, the network left both out"
+  - id: masked-hub
+    a: "1000167501"
+    b: "3008070024"
+    operational_network: {state: ungrouped, groupB: ON-98617, reasonA: aggregator_address_masked}
+    owner_portfolio: {state: ungrouped, groupB: OP-98617, reasonA: address_evidence_masked}
+    note: "one lot left out because its address is masked as an aggregator address"
+  - id: louvain-split
+    a: "4012430039"
+    b: "3055250004"
+    operational_network: {state: different, groupA: ON-536, groupB: ON-5363}
+    owner_portfolio: {state: ungrouped, groupB: OP-5363, reasonA: address_evidence_masked}
+    note: "different networks cut from one component (see Q19.3)"

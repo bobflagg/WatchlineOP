@@ -1,0 +1,26 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q26 example data. Values follow tests/q26_*/fixtures.yaml (hpd_registrations 2026-05-29, DOS 2026-07-06, hpd_violations 2026-07-02,
+# BOR release v0.3.0, run 2026-05-29-869bd299). Q26 adds no ontology element: it reads the Q1, Q2, Q5, Q8, Q9 and Q15 elements.
+# The absence statement, its reason and the violation outcome are computed at answer time and are not in the graph. Entities only; no person is named.
+
+# Anchor F: no registration row, so outside source coverage in the registration data and in both layers (BOR's reason is stored on the lot).
+id:lot-3008970014-q26 a onto:TaxLot ; onto:bbl "3008970014" ; onto:hpdRegistered false ; onto:residentialUnits 40 ; onto:yearBuilt 2025 ;
+    onto:networkAbsence "outside_source_coverage" ; onto:networkAbsenceDetail "no_registration" ;
+    onto:portfolioAbsence "outside_source_coverage" ; onto:portfolioAbsenceDetail "no_registration" .
+
+# 20 River Terrace: registered co-op, in a network, out of the portfolio by policy; no violation in the source.
+id:lot-1000160180-q26 a onto:TaxLot ; onto:bbl "1000160180" ; onto:hpdRegistered true ; onto:residentialUnits 293 ;
+    onto:inNetwork id:on-1710-q26 ;
+    onto:portfolioAbsence "excluded_by_policy" ; onto:portfolioAbsenceDetail "coop_condo_dominated" .
+id:on-1710-q26 a onto:OperationalNetwork ; onto:groupId "ON-1710" ; onto:networkSplit "wcc" .
+
+# Anchor A: registered, no linkage in either layer; one violation (illustrative id).
+id:lot-3008260002-q26 a onto:TaxLot ; onto:bbl "3008260002" ; onto:hpdRegistered true ; onto:hasBuilding id:bldg-3014788-q26 ;
+    onto:networkAbsence "no_qualifying_linkage" ; onto:networkAbsenceDetail "no_linkage" ;
+    onto:portfolioAbsence "no_qualifying_linkage" ; onto:portfolioAbsenceDetail "no_linkage" .
+id:bldg-3014788-q26 a onto:Building ; onto:bin "3014788" ; onto:hasViolation id:violation-q26-a .
+id:violation-q26-a a onto:Violation ; onto:violationId 2600001 ; onto:violationClass "B" ; onto:violationStatus "Open" ; onto:inspectionDate "2024-02-01"^^xsd:date .

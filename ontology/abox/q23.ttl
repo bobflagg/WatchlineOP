@@ -1,0 +1,27 @@
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q23 example data. Values follow tests/q23_*/fixtures.yaml (BOR release v0.3.0, run 2026-05-29-869bd299; frozen baseline in data/README.md).
+# Q23 adds no ontology element: it reads the Q2, Q4, Q6, Q8 and Q9 elements. Footprint counts, layer states and the address check are computed
+# at answer time and are not in the graph. Entities only; no person is named. Registration ids are illustrative.
+
+# One agent in two spellings (one name key under N3) and a legal-suffix variant (a different key). All contact type Agent.
+id:reg-q23-a a onto:Registration ; onto:registrationId 900001 ; onto:hasContact id:agent-q23-upper .
+id:reg-q23-b a onto:Registration ; onto:registrationId 900002 ; onto:hasContact id:agent-q23-mixed .
+id:reg-q23-c a onto:Registration ; onto:registrationId 900003 ; onto:hasContact id:agent-q23-llc .
+id:agent-q23-upper a onto:Contact ; onto:contactType "Agent" ; onto:corporationName "BRIGHTON MANAGEMENT" ; onto:mailingAddress "6 EAST 45TH STREET" ; onto:addressLineTwo "7 FL" .
+id:agent-q23-mixed a onto:Contact ; onto:contactType "Agent" ; onto:corporationName "Brighton Management" ; onto:mailingAddress "6 EAST 45TH STREET" .
+id:agent-q23-llc a onto:Contact ; onto:contactType "Agent" ; onto:corporationName "BRIGHTON MANAGEMENT LLC" ; onto:mailingAddress "6 EAST 45TH" .
+
+# Footprint buildings and lots: one lot in a network and a portfolio, one in the network only (no portfolio).
+id:lot-q23-1 a onto:TaxLot ; onto:bbl "3010910002" ; onto:hasBuilding id:bldg-q23-1 ; onto:inNetwork id:on-142-q23 ; onto:inPortfolio id:op-92928-q23 .
+id:lot-q23-2 a onto:TaxLot ; onto:bbl "1008960012" ; onto:hasBuilding id:bldg-q23-2 ; onto:inNetwork id:on-142-q23 ; onto:portfolioAbsence "no_qualifying_linkage" ; onto:portfolioAbsenceDetail "no_linkage" .
+id:bldg-q23-1 a onto:Building ; onto:bin "3025921" ; onto:hasRegistration id:reg-q23-a .
+id:bldg-q23-2 a onto:Building ; onto:bin "1019505" ; onto:hasRegistration id:reg-q23-b .
+id:on-142-q23 a onto:OperationalNetwork ; onto:groupId "ON-142" ; onto:networkSplit "wcc" .
+id:op-92928-q23 a onto:OwnerPortfolio ; onto:portfolioId "OP-92928" ; onto:portfolioComposition "identity" .
+
+# An address text masked by both methods (degrees differ).
+id:mask-q23-net a onto:NetworkMaskedAddress ; onto:maskedAddressId "A0000999" ; onto:maskedAddressText "909 THIRD AVENUE" ; onto:maskedAddressDegree 125 .
+id:mask-q23-port a onto:PortfolioMaskedAddress ; onto:portfolioMaskedAddressText "909 THIRD AVENUE" ; onto:portfolioMaskedAddressDegree 281 .

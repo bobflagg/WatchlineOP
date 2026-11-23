@@ -1,0 +1,9 @@
+# Same format as tests/negative/q18/cases.yaml: bad data inside a transaction that is always rolled back.
+# Cases reuse the existing property key `status` so no new key token is created and the check keeps its catalog fast path.
+# The Q19-only keys (pairState, componentId, precision, ...) are guarded by the check but not seeded here.
+cases:
+  - {name: status stored on a landlord,           create: "MATCH (n:Landlord) WITH n LIMIT 1 SET n.status = 'same'", check: queries/checks/q19-computed-not-stored.cypher}
+  - {name: status stored on an operational network, create: "MATCH (n:OperationalNetwork) WITH n LIMIT 1 SET n.status = 'same'", check: queries/checks/q19-computed-not-stored.cypher}
+  - {name: status stored on an owner portfolio,   create: "MATCH (n:OwnerPortfolio) WITH n LIMIT 1 SET n.status = 'different'", check: queries/checks/q19-computed-not-stored.cypher}
+  - {name: status stored on a lot,                create: "MATCH (n:Lot) WITH n LIMIT 1 SET n.status = 'ungrouped'", check: queries/checks/q19-computed-not-stored.cypher}
+  - {name: status stored on a connecting link,    create: "MATCH ()-[r:CONNECTED_BY_IDENTITY]->() WITH r LIMIT 1 SET r.status = 'probable'", check: queries/checks/q19-computed-not-stored.cypher}

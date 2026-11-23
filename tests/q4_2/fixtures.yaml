@@ -1,4 +1,4 @@
-# Q4.2 expected business addresses. Provisional until the frozen dump is identified (data/README.md).
+# Q4.2 expected business addresses. verified against the frozen baseline recorded in data/README.md (2026-11-16).
 # Checked read-only 2026-11-12. check_addresses.py re-derives each from the source. Street lines are as recorded (not normalized).
 # contacts: [contactType, street line, zip]
 registrations:

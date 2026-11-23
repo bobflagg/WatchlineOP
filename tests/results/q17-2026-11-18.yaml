@@ -1,0 +1,24 @@
+# Q17 acceptance results, 2026-11-18. make test passed for Q17.1 to Q17.4 and make shapes passed 511/511 (user-reported 2026-11-18).
+question: Q17
+fixture_version: "tests/q17_1 to q17_4 fixtures.yaml, re-derived from the frozen baseline by each check"
+baseline: "Frozen baseline recorded 2026-11-16 in data/README.md: justfixwow-poc-baseline_2026-11-16.sql.gz, SHA-256 9124f6c0d0f0d2e453f1971247ed29c217d3d4b5f55338d95344e04a617b6278."
+tools:
+  shacl2cypher: "0.3.0; Q17 adds no SHACL shape, so the compiled rule set is unchanged"
+acceptance:
+  graph:
+    status: passed
+    reason: "make test passed for Q17.1 to Q17.4 and make shapes passed 511/511, including queries/checks/q17-computed-not-stored.cypher and its four negative cases (user-reported 2026-11-18)"
+    evidence:
+      shapes: "none (no graph element)"
+      supplemental_checks: "queries/checks/q17-computed-not-stored.cypher (coverage Q17-R1)"
+      sub_question_checks: "tests/q17_1 to q17_4 (coverage Q17-R2)"
+      negative_cases: "4 in tests/negative/q17/cases.yaml (reuse the key `status`, no new key minted)"
+  retrieval_extraction:
+    status: pending
+    reason: "not declared for Q17 (acceptance_types: [graph])"
+  investigation:
+    status: pending
+    reason: "not declared for Q17"
+open_points:
+  - "The as-of date (2026-05-29) and the threshold (3) are inputs stated in every answer; later public records are a freshness limit."
+  - "The answer is per lot: HPD registers by building, so registered buildings are returned beside PLUTO's count and no ruling is made on one building."

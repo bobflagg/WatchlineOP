@@ -1,0 +1,30 @@
+# Q11.2 fixtures. hpd_contacts (frozen baseline, data/README.md). check_roles.py re-derives each from the source. Names are entities, never people.
+type_map:   # answer contract: contactType -> affiliation type (vocabulary scheme affiliation-types). Never changes a recorded role.
+  CorporateOwner: ownership
+  IndividualOwner: ownership
+  JointOwner: ownership
+  Shareholder: ownership
+  Agent: management
+  SiteManager: management
+  HeadOfficer: other
+  Officer: other
+  Lessee: other
+entities:
+  - name: "5413 PLAZA LLC"
+    registrations: 1
+    own: {CorporateOwner: 1}
+    others: {Agent: 1, HeadOfficer: 1, Shareholder: 1, SiteManager: 1}
+    by_affiliation: {ownership: 1, management: 2, other: 1}
+    note: "anchor A: a disclosed managing agent and site manager are management, not ownership; the shareholder is a recorded ownership interest of unstated size, not a parent company"
+  - name: "MOSHOLU PRESERVATION CORP"
+    registrations: 3
+    own: {CorporateOwner: 3}
+    others: {Agent: 3, HeadOfficer: 3, SiteManager: 3}
+    by_affiliation: {ownership: 0, management: 6, other: 3}
+    note: "three registrations, one per building; roles repeat per registration"
+  - name: "NO SUCH ENTITY LLC"
+    registrations: 0
+    own: {}
+    others: {}
+    by_affiliation: {ownership: 0, management: 0, other: 0}
+    note: "no registration names it: the answer is empty, not an affiliation finding"

@@ -37,14 +37,14 @@ rules:
     names: [RegistrationShape.registrationId.datatype, RegistrationShape.registrationId.minCount, RegistrationShape.registrationId.minInclusive]
   - id: Q2-R2
     question: Q2
-    rule: "contactType is one of CorporateOwner, IndividualOwner, JointOwner and present on every owner contact"
+    rule: "contactType is present on every contact and one of the nine HPD types (CorporateOwner, IndividualOwner, JointOwner, Agent, HeadOfficer, Officer, Shareholder, SiteManager, Lessee)"
     covered_by: compiled
-    names: [OwnerContactShape.contactType.datatype, OwnerContactShape.contactType.minCount, OwnerContactShape.contactType.pattern]
+    names: [ContactShape.contactType.datatype, ContactShape.contactType.minCount, ContactShape.contactType.pattern]
   - id: Q2-R3
     question: Q2
-    rule: "Every registration is linked to at least one building; every owner contact to exactly one registration; the relationships end on the right class"
+    rule: "Every registration is linked to at least one building; every contact to exactly one registration; the relationships end on the right class"
     covered_by: compiled
-    names: [RegistrationShape.inv_hasRegistration.minCount, OwnerContactShape.inv_hasOwnerContact.minCount, OwnerContactShape.inv_hasOwnerContact.maxCount, BuildingRegistrationShape.hasRegistration.class, RegistrationShape.hasOwnerContact.class]
+    names: [RegistrationShape.inv_hasRegistration.minCount, ContactShape.inv_hasContact.minCount, ContactShape.inv_hasContact.maxCount, BuildingRegistrationShape.hasRegistration.class, RegistrationShape.hasContact.class]
   - id: Q2-R4
     question: Q2
     rule: "At most one lastRegistered and one registrationEnd per building and registration pair (one HAS_REGISTRATION per pair)"
@@ -58,9 +58,9 @@ rules:
     names: [queries/checks/q02-end-before-last.cypher]
   - id: Q2-R6
     question: Q2
-    rule: "An owner contact with no name has the name absent, never an empty string"
+    rule: "A contact with no corporation name or person name has it absent, never an empty string"
     covered_by: compiled
-    names: [OwnerContactShape.ownerName.datatype, OwnerContactShape.ownerName.minLength]
+    names: [ContactShape.corporationName.datatype, ContactShape.corporationName.minLength, ContactShape.personName.datatype, ContactShape.personName.minLength]
   - id: Q2-R7
     question: Q2
     rule: "Names are reported as recorded; no rule merges or compares spellings"
@@ -69,9 +69,9 @@ rules:
     note: "An answer rule: the fixtures hold the three spellings of one owner and compare them as recorded."
   - id: Q2-N1
     question: Q2
-    rule: "One Registration per registrationId, one OwnerContact per contactKey"
+    rule: "One Registration per registrationId, one Contact per contactKey"
     covered_by: native
-    names: [registration_id_unique, owner_contact_key_unique]
+    names: [registration_id_unique, contact_key_unique]
   # --- Q3 (ontology/ontology-notes.md, Q3 "Rules for Stage 6 shapes") ---
   - id: Q3-R1
     question: Q3
@@ -92,7 +92,7 @@ rules:
     question: Q3
     rule: "A blank grantee name or address part is absent, never an empty string (also for owner contact address parts)"
     covered_by: compiled
-    names: [GranteeShape.granteeName.datatype, GranteeShape.granteeName.minLength, GranteeShape.mailingAddress.datatype, GranteeShape.mailingAddress.minLength, GranteeShape.addressLineTwo.datatype, GranteeShape.addressLineTwo.minLength, GranteeShape.zipCode.datatype, GranteeShape.zipCode.minLength, OwnerContactAddressShape.mailingAddress.datatype, OwnerContactAddressShape.mailingAddress.minLength, OwnerContactAddressShape.addressLineTwo.datatype, OwnerContactAddressShape.addressLineTwo.minLength, OwnerContactAddressShape.zipCode.datatype, OwnerContactAddressShape.zipCode.minLength]
+    names: [GranteeShape.granteeName.datatype, GranteeShape.granteeName.minLength, GranteeShape.mailingAddress.datatype, GranteeShape.mailingAddress.minLength, GranteeShape.addressLineTwo.datatype, GranteeShape.addressLineTwo.minLength, GranteeShape.zipCode.datatype, GranteeShape.zipCode.minLength, ContactAddressShape.mailingAddress.datatype, ContactAddressShape.mailingAddress.minLength, ContactAddressShape.addressLineTwo.datatype, ContactAddressShape.addressLineTwo.minLength, ContactAddressShape.zipCode.datatype, ContactAddressShape.zipCode.minLength]
   - id: Q3-R5
     question: Q3
     rule: "At most one HAS_DEED per lot and deed pair"
@@ -110,24 +110,14 @@ rules:
     covered_by: native
     names: [deed_document_id_unique, grantee_key_unique]
   # --- Q4 (ontology/ontology-notes.md, Q4 "Rules for Stage 6 shapes") ---
-  - id: Q4-R1
-    question: Q4
-    rule: "contactType is present on every role contact and one of Agent, HeadOfficer, Officer, Shareholder, SiteManager, Lessee; owner types are rejected"
-    covered_by: compiled
-    names: [RoleContactShape.contactType.minCount, RoleContactShape.contactType.datatype, RoleContactShape.contactType.pattern]
-  - id: Q4-R2
-    question: Q4
-    rule: "Every role contact is linked to exactly one registration; HAS_ROLE_CONTACT ends on a role contact"
-    covered_by: compiled
-    names: [RoleContactShape.inv_hasRoleContact.minCount, RoleContactShape.inv_hasRoleContact.maxCount, RegistrationRoleShape.hasRoleContact.class]
   - id: Q4-R3
     question: Q4
-    rule: "A blank title, corporation name, person name or address part is absent, never an empty string"
+    rule: "A blank title is absent, never an empty string (names and address parts: Q2-R6, Q3-R4)"
     covered_by: compiled
-    names: [RoleContactShape.contactTitle.datatype, RoleContactShape.contactTitle.minLength, RoleContactShape.corporationName.datatype, RoleContactShape.corporationName.minLength, RoleContactShape.personName.datatype, RoleContactShape.personName.minLength, RoleContactShape.mailingAddress.datatype, RoleContactShape.mailingAddress.minLength, RoleContactShape.addressLineTwo.datatype, RoleContactShape.addressLineTwo.minLength, RoleContactShape.zipCode.datatype, RoleContactShape.zipCode.minLength]
+    names: [ContactTitleShape.contactTitle.datatype, ContactTitleShape.contactTitle.minLength]
   - id: Q4-R4
     question: Q4
-    rule: "corporationName appears only on agents and lessees"
+    rule: "corporationName appears only on corporate owners, agents and lessees"
     covered_by: check
     names: [queries/checks/q04-corporation-name-types.cypher]
     note: "Conditional on another property; outside what shacl2cypher compiles."
@@ -142,11 +132,6 @@ rules:
     covered_by: test
     names: [tests/q4_1/check_roles.py]
     note: "Answer rules: the fixtures hold anchor C (PRESIDENT OF CO stays HeadOfficer, agent is the owners corporation) and a building with no role contact."
-  - id: Q4-N1
-    question: Q4
-    rule: "One RoleContact per contactKey"
-    covered_by: native
-    names: [role_contact_key_unique]
   # --- Q5 (ontology/ontology-notes.md, Q5 "Rules for Stage 6 shapes") ---
   - id: Q5-R1
     question: Q5
@@ -186,3 +171,450 @@ rules:
     rule: "One DosEntity per dosId"
     covered_by: native
     names: [dos_entity_id_unique]
+  # --- Q8 (ontology/ontology-notes.md, Q8 "Rules for Stage 6 shapes") ---
+  - id: Q8-R1
+    question: Q8
+    rule: "Every network has an id of the form ON-<n> and a split of wcc or louvain"
+    covered_by: compiled
+    names: [OperationalNetworkShape.groupId.minCount, OperationalNetworkShape.groupId.datatype, OperationalNetworkShape.groupId.pattern, OperationalNetworkShape.networkSplit.minCount, OperationalNetworkShape.networkSplit.datatype, OperationalNetworkShape.networkSplit.in]
+  - id: Q8-R2
+    question: Q8
+    rule: "A lot is in at most one network, a network has at least two member lots"
+    covered_by: compiled
+    names: [LotNetworkShape.inNetwork.maxCount, LotNetworkShape.inNetwork.class, OperationalNetworkShape.inv_inNetwork.minCount]
+  - id: Q8-R3
+    question: Q8
+    rule: "networkAbsence is one of the five top-level codes and networkAbsenceDetail one of the eleven detail codes"
+    covered_by: compiled
+    names: [LotNetworkShape.networkAbsence.datatype, LotNetworkShape.networkAbsence.in, LotNetworkShape.networkAbsenceDetail.datatype, LotNetworkShape.networkAbsenceDetail.in]
+  - id: Q8-R4
+    question: Q8
+    rule: "Both absence properties are present or both absent, absent on a lot in a network, and each detail code belongs to its top-level reason"
+    covered_by: check
+    names: [queries/checks/q08-absence.cypher]
+    note: "The hierarchy lives in the vocabulary, not the graph; the mapping from detail code to top-level reason is repeated in the Cypher check (BOR DATA.md levels)."
+  - id: Q8-R5
+    question: Q8
+    rule: "What a landlord covers is a lot (that it covers one, or is the end of a portfolio link, is Q9-R6)"
+    covered_by: compiled
+    names: [LandlordShape.covers.class]
+  - id: Q8-R6
+    question: Q8
+    rule: "Each COVERS has an integer registrationId; every lot in a network is covered by exactly one landlord; a landlord that covers a lot in a network covers lots of one network only, all of them in a network"
+    covered_by: check
+    names: [queries/checks/q08-covers.cypher]
+    note: "tests/q8_3 also compares every cover and its registration with the release and the source."
+  - id: Q8-R7
+    question: Q8
+    rule: "A name or address link joins two different landlords (lower id first) and has a networkEdgeId string and a weight above 0; an identity link the network used has weight 100; a network group id is present exactly when both ends are in one network; every network has a link inside it"
+    covered_by: check
+    names: [queries/checks/q08-links.cypher]
+    note: "Relationship properties and cross-node comparisons are outside what shacl2cypher compiles. tests/q8_3 compares every link, with its ids and weights, with the release graph_edges field by field."
+  - id: Q8-R8a
+    question: Q8
+    rule: "A landlord record has a name: a non-blank string"
+    covered_by: compiled
+    names: [LandlordShape.landlordName.datatype, LandlordShape.landlordName.minCount, LandlordShape.landlordName.minLength]
+  - id: Q8-R8b
+    question: Q8
+    rule: "businessAddresses, when present, is a non-empty, sorted list of distinct non-blank strings; every operational network and every owner portfolio has exactly one anchor, a landlord"
+    covered_by: check
+    names: [queries/checks/q08-labels.cypher]
+    note: "A list property and a relationship that starts at either of two labels are outside what shacl2cypher compiles. tests/q8_3 and tests/q9_1 compare names, addresses and anchors with the release."
+  - id: Q8-R9
+    question: Q8
+    rule: "BASED_ON_CONTACT ends on a contact"
+    covered_by: compiled
+    names: [LandlordShape.basedOnContact.class]
+    note: "That each link matches the release (registration, type and names of a selected observation) is tests/q8_3/check_contacts.py."
+  - id: Q8-N1
+    question: Q8
+    rule: "One OperationalNetwork per groupId; one Landlord per nodeId"
+    covered_by: native
+    names: [operational_network_id_unique, landlord_id_unique]
+  - id: Q9-R1
+    question: Q9
+    rule: "groupId is present, a string, OP- followed by an integer; composition is present and one of identity, deed_only, deed_bridged"
+    covered_by: compiled
+    names: [OwnerPortfolioShape.portfolioId.minCount, OwnerPortfolioShape.portfolioId.datatype, OwnerPortfolioShape.portfolioId.pattern, OwnerPortfolioShape.portfolioComposition.minCount, OwnerPortfolioShape.portfolioComposition.datatype, OwnerPortfolioShape.portfolioComposition.in]
+  - id: Q9-R2
+    question: Q9
+    rule: "A portfolio has at least one member rental lot; a lot is in at most one portfolio, and that is a portfolio"
+    covered_by: compiled
+    names: [OwnerPortfolioShape.inv_inPortfolio.minCount, LotPortfolioShape.inPortfolio.maxCount, LotPortfolioShape.inPortfolio.class]
+  - id: Q9-R3
+    question: Q9
+    rule: "portfolioAbsence is one of BOR's five top-level codes; portfolioAbsenceDetail one of the 18 detail codes used in this layer"
+    covered_by: compiled
+    names: [LotPortfolioShape.portfolioAbsence.datatype, LotPortfolioShape.portfolioAbsence.in, LotPortfolioShape.portfolioAbsenceDetail.datatype, LotPortfolioShape.portfolioAbsenceDetail.in]
+  - id: Q9-R4
+    question: Q9
+    rule: "Both portfolio absence properties are present or both absent, absent on a lot in a portfolio, and each detail code belongs to its top-level reason"
+    covered_by: check
+    names: [queries/checks/q09-absence.cypher]
+    note: "The hierarchy lives in the vocabulary, not the graph; the mapping from detail code to top-level reason is repeated in the Cypher check (BOR DATA.md levels). A co-op or condo lot outside the footprint (coop_condo_excluded) has no IN_PORTFOLIO, which this rule enforces."
+  - id: Q9-R5
+    question: Q9
+    rule: "An identity or deed link used by a portfolio joins two different landlords (lower id first) and has a portfolioEdgeId, an evidenceId, a stage among the codes of its type and the matching evidenceType; a deed link carries no weight; its ends cover lots of one portfolio only, the same one as its portfolio group id"
+    covered_by: check
+    names: [queries/checks/q09-links.cypher]
+    note: "Relationship properties and cross-node comparisons are outside what shacl2cypher compiles. tests/q9_3 compares every link with the release graph_edges."
+  - id: Q9-R6
+    question: Q9
+    rule: "A landlord covers a lot or is the end of a portfolio link of a group; each lot in a portfolio is covered by at least one landlord; in a portfolio with more than one covering landlord each of them has a link"
+    covered_by: check
+    names: [queries/checks/q09-landlords.cypher]
+    note: "Replaces the Q8 rule that every landlord covers a lot: 115 portfolio landlords cover only co-op or condo lots that are not in the graph."
+  - id: Q9-N1
+    question: Q9
+    rule: "One OwnerPortfolio per groupId"
+    covered_by: native
+    names: [owner_portfolio_id_unique]
+  - id: Q6-R1
+    question: Q6
+    rule: "A masked address has an id (A and seven digits), a non-blank text, an integer degree above the threshold of 25 and a non-negative integer count of set-aside edges"
+    covered_by: compiled
+    names: [NetworkMaskedAddressShape.maskedAddressDegree.datatype, NetworkMaskedAddressShape.maskedAddressDegree.minCount, NetworkMaskedAddressShape.maskedAddressDegree.minInclusive, NetworkMaskedAddressShape.maskedEdges.datatype, NetworkMaskedAddressShape.maskedEdges.minCount, NetworkMaskedAddressShape.maskedEdges.minInclusive, NetworkMaskedAddressShape.maskedAddressId.datatype, NetworkMaskedAddressShape.maskedAddressId.minCount, NetworkMaskedAddressShape.maskedAddressId.pattern, NetworkMaskedAddressShape.maskedAddressText.datatype, NetworkMaskedAddressShape.maskedAddressText.minCount, NetworkMaskedAddressShape.maskedAddressText.minLength]
+  - id: Q6-R2
+    question: Q6
+    rule: "A listed address has a key text, a kind of the four codes, a basis and the review status unreviewed; its zip5 is five digits when present"
+    covered_by: compiled
+    names: [MailDropAddressShape.listReviewStatus.datatype, MailDropAddressShape.listReviewStatus.in, MailDropAddressShape.listReviewStatus.minCount, MailDropAddressShape.mailDropAddressKey.datatype, MailDropAddressShape.mailDropAddressKey.minCount, MailDropAddressShape.mailDropAddressKey.minLength, MailDropAddressShape.mailDropBasis.datatype, MailDropAddressShape.mailDropBasis.minCount, MailDropAddressShape.mailDropBasis.minLength, MailDropAddressShape.mailDropKind.datatype, MailDropAddressShape.mailDropKind.in, MailDropAddressShape.mailDropKind.minCount, MailDropAddressShape.zipFive.datatype, MailDropAddressShape.zipFive.pattern]
+  - id: Q6-R5
+    question: Q6
+    rule: "A portfolio masked address has a non-blank derived text, an integer degree above the threshold of 25 and at least one masked identity"
+    covered_by: compiled
+    names: [PortfolioMaskedAddressShape.portfolioMaskedAddressText.datatype, PortfolioMaskedAddressShape.portfolioMaskedAddressText.minCount, PortfolioMaskedAddressShape.portfolioMaskedAddressText.minLength, PortfolioMaskedAddressShape.portfolioMaskedAddressDegree.datatype, PortfolioMaskedAddressShape.portfolioMaskedAddressDegree.minCount, PortfolioMaskedAddressShape.portfolioMaskedAddressDegree.minInclusive, PortfolioMaskedAddressShape.maskedIdentities.datatype, PortfolioMaskedAddressShape.maskedIdentities.minCount, PortfolioMaskedAddressShape.maskedIdentities.minInclusive]
+  - id: Q6-R3
+    question: Q6
+    rule: "Masked address texts are unique within each method; no node has two of the labels NetworkMaskedAddress, PortfolioMaskedAddress, MailDropAddress; the list key is address|zip5; the identity counts of portfolio masked addresses sum to 5298"
+    covered_by: check
+    names: [queries/checks/q06-addresses.cypher]
+    note: "tests/q6_2 and q6_4 compare every node with the release and the list."
+  - id: Q6-R4
+    question: Q6
+    rule: "A masked address (either method) and a listed address have no relationship"
+    covered_by: check
+    names: [queries/checks/q06-no-relationships.cypher]
+    note: "The match to HPD contact addresses is by text at answer time (user decision 2026-11-13)."
+  - id: Q6-N1
+    question: Q6
+    rule: "One NetworkMaskedAddress per addressId; one PortfolioMaskedAddress per address text; one MailDropAddress per list key"
+    covered_by: native
+    names: [network_masked_address_id_unique, portfolio_masked_address_unique, mail_drop_address_key_unique]
+  # --- Q7 (ontology/ontology-notes.md, Q7 "Rules for Stage 6 shapes") ---
+  - id: Q7-R1
+    question: Q7
+    rule: "documentId and documentType present on every document; dates are dates; documentAmount is a whole number, never negative"
+    covered_by: compiled
+    names: [DocumentShape.documentId.minCount, DocumentShape.documentId.datatype, DocumentShape.documentId.minLength, DocumentShape.documentType.minCount, DocumentShape.documentType.datatype, DocumentShape.documentType.minLength, DocumentShape.recordedDate.datatype, DocumentShape.documentDate.datatype, DocumentShape.documentAmount.datatype, DocumentShape.documentAmount.minInclusive]
+  - id: Q7-R2
+    question: Q7
+    rule: "Every document names at least one party (scope C documents name at least two by construction; 19 scope M mortgages record one, kept as recorded); HAS_PARTY ends on a document party; every document party belongs to a document"
+    covered_by: compiled
+    names: [DocumentShape.hasParty.minCount, DocumentShape.hasParty.class, DocumentPartyShape.inv_hasParty.minCount]
+  - id: Q7-R3
+    question: Q7
+    rule: "A blank party name or address part is absent, never an empty string"
+    covered_by: compiled
+    names: [DocumentPartyShape.partyName.datatype, DocumentPartyShape.partyName.minLength, DocumentPartyShape.mailingAddress.datatype, DocumentPartyShape.mailingAddress.minLength, DocumentPartyShape.addressLineTwo.datatype, DocumentPartyShape.addressLineTwo.minLength, DocumentPartyShape.zipCode.datatype, DocumentPartyShape.zipCode.minLength]
+  - id: Q7-R4
+    question: Q7
+    rule: "Hub counts are whole numbers: documents and DOS entities at least 1, distinct names at least 0 (a name with no letter is not counted)"
+    covered_by: compiled
+    names: [DocumentPartyShape.addressPartyCount.datatype, DocumentPartyShape.addressPartyCount.minInclusive, DocumentPartyShape.addressDocumentCount.datatype, DocumentPartyShape.addressDocumentCount.minInclusive, DosHubShape.processAddressEntities.datatype, DosHubShape.processAddressEntities.minInclusive]
+  - id: Q7-R5
+    question: Q7
+    rule: "Hub counts are present exactly when the street line is; partyType is 1, 2 or 3 on every HAS_PARTY link; a party belongs to exactly one document; a party is not a Contact, Grantee or Registration"
+    covered_by: check
+    names: [queries/checks/q07-documents.cypher]
+    note: "Conditional rules and link properties are outside what shacl2cypher compiles."
+  - id: Q7-R6
+    question: Q7
+    rule: "Names are stored as recorded (trimmed only); a name match is a lead; masks, mail-drop list and BOR groups are reported apart; no group and no link do not show two parties are unrelated"
+    covered_by: test
+    names: [tests/q7_1/check_shared_contacts.py, tests/q7_2/check_process_address.py, tests/q7_3/check_documents.py, tests/q7_4/check_set_aside.py, tests/q7_5/check_grouping.py]
+    note: "Answer rules: the fixtures hold anchors A and B (no group, shared address used) and C (grouped, three links)."
+  - id: Q7-N1
+    question: Q7
+    rule: "One Document per documentId, one DocumentParty per partyKey"
+    covered_by: native
+    names: [document_id_unique, document_party_key_unique]
+  # --- Q11 (ontology/ontology-notes.md, Q11 "Rules for Stage 6 shapes"; no new graph element, so no new SHACL shape) ---
+  - id: Q11-R1
+    question: Q11
+    rule: "A mortgage (docType MTGE) has only parties with partyType 1 (borrower) or 2 (lender); every mortgage names at least one HPD CorporateOwner name (N3, scope M); no node or relationship stores an affiliation type or an evidence status"
+    covered_by: check
+    names: [queries/checks/q11-mortgages.cypher]
+    note: "Conditional rules and link properties are outside what shacl2cypher compiles. Document, DocumentParty and HAS_PARTY keep their Q7 shapes and native constraints."
+  - id: Q11-R2
+    question: Q11
+    rule: "Mortgage counts, roles, HPD roles, DOS process contacts and group leads equal the frozen source and the pinned release; a mortgage under a differently spelled owner name is absent (anchor C, recorded gap); an affiliation is documented or hypothesized and a name match is a lead"
+    covered_by: test
+    names: [tests/q11_1/check_mortgages.py, tests/q11_2/check_roles.py, tests/q11_3/check_process.py, tests/q11_4/check_leads.py]
+    note: "Answer rules: the fixtures hold anchors A and B (mortgage, shared borrower, roles, process address, no group), anchor C (the gap) and an entity in one portfolio and one network."
+  - id: Q11-N1
+    question: Q11
+    rule: "One Document per documentId, one DocumentParty per partyKey (shared with Q7, a document in both scopes loads once)"
+    covered_by: native
+    names: [document_id_unique, document_party_key_unique]
+  # --- Q12 (ontology/ontology-notes.md, Q12 "Rules for Stage 6 shapes") ---
+  - id: Q12-R1
+    question: Q12
+    rule: "A blank grantor name or address part is absent, never an empty string"
+    covered_by: compiled
+    names: [GrantorShape.grantorName.datatype, GrantorShape.grantorName.minLength, GrantorShape.mailingAddress.datatype, GrantorShape.mailingAddress.minLength, GrantorShape.addressLineTwo.datatype, GrantorShape.addressLineTwo.minLength, GrantorShape.zipCode.datatype, GrantorShape.zipCode.minLength]
+  - id: Q12-R2
+    question: Q12
+    rule: "Every grantor belongs to exactly one deed (a grantor is a separate node from a grantee, even with the same name); HAS_GRANTOR ends on a grantor"
+    covered_by: compiled
+    names: [GrantorShape.inv_hasGrantor.minCount, GrantorShape.inv_hasGrantor.maxCount, DeedGrantorShape.hasGrantor.class]
+  - id: Q12-R3
+    question: Q12
+    rule: "nameKey on Grantor and Grantee is rule N3 of the name and absent exactly when the name is blank or only periods, commas and apostrophes; no node or relationship stores a not-a-sale flag, an attribution or a count"
+    covered_by: check
+    names: [queries/checks/q12-name-keys.cypher]
+    note: "Conditional rules and the N3 transformation are outside what shacl2cypher compiles. Equality with the source name is also checked by tests/q12_1."
+  - id: Q12-R4
+    question: Q12
+    rule: "Deeds, grantors, grantees, not-a-sale counts, portfolio deeds (each once, run 2026-05-29-869bd299) and attribution equal the frozen source and the pinned release; grantor total 1,619,378 on 1,003,931 deeds; an owner spelled differently (anchor C) is a recorded gap; attribution is a name lead, not historical ownership"
+    covered_by: test
+    names: [tests/q12_1/check_deeds.py, tests/q12_2/check_portfolio_deeds.py, tests/q12_3/check_attribution.py]
+    note: "Answer rules: the fixtures hold anchor A (a $5,000,000 sale and a $0 deed with the same name on both sides) and the multi-lot deed 2020021400087001."
+  - id: Q12-N1
+    question: Q12
+    rule: "One Grantor per partyKey"
+    covered_by: native
+    names: [grantor_key_unique]
+  # --- Q13 (ontology/ontology-notes.md, Q13 "Rules for Stage 6 shapes") ---
+  - id: Q13-R1
+    question: Q13
+    rule: "HAS_FINANCING_DOCUMENT ends on a Document; every target has a documentId, a documentType, typed dates and amount, and at least one party (Document shape of Q7)"
+    covered_by: compiled
+    names: [LotFinancingShape.hasFinancingDocument.class, DocumentShape.documentId.minCount, DocumentShape.documentType.minCount, DocumentShape.hasParty.minCount]
+  - id: Q13-R2
+    question: Q13
+    rule: "A financing document has one of the seven types; HAS_FINANCING_DOCUMENT starts on a lot and has no property; no node or relationship stores a kind, description, count or outstanding flag"
+    covered_by: check
+    names: [queries/checks/q13-financing.cypher]
+    note: "Conditional rules and link properties are outside what shacl2cypher compiles."
+  - id: Q13-R3
+    question: Q13
+    rule: "Financing documents (2,885,412), lot links (3,279,564) and party links (7,345,721) equal the frozen source; a document on several lots is one node (252,760 documents), counted once; absent documentDate stays absent; amount 0 is kept as recorded; the answer names borrower and lender on a mortgage only; no satisfaction or termination is read as proof of payment"
+    covered_by: test
+    names: [tests/q13_1/check_documents.py, tests/q13_2/check_parties.py, tests/q13_3/check_kinds.py]
+    note: "Answer rules: the fixtures hold anchors C and A, the multi-lot document 2003060300708001 and a lot with no financing document. Scope F load check: scripts/load_financing.py."
+  - id: Q13-R4
+    question: Q13
+    rule: "The scope F load keeps the Q7 and Q11 document rules: hub counts only where a street line exists and parties of scope F-only documents carry none (queries/checks/q07-documents.cypher); the owner-name rule for mortgages applies to documents not loaded by scope F (queries/checks/q11-mortgages.cypher)"
+    covered_by: check
+    names: [queries/checks/q07-documents.cypher, queries/checks/q11-mortgages.cypher]
+    note: "Relaxed 2026-11-17 for scope F (decision of Q13 Stage 1); tests/q7_3 and tests/q11_1 count scope C and scope M documents only."
+  # --- Q14 (ontology/ontology-notes.md, Q14 "Rules for Stage 6 shapes"; no new graph element, so no new SHACL shape) ---
+  - id: Q14-R1
+    question: Q14
+    rule: "No node or relationship stores a supporting-deed flag, basis, effective date, registration status, in-force flag or title and registration relation; HAS_REGISTRATION keeps only lastRegistered and registrationEnd; registration dates sit on the link, not the node (the no-Violation-node rule was dropped when Q15 loaded violations, 2026-11-18)"
+    covered_by: check
+    names: [queries/checks/q14-computed-not-stored.cypher]
+    note: "Conditional and absence rules are outside what shacl2cypher compiles. Deed, Grantee, Registration and Contact keep their Q2, Q3, Q4 and Q12 shapes."
+  - id: Q14-R2
+    question: Q14
+    rule: "Supporting deeds (basis document or recorded, ties all returned, recordedAfterDate and confirmatory flags), registration status on the date (registered-later, ended, undated, end-unknown, in-force) and the title and registration relation (name rule N3) equal the frozen source; no registration in force is a gap, not an absent owner; in force is HPD's period, not responsibility"
+    covered_by: test
+    names: [tests/q14_1/check_title.py, tests/q14_2/check_registrations.py, tests/q14_3/check_relation.py]
+    note: "Answer rules: the fixtures hold lot 3008380044 (deed recorded after the violation), anchor A (2022-10-20 and 2026-01-15) and lot 3008770052 (lapsed registration)."
+  # --- Q15 (ontology/ontology-notes.md, Q15 "Rules for Stage 6 shapes") ---
+  - id: Q15-R1
+    question: Q15
+    rule: "Every Violation has violationId (integer), violationClass (A, B, C or I), status (Open or Close), inspectionDate (date) and orderNumber (numeric text, no leading zero; Q15.3), and exactly one incoming HAS_VIOLATION; HAS_VIOLATION ends on a violation; violationId is unique"
+    covered_by: compiled
+    names: [ViolationShape.violationId.minCount, ViolationShape.violationId.datatype, ViolationShape.violationClass.minCount, ViolationShape.violationClass.datatype, ViolationShape.violationClass.in, ViolationShape.violationStatus.minCount, ViolationShape.violationStatus.datatype, ViolationShape.violationStatus.in, ViolationShape.inspectionDate.minCount, ViolationShape.inspectionDate.datatype, ViolationShape.orderNumber.minCount, ViolationShape.orderNumber.datatype, ViolationShape.orderNumber.pattern, ViolationShape.inv_hasViolation.minCount, ViolationShape.inv_hasViolation.maxCount, BuildingViolationShape.hasViolation.class]
+    note: "Native constraint violation_id_unique (tests/negative/q15 case: duplicate violation id)."
+  - id: Q15-R2
+    question: Q15
+    rule: "HAS_VIOLATION starts on a building only (no lot) and has no property; no lot, building, violation or link stores a count, oldest open date, rate or unit count; a violation carries only its five properties, including orderNumber (no apartment, description, pest kind or notice date)"
+    covered_by: check
+    names: [queries/checks/q15-violations.cypher]
+    note: "Conditional and absence rules are outside what shacl2cypher compiles."
+  - id: Q15-R3
+    question: Q15
+    rule: "Violations loaded (1,901,592) and the 10,770 excluded (3,540 with no usable BIN, 7,230 with a BIN that is not a registered building) equal the frozen source (1,912,362 on registered lots); counts by class and status, the oldest open inspection date and the rate (null when units are 0 or absent, one row per lot) equal independent SQL; a building with no violation is an empty answer; pest violations by order code and status, and the loaded and open totals per pest order code (Q15.3, 2026-11-21), equal independent SQL, every loaded violation has a numeric order code, and no description or pest kind is stored"
+    covered_by: test
+    names: [tests/q15_1/check_violations.py, tests/q15_2/check_rate.py, tests/q15_3/check_pests.py]
+    note: "Anchor C fixture: open B 2, C 2, oldest 2023-03-25, 32 units, rate 0.125; closed A 1, B 3, C 2. Load check: scripts/load_violations.py."
+  # --- Q27 (ontology/ontology-notes.md, Q27 "Rules for Stage 6 shapes") ---
+  - id: Q27-R1
+    question: Q27
+    rule: "Every Problem has problemId and complaintId (integers), problemType (EMERGENCY, NON EMERGENCY, IMMEDIATE EMERGENCY, HAZARDOUS or REFERRAL), majorCategory, minorCategory and problemCode (uppercase text; Q27.3), status (OPEN or CLOSE), receivedDate (date) and duplicate (boolean), and exactly one incoming HAS_PROBLEM; HAS_PROBLEM ends on a problem; problemId is unique"
+    covered_by: compiled
+    names: [ProblemShape.problemId.minCount, ProblemShape.problemId.datatype, ProblemShape.complaintId.minCount, ProblemShape.complaintId.datatype, ProblemShape.problemType.minCount, ProblemShape.problemType.datatype, ProblemShape.problemType.in, ProblemShape.majorCategory.minCount, ProblemShape.majorCategory.datatype, ProblemShape.minorCategory.minCount, ProblemShape.minorCategory.datatype, ProblemShape.minorCategory.pattern, ProblemShape.problemCode.minCount, ProblemShape.problemCode.datatype, ProblemShape.problemCode.pattern, ProblemShape.problemStatus.minCount, ProblemShape.problemStatus.datatype, ProblemShape.problemStatus.in, ProblemShape.receivedDate.minCount, ProblemShape.receivedDate.datatype, ProblemShape.duplicateFlag.minCount, ProblemShape.duplicateFlag.datatype, ProblemShape.inv_hasProblem.minCount, ProblemShape.inv_hasProblem.maxCount, BuildingProblemShape.hasProblem.class]
+    note: "Native constraint problem_id_unique (tests/negative/q27 case: duplicate problem id)."
+  - id: Q27-R2
+    question: Q27
+    rule: "HAS_PROBLEM starts on a building only (no lot) and has no property; no lot, building, problem or link stores a count, period total, rate or unit count; no problem is received before 2021-01-01; a problem carries only its nine properties, including minorCategory and problemCode (no apartment, unit or space type, anonymity, coordinates, pest kind or complaint status); a PESTS problem carries one of the seven pest codes"
+    covered_by: check
+    names: [queries/checks/q27-problems.cypher]
+    note: "Conditional and absence rules are outside what shacl2cypher compiles."
+  - id: Q27-R3
+    question: Q27
+    rule: "Problems loaded (4,033,827; 26,221 open; 682,192 flagged duplicate) and the 27,561 excluded (8,461 with no usable BIN, 19,100 with a BIN that is not a registered building) equal the frozen source (4,061,388 on registered lots since 2021-01-01); counts by type, category and status with duplicates, distinct complaints and dates, and the rate (null when units are 0 or absent, one row per lot) equal independent SQL; a building with no problem is an empty answer; pest complaint problems by problem code and status and the loaded, open and duplicate totals per pest code (Q27.3, 2026-11-21) equal independent SQL, every loaded problem has a minor category and a problem code, and no pest kind is stored"
+    covered_by: test
+    names: [tests/q27_1/check_problems.py, tests/q27_2/check_rate.py, tests/q27_3/check_pest_problems.py]
+    note: "Anchor C fixture, 2023 to 2025: 27 problems (EMERGENCY 12, IMMEDIATE EMERGENCY 2, NON EMERGENCY 13), none open, 1 flagged duplicate, 32 units, rate 0.84375. Load check: scripts/load_problems.py."
+  # --- Q28 (ontology/ontology-notes.md, Q28 "Rules for Stage 6 shapes") ---
+  - id: Q28-R1
+    question: Q28
+    rule: "Every Litigation has litigationId (integer), caseType, caseStatus and openJudgement (YES or NO), and exactly one incoming HAS_LITIGATION; caseOpenDate and findingDate are dates, harassmentFinding is After Inquest, After Trial or No Harassment, penalty is a non-negative integer, respondent is text when present; HAS_LITIGATION ends on a case; litigationId is unique"
+    covered_by: compiled
+    names: [BuildingLitigationShape.hasLitigation.class, LitigationShape.caseOpenDate.datatype, LitigationShape.caseStatus.datatype, LitigationShape.caseStatus.minCount, LitigationShape.caseType.datatype, LitigationShape.caseType.minCount, LitigationShape.findingDate.datatype, LitigationShape.harassmentFinding.datatype, LitigationShape.harassmentFinding.in, LitigationShape.inv_hasLitigation.maxCount, LitigationShape.inv_hasLitigation.minCount, LitigationShape.litigationId.datatype, LitigationShape.litigationId.minCount, LitigationShape.openJudgement.datatype, LitigationShape.openJudgement.in, LitigationShape.openJudgement.minCount, LitigationShape.penalty.datatype, LitigationShape.penalty.minInclusive, LitigationShape.respondent.datatype]
+    note: "Native constraint litigation_id_unique (tests/negative/q28 case: duplicate case id)."
+  - id: Q28-R2
+    question: Q28
+    rule: "HAS_LITIGATION starts on a building only (no lot) and has no property; no lot, building, case or link stores a count, owner match or total; a finding date exists only with After Inquest or After Trial; respondentKeys is a non-empty list only with a respondent and a respondent is never an empty string; a case carries only its ten properties (no address, coordinates or judgement amount)"
+    covered_by: check
+    names: [queries/checks/q28-litigation.cypher]
+    note: "Conditional and absence rules are outside what shacl2cypher compiles."
+  - id: Q28-R3
+    question: Q28
+    rule: "Cases loaded (210,169) and the 1,483 excluded on registered lots equal the frozen source (211,652 on registered lots); each building's cases with every field, the odd-value counts (289 no open date, 3 before 1990, 1 after the snapshot, 217 findings, 5,990 No Harassment, 2,919 no respondent) and the respondent match against the registered owners under rule N3 equal independent SQL; a building with no case is an empty answer"
+    covered_by: test
+    names: [tests/q28_1/check_litigation.py, tests/q28_2/check_respondent.py]
+    note: "Anchor C fixture: one closed Tenant Action opened 2023-05-15, no finding; respondent differs from the HPD owner under N3 (STREET vs ST). Load check: scripts/load_litigations.py."
+  # --- Q16 (ontology/ontology-notes.md, Q16 "Rules for Stage 6 shapes"; retrieval-extraction only, no graph element, so no SHACL shape) ---
+  - id: Q16-R1
+    question: Q16
+    rule: "No node carries a retrieved-item, reported-claim, report, filing-document or claim label, and no node or relationship stores a publisher, quoted claim, extracted value, extraction method, source category, fact relation, match basis or search log, and no Lot, Building, Registration, Contact or DosEntity stores a review status: web and document findings are session evidence, not graph facts"
+    covered_by: check
+    names: [queries/checks/q16-computed-not-stored.cypher]
+    note: "Absence rule, outside what shacl2cypher compiles. The Q6 MailDropAddress list entry keeps its own reviewStatus (list-review-statuses) and is exempt, so review status is checked on the five node labels only. Catalog fast path: the scans run only for a property key that exists. The answer-contract rules (review status starts unreviewed and is never set to confirmed or refuted by the project; a similar name or low-confidence scan is lead only; nothing found is stated with the queries and dates) are checked by the downstream consumer against tests/q16/contract.yaml, and stay pending."
+  # --- Q17 (ontology/ontology-notes.md, Q17 "Rules for Stage 6 shapes"; no graph element, so no SHACL shape) ---
+  - id: Q17-R1
+    question: Q17
+    rule: "No node or relationship stores a missing, lapsed, older-than-deed or stale condition, a no-usable-registration flag, a threshold outcome, a unit threshold or an as-of date, and no Lot, Building, Registration or HAS_REGISTRATION link stores a status: the conditions are computed at answer time from hpdRegistered, the registration dates and the deed recorded date"
+    covered_by: check
+    names: [queries/checks/q17-computed-not-stored.cypher]
+    note: "Absence rule, outside what shacl2cypher compiles. Catalog fast path: the scans run only for a property key that exists. The negative cases reuse the key `status` so no key is minted."
+  - id: Q17-R2
+    question: Q17
+    rule: "Missing, no-usable-registration, lapsed (by end date against 2026-05-29), older-than-latest-deed (ties all returned, not-a-sale flag) and the unit threshold (3; 0 or absent units is units-not-recorded) equal independent SQL on the frozen baseline; a lot outside the rental scope is absent from the graph"
+    covered_by: test
+    names: [tests/q17_1/check_missing.py, tests/q17_2/check_lapsed.py, tests/q17_3/check_stale.py, tests/q17_4/check_threshold.py]
+    note: "Fixtures: anchors A, E, F, a placeholder-id lot, a lot with one ended and one running registration, and a same-day two-deed lot. As-of date and legal-applicability limits are stated in the answer."
+  # --- Q18 (ontology/ontology-notes.md, Q18 "Rules for Stage 6 shapes"; no graph element, so no SHACL shape) ---
+  - id: Q18-R1
+    question: Q18
+    rule: "No node or relationship stores a deed classification, a zero-transfer or correction flag, a restructuring verdict or signal, a signal count or a follow-on, and no Deed, Grantor or Grantee stores a status: classification and signals are computed at answer time from the deed type, the recorded amount, the party name keys, the lot address and the registered owners"
+    covered_by: check
+    names: [queries/checks/q18-computed-not-stored.cypher]
+    note: "Absence rule, outside what shacl2cypher compiles. Catalog fast path: the scans run only for a property key that exists. The negative cases reuse the key `status` so no key is minted."
+  - id: Q18-R2
+    question: Q18
+    rule: "Deeds on a lot set (each counted once, classified correction, zero-transfer or priced), the four signals of each zero-transfer deed, and the independence of the signals from group membership equal independent SQL on the frozen baseline; no Q18 lookup reads Operational Network or Owner Portfolio membership"
+    covered_by: test
+    names: [tests/q18_1/check_classification.py, tests/q18_2/check_signals.py, tests/q18_3/check_independence.py]
+    note: "Fixtures: anchors A and B, a three-lot portfolio with no priced deed, and two anchor C lots. The person grantor of anchor B is never named. Signals are name and record leads (rule N3), not findings."
+  # --- Q19 (ontology/ontology-notes.md, Q19 "Rules for Stage 6 shapes"; no graph element, so no SHACL shape) ---
+  - id: Q19-R1
+    question: Q19
+    rule: "No node or relationship stores a pair state, a path or step count, connectivity before subdivision, a component id, a stage precision, probability or confidence, and no Landlord, OperationalNetwork, OwnerPortfolio, Lot or CONNECTED_BY_* link stores a status: all are computed at answer time from group membership, absence properties, COVERS and the links"
+    covered_by: check
+    names: [queries/checks/q19-computed-not-stored.cypher]
+    note: "Absence rule, outside what shacl2cypher compiles. Catalog fast path: the scans run only for a property key that exists. The negative cases reuse the key `status` so no key is minted."
+  - id: Q19-R2
+    question: Q19
+    rule: "The pair state per layer with BOR's reason codes, the fewest-link path inside a group (every link a kept release edge of the group), connectivity before subdivision against the release's component, and stage precision as a method property (none stored) equal the pinned BOR release (v0.3.0, run 2026-05-29-869bd299)"
+    covered_by: test
+    names: [tests/q19_1/check_pair_state.py, tests/q19_2/check_path.py, tests/q19_3/check_subdivision.py, tests/q19_4/check_method.py]
+    note: "Fixtures: anchors A and B (no path), C and D (different groups), 438 52 Street and 1704 East 15 Street (identity link), a deed-only portfolio, a path through a third record, a masked-hub lot and a Louvain-split pair. Stage precision is not evaluated in this release; the answer says so."
+
+  # --- Q20 (ontology/ontology-notes.md, Q20 "Rules for Stage 6 shapes"; no graph element, so no SHACL shape) ---
+  - id: Q20-R1
+    question: Q20
+    rule: "No node carries a Dossier, Finding, Claim, Lead, StopReason or BeneficialOwner label, no node or relationship stores a lead status, stop reason, claim label, dossier section or ownership conclusion, and no source-record or group node stores a status: the dossier, its leads and its stop reason are assembled at answer time"
+    covered_by: check
+    names: [queries/checks/q20-computed-not-stored.cypher]
+    note: "Absence rule, outside what shacl2cypher compiles. Catalog fast path: the scans run only for a label or key that exists. The negative cases reuse the key `status` so no key is minted."
+  - id: Q20-R2
+    question: Q20
+    rule: "The anchor A recorded trail (lot and building, registered owner, deeds, DOS record and process address, joint mortgage, shared HPD address, no group) equals what each component lookup returns; the layers are returned apart; the lead rule and the single stop reason are applied to the recorded trail"
+    covered_by: test
+    names: [tests/q20_1/check_trail.py, tests/q20_2/check_layers.py, tests/q20_3/check_leads.py]
+    note: "Graph part only. Following leads on retrieved sources and labeling claims (Q20.4, the investigation part of Q20.3) need a versioned retrieval cache and stay pending; the contract is tests/q20_3/contract.yaml."
+
+  # --- Q21 (ontology/ontology-notes.md, Q21 "Rules for Stage 6 shapes"; no graph element, so no SHACL shape) ---
+  - id: Q21-R1
+    question: Q21
+    rule: "No node or relationship stores an open violation count, a count by class, a rate per unit, a rank, a concentration share or a top-lot count, no Lot, Building, OperationalNetwork or OwnerPortfolio stores a status, and no node carries a Ranking or Concentration label: all are computed at answer time from HAS_BUILDING, HAS_VIOLATION and group membership"
+    covered_by: check
+    names: [queries/checks/q21-computed-not-stored.cypher]
+    note: "Absence rule, outside what shacl2cypher compiles. Catalog fast path: the scans run only for a key or label that exists. The negative cases reuse the key `status` so no key is minted."
+  - id: Q21-R2
+    question: Q21
+    rule: "Open violations by class, units, rate and rank per member lot, the top-3 concentration share, and the two layers' member lists and set differences equal the pinned BOR release (v0.3.0, run 2026-05-29-869bd299) and independent SQL on the frozen baseline"
+    covered_by: test
+    names: [tests/q21_1/check_ranking.py, tests/q21_2/check_concentration.py, tests/q21_3/check_layers.py]
+    note: "Fixtures: anchor D's network and portfolio, anchor C's network, a lot with no PLUTO units (rate unavailable), a two-lot network and the 424-lot hub. A building on several lots counts toward each; the distinct total is returned beside the sum."
+
+  # --- Q22 (ontology/ontology-notes.md, Q22 "Rules for Stage 6 shapes"; no graph element, so no SHACL shape) ---
+  - id: Q22-R1
+    question: Q22
+    rule: "No node or relationship stores an entity name outcome, a comparison rule, a same-entity flag or a joining-record count, no Contact, Grantee, Grantor, DocumentParty or DosEntity stores a status, and no SAME_AS, SAME_ENTITY or MATCHES relationship or NameComparison or EntityMatch label exists: a name match is a lead, computed at answer time"
+    covered_by: check
+    names: [queries/checks/q22-computed-not-stored.cypher]
+    note: "Absence rule, outside what shacl2cypher compiles. Catalog fast path. The negative cases reuse the key `status` so no key is minted."
+  - id: Q22-R2
+    question: Q22
+    rule: "The name comparison outcome and rule for the anchor G, B, D and C pairs and the rule cases (Holdings II, legal suffix, absent name) equal compare.entity_name_comparison, each spelling is recorded in its source, Q3 and Q5 still treat a space as a difference, and the lots on which both names are deed parties equal ACRIS"
+    covered_by: test
+    names: [tests/q22_1/check_names.py, tests/q22_2/check_joins.py]
+    note: "Anchor D's DOS long form is not in the graph (scope: N3 key equals a graph name); the pair is checked on the recorded spellings, not on the graph record."
+
+  # --- Q23 (ontology/ontology-notes.md, Q23 "Rules for Stage 6 shapes"; no graph element, so no SHACL shape) ---
+  - id: Q23-R1
+    question: Q23
+    rule: "No node or relationship stores a footprint count, a layer state, a commercial-service flag or an operator verdict, no Contact, Registration, Building, Lot or mask node stores a status, and no MANAGED_BY, MANAGES, SAME_AGENT or SAME_OWNER relationship or AgentFootprint or ManagingAgent label exists: shared management is a record link, not a grouping and not ownership, computed at answer time"
+    covered_by: check
+    names: [queries/checks/q23-computed-not-stored.cypher]
+    note: "Absence rule, outside what shacl2cypher compiles. Catalog fast path. The negative cases reuse the key `status` so no key is minted."
+  - id: Q23-R2
+    question: Q23
+    rule: "The footprint (registrations, buildings, lots) of an agent name by spelling equals the source under rule N3, the layer counts equal the BOR release against the reference building (same, other, none), and the mask degrees of the agent's addresses equal the release"
+    covered_by: test
+    names: [tests/q23_1/check_footprint.py, tests/q23_2/check_layers.py, tests/q23_3/check_masks.py]
+    note: "Contact rows of another type carrying the same name are reported apart from the Agent counts. A lot in no group is 'none', not 'other'."
+
+  # --- Q24 (ontology/ontology-notes.md, Q24 "Rules for Stage 6 shapes"; no graph element, so no SHACL shape) ---
+  - id: Q24-R1
+    question: Q24
+    rule: "No node or relationship stores a match basis, a near-name kind, a lead flag, a search outcome, a person key or a match count, no Contact, Grantee, Grantor or DosEntity stores a status, and no SAME_PERSON, NAME_MATCH or NEAR_MATCH relationship or NameSearch, NameMatch or Lead label exists: a name match is a lead, computed at answer time"
+    covered_by: check
+    names: [queries/checks/q24-computed-not-stored.cypher]
+    note: "Absence rule, outside what shacl2cypher compiles. Catalog fast path. The negative cases reuse the key `status` so no key is minted."
+  - id: Q24-R2
+    question: Q24
+    rule: "Entity name matches (HPD contacts, deed grantees and grantors, DOS records) equal the source under rule N3 with roles, buildings and lots, person leads equal the source in both name orders with counts, near-name candidates equal the source and are classified by rule, and the outcome, snapshot dates and caveats follow the contract"
+    covered_by: test
+    names: [tests/q24_1/check_entity.py, tests/q24_2/check_person.py, tests/q24_3/check_near.py, tests/q24_4/check_contract.py]
+    note: "Person fixtures are rules; names are never printed or stored. Near names are found by a shared core only; spacing variants, abbreviations and misspellings are a documented limit."
+
+  # --- Q25 (ontology/ontology-notes.md, Q25 "Rules for Stage 6 shapes"; no graph element, so no SHACL shape) ---
+  - id: Q25-R1
+    question: Q25
+    rule: "No node or relationship stores a registry outcome, registry name, filing id, registry status, foreign filing date or foreign agent, no DosEntity stores a status, and no RegistrySearch, RegistryFinding or ForeignEntity label exists: registry findings are session evidence, not graph facts"
+    covered_by: check
+    names: [queries/checks/q25-computed-not-stored.cypher]
+    note: "Absence rule, outside what shacl2cypher compiles. Catalog fast path. The negative cases reuse the key `status` so no key is minted."
+
+  # --- Q26 (ontology/ontology-notes.md, Q26 "Rules for Stage 6 shapes"; no graph element, so no SHACL shape) ---
+  - id: Q26-R1
+    question: Q26
+    rule: "No node or relationship stores a source absence, a derived reason for the registration, DOS or violation source, a violation outcome or a not-loaded flag, no Lot, Building, Contact, DosEntity, OperationalNetwork or OwnerPortfolio stores a status, and no SourceAbsence or Absence label exists: the absence statement is computed at answer time (only BOR's layer reasons are stored)"
+    covered_by: check
+    names: [queries/checks/q26-computed-not-stored.cypher]
+    note: "Absence rule, outside what shacl2cypher compiles. Catalog fast path: the scans run only for a key or label that exists. The negative cases reuse the key `status` so no key is minted."
+  - id: Q26-R2
+    question: Q26
+    rule: "Registration, DOS entity, layer and violation absences per lot equal independent SQL on the frozen baseline and the pinned BOR release (v0.3.0, run 2026-05-29-869bd299); violations of an unregistered lot are not-loaded, never none"
+    covered_by: test
+    names: [tests/q26_1/check_registration.py, tests/q26_2/check_dos_absence.py, tests/q26_3/check_layer_absence.py, tests/q26_4/check_violation_absence.py]
+    note: "Fixtures: anchor F (unregistered), 20 River Terrace (portfolio excluded by policy, no violation), anchors A to E, a masked aggregator lot, and an unregistered lot whose source holds 219 violations. An out-of-scope lot is absent."

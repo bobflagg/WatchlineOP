@@ -1,0 +1,68 @@
+# Q9.3 expected links behind an Owner Portfolio (BOR release v0.3.0, run 2026-05-29-869bd299).
+# check_signals.py re-derives each from the release (graph_edges.csv, group_members.csv, group_bbls.csv, node_observations.csv), so a stale
+# fixture fails. links are [type, nodeA, nodeB, stage, evidenceId]: every edge BOR used that touches a landlord covering a rental lot
+# of the portfolio. A pair can have several edges (one per piece of evidence); the old release listed only a spanning tree.
+portfolios:
+  - groupId: OP-98617
+    note: "anchor C: two identity steps from Splink"
+    links:   # [type, nodeA, nodeB, stage, evidenceId], every edge touching a landlord that covers a rental lot of the portfolio
+      - [CONNECTED_BY_IDENTITY, 98617, 98618, identity.splink_base, C0044503]
+      - [CONNECTED_BY_IDENTITY, 98617, 98619, identity.splink_base, C0044503]
+      - [CONNECTED_BY_IDENTITY, 98618, 98619, identity.splink_base, C0044503]
+  - groupId: OP-53559
+    note: "anchor D"
+    links:   # [type, nodeA, nodeB, stage, evidenceId], every edge touching a landlord that covers a rental lot of the portfolio
+      - [CONNECTED_BY_DEED, 53559, 53560, deed.held_since, DV0000380]
+      - [CONNECTED_BY_IDENTITY, 53559, 53560, identity.registered_llc, LG0000930]
+      - [CONNECTED_BY_IDENTITY, 53559, 53560, identity.splink_base, C0001400]
+      - [CONNECTED_BY_DEED, 53559, 53561, deed.held_since, DV0000379]
+      - [CONNECTED_BY_IDENTITY, 53559, 53561, identity.registered_llc, LG0000929]
+      - [CONNECTED_BY_IDENTITY, 53559, 53561, identity.splink_base, C0001400]
+      - [CONNECTED_BY_IDENTITY, 53560, 53561, identity.splink_base, C0001400]
+  - groupId: OP-5346
+    note: "deed_bridged: two identity steps joined by a deed"
+    links:   # [type, nodeA, nodeB, stage, evidenceId], every edge touching a landlord that covers a rental lot of the portfolio
+      - [CONNECTED_BY_DEED, 5346, 5347, deed.held_since, DV0000318]
+      - [CONNECTED_BY_IDENTITY, 5346, 5347, identity.splink_base, C0053102]
+      - [CONNECTED_BY_DEED, 5346, 5348, deed.held_since, DV0000318]
+      - [CONNECTED_BY_DEED, 5346, 5349, deed.held_since, DV0000318]
+      - [CONNECTED_BY_DEED, 5347, 5348, deed.held_since, DV0000318]
+      - [CONNECTED_BY_DEED, 5347, 5349, deed.held_since, DV0000318]
+      - [CONNECTED_BY_DEED, 5348, 5349, deed.held_since, DV0000318]
+      - [CONNECTED_BY_IDENTITY, 5348, 5349, identity.splink_base, C0040147]
+  - groupId: OP-10201
+    note: "deed_only"
+    links:   # [type, nodeA, nodeB, stage, evidenceId], every edge touching a landlord that covers a rental lot of the portfolio
+      - [CONNECTED_BY_DEED, 10201, 10578, deed.held_since, DV0000188]
+  - groupId: OP-103727
+    note: "linked successor"
+    links:   # [type, nodeA, nodeB, stage, evidenceId], every edge touching a landlord that covers a rental lot of the portfolio
+      - [CONNECTED_BY_DEED, 103727, 115114, deed.linked_successor, DV0000348]
+  - groupId: OP-5292
+    note: "curated owner list"
+    links:   # [type, nodeA, nodeB, stage, evidenceId], every edge touching a landlord that covers a rental lot of the portfolio
+      - [CONNECTED_BY_IDENTITY, 5292, 87870, identity.curated, CG0000001]
+      - [CONNECTED_BY_IDENTITY, 87870, 87879, identity.splink_base, C0008542]
+  - groupId: OP-100005
+    note: "Splink feedback"
+    links:   # [type, nodeA, nodeB, stage, evidenceId], every edge touching a landlord that covers a rental lot of the portfolio
+      - [CONNECTED_BY_IDENTITY, 100005, 100006, identity.splink_feedback, C0045857]
+  - groupId: OP-100248
+    note: "registered LLC owner match"
+    links:   # [type, nodeA, nodeB, stage, evidenceId], every edge touching a landlord that covers a rental lot of the portfolio
+      - [CONNECTED_BY_DEED, 100248, 100249, deed.held_since, DV0000258]
+      - [CONNECTED_BY_IDENTITY, 100248, 100249, identity.registered_llc, LG0001524]
+  - groupId: OP-100619
+    note: "one rental lot; the other record covers only a co-op or condo lot"
+    links:   # [type, nodeA, nodeB, stage, evidenceId], every edge touching a landlord that covers a rental lot of the portfolio
+      - [CONNECTED_BY_IDENTITY, 100619, 100620, identity.splink_base, C0015403]
+totals:
+  portfolio_landlords: 15623
+  portfolio_only_landlords: 111       # in a portfolio, in no Operational Network
+  landlords_without_rental_lot: 115   # cover only co-op or condo lots outside the footprint
+  landlords_both_layers_union: 31035
+  covers_union: 71430
+  edges_by_stage: {identity.splink_base: 10071, identity.splink_feedback: 1671, identity.registered_llc: 2379, identity.curated: 194, deed.held_since: 943, deed.linked_successor: 80}
+  edges_without_portfolio: 772        # kept edges in a portfolio BOR dropped as co-op or condo dominated: no portfolioGroupId
+  edges_skipped_not_landlord: 2       # an end is not a Landlord node; not loaded
+  relationships: {CONNECTED_BY_IDENTITY: 14315, CONNECTED_BY_DEED: 1023}   # rows of graph_edges before the two edges with a non-Landlord end are skipped; one deed can join a pair at both stages

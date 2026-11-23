@@ -25,4 +25,37 @@ cases:
   house_out_of_range: {outcome: not_found, bbl: null, in_graph: null, grc: "42"}
   no_tax_lot_candidate: {outcome: not_found, bbl: null, in_graph: null, grc: "00"}
   blank_house: {outcome: not_found, bbl: null, in_graph: null, grc: "13"}
+  # The city's street is HALLETTS POINT; the apostrophe makes it EE, the retry without it resolves: inferred, a variant.
+  apostrophe_typed: {outcome: variant, bbl: "4009157501", bin: "4617681", in_graph: true, grc: "01", inferred: true, tried: 2}
+  apostrophe_stripped: {outcome: variant, bbl: "4009157501", bin: "4617681", in_graph: true, grc: "01", inferred: false, tried: 1}
+  # ", Astoria" is dropped before the call, so the same two requests are sent as for apostrophe_typed.
+  apostrophe_locality: {outcome: variant, bbl: "4009157501", bin: "4617681", in_graph: true, grc: "01", inferred: true, tried: 2}
+  # Wrong borough: both spellings fail; the city's list is shown and nothing is chosen.
+  apostrophe_wrong_borough: {outcome: ambiguous, bbl: null, in_graph: null, grc: "EE", inferred: false, tried: 2}
+  apostrophe_wrong_borough_stripped: {outcome: ambiguous, bbl: null, in_graph: null, grc: "EE", inferred: false, tried: 1}
+  apostrophe_zip: {outcome: variant, bbl: "4009157501", bin: "4617681", in_graph: true, grc: "01", inferred: true, tried: 2}
+  apostrophe_zip_stripped: {outcome: variant, bbl: "4009157501", bin: "4617681", in_graph: true, grc: "01", inferred: false, tried: 1}
   zip_instead_of_borough: {outcome: exact, bbl: "3008210012", bin: "3324451", in_graph: true, related_lots: [], grc: "00"}
+
+# resolve_text: an address typed as one string. Every request it sends must be in recorded.json.
+text_cases:
+  - {input: "10 Hallett's Pt, Astoria", borough: Queens, expect: {outcome: variant, bbl: "4009157501", inferred: true, tried: 2}}
+  - {input: "10 Hallett\u2019s Pt, Queens, NY 11102", expect: {outcome: variant, bbl: "4009157501", inferred: true, tried: 2}}
+  - {input: "224 54 STREET, Brooklyn", expect: {outcome: exact, bbl: "3008210012", bin: "3324451", inferred: false, tried: 1}}
+  - {input: "5413 7 AVENUE Brooklyn", expect: {outcome: exact, bbl: "3008260002", bin: "3014788", inferred: false, tried: 1}}
+  # borough from the neighborhood (data/neighborhoods.yaml): Astoria -> Queens; never exact
+  - {input: "10 Hallett\u2019s Pt, Astoria", expect: {outcome: variant, bbl: "4009157501", inferred: true, tried: 2, borough_inferred_from: Astoria}}
+  - {input: "224 54 STREET, Sunset Park", expect: {outcome: variant, bbl: "3008210012", inferred: false, tried: 1, borough_inferred_from: Sunset Park}}
+  - {input: "10 Halletts Pt, Astoria", borough: Brooklyn, raises: ValueError}
+  - {input: "10 Halletts Pt, Murray Hill", raises: BoroughRequired}
+  - {input: "10 Halletts Pt, Atlantis", raises: BoroughRequired}
+  - {input: "10 Halletts Pt", raises: BoroughRequired}
+  - {input: "10 Halletts Pt, Brooklyn", borough: Queens, raises: ValueError}
+  - {input: "Hallett's Pt", borough: Queens, raises: ValueError}
+# parse_address alone (no Geosupport): house, street, borough, zip5, locality
+parse_cases:
+  - {input: "10 Hallett\u2019s Pt, Astoria", house: "10", street: "Hallett's Pt", borough: null, zip5: null, locality: [Astoria]}
+  - {input: "37-20 Main St 11354", house: "37-20", street: "Main St", borough: null, zip5: "11354", locality: []}
+  - {input: "218 54 St Apt 3B, Brooklyn", house: "218", street: "54 St", borough: Brooklyn, zip5: null, locality: []}
+  - {input: "100 Broad Street, New York, NY", house: "100", street: "Broad Street", borough: Manhattan, zip5: null, locality: []}
+  - {input: "1 Brooklyn", house: "1", street: "Brooklyn", borough: null, zip5: null, locality: []}

@@ -1,0 +1,24 @@
+# Q14 acceptance results, 2026-11-17. make test (73/73) and make shapes (468/468) passed (user-reported 2026-11-18).
+question: Q14
+fixture_version: verified against the frozen baseline (2026-11-16) by the checks once run
+baseline: "Frozen baseline recorded 2026-11-16 in data/README.md: justfixwow-poc-baseline_2026-11-16.sql.gz, SHA-256 9124f6c0d0f0d2e453f1971247ed29c217d3d4b5f55338d95344e04a617b6278."
+tools:
+  shacl2cypher: "0.3.0; Q14 adds no SHACL shape, so the compiled rule set is unchanged"
+acceptance:
+  graph:
+    status: passed
+    reason: "make test 73/73 (includes tests/q14_1 to q14_3) and make shapes 468/468 (new check and six negative cases) passed on the loaded graph (user-reported 2026-11-18)"
+    evidence:
+      shapes: "none new (no graph element); existing deed, grantee, registration and contact shapes cover the inputs"
+      supplemental_checks: "queries/checks/q14-computed-not-stored.cypher (no stored status, flag, basis or relation; registration dates only on HAS_REGISTRATION; no Violation node)"
+      negative_cases: "6 in tests/negative/q14/cases.yaml (all supplemental check)"
+      sub_question_checks: "tests/q14_1 to q14_3 compare lookups with independent SQL (Q14.3 against the Q14.1 and Q14.2 answers)"
+  retrieval_extraction:
+    status: pending
+    reason: "not declared for Q14"
+  investigation:
+    status: pending
+    reason: "not declared for Q14; the agent reads violation dates from a source tool and passes the chosen date"
+open_points:
+  - "Violations are not loaded (1,970,575 rows, user choice 2026-11-17); the date is an input."
+  - "HPD keeps one row per registration with the last registration date, so in force is conservative: a later filing hides an earlier one."

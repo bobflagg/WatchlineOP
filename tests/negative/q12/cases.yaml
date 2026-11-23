@@ -1,0 +1,16 @@
+# Same format as tests/negative/q11/cases.yaml: bad data inside a transaction that is always rolled back.
+cases:
+  - {name: grantor with no deed,          create: "CREATE (:Grantor {partyKey: 'q12-x'})", rule: GrantorShape.inv_hasGrantor.minCount}
+  - {name: grantor on two deeds,          create: "MATCH (g:Grantor) WITH g LIMIT 1 MATCH (d:Deed) WHERE NOT (d)-[:HAS_GRANTOR]->(g) WITH g, d LIMIT 1 CREATE (d)-[:HAS_GRANTOR]->(g)", rule: GrantorShape.inv_hasGrantor.maxCount}
+  - {name: HAS_GRANTOR ends on a grantor, create: "MATCH (a:Deed), (b:Deed) WHERE a <> b WITH a, b LIMIT 1 CREATE (a)-[:HAS_GRANTOR]->(b)", rule: DeedGrantorShape.hasGrantor.class}
+  - {name: grantor with empty name,       create: "MATCH (d:Deed) WITH d LIMIT 1 CREATE (d)-[:HAS_GRANTOR]->(:Grantor {partyKey: 'q12-x', name: ''})", rule: GrantorShape.grantorName.minLength}
+  - {name: grantor name as number,        create: "MATCH (d:Deed) WITH d LIMIT 1 CREATE (d)-[:HAS_GRANTOR]->(:Grantor {partyKey: 'q12-x', name: 7})", rule: GrantorShape.grantorName.datatype}
+  - {name: grantor with empty address,    create: "MATCH (d:Deed) WITH d LIMIT 1 CREATE (d)-[:HAS_GRANTOR]->(:Grantor {partyKey: 'q12-x', mailingAddress: ''})", rule: GrantorShape.mailingAddress.minLength}
+  - {name: grantor with empty second line, create: "MATCH (d:Deed) WITH d LIMIT 1 CREATE (d)-[:HAS_GRANTOR]->(:Grantor {partyKey: 'q12-x', addressLine2: ''})", rule: GrantorShape.addressLineTwo.minLength}
+  - {name: grantor with empty zip,        create: "MATCH (d:Deed) WITH d LIMIT 1 CREATE (d)-[:HAS_GRANTOR]->(:Grantor {partyKey: 'q12-x', zip: ''})", rule: GrantorShape.zipCode.minLength}
+  - {name: duplicate grantor key,         create: "MATCH (g:Grantor) WITH g LIMIT 1 CREATE (:Grantor {partyKey: g.partyKey})", error: constraint}
+  - {name: named grantor without nameKey, create: "MATCH (d:Deed) WITH d LIMIT 1 CREATE (d)-[:HAS_GRANTOR]->(:Grantor {partyKey: 'q12-x', name: 'ACME LLC'})", check: queries/checks/q12-name-keys.cypher}
+  - {name: grantee nameKey not N3,        create: "MATCH (d:Deed) WITH d LIMIT 1 CREATE (d)-[:HAS_GRANTEE]->(:Grantee {partyKey: 'q12-x', name: 'Acme, Inc.', nameKey: 'Acme, Inc.'})", check: queries/checks/q12-name-keys.cypher}
+  - {name: nameKey without a name,        create: "MATCH (d:Deed) WITH d LIMIT 1 CREATE (d)-[:HAS_GRANTOR]->(:Grantor {partyKey: 'q12-x', nameKey: 'ACME LLC'})", check: queries/checks/q12-name-keys.cypher}
+  - {name: not-a-sale flag stored on a deed, create: "MATCH (d:Deed) WITH d LIMIT 1 SET d.notSale = true", check: queries/checks/q12-name-keys.cypher}
+  - {name: attribution stored on a link,  create: "MATCH (:Deed)-[r:HAS_GRANTOR]->(:Grantor) WITH r LIMIT 1 SET r.attributable = true", check: queries/checks/q12-name-keys.cypher}

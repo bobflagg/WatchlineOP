@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: grantorName is functional. A grantor row has one recorded name; a second name is a second row.
+id:bad-grantor-3 a onto:Grantor ; onto:grantorName "ONE LLC", "TWO LLC" .

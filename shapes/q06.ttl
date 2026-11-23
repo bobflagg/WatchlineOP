@@ -1,0 +1,53 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix s2c:  <https://w3id.org/shacl2cypher#> .
+@prefix shp:  <https://watchline.example/shapes/> .
+
+# Q6 shapes: the rules OWL cannot express (ontology/ontology-notes.md, Q6 "Rules for Stage 6 shapes").
+# Rules that compare nodes or look at relationships and labels together are named Cypher checks (queries/checks/q06-*.cypher).
+
+# --- Graph names ---
+onto:NetworkMaskedAddress s2c:label "NetworkMaskedAddress" .
+onto:PortfolioMaskedAddress s2c:label "PortfolioMaskedAddress" .
+onto:MailDropAddress s2c:label "MailDropAddress" .
+onto:portfolioMaskedAddressText s2c:property "address" .
+onto:portfolioMaskedAddressDegree s2c:property "degree" .
+onto:maskedIdentities s2c:property "maskedIdentities" .
+onto:maskedAddressId s2c:property "addressId" .
+onto:maskedAddressText s2c:property "address" .
+onto:maskedAddressDegree s2c:property "degree" .
+onto:maskedEdges s2c:property "maskedEdges" .
+onto:mailDropAddressKey s2c:property "address" .
+onto:zipFive s2c:property "zip5" .
+onto:mailDropKind s2c:property "kind" .
+onto:mailDropBasis s2c:property "basis" .
+onto:listReviewStatus s2c:property "reviewStatus" .
+
+# --- Rules ---
+shp:NetworkMaskedAddressShape a sh:NodeShape ;
+    s2c:key "addressId" ;
+    sh:targetClass onto:NetworkMaskedAddress ;
+    # R1 id present and well formed; text present and not blank; degree an integer above the method's threshold of 25; masked edge count a non-negative integer
+    sh:property [ sh:path onto:maskedAddressId ; sh:minCount 1 ; sh:datatype xsd:string ; sh:pattern "^A[0-9]{7}$" ] ;
+    sh:property [ sh:path onto:maskedAddressText ; sh:minCount 1 ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:maskedAddressDegree ; sh:minCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 26 ] ;
+    sh:property [ sh:path onto:maskedEdges ; sh:minCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 0 ] .
+
+shp:PortfolioMaskedAddressShape a sh:NodeShape ;
+    s2c:key "address" ;
+    sh:targetClass onto:PortfolioMaskedAddress ;
+    # R5 derived text present and not blank; degree an integer above the method's threshold of 25; at least one masked identity
+    sh:property [ sh:path onto:portfolioMaskedAddressText ; sh:minCount 1 ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:portfolioMaskedAddressDegree ; sh:minCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 26 ] ;
+    sh:property [ sh:path onto:maskedIdentities ; sh:minCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 1 ] .
+
+shp:MailDropAddressShape a sh:NodeShape ;
+    s2c:key "listKey" ;
+    sh:targetClass onto:MailDropAddress ;
+    # R2 key text, kind, basis and review status present; kind one of the list's four codes; review status unreviewed; zip5 five digits when present
+    sh:property [ sh:path onto:mailDropAddressKey ; sh:minCount 1 ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:zipFive ; sh:datatype xsd:string ; sh:pattern "^[0-9]{5}$" ] ;
+    sh:property [ sh:path onto:mailDropKind ; sh:minCount 1 ; sh:datatype xsd:string ; sh:in ( "registered_agent" "law_firm" "management_office" "unknown" ) ] ;
+    sh:property [ sh:path onto:mailDropBasis ; sh:minCount 1 ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:listReviewStatus ; sh:minCount 1 ; sh:datatype xsd:string ; sh:in ( "unreviewed" ) ] .

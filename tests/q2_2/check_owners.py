@@ -1,8 +1,8 @@
-"""Check OwnerContact nodes and HAS_OWNER_CONTACT against the frozen source. Read-only on both databases.
+"""Check the owner-type Contact nodes and HAS_CONTACT against the frozen source. Read-only on both databases.
 
 1. Each fixture is re-derived from the source with SQL, so a stale fixture fails.
 2. Each fixture is looked up in the graph with tests/q2_2/lookup.cypher.
-3. Graph totals must equal the totals computed from the source, and every OwnerContact must be linked.
+3. Graph totals must equal the totals computed from the source, and every owner-type Contact must be linked.
 Person names are never printed or stored in fixtures: a named person is compared as "<person>".
 Run: uv run python tests/q2_2/check_owners.py
 """
@@ -26,14 +26,18 @@ NAME = """CASE WHEN c.type = 'CorporateOwner' THEN nullif(btrim(c.corporationnam
 SOURCE_OWNERS = f"SELECT DISTINCT c.type, {NAME} FROM hpd_contacts c WHERE c.registrationid = %(rid)s AND c.type IN ('CorporateOwner','IndividualOwner','JointOwner')"
 SOURCE_ON_BIN = f"SELECT count(*) FROM hpd_registrations WHERE registrationid = %(rid)s AND bin = %(bin)s AND {VALID}"
 SOURCE_TOTALS = f"""
-SELECT count(*), count(name) FROM (SELECT DISTINCT c.registrationid, c.type, {NAME} AS name FROM hpd_contacts c
+SELECT count(*), count(name) FROM (SELECT DISTINCT c.registrationid, c.type, nullif(btrim(c.corporationname), '') AS corp,
+   nullif(btrim(concat_ws(' ', nullif(btrim(c.firstname), ''), nullif(btrim(c.middleinitial), ''), nullif(btrim(c.lastname), ''))), '') AS person,
+   nullif(btrim(c.title), '') AS title, {NAME} AS name FROM hpd_contacts c
  WHERE c.type IN ('CorporateOwner','IndividualOwner','JointOwner')
    AND c.registrationid IN (SELECT registrationid FROM hpd_registrations WHERE bbl IS NOT NULL AND {VALID})) x
 """
 GRAPH_TOTALS = """
-CALL () { MATCH (c:OwnerContact) RETURN count(c) AS contacts, count(c.name) AS named }
-CALL () { MATCH (c:OwnerContact) WHERE NOT (:Registration)-[:HAS_OWNER_CONTACT]->(c) RETURN count(c) AS orphans }
-CALL () { MATCH (c:OwnerContact) WHERE NOT c.contactType IN ['CorporateOwner','IndividualOwner','JointOwner'] RETURN count(c) AS badtype }
+CALL () { MATCH (c:Contact) WHERE c.contactType IN ['CorporateOwner','IndividualOwner','JointOwner']
+          RETURN count(c) AS contacts,
+                 count(CASE WHEN (c.contactType = 'CorporateOwner' AND c.corporationName IS NOT NULL) OR (c.contactType <> 'CorporateOwner' AND c.personName IS NOT NULL) THEN 1 END) AS named }
+CALL () { MATCH (c:Contact) WHERE NOT (:Registration)-[:HAS_CONTACT]->(c) RETURN count(c) AS orphans }
+CALL () { MATCH (c:Contact) WHERE NOT c.contactType IN ['CorporateOwner','IndividualOwner','JointOwner','Agent','HeadOfficer','Officer','Shareholder','SiteManager','Lessee'] RETURN count(c) AS badtype }
 RETURN contacts, named, orphans, badtype
 """
 results = []
@@ -71,15 +75,15 @@ def main() -> int:
                     derived = sorted(mask(t, n) for t, n in cur.fetchall())
                     check(f"{rid} fixture matches source", on_bin and derived == sorted(exp), f"on building {on_bin}, source gives {derived}")
                     rows = {r["registrationId"]: r["owners"] for r in session.run(lookup, bin=b)}
-                    got = sorted(mask(o["contactType"], o["name"]) for o in rows.get(rid, [None])) if rid in rows else None
+                    got = sorted(mask(o["contactType"], o["corporationName"] if o["contactType"] == "CorporateOwner" else o["personName"]) for o in rows.get(rid, [None])) if rid in rows else None
                     check(f"{rid} graph matches fixture", got == sorted(exp), f"graph has {got}")
                 cur.execute(SOURCE_TOTALS)
                 src = cur.fetchone()
             check("source totals match fixture", src == (fx["totals"]["contacts"], fx["totals"]["named"]), f"source gives {src}")
             g = session.run(GRAPH_TOTALS).single()
             check("graph contact totals match source", (g["contacts"], g["named"]) == src, f"graph {(g['contacts'], g['named'])} vs source {src}")
-            check("every OwnerContact is linked to a Registration", g["orphans"] == 0, f"{g['orphans']} unlinked")
-            check("only owner contact types are loaded", g["badtype"] == 0, f"{g['badtype']} other types")
+            check("every Contact is linked to a Registration", g["orphans"] == 0, f"{g['orphans']} unlinked")
+            check("every Contact has one of the nine HPD types", g["badtype"] == 0, f"{g['badtype']} other types")
     failed = results.count(False)
     print(f"{len(results) - failed}/{len(results)} checks passed")
     return 0 if failed == 0 else 1

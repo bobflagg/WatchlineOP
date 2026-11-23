@@ -1,0 +1,13 @@
+# Fixture for eval-q15-q27-mice-portfolio-op-16799. Read from the graph on 2026-11-21, then re-derived by tests/agent_eval/check_mice_portfolio.py:
+# members from the pinned BOR release (v0.3.0, run 2026-05-29-869bd299), complaints and violations from the frozen source. A stale value fails the check.
+# Mice complaints: Problem.minorCategory PESTS and problemCode MICE since 2021-01-01 (data through 2026-07-07). Mice violations: orders 569 and 869
+# (data through 2026-07-02). Counts are per building. Group ids are valid only within this release and run.
+layer: portfolio
+groupId: OP-16799
+composition: identity
+buildings:
+  - {bbl: "2030680081", bin: "2011983", units: 74, mice_complaints: 66, mice_open: 0, first: "2021-05-17", last: "2026-05-18", mice_violations: 12, mice_violations_open: 3}
+  - {bbl: "2024610070", bin: "2002817", units: 69, mice_complaints: 36, mice_open: 0, first: "2021-07-23", last: "2026-06-10", mice_violations: 22, mice_violations_open: 10}
+  - {bbl: "2031910048", bin: "2014146", units: 55, mice_complaints: 21, mice_open: 2, first: "2021-05-03", last: "2026-06-12", mice_violations: 4,  mice_violations_open: 3}
+  - {bbl: "2024660032", bin: "2002862", units: 60, mice_complaints: 12, mice_open: 0, first: "2021-01-26", last: "2026-04-05", mice_violations: 3,  mice_violations_open: 1}
+totals: {buildings: 4, buildings_with_mice_complaints: 4, mice_complaints: 135, mice_violations: 41, mice_violations_open: 17}

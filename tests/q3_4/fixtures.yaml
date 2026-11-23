@@ -1,4 +1,4 @@
-# Q3.4 expected name agreement. Provisional until the frozen dump is identified (data/README.md).
+# Q3.4 expected name agreement. verified against the frozen baseline recorded in data/README.md (2026-11-16).
 # Checked 2026-11-12. check_names.py computes each outcome in SQL (independent) and with src/watchline/compare.py, and
 # compares both with the fixture. Lots are also read from the graph with lookup.cypher and compared.
 # Rules: N1 = uppercase, trim, collapse whitespace; N2 = N1, remove periods, commas to spaces. Spaces inside a name stay.

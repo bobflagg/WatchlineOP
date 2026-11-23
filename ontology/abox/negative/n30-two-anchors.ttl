@@ -1,0 +1,8 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: a group has one anchor (functional), and two different landlord records are different individuals here.
+id:bad-1 a onto:OwnerPortfolio ; onto:portfolioId "OP-98617" ; onto:anchoredBy id:bad-2, id:bad-3 .
+id:bad-2 a onto:Landlord .
+id:bad-3 a onto:Landlord .
+id:bad-2 owl:differentFrom id:bad-3 .

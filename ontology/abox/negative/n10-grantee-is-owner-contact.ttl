@@ -1,4 +1,4 @@
 @prefix onto: <https://watchline.example/onto/> .
 @prefix id:   <https://watchline.example/id/> .
-# Must be inconsistent: Grantee and OwnerContact are disjoint. A deed party is not an HPD contact, even with the same name.
-id:bad-party-1 a onto:Grantee, onto:OwnerContact .
+# Must be inconsistent: Grantee and Contact are disjoint. A deed party is not an HPD contact, even with the same name.
+id:bad-party-1 a onto:Grantee, onto:Contact .

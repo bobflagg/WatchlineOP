@@ -17,7 +17,7 @@ define todo
 	@echo "not implemented: $(1)" >&2; exit 1
 endef
 
-.PHONY: shapes oops help setup dirs versions check-env \
+.PHONY: test-serial shapes oops help setup dirs versions check-env \
         vocab profiles taxonomy thesaurus ontology \
         load test graph rebuild rebuild-all clean
 
@@ -52,8 +52,8 @@ vocab: ## Stage 1: run validate_skos on the vocabulary (uses a local clone of in
 profiles: check-env ## Stage 2: check profiles/ against the vocabulary, data/sources.yaml and the live graph
 	uv run python scripts/check_profiles.py
 
-taxonomy: ## Stage 3 (not yet redone)
-	$(call todo,stage 3 taxonomy)
+taxonomy: ## Stage 3: check the SKOS hierarchy (offline)
+	uv run python scripts/check_taxonomy.py
 
 thesaurus: ## Stage 4: check related links, notes, labels and external mappings
 	uv run python scripts/check_thesaurus.py
@@ -67,14 +67,29 @@ oops: ## Stage 5: send the TBox (only) to the OOPS! web service and list its pit
 ## --- Stage 6: knowledge graph (Q1 so far: Lot, Building) -------------------
 # Each loader reconciles staged and graph counts and exits non-zero on a mismatch.
 
-load: check-env ## Load Lot, Building and HAS_BUILDING, then Registration, HAS_REGISTRATION and OwnerContact (order matters)
+load: check-env ## Load Lot, Building and HAS_BUILDING, then Registration, HAS_REGISTRATION and Contact (order matters)
 	uv run python scripts/load_lots.py
 	uv run python scripts/load_buildings.py
 	uv run python scripts/load_registrations.py
 	uv run python scripts/load_deeds.py
+	uv run python scripts/load_documents.py
+	uv run python scripts/load_mortgages.py
+	uv run python scripts/load_financing.py
+	uv run python scripts/load_violations.py
+	uv run python scripts/load_problems.py
+	uv run python scripts/load_litigations.py
 	uv run python scripts/load_dos.py
+	uv run python scripts/load_networks.py
+	uv run python scripts/load_portfolios.py
+	uv run python scripts/load_service_addresses.py
+	uv run python scripts/load_landlord_labels.py
+	uv run python scripts/load_landlord_contacts.py
+	uv run python scripts/load_graph_edges.py
 
-test: check-env ## Run every sub-question check (tests/q*_*/check_*.py); all must pass
+test: check-env ## Run every sub-question check in parallel (JOBS=4); K=q17 selects, FAILED=1 reruns the last failures; all must pass
+	uv run python scripts/run_tests.py -j $${JOBS:-4} $(if $(K),-k $(K)) $(if $(FAILED),--failed)
+
+test-serial: check-env ## Run every sub-question check one after the other (the old behaviour)
 	@for f in tests/q*_*/check_*.py; do echo "== $$f"; uv run python $$f || exit 1; done
 
 shapes: check-env ## Stage 6: compile the SHACL shapes, run them on the graph, run the seeded bad-data cases

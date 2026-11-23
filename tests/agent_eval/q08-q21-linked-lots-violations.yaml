@@ -1,0 +1,18 @@
+# Agent-level evaluation case (draft). Not run by make test.
+id: eval-q08-q21-anchor-c
+question: [Q8, Q9, Q21]
+input: "What other lots are tied to the landlord of anchor C (BIN 3013901), and how many open violations do they have?"
+tools: [neo4j read, Lot -> Landlord -> Operational Network / Owner Portfolio, Building -> HAS_VIOLATION]
+must_include:
+  - anchor C is in Owner Portfolio OP-98617 and Operational Network ON-1710 (release v0.3.0), reported separately
+  - member lot count per layer
+  - open violation count per layer, by class, counting distinct violations
+  - release version and run id (2026-05-29-869bd299)
+must_say:
+  - both groupings are leads to verify, not findings of common ownership
+  - management links (MANAGED_BY) do not establish ownership
+must_not:
+  - merge the two layers into one list
+  - treat a display name or person anchor as an ownership claim
+  - repeat any individual's name (write "a person (name not repeated)")
+expected_source: tests/q21_1 to q21_3 SQL on the frozen baseline (SHA-256 9124f6c0d0f0d2e453f1971247ed29c217d3d4b5f55338d95344e04a617b6278); counts are derived, not typed in

@@ -1,0 +1,293 @@
+# Question schema: Q8 "Which buildings belong to this building's Operational Network in the selected run, which links connect them,
+# and was the network a whole component or a Louvain community?" (sub-questions Q8.1 to Q8.4).
+# Extends the Q1 graph; declares only what Q8 adds. The run, release and snapshot are fixed per deployment and recorded once in
+# data/sources.yaml (bor_layers), not on the nodes. Ids from the release are run-local. Member lots, buildings and residential
+# units (Q8.2) are computed from IN_NETWORK, Lot and HAS_BUILDING and not stored.
+question: Q8
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [bor_layers, hpd_registrations]
+
+graph:
+  constraints:
+    - {name: operational_network_id_unique, label: OperationalNetwork, property: groupId, kind: unique}
+    - {name: landlord_id_unique, label: Landlord, property: nodeId, kind: unique}
+
+  nodes:
+    Lot:
+      concept: tax-lot
+      key: bbl
+      scope: "Declared by Q1; Q8 adds the two network absence properties."
+      proved_by: tests/q8_4/check_absence.py
+      properties:
+        networkAbsence:
+          concept: network-absence
+          type: string
+          source: bor_layers.bbl_status.top_level_reason
+          allowed_scheme: network-absence-reasons
+          allowed_level: top
+          allowed: [no_qualifying_linkage, excluded_by_policy, below_eligibility_rule, outside_source_coverage, outside_method_input]
+          rule: "Set from the Operational Network rows of bbl_status with status not_in_group, for lots in the graph. The stored value is BOR's own code."
+          null_policy: "absent when the lot is in a network (71256), or has no BOR status row (1009 lots missing from PLUTO); 142534 lots have a value"
+          proved_by: tests/q8_4/check_absence.py
+        networkAbsenceDetail:
+          concept: network-absence-detail
+          type: string
+          source: bor_layers.bbl_status.reason_code
+          allowed_scheme: network-absence-reasons
+          allowed_level: detail
+          allowed_subset: true
+          allowed: [no_linkage, no_registration, no_owner_contact, aggregator_address_masked, address_evidence_masked, first_name_veto, common_name_veto, shared_company_degree_unknown, shared_company_name_not_rare, shared_company_first_name_conflict, shared_company_degree_cap]
+          rule: "As networkAbsence. Each detail code belongs to exactly one top-level reason; the 11 here are the ones the layer uses."
+          null_policy: "absent exactly when networkAbsence is absent"
+          proved_by: tests/q8_4/check_absence.py
+
+    OperationalNetwork:
+      concept: operational-network
+      key: groupId
+      scope: "One OperationalNetwork per Operational Network row of groups (9673 rows). Reasons for lots outside the graph are not loaded."
+      proved_by: tests/q8_1/check_network.py
+      properties:
+        groupId:
+          concept: network-group-id
+          type: string
+          source: bor_layers.groups.group_id
+          rule: "ON-<n>, n the smallest landlord id in the network. Run-local."
+          null_policy: never absent
+          proved_by: tests/q8_1/check_network.py
+        split:
+          concept: network-split
+          type: string
+          source: bor_layers.groups.split
+          allowed_scheme: network-splits
+          allowed: [wcc, louvain]
+          rule: "BOR's own code: wcc is a whole component (9627 networks), louvain a community cut from a component of more than 300 lots (46)."
+          null_policy: never absent
+          proved_by: tests/q8_1/check_network.py
+
+    Landlord:
+      concept: landlord
+      key: nodeId
+      scope: "One Landlord per landlord record that has an Operational Network (30924) or an Owner Portfolio (Q9 adds the 111 in portfolios only): 31035. Each has the name and the business addresses WoW filed for it."
+      proved_by: tests/q8_3/check_links.py
+      properties:
+        nodeId:
+          concept: landlord
+          type: integer
+          source: bor_layers.network_membership.node_id
+          rule: "Identity only: the run-local landlord record id."
+          identity_only: true
+          null_policy: never absent
+          proved_by: tests/q8_3/check_links.py
+        name:
+          concept: landlord-name
+          type: string
+          source: bor_layers.node_names.name
+          rule: "The release's landlord name, exactly as spelled (case and leading punctuation kept). A name on a landlord record, not a finding of who owns."
+          null_policy: never absent
+          proved_by: tests/q8_3/check_links.py
+        businessAddresses:
+          concept: business-address
+          type: list of string
+          source: bor_layers.node_observations.selected_observation_id, bor_layers.observation_contacts.business_house, bor_layers.observation_contacts.business_street, bor_layers.observation_contacts.business_apartment, bor_layers.observation_contacts.business_city, bor_layers.observation_contacts.business_state, bor_layers.observation_contacts.business_zip
+          rule: "One string per distinct business address on the HPD contacts that WoW selected for the landlord's lots, as filed: '<house> <street> <apartment>, <city>, <state> <zip>' with blank parts left out, sorted. Spelling variants stay separate values."
+          null_policy: "absent for the landlords with no selected observation or no address on it (95 have no selected observation)"
+          proved_by: tests/q8_3/check_links.py
+
+  relationships:
+    IN_NETWORK:
+      concept: in-network
+      from: Lot
+      to: OperationalNetwork
+      source: bor_layers.group_bbls.bbl, bor_layers.group_bbls.group_id
+      rule: "One per Operational Network row of group_bbls (71256). Every member is a Lot that already exists; a missing Lot is an error. All members are rental lots, so no flag is stored."
+      proved_by: tests/q8_1/check_network.py
+    ANCHORED_BY:
+      concept: anchor-landlord
+      from: "OperationalNetwork|OwnerPortfolio"
+      to: Landlord
+      source: bor_layers.groups.layer, bor_layers.groups.group_id, bor_layers.groups.anchor_node_id
+      rule: "One per row of groups: 9673 networks and 6523 portfolios (16196). The anchor is the member landlord record with the most lots, ties to the smallest node id; a display rule, not a finding about ownership. Declared here for both layers; Q9 reads the portfolio side."
+      proved_by: tests/q8_1/check_network.py
+    BASED_ON_CONTACT:
+      concept: based-on-contact
+      from: Landlord
+      to: Contact
+      source: bor_layers.node_observations.selected_observation_id, bor_layers.observation_contacts.contact_type, bor_layers.observation_contacts.first_name, bor_layers.observation_contacts.middle_initial, bor_layers.observation_contacts.last_name, bor_layers.observation_contacts.corporation_name, bor_layers.node_observations.registration_id
+      rule: "One per distinct (landlord, Contact) where the Contact is on the registration of one of the landlord's selected observations and has that observation's type, corporation name and person name (71237 distinct selected contacts on 30940 landlords; the release has no title, so contacts that differ only in title are all linked). A registration or contact the graph does not hold is not linked and not created. The record WoW used for the landlord, not a finding that the landlord is the owner."
+      proved_by: tests/q8_3/check_contacts.py
+    COVERS:
+      concept: covers
+      from: Landlord
+      to: Lot
+      source: bor_layers.node_observations.node_id, bor_layers.node_observations.bbl
+      rule: "One per (landlord, lot) of a landlord that has a network (71256) or a portfolio (Q9 adds 174): 71430. Each lot is covered by one landlord."
+      proved_by: tests/q8_3/check_links.py
+      properties:
+        registrationId:
+          concept: registration-id
+          type: integer
+          source: bor_layers.node_observations.registration_id
+          rule: "The HPD registration BOR used for the lot. Asserted against hpd_registrations by the check."
+          null_policy: never absent
+          proved_by: tests/q8_3/check_links.py
+    CONNECTED_BY_NAME:
+      concept: connected-by-name
+      from: Landlord
+      to: Landlord
+      source: bor_layers.graph_edges.node_a, bor_layers.graph_edges.node_b
+      rule: "One per kept network.name row of graph_edges (4582), from node_a to node_b (node_a < node_b): WoW's fuzzy name match. Operational Network only."
+      proved_by: tests/q8_3/check_links.py
+      properties:
+        weight:
+          concept: link-weight
+          type: float
+          source: bor_layers.graph_edges.weight
+          rule: "1.5 times WoW's name-match weight, summed over the mutual matches the source lists twice."
+          null_policy: never absent
+          proved_by: tests/q8_3/check_links.py
+        networkEdgeId:
+          concept: edge-id
+          type: string
+          source: bor_layers.graph_edges.edge_id
+          rule: "Identity only: GE<7 digits>, run-local."
+          identity_only: true
+          null_policy: never absent
+          proved_by: tests/q8_3/check_links.py
+        networkGroupId:
+          concept: network-group-id
+          type: string
+          source: bor_layers.graph_edges.group_id
+          rule: "The network both ends are in; absent when the edge crosses a boundary (checked for every edge)."
+          null_policy: "absent for edges across a network boundary or outside a network"
+          proved_by: tests/q8_3/check_links.py
+    CONNECTED_BY_ADDRESS:
+      concept: connected-by-address
+      from: Landlord
+      to: Landlord
+      source: bor_layers.graph_edges.node_a, bor_layers.graph_edges.node_b
+      rule: "One per kept network.address row of graph_edges (49027): WoW's business-address match. Edges at a masked address (more than 25 landlords) are not loaded; see NetworkMaskedAddress.maskedEdges. Operational Network only."
+      proved_by: tests/q8_3/check_links.py
+      properties:
+        weight:
+          concept: link-weight
+          type: float
+          source: bor_layers.graph_edges.weight
+          rule: "1.0 times WoW's address-match weight."
+          null_policy: never absent
+          proved_by: tests/q8_3/check_links.py
+        networkEdgeId:
+          concept: edge-id
+          type: string
+          source: bor_layers.graph_edges.edge_id
+          identity_only: true
+          null_policy: never absent
+          proved_by: tests/q8_3/check_links.py
+        networkGroupId:
+          concept: network-group-id
+          type: string
+          source: bor_layers.graph_edges.group_id
+          null_policy: "absent for edges across a network boundary or outside a network"
+          proved_by: tests/q8_3/check_links.py
+    CONNECTED_BY_IDENTITY:
+      concept: connected-by-identity
+      from: Landlord
+      to: Landlord
+      source: bor_layers.graph_edges.node_a, bor_layers.graph_edges.node_b
+      rule: >-
+        One per (pair, evidence) of the Owner Portfolio identity rows of graph_edges (14315): the two landlord records were judged one party
+        by a resolved identity cluster, a curated owner or a registered-LLC entity. The Operational Network uses the same edges (14206 rows;
+        a registered-LLC pair two entities share counts once and cites the first set), so one relationship carries both layers' ids.
+      proved_by: tests/q8_3/check_links.py
+      properties:
+        stage:
+          concept: ownership-signal
+          type: string
+          source: bor_layers.graph_edges.stage
+          allowed_scheme: ownership-signals
+          allowed: [identity.splink_base, identity.splink_feedback, identity.curated, identity.registered_llc]
+          rule: "BOR's stage code from the Owner Portfolio row, as BOR spells it (with its dot)."
+          null_policy: never absent
+          proved_by: tests/q9_3/check_signals.py
+        evidenceType:
+          concept: evidence-type
+          type: string
+          source: bor_layers.graph_edges.evidence_type
+          allowed_scheme: link-evidence-types
+          allowed: [identity_cluster, link_set]
+          null_policy: never absent
+          proved_by: tests/q9_3/check_signals.py
+        evidenceId:
+          concept: evidence-id
+          type: string
+          source: bor_layers.graph_edges.evidence_id
+          rule: "A cluster, curated or registered-LLC set id of the release; run-local. With the pair it is the identity of the relationship."
+          identity_only: true
+          null_policy: never absent
+          proved_by: tests/q9_3/check_signals.py
+        portfolioEdgeId:
+          concept: edge-id
+          type: string
+          source: bor_layers.graph_edges.edge_id
+          rule: "The Owner Portfolio row's id, GE<7 digits>, run-local."
+          identity_only: true
+          null_policy: never absent
+          proved_by: tests/q9_3/check_signals.py
+        portfolioGroupId:
+          concept: portfolio-group-id
+          type: string
+          source: bor_layers.graph_edges.group_id
+          rule: "The portfolio both ends are in, from the Owner Portfolio row."
+          null_policy: "absent when BOR dropped the group as co-op or condo dominated (772 portfolio edges)"
+          proved_by: tests/q9_3/check_signals.py
+        networkEdgeId:
+          concept: edge-id
+          type: string
+          source: bor_layers.graph_edges.edge_id
+          rule: "The Operational Network row's id of the same pair and evidence."
+          identity_only: true
+          null_policy: "absent for the 109 pairs a registered-LLC set shares with an earlier set, and for pairs not in a network"
+          proved_by: tests/q8_3/check_links.py
+        networkGroupId:
+          concept: network-group-id
+          type: string
+          source: bor_layers.graph_edges.group_id
+          null_policy: "absent when there is no network row or the edge crosses a boundary"
+          proved_by: tests/q8_3/check_links.py
+        weight:
+          concept: link-weight
+          type: float
+          source: bor_layers.graph_edges.weight
+          rule: "100 from the Operational Network row; absent when the pair has no network row."
+          null_policy: "absent when there is no network row"
+          proved_by: tests/q8_3/check_links.py
+
+answer:
+  Q8.1:
+    lookup: tests/q8_1/lookup.cypher
+    lookups: [tests/q8_1/lookup_anchor.cypher]
+    fields:
+      networkId: {concept: network-group-id, source: OperationalNetwork.groupId, type: string, null_policy: absent when the lot is in no network; the answer names the run once}
+      anchor:    {concept: anchor-landlord, source: "OperationalNetwork-[:ANCHORED_BY]->Landlord", type: "{nodeId, name}", null_policy: "absent when the lot is in no network; the name is the landlord record's, not the owner's"}
+      split:     {concept: network-split, source: OperationalNetwork.split, type: string, allowed_scheme: network-splits, allowed: [wcc, louvain], null_policy: absent when the lot is in no network}
+    note: "A network is a lead to verify, not a finding of common ownership. Ids hold only inside the named run."
+  Q8.2:
+    lookup: tests/q8_2/lookup.cypher
+    fields:
+      lots:             {concept: tax-lot, source: "OperationalNetwork<-[:IN_NETWORK]-Lot", type: "list of string (BBL)", counting_unit: "lots in the graph"}
+      buildings:        {concept: building, source: "Lot-[:HAS_BUILDING]->Building", type: "list of string (BIN)", counting_unit: "BINs listed in HPD registrations", null_policy: "a member lot with no listed building adds none; the answer counts such lots"}
+      residentialUnits: {concept: residential-units, source: derived, type: integer, counting_unit: "residential units as PLUTO counts them, summed over the member lots", rule: "sum of Lot.unitsRes; lots with none recorded add nothing and are counted apart"}
+  Q8.3:
+    lookup: tests/q8_3/lookup.cypher
+    lookups: [tests/q8_3/lookup_landlords.cypher]
+    fields:
+      landlords: {concept: landlord, source: "Landlord-[:COVERS]->Lot", type: "list of {nodeId, name, businessAddresses, selectedContacts, lots: list of {bbl, registrationId}}", null_policy: "businessAddresses is empty for a landlord with no address on its selected observation"}
+      links:     {concept: connected-by-identity, source: "CONNECTED_BY_NAME|CONNECTED_BY_ADDRESS|CONNECTED_BY_IDENTITY with networkGroupId", type: "list of {type, nodeA, nodeB, weight, stage, evidenceId}", null_policy: "an empty list means the network has one landlord; edges across a boundary have no networkGroupId and are listed apart"}
+      selectedContacts: {concept: contact, source: "Landlord-[:BASED_ON_CONTACT]->Contact", type: "list of {registrationId, contactType}", counting_unit: "distinct HPD contacts", null_policy: "empty for a landlord with no selected observation, or whose registration or contact the graph does not hold; the names are not repeated in the answer's list"}
+    note: "A link is evidence the method counted, not proof of common ownership. Weights compare only within one run."
+  Q8.4:
+    lookup: tests/q8_4/lookup.cypher
+    fields:
+      networkAbsence:       {concept: network-absence, source: Lot.networkAbsence, type: string, allowed_scheme: network-absence-reasons, allowed_level: top, allowed: [no_qualifying_linkage, excluded_by_policy, below_eligibility_rule, outside_source_coverage, outside_method_input], null_policy: "absent when the lot is in a network or has no BOR status row"}
+      networkAbsenceDetail: {concept: network-absence-detail, source: Lot.networkAbsenceDetail, type: string, allowed_scheme: network-absence-reasons, allowed_level: detail, allowed_subset: true, allowed: [no_linkage, no_registration, no_owner_contact, aggregator_address_masked, address_evidence_masked, first_name_veto, common_name_veto, shared_company_degree_unknown, shared_company_name_not_rare, shared_company_first_name_conflict, shared_company_degree_cap], null_policy: "absent exactly when networkAbsence is absent"}
+    note: "Absence is not evidence of different owners. A lot not in the graph (a PLUTO lot with fewer than 3 residential units and no registration) has no answer here."

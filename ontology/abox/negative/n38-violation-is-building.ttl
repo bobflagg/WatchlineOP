@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: Violation and Building are disjoint. A citation is not the structure it is cited against.
+id:bad-violation-8 a onto:Violation, onto:Building ; onto:violationId 2 .

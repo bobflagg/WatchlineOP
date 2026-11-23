@@ -1,0 +1,24 @@
+# Q15.3 fixtures. hpd_violations (data through 2026-07-02), hpd_registrations (frozen baseline, data/README.md), data/hpd_pest_orders.yaml.
+# check_pests.py re-derives each from the source, so a stale fixture fails. Counting unit: violations.
+buildings:
+  - bin: "3013901"
+    label: "anchor C (438 52 Street): one open roach violation (order 568), no mice; a building with a pest violation of another kind"
+    open: {"568": 1}
+    closed: {}
+    oldest_open: "2023-03-25"
+  - bin: "3014788"
+    label: "anchor A (5413 7 Avenue): no pest violation; an empty result is not an error"
+    open: {}
+    closed: {}
+    oldest_open: null
+  - bin: "3029603"
+    label: "mice only (order 569 or 869): 5 violations, 4 open; re-derived from the source"
+    derived: true
+  - bin: "3324358"
+    label: "vermin only (order 566 or 866): 2 violations; the code does not say mice, so the answer must not call them mice"
+    derived: true
+totals:
+  # loaded rows per pest order code on a registered BIN (queried 2026-11-21)
+  loaded: {"566": 6366, "567": 3697, "568": 65004, "569": 56562, "866": 640, "867": 184, "868": 2562, "869": 2631}
+  loaded_open: {"566": 1282, "567": 1208, "568": 19919, "569": 16140, "866": 268, "867": 114, "868": 1458, "869": 1488}
+  every_violation_has_order_code: 1901592

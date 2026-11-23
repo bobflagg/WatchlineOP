@@ -1,0 +1,34 @@
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q19 example data. Values come from the verified fixtures in tests/q19_*/fixtures.yaml (BOR release v0.3.0, run 2026-05-29-869bd299).
+# Q19 adds no ontology element: it reads the Q8 and Q9 elements. The pair state, path, connectivity before subdivision and stage precision
+# are computed at answer time and are not in the graph. Entities only; no person is named.
+
+# Same portfolio and network, joined by one identity link (anchor C, 438 52 Street, and 1704 East 15 Street).
+id:lot-3008070024-q19 a onto:TaxLot ; onto:bbl "3008070024" ; onto:inNetwork id:on-98617-q19 ; onto:inPortfolio id:op-98617-q19 .
+id:lot-3067970008-q19 a onto:TaxLot ; onto:bbl "3067970008" ; onto:inNetwork id:on-98617-q19 ; onto:inPortfolio id:op-98617-q19 .
+id:on-98617-q19 a onto:OperationalNetwork ; onto:groupId "ON-98617" ; onto:networkSplit "wcc" .
+id:op-98617-q19 a onto:OwnerPortfolio ; onto:portfolioId "OP-98617" ; onto:portfolioComposition "identity" .
+id:landlord-98618-q19 a onto:Landlord ; onto:covers id:lot-3008070024-q19 ; onto:connectedByIdentity id:landlord-98619-q19 .
+id:landlord-98619-q19 a onto:Landlord ; onto:covers id:lot-3067970008-q19 .
+
+# Different groups in both layers (anchors C and D).
+id:lot-3008210012-q19 a onto:TaxLot ; onto:bbl "3008210012" ; onto:inNetwork id:on-18742-q19 ; onto:inPortfolio id:op-53559-q19 .
+id:on-18742-q19 a onto:OperationalNetwork ; onto:groupId "ON-18742" ; onto:networkSplit "wcc" .
+id:op-53559-q19 a onto:OwnerPortfolio ; onto:portfolioId "OP-53559" ; onto:portfolioComposition "identity" .
+
+# No path (anchors A and B): both in no group in either layer, with BOR's reason.
+id:lot-3008260002-q19 a onto:TaxLot ; onto:bbl "3008260002" ;
+    onto:networkAbsence "no_qualifying_linkage" ; onto:networkAbsenceDetail "no_linkage" ;
+    onto:portfolioAbsence "no_qualifying_linkage" ; onto:portfolioAbsenceDetail "no_linkage" .
+id:lot-3008260005-q19 a onto:TaxLot ; onto:bbl "3008260005" ;
+    onto:networkAbsence "no_qualifying_linkage" ; onto:networkAbsenceDetail "no_linkage" ;
+    onto:portfolioAbsence "no_qualifying_linkage" ; onto:portfolioAbsenceDetail "no_linkage" .
+
+# Two lots in different Louvain communities of one component: connected before subdivision, in different networks.
+id:lot-4012430039-q19 a onto:TaxLot ; onto:bbl "4012430039" ; onto:inNetwork id:on-536-q19 .
+id:lot-3055250004-q19 a onto:TaxLot ; onto:bbl "3055250004" ; onto:inNetwork id:on-5363-q19 .
+id:on-536-q19 a onto:OperationalNetwork ; onto:groupId "ON-536" ; onto:networkSplit "louvain" .
+id:on-5363-q19 a onto:OperationalNetwork ; onto:groupId "ON-5363" ; onto:networkSplit "louvain" .

@@ -1,0 +1,40 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix s2c:  <https://w3id.org/shacl2cypher#> .
+@prefix shp:  <https://watchline.example/shapes/> .
+
+# Q9 shapes: the rules OWL cannot express (ontology/ontology-notes.md, Q9 "Rules for Stage 6 shapes").
+# Rules about relationship properties and comparisons across nodes are named Cypher checks (queries/checks/q09-*.cypher).
+
+# --- Graph names ---
+onto:OwnerPortfolio s2c:label "OwnerPortfolio" .
+onto:inPortfolio s2c:relationship "IN_PORTFOLIO" ; s2c:direction "out" .
+onto:portfolioId s2c:property "groupId" .
+onto:portfolioComposition s2c:property "composition" .
+onto:portfolioAbsence s2c:property "portfolioAbsence" .
+onto:portfolioAbsenceDetail s2c:property "portfolioAbsenceDetail" .
+
+# --- Rules ---
+shp:OwnerPortfolioShape a sh:NodeShape ;
+    s2c:key "groupId" ;
+    sh:targetClass onto:OwnerPortfolio ;
+    # R1 id present and well formed; composition present and one of BOR's three codes
+    sh:property [ sh:path onto:portfolioId ; sh:minCount 1 ; sh:datatype xsd:string ; sh:pattern "^OP-[0-9]+$" ] ;
+    sh:property [ sh:path onto:portfolioComposition ; sh:minCount 1 ; sh:datatype xsd:string ; sh:in ( "identity" "deed_only" "deed_bridged" ) ] ;
+    # R2 a portfolio has at least one member rental lot (53 have exactly one)
+    sh:property [ sh:path [ sh:inversePath onto:inPortfolio ] ; sh:minCount 1 ] .
+
+shp:LotPortfolioShape a sh:NodeShape ;
+    s2c:key "bbl" ;
+    sh:targetClass onto:TaxLot ;
+    # R2 a lot is in at most one portfolio, and that is a portfolio
+    sh:property [ sh:path onto:inPortfolio ; sh:maxCount 1 ; sh:class onto:OwnerPortfolio ] ;
+    # R3 absence codes are BOR's top-level and detail codes
+    sh:property [ sh:path onto:portfolioAbsence ; sh:datatype xsd:string ;
+                  sh:in ( "no_qualifying_linkage" "excluded_by_policy" "below_eligibility_rule" "outside_source_coverage" "outside_method_input" ) ] ;
+    sh:property [ sh:path onto:portfolioAbsenceDetail ; sh:datatype xsd:string ;
+                  sh:in ( "no_linkage" "no_registration" "no_owner_contact" "unmatched_node" "address_evidence_masked" "coop_condo_excluded"
+                          "coop_condo_dominated" "institutional_screen" "first_name_veto" "common_name_veto" "shared_company_degree_unknown"
+                          "shared_company_name_not_rare" "shared_company_first_name_conflict" "shared_company_degree_cap" "deed_not_latest"
+                          "deed_parcels_out_of_range" "successor_not_shell" "successor_transfer_not_nominal" ) ] .

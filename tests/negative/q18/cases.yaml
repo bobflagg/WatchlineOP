@@ -1,0 +1,7 @@
+# Same format as tests/negative/q17/cases.yaml: bad data inside a transaction that is always rolled back.
+# Cases reuse the existing property key `status` so no new key token is created and the check keeps its catalog fast path.
+# The Q18-only keys (classification, signals, ...) are guarded by the check but not seeded here.
+cases:
+  - {name: status stored on a deed,                 create: "MATCH (d:Deed) WITH d LIMIT 1 SET d.status = 'zero-transfer'", check: queries/checks/q18-computed-not-stored.cypher}
+  - {name: status stored on a grantor,              create: "MATCH (g:Grantor) WITH g LIMIT 1 SET g.status = 'restructuring'", check: queries/checks/q18-computed-not-stored.cypher}
+  - {name: status stored on a grantee,              create: "MATCH (g:Grantee) WITH g LIMIT 1 SET g.status = 'restructuring'", check: queries/checks/q18-computed-not-stored.cypher}

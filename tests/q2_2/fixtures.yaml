@@ -1,4 +1,4 @@
-# Q2.2 expected owner contacts per registration. Provisional until the frozen dump is identified (data/README.md).
+# Q2.2 expected owner contacts per registration. verified against the frozen baseline recorded in data/README.md (2026-11-16).
 # Checked read-only 2026-11-12. check_owners.py re-derives each from the source, so a stale fixture fails.
 # Person names are not repeated: name "<person>" means a name is recorded, null means the name is blank.
 # Owners are compared as a set of [contactType, name].
@@ -14,4 +14,4 @@ registrations:
   - {bin: "3082967", registrationId: 318901, note: "individual owner with a blank name", owners: [[IndividualOwner, null]]}
   - {bin: "3014490", registrationId: 306882, note: "individual owner, registration ended 2021-09-01", owners: [[IndividualOwner, "<person>"]]}
   - {bin: "3014601", registrationId: 345930, note: "registration with no owner contact", owners: []}
-totals: {contacts: 203802, named: 203412}
+totals: {contacts: 203804, named: 203414}

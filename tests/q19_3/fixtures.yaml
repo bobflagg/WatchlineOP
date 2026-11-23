@@ -1,0 +1,11 @@
+# Q19.3 connectivity before subdivision versus membership (BOR release v0.3.0, run 2026-05-29-869bd299).
+# check_subdivision.py re-derives each from network_membership.csv (component) and graph_edges.csv (path over kept network edges).
+pairs:
+  - {id: whole-component, a: "3008070024", b: "3067970008", connected: true, sameNetwork: true, split: wcc, steps: 1, crossesCut: false}
+  - {id: louvain-split, a: "4012430039", b: "3055250004", connected: true, sameNetwork: false, split: louvain, steps: 4, crossesCut: true,
+     note: "a path through other networks joins lots in different communities; the path is connectivity, not membership"}
+  - {id: different-components, a: "3008070024", b: "3008210012", connected: false, sameNetwork: false}
+  - {id: ungrouped-pair, a: "3008260002", b: "3008260005", connected: false, sameNetwork: false}
+totals:
+  louvain_networks: 46
+  components_in_several_networks: 5

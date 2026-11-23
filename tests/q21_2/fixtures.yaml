@@ -1,0 +1,7 @@
+# Q21.2 fixtures: concentration of open violations in a group (top 3 lots). Group members come from the BOR release (v0.3.0), counts from the source;
+# check_concentration.py re-derives every figure. Anchor D's network: 18 open over 35 lots, top three hold about 72% (queried 2026-11-10; re-derived, not fixed).
+groups:
+  - {layer: network,   groupId: ON-18742, note: "anchor D's network"}
+  - {layer: portfolio, groupId: OP-53559, note: "anchor D's portfolio"}
+  - {layer: network,   groupId: ON-1,     note: "two lots: top 3 covers every lot, share 1.0 if any open"}
+  - {layer: network,   groupId: ON-42365, note: "the 424-lot hub network"}

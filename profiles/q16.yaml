@@ -1,0 +1,57 @@
+# Question schema: Q16 "What do published reports and retrieved filing documents say about this owner or entity, how do they relate to
+# the recorded facts, and what is each one's review status?" (sub-questions Q16.1 to Q16.4).
+# Retrieval-extraction only (decision 2026-11-18): no source is in the snapshot, so no graph element, loader, lookup or expected.sql.
+# Every item is session evidence in the answer contract and is never loaded into the graph. The fields below are the contract the
+# downstream consumer returns; they are checked against the vocabulary, not against the graph. Acceptance is pending a versioned
+# retrieval cache the user supplies (like Q5.4 and Q11.5). No per-record evidence fields are stored (nothing is stored).
+question: Q16
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: []   # web_research is not a dataset and has no column profile (data/sources.yaml: table null)
+
+graph:
+  constraints: []
+  nodes: {}
+  relationships: {}
+
+answer:
+  Q16.1:
+    pending: "no retrieval cache supplied; acceptance waits on it"
+    fields:
+      publisher:     {concept: retrieved-item, source: "web_research: the publisher or filing body of the item", type: string, null_policy: "never absent for a listed item"}
+      itemDate:      {concept: retrieved-item, source: "web_research: the publication or filing date", type: date, null_policy: "absent only when the item states none; then reported as undated. An item dated after the as-of date is outside the answer and listed as such"}
+      locator:       {concept: retrieved-item, source: "web_research: URL or document id, and page", type: string, null_policy: "never absent; page absent when the item has none"}
+      quotedClaim:   {concept: reported-claim, source: "web_research: the quoted text of the claim", type: string, null_policy: "never absent for a report; a claim is a published statement, not a fact. A person named is shown with the source and the role the item gives; no ownership is inferred"}
+      sourceCategory: {concept: source-category, source: "web_research: assigned at retrieval", type: string, allowed_scheme: source-categories, allowed: [public-record, published-reporting, web-content, project-derived], null_policy: "never absent; a report is published-reporting"}
+    note: "The publication is the recorded evidence; whether the claim is true and applies is a separate judgment. Session evidence, not graph fact."
+  Q16.2:
+    pending: "no retrieval cache supplied; acceptance waits on it"
+    fields:
+      extractedValue:   {concept: retrieved-item, source: "web_research: the value taken from a retrieved filing document", type: string, null_policy: "absent when the document is unreadable, partial or behind payment; then an unresolved lead with the reason"}
+      extractionMethod: {concept: extraction-method, source: "web_research: how the value was read (for example parsed text, or OCR of a scan)", type: string, null_policy: "never absent when a value is extracted"}
+      confidence:       {concept: extraction-method, source: "web_research: low-confidence flag on the extracted value", type: boolean, null_policy: "never absent when a value is extracted; true on an uncertain scanned name, which is never used as a link"}
+      sourceCategory:   {concept: source-category, source: "web_research: assigned at retrieval", type: string, allowed_scheme: source-categories, allowed: [public-record, published-reporting, web-content, project-derived], null_policy: "never absent; a primary record retrieved from the web is public-record, other pages web-content"}
+    note: "Free public registries only; a paid step is an unresolved lead. Session evidence, not graph fact."
+  Q16.3:
+    pending: "no retrieval cache supplied; acceptance waits on it"
+    fields:
+      factRelation: {concept: fact-relation, source: "derived at answer time: the item compared with the cited recorded HPD, ACRIS or DOS value", type: string, allowed_scheme: fact-relations, allowed: [agrees, adds, conflicts, unrelated], null_policy: "never absent; computed, not stored. The cited recorded item is returned beside it"}
+      matchBasis:   {concept: match-basis, source: "derived at answer time: rule N3 on the name, or the exact address", type: string, allowed_scheme: match-bases, allowed: [exact-match, lead-only], null_policy: "never absent; a similar but not identical name, or a low-confidence name, is lead-only and never used to join recorded facts"}
+    note: "A name match is a lead (rule N3), not common identity."
+  Q16.4:
+    pending: "no retrieval cache supplied; acceptance waits on it"
+    fields:
+      reviewStatus:  {concept: review-status, source: "answer contract: starts item-unreviewed", type: string, allowed_scheme: review-statuses, allowed: [item-unreviewed, confirmed, refuted, inconclusive, contested], null_policy: "never absent; the project never sets confirmed or refuted itself. Two contradicting items are both returned as contested, neither chosen"}
+      searchLog:     {concept: retrieved-item, source: "retrieval log: queries, sources searched and dates", type: "list of {query, source, date}", null_policy: "always stated; when nothing is found the answer is 'no reports or documents found in the sources searched' with this log, never 'no news'"}
+      asOfDate:      {concept: retrieved-item, source: "input", type: date, null_policy: "always stated; the step and time budget are stated with it"}
+    note: "An item that is dated after the as-of date, unreadable or behind payment is listed with its reason."
+
+diagnostics: []
+
+not_stored:   # deliberately absent from the graph
+  - {term: retrieved item, reason: web and document findings are session evidence; promoting them needs a separately governed process}
+  - {term: reported claim, reason: a published claim is not a graph fact; the publication is the recorded evidence}
+  - {term: relation to recorded facts, reason: computed at answer time from the cited recorded item}
+  - {term: match basis, reason: computed at answer time by rule N3 or an exact address}
+  - {term: review status, reason: lives with the item in the session or dossier, not the graph}
+  - {term: retrieval log, reason: kept with the cache for replay and evaluation, not in the graph}

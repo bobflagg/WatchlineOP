@@ -1,0 +1,25 @@
+# Q23 acceptance results, 2026-11-19. Graph acceptance passed (user-reported): make test K=q23 and make shapes.
+question: Q23
+fixture_version: "tests/q23_1 to q23_3 fixtures.yaml; footprints re-derived from the frozen baseline and layer membership from BOR release v0.3.0 by each check"
+baseline: "Database facts from the frozen baseline recorded 2026-11-16 in data/README.md."
+tools:
+  shacl2cypher: "0.3.0; Q23 adds no SHACL shape, so the compiled rule set is unchanged"
+acceptance:
+  graph:
+    status: passed
+    reason: "make test K=q23 and make shapes passed on the loaded graph (user-reported 2026-11-19), including the computed-not-stored check and its negative cases"
+    evidence:
+      shapes: "none (no graph element)"
+      supplemental_checks: "queries/checks/q23-computed-not-stored.cypher (coverage Q23-R1)"
+      sub_question_checks: "tests/q23_1 (footprint), q23_2 (layers), q23_3 (masks) (coverage Q23-R2)"
+      negative_cases: "5 in tests/negative/q23/cases.yaml (reuse the key `status`, no new key minted)"
+  retrieval_extraction:
+    status: pending
+    reason: "not declared for Q23 (acceptance_types: [graph])"
+  investigation:
+    status: pending
+    reason: "not declared for Q23"
+open_points:
+  - "A shared agent is a management relationship, not ownership. A large footprint suggests a commercial service and does not prove one; no verdict is stored or returned."
+  - "The mail-drop list is undefined and unused; the Q6 masks answer requirement 4."
+  - "A BIN on two lots counts toward both lots; building and lot counts can differ from registration counts."

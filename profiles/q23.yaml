@@ -1,0 +1,61 @@
+# Question schema: Q23 "Managing agent footprint": which buildings does this managing agent disclose, how does that set relate to the building's
+# Operational Network and Owner Portfolio, and is the agent's address masked (sub-questions Q23.1 to Q23.3).
+# Adds no graph element (stage 1, 2026-11-19). Answered from Contact (type Agent, nameKey), HAS_CONTACT, HAS_REGISTRATION, HAS_BUILDING,
+# IN_NETWORK, IN_PORTFOLIO and the Q6 mask nodes. Counts, layer states and the address check are computed at answer time.
+question: Q23
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [hpd_contacts, hpd_registrations, bor_layers]
+
+graph:
+  constraints: []
+  nodes: {}
+  relationships: {}
+
+answer:
+  Q23.1:
+    lookup: tests/q23_1/lookup.cypher
+    proved_by: tests/q23_1/check_footprint.py
+    fields:
+      contactType:   {concept: contact-type, source: Contact.contactType, type: string, allowed_scheme: contact-types, allowed_subset: true, allowed: [Agent, HeadOfficer, Officer, Shareholder, SiteManager, Lessee, CorporateOwner, IndividualOwner, JointOwner], null_policy: "never absent; the managing agent is Agent, other types carrying the same name are reported apart. HPD's contact description (GEN.PART) is not a contact type and is not stored"}
+      spelling:      {concept: corporation-name, source: Contact.corporationName, type: string, null_policy: "as recorded; one row per spelling, case kept. Names with the same N3 key combine; a legal suffix or a misspelling is a different key"}
+      registrations: {concept: registration, source: "derived: distinct Registrations with the contact", type: integer, counting_unit: "distinct registrations", null_policy: "never absent"}
+      buildings:     {concept: building, source: "derived: distinct Buildings (BIN) of those registrations", type: integer, counting_unit: "distinct buildings", null_policy: "never absent"}
+      lots:          {concept: tax-lot, source: "derived: distinct Lots that hold those buildings", type: integer, counting_unit: "distinct lots; a BIN on two lots counts toward both", null_policy: "never absent"}
+    note: "Rule N3 and the name key are stated with the answer. A shared agent is a management relationship, not ownership. A large footprint suggests a commercial service and does not prove one. Counts are derived by the stated rule."
+  Q23.2:
+    lookup: tests/q23_2/lookup.cypher
+    proved_by: tests/q23_2/check_layers.py
+    fields:
+      referenceLot:   {concept: tax-lot, source: Lot.bbl, type: string, null_policy: "never absent; one row per lot of the reference building"}
+      network:        {concept: network-group-id, source: OperationalNetwork.groupId, type: string, null_policy: "absent when the reference lot is in no network; run-local"}
+      portfolio:      {concept: portfolio-group-id, source: OwnerPortfolio.groupId, type: string, null_policy: "absent when the reference lot is in no portfolio; run-local"}
+      lots:           {concept: agent-footprint, source: "derived: footprint lots (Q23.1)", type: integer, counting_unit: "distinct lots", null_policy: "never absent"}
+      networkSame:    {concept: operational-network, source: "derived: footprint lots in the reference lot's network", type: integer, counting_unit: lots, null_policy: "0 when the reference lot is in no network"}
+      networkOther:   {concept: operational-network, source: "derived: footprint lots in another network", type: integer, counting_unit: lots, null_policy: "0 when none"}
+      networkNone:    {concept: operational-network, source: "derived: footprint lots in no network", type: integer, counting_unit: lots, null_policy: "0 when none"}
+      portfolioSame:  {concept: owner-portfolio, source: "derived: footprint lots in the reference lot's portfolio", type: integer, counting_unit: lots, null_policy: "0 when the reference lot is in no portfolio"}
+      portfolioOther: {concept: owner-portfolio, source: "derived: footprint lots in another portfolio", type: integer, counting_unit: lots, null_policy: "0 when none"}
+      portfolioNone:  {concept: owner-portfolio, source: "derived: footprint lots in no portfolio (rental lots only are members)", type: integer, counting_unit: lots, null_policy: "0 when none"}
+    note: "same + other + none equals lots, for each layer. 'None' means the release did not group the lot; it is not 'other'. Both layers are derived leads valid only within release v0.3.0; shared management does not establish shared ownership."
+  Q23.3:
+    lookup: tests/q23_3/lookup.cypher
+    proved_by: tests/q23_3/check_masks.py
+    fields:
+      address:         {concept: mailing-address, source: "Contact.mailingAddress plus Contact.addressLine2, uppercased", type: string, null_policy: "absent when the agent contact has no recorded address (counted apart)"}
+      contacts:        {concept: contact, source: "derived: distinct agent Contacts at the text", type: integer, counting_unit: "distinct contacts", null_policy: "never absent"}
+      networkDegree:   {concept: masked-address-degree, source: NetworkMaskedAddress.degree, type: integer, null_policy: "absent when the network method did not mask the text"}
+      portfolioDegree: {concept: portfolio-masked-address-degree, source: PortfolioMaskedAddress.degree, type: integer, null_policy: "absent when the portfolio method did not mask the text"}
+    note: "The mail-drop list is not used (undefined, unreviewed); the Q6 masks answer the question. Absent degrees mean no method masked the text, not that the address is safe. Co-location alone supports neither identity nor ownership."
+
+diagnostics: []
+
+not_stored:   # deliberately absent from the graph
+  - {term: agent footprint counts, reason: "computed at answer time from Contact, HAS_CONTACT, HAS_REGISTRATION and HAS_BUILDING; a stored count would go stale"}
+  - {term: layer state of a footprint lot, reason: "same, other and none are comparisons with a chosen reference building, computed at answer time"}
+  - {term: hpd_contacts.contactdescription, reason: "kind of entity (GEN.PART, CORP, INDIV); not a contact type and not needed for Q23"}
+  - {term: commercial service or operator verdict, reason: "footprint size suggests, never proves; the answer reports counts with the caveat, not a classification"}
+  - {term: mail-drop list match, reason: "the list is undefined and unreviewed; masks come from the release (Q6)"}
+
+open_points:
+  - "A BIN on two lots counts toward both lots; the building count is the distinct BIN total."

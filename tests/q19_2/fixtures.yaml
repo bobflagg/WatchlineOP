@@ -1,0 +1,11 @@
+# Q19.2 expected fewest-link path between two lots of one group (BOR release v0.3.0, run 2026-05-29-869bd299).
+# check_path.py re-derives the step count from graph_edges.csv and requires every link of the graph's path to be a kept release edge
+# of that group. `stages` (portfolio only) is the multiset of stage codes when the shortest path is unique.
+paths:
+  - {id: identity-direct, layer: owner_portfolio, groupId: OP-98617, a: "3008070024", b: "3067970008", steps: 1}
+  - {id: deed-direct, layer: owner_portfolio, groupId: OP-10201, a: "4019660080", b: "4019660083", steps: 1, stages: [deed.held_since]}
+  - {id: through-a-third-record, layer: owner_portfolio, groupId: OP-100039, a: "1006140036", b: "1003500001", steps: 2, stages: [identity.registered_llc, identity.splink_base]}
+  - {id: network-direct, layer: operational_network, groupId: ON-98617, a: "3008070024", b: "3067970008", steps: 1}
+  - {id: network-other, layer: operational_network, groupId: ON-100039, a: "1006140036", b: "1003500001", steps: 1}
+no_path:   # two lots in no common group: the lookup returns no row
+  - {id: ungrouped, layer: owner_portfolio, groupId: OP-98617, a: "3008260002", b: "3008260005"}

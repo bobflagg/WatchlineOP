@@ -1,0 +1,15 @@
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q22 example data. Values follow tests/q22_*/fixtures.yaml (frozen baseline in data/README.md). Q22 adds no ontology element: it reads the
+# Q2, Q3 and Q5 elements. The name comparison outcome, its rule and the joining records are computed at answer time and are not in the graph.
+# Entities only; no person is named.
+
+# Anchor G: the HPD spelling and the DOS spelling differ by a space only (rule S1 in the answer; Q3 and Q5 keep it a difference).
+id:owner-ks-turnpike-q22 a onto:Contact ; onto:corporationName "KS TURNPIKE LLC" .
+id:dos-3574572-q22 a onto:DosEntity ; onto:dosId 3574572 ; onto:dosEntityName "K S TURNPIKE LLC" .
+
+# Anchor B: two names on the same lot's deeds; no record joins them.
+id:grantee-702-54-q22 a onto:Grantee ; onto:granteeName "702 54 STREET LLC" .
+id:grantee-702-plaza-q22 a onto:Grantee ; onto:granteeName "702 PLAZA LLC" .

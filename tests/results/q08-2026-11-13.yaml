@@ -1,0 +1,26 @@
+# SUPERSEDED 2026-11-16 by tests/results/q08-2026-11-16.yaml: this file records BOR release v0.2.1 and pre-merge counts. Kept as history.
+# Q8 acceptance results, 2026-11-13. Shapes compile (checked here, no database); the supplemental checks and negative cases are written and
+# await a run on the loaded graph (user: `make shapes`, then `make rebuild CONFIRM=watchline && make graph`).
+question: Q8
+fixture_version: provisional (not yet verified against an identified frozen dump)
+baseline: "Pending: dump filename and SHA-256 are not recorded in data/README.md. No result below is 'passed' for acceptance. The BOR release is identified (v0.2.1, sha256 b694512a...33df, run 2026-05-29-149e871f)."
+tools:
+  neo4j: "pending: tests/results/shapes.json after the next make shapes"
+  shacl2cypher: "0.3.0 (strict mode; all 134 rules of Q1 to Q5 and Q8 compile, no static diagnostics; coverage names match)"
+acceptance:
+  graph:
+    status: pending
+    reason: "baseline not identified; shapes, supplemental checks and 26 negative cases not yet run on the graph"
+    evidence:
+      sub_question_checks: "q8_1 to q8_4 passed after loading (user-reported 2026-11-13); q8_3 compares every landlord, cover and link with the release"
+      ontology: "make ontology 107/107, make profiles, make thesaurus, make taxonomy passed (user-reported); OOPS! pending (service offline)"
+      shapes_compile: "passed (compile only, no database)"
+      supplemental_checks_on_loaded_graph: "pending: queries/checks/q08-absence.cypher, q08-covers.cypher, q08-links.cypher"
+      negative_cases: "pending: tests/negative/q08/cases.yaml (26 cases)"
+      release_facts_checked_offline: "9673 of 9673 networks have at least one link inside them (read from network_edges and network_membership)"
+  retrieval_extraction:
+    status: pending
+    reason: "not declared for Q8"
+  investigation:
+    status: pending
+    reason: "not declared for Q8"

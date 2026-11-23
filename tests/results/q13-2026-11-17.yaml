@@ -1,0 +1,25 @@
+# Q13 acceptance results, 2026-11-17. make test, make shapes (461/461), make ontology (165/165) and make thesaurus (11/11) passed (user-reported).
+question: Q13
+fixture_version: verified against the frozen baseline (2026-11-16) by the checks once run
+baseline: "Frozen baseline recorded 2026-11-16 in data/README.md: justfixwow-poc-baseline_2026-11-16.sql.gz, SHA-256 9124f6c0d0f0d2e453f1971247ed29c217d3d4b5f55338d95344e04a617b6278. BOR release v0.3.0 (run 2026-05-29-869bd299)."
+tools:
+  shacl2cypher: "0.3.0, strict mode; all 210 rules over Q1 to Q13 compile, no static diagnostics; coverage names and negative-case rules match (offline, 2026-11-17)"
+acceptance:
+  graph:
+    status: passed
+    reason: "make test passed on the scope F graph after the Q11.1 scope M predicate and Q13.1 multi-lot fixes; make shapes 461/461 after narrowing the Q13 stored-field check to lots, documents and parties and isolating the Q11 type-3 negative case; make ontology 165/165; make thesaurus 11/11 (user-reported 2026-11-17)"
+    evidence:
+      shapes: "shapes/q13.ttl (LotFinancingShape): 1 compiled rule (HAS_FINANCING_DOCUMENT ends on a Document); id, type, dates, amount and party rules come from DocumentShape (Q7)"
+      supplemental_checks: "queries/checks/q13-financing.cypher (seven types, a party each, lot-to-document links without properties, no stored kind, description, count or outstanding flag); relaxed for scope F: queries/checks/q07-documents.cypher, queries/checks/q11-mortgages.cypher"
+      native: "document_id_unique, document_party_key_unique (Q7, shared)"
+      negative_cases: "12 in tests/negative/q13/cases.yaml (5 shape rules, 7 supplemental check)"
+      sub_question_checks: "tests/q13_1 to q13_3 (written in stage 1; reconcile 2,885,412 documents, 3,279,564 links, 7,345,721 party links, user-reported 2026-11-17); tests/q7_3/check_documents.py and tests/q11_1/check_mortgages.py now count scope C and M documents only"
+  retrieval_extraction:
+    status: pending
+    reason: "not declared for Q13"
+  investigation:
+    status: pending
+    reason: "not declared for Q13"
+open_points:
+  - "Q7.3 and Q11.1 totals were relaxed, not weakened: scope C and scope M documents are still compared with their fixtures; scope F documents without owner names are left to Q13."
+  - "Descriptions of the five kinds are the project's wording, not official ACRIS text (acris_document_codes is unusable locally)."

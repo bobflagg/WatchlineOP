@@ -1,0 +1,64 @@
+# Question schema: Q13 "Mortgages, assignments, satisfactions": the financing documents recorded against a lot, their parties, and the count by
+# kind (sub-questions Q13.1 to Q13.3).
+# Adds one relationship: HAS_FINANCING_DOCUMENT (Lot to Document). Document, DocumentParty and HAS_PARTY are the Q7.3 nodes (profiles/q07.yaml),
+# loaded for a third scope F by scripts/load_financing.py. The kind, the description and the counts by kind are computed at answer time.
+question: Q13
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [acris_master, acris_parties, acris_legals]
+
+graph:
+  constraints: []   # Document and DocumentParty constraints are declared by Q7
+
+  nodes: {}
+
+  relationships:
+    HAS_FINANCING_DOCUMENT:
+      concept: has-financing-document
+      from: Lot
+      to: Document
+      source: acris_legals.bbl, acris_legals.documentid
+      rule: >-
+        One per distinct (BBL, documentid) for a graph Lot and a Document whose current version (latest modifieddate, then goodthroughdate) has
+        doctype MTGE, ASST, SAT, AGMT, AL&R, TL&R or SAGE (scope F, decision 2026-11-17; 2885412 documents, profiled by scripts/profile_q13_scope.py).
+        A document on several lots links to each (252760 documents). Documents of scopes C and M that are also financing types load once.
+      proved_by: tests/q13_1/expected.sql
+
+answer:
+  Q13.1:
+    lookup: tests/q13_1/lookup.cypher
+    fields:
+      documentId:   {concept: document-id, source: Document.documentId, type: string, counting_unit: "distinct documents; a document on several lots is one document"}
+      docType:      {concept: document-type, source: Document.docType, type: string, allowed: [MTGE, ASST, SAT, AGMT, "AL&R", "TL&R", SAGE], null_policy: "never absent for a listed document"}
+      docDate:      {concept: document-date, source: Document.docDate, type: date, null_policy: "absent when ACRIS has none (40% of documents, mostly old ones)"}
+      recordedDate: {concept: recorded-date, source: Document.recordedDate, type: date, null_policy: "absent when ACRIS has none"}
+      amount:       {concept: document-amount, source: Document.amount, type: integer, counting_unit: "whole US dollars", null_policy: "0 is kept as recorded: on a mortgage never a free loan, on the other types the norm"}
+      otherLots:    {concept: has-financing-document, source: "derived: count of other Lots on HAS_FINANCING_DOCUMENT to the same Document", type: integer, counting_unit: "other graph lots", null_policy: "0 when the document names no other graph lot"}
+    note: "An empty list means no financing document in the snapshot, not that the lot has no loan. The answer reports documents and does not say which loan is outstanding."
+  Q13.2:
+    lookup: tests/q13_2/lookup.cypher
+    fields:
+      documentId:   {concept: document-id, source: Document.documentId, type: string}
+      parties:      {concept: document-party, source: "Document-[:HAS_PARTY]->DocumentParty", type: "list of {name, nameKey, partyType, mailingAddress, addressLine2, zip}", null_policy: "every distinct party row is listed; an empty list is not expected (every document has a party row) and is a source gap if it occurs"}
+      partyType:    {concept: party-role, source: "HAS_PARTY.partyType", type: integer, allowed: [1, 2, 3], null_policy: "never absent; kept as recorded"}
+      role:         {concept: party-role, source: "derived: on docType MTGE only, 1 is the borrower and 2 the lender", type: string, allowed: [borrower, lender], null_policy: "absent on every other type, where the code is repeated and no role is named"}
+    note: "A person's name is returned for the answer only, never repeated in logs or fixtures. Name keys (rule N3) are lookup keys, not matches."
+  Q13.3:
+    lookup: tests/q13_3/lookup.cypher
+    fields:
+      docType:      {concept: document-type, source: Document.docType, type: string, allowed: [MTGE, ASST, SAT, AGMT, "AL&R", "TL&R", SAGE]}
+      documents:    {concept: financing-document, source: "derived: count of distinct Documents of the type on the lot", type: integer, counting_unit: "distinct documents", null_policy: "0 when none; zero satisfactions is not proof a loan is outstanding"}
+      kind:         {concept: financing-document, source: "answer contract (tests/q13_support.py KINDS): MTGE mortgage, ASST and AL&R assignment, SAT satisfaction, TL&R termination, AGMT and SAGE agreement", type: string, allowed: [mortgage, assignment, satisfaction, termination, agreement], null_policy: "never absent"}
+      description:  {concept: financing-document, source: "answer contract (tests/q13_support.py KINDS): the project's wording for the code, not official ACRIS text", type: string, null_policy: "never absent"}
+      byKind:       {concept: financing-document, source: "derived: sum of documents over the types of a kind", type: "map kind to integer", counting_unit: "distinct documents", null_policy: "a kind with no document is 0"}
+    note: "A satisfaction is a recorded document, not proof a loan was paid; a termination is not proof of payment; no satisfaction is not proof a loan is outstanding. Any conclusion is derived (Type II)."
+
+diagnostics: []
+
+not_stored:   # deliberately absent from the graph
+  - {term: kind and description, reason: answer contract; ACRIS descriptions are unavailable locally and the wording is the project's}
+  - {term: counts by kind and other-lot count, reason: computed from HAS_FINANCING_DOCUMENT and the document types}
+  - {term: borrower and lender roles, reason: the recorded party code is stored; the role is named only on MTGE at answer time}
+  - {term: outstanding loan, reason: not a recorded fact; the answer lists documents and never says which loan is outstanding}
+  - {term: party hub counts on scope F parties, reason: addressNames and addressDocuments are set only for scopes C and M}
+  - {term: M&CON, AALR, SUBM, SMTG, DTL, CTOR and other loan-related types, reason: not loaded; add a type only when a question needs it}

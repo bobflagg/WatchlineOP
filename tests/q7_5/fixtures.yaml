@@ -1,0 +1,25 @@
+# Q7.5 fixtures (BOR release v0.3.0, run 2026-05-29-869bd299). Lots are resolved by name where an entity is given.
+# verified against the frozen baseline recorded in data/README.md (2026-11-16). Links also appear in tests/q8_3/fixtures.yaml, derived there from the release.
+pairs:
+  - label: "anchors A and B (5413 PLAZA LLC, 702 PLAZA LLC): in no group in either layer"
+    nameA: "5413 PLAZA LLC"
+    nameB: "702 PLAZA LLC"
+    lotsA: ["3008260002"]
+    lotsB: ["3008260005"]
+    network_shared: null
+    portfolio_shared: null
+    absence: {network: no_linkage, portfolio: no_linkage}
+    landlordsA: []
+    landlordsB: []
+    links: []
+  - label: "anchor C: landlords 98618 and 98619 in one network and one portfolio, joined by identity, name and address"
+    bblsA: ["3008870067"]
+    bblsB: ["3067510012"]
+    network_shared: ON-98617
+    portfolio_shared: OP-98617
+    landlordsA: [98618]
+    landlordsB: [98619]
+    links:
+      - {type: CONNECTED_BY_IDENTITY, nodeA: 98618, nodeB: 98619, weight: 100.0, stage: identity.splink_base, evidenceType: identity_cluster, evidenceId: C0044503, networkGroupId: ON-98617, portfolioGroupId: OP-98617}
+      - {type: CONNECTED_BY_NAME, nodeA: 98618, nodeB: 98619, weight: 7.5, stage: null, evidenceType: null, evidenceId: null, networkGroupId: ON-98617, portfolioGroupId: null}
+      - {type: CONNECTED_BY_ADDRESS, nodeA: 98618, nodeB: 98619, weight: 6.0, stage: null, evidenceType: null, evidenceId: null, networkGroupId: ON-98617, portfolioGroupId: null}

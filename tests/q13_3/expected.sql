@@ -1,0 +1,5 @@
+-- Q13.3 expected answers: financing documents of a lot grouped by kind. Same documents as tests/q13_1/expected.sql; the kind and description
+-- come from the answer contract (tests/q13_support.py KINDS), not from the data.
+-- Anchor C lot 3008070024: mortgages 6 (one at $0 in 1980), assignments 5 (ASST 3, AL&R 2), satisfactions 2, agreements 4 (AGMT 3, SAGE 1), terminations 0.
+-- Anchor A lot 3008260002: mortgages 4 (1973 and 1981 at $0), assignments 2 (ASST 1, AL&R 1), satisfactions 2, terminations 1, agreements 2 (AGMT 1, SAGE 1).
+-- See tests/q13_1/expected.sql for the query; grouping is done by the check.

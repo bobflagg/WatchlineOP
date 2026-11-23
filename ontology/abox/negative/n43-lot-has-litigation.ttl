@@ -1,0 +1,5 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: hasLitigation has domain Building, and TaxLot and Building are disjoint. Cases belong to the building (BIN), never to the lot.
+id:bad-lot-12 a onto:TaxLot ; onto:hasLitigation id:bad-case-12 .
+id:bad-case-12 a onto:Litigation ; onto:litigationId 1 .

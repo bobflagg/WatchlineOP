@@ -1,0 +1,18 @@
+# Q8.1 expected network of a lot (BOR release v0.3.0, run 2026-05-29-869bd299, Operational Network layer).
+# check_network.py re-derives each from the release (groups.csv, group_bbls.csv), so a stale fixture fails.
+# groupId null means the lot is in no network.
+lots:
+  - {bbl: "3008070024", groupId: ON-98617, split: wcc,     note: "anchor C (438 52 Street), 5-lot whole component"}
+  - {bbl: "3008210012", groupId: ON-18742, split: wcc,     note: "anchor D (224 54 Street), 35 lots, three buildings on this lot"}
+  - {bbl: "1012120025", groupId: ON-675,   split: louvain, note: "a Louvain community of 27 lots cut from the component NC-675"}
+  - {bbl: "2033330047", groupId: ON-1,     split: wcc,     note: "smallest network size: 2 lots"}
+  - {bbl: "3001210014", groupId: ON-42365, split: wcc,     note: "the largest network: 424 lots"}
+  - {bbl: "3008260002", groupId: null,     split: null,    note: "anchor A: not in a network (no qualifying linkage)"}
+  - {bbl: "3008970014", groupId: null,     split: null,    note: "anchor F: not in a network (no HPD registration)"}
+absent_from_graph:   # a BBL in the release's lot universe but outside the loaded scope: the lookup must find no Lot
+  - {bbl: "2046000009", note: "unregistered PLUTO lot with fewer than 3 residential units"}
+totals:   # Operational Network layer of the release
+  networks: 9673
+  wcc: 9627
+  louvain: 46
+  lots_in_networks: 71256

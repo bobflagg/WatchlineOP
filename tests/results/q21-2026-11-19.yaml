@@ -1,0 +1,25 @@
+# Q21 acceptance results, 2026-11-19. Graph acceptance is pending: the checks are written and offline checks pass; the user runs make test and make shapes.
+question: Q21
+fixture_version: "tests/q21_1 to q21_3 fixtures.yaml; group members re-derived from the pinned BOR release v0.3.0 (run 2026-05-29-869bd299), counts and units from the frozen baseline by each check"
+baseline: "BOR release v0.3.0 (sha256 b085ac37ea818dae65b395fec7750fd3afcfa3da47c499ced6743fbfc4124223); database facts from the frozen baseline recorded 2026-11-16 in data/README.md."
+tools:
+  shacl2cypher: "0.3.0; Q21 adds no SHACL shape, so the compiled rule set is unchanged"
+acceptance:
+  graph:
+    status: pending
+    reason: "written, not yet run on the loaded graph: the user runs make test K=q21 and make shapes"
+    evidence:
+      shapes: "none (no graph element)"
+      supplemental_checks: "queries/checks/q21-computed-not-stored.cypher (coverage Q21-R1)"
+      sub_question_checks: "tests/q21_1 to q21_3 (coverage Q21-R2)"
+      negative_cases: "4 in tests/negative/q21/cases.yaml (reuse the key `status`, no new key minted)"
+  retrieval_extraction:
+    status: pending
+    reason: "not declared for Q21 (acceptance_types: [graph])"
+  investigation:
+    status: pending
+    reason: "not declared for Q21"
+open_points:
+  - "A building on several lots counts toward each lot; the group's distinct total is returned beside the sum of lot counts."
+  - "Both layers are derived leads; the ranking changes with the layer and is not a finding of common ownership."
+  - "A violation is what an inspector cited, not a measure of conditions."

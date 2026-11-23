@@ -1,4 +1,4 @@
-# Q3.3 expected owners per Lot (through its buildings' registrations). Provisional until the dump is identified.
+# Q3.3 expected owners per Lot (through its buildings' registrations). verified against the frozen baseline recorded in data/README.md (2026-11-16).
 # Checked read-only 2026-11-12. check_lot_owners.py re-derives each from the source. Compared as sets of [registrationId, type, name].
 lots:
   - {bbl: "3008260002", note: "anchor A", owners: [[316103, CorporateOwner, "5413 PLAZA LLC"]]}

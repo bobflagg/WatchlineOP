@@ -1,4 +1,4 @@
-# Q5.1 expected DOS candidates per owner-entity name. Provisional until the frozen dump is identified (data/README.md).
+# Q5.1 expected DOS candidates per owner-entity name. verified against the frozen baseline recorded in data/README.md (2026-11-16).
 # Checked read-only 2026-11-12. check_dos.py re-derives each candidate set with SQL and with compare.n3 and compares the graph.
 # names: [input name, where it comes from, candidates]; candidate: [dosId, outcome, rule]. Outcomes are the name-agreement-outcomes scheme.
 names:

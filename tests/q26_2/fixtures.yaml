@@ -1,0 +1,10 @@
+# Q26.2 fixtures (hpd_contacts, dos_active_corporations through 2026-07-06). check_dos_absence.py re-derives each from the source.
+# reason: null when a record exists; else BOR-style top-level reason applied by decision 2026-11-19.
+cases:
+  - {bbl: "3008260002", reason: null, label: "anchor A: 5413 PLAZA LLC has a DOS record"}
+  - {bbl: "3008260005", reason: null, label: "anchor B: 702 PLAZA LLC has a DOS record"}
+  - {bbl: "1000160180", reason: no_qualifying_linkage, label: "20 River Terrace: corporation name, no record under its N3 key"}
+  - {bbl: "3008070024", reason: no_qualifying_linkage, label: "anchor C: HPD spelling 438 52 ST OWNERS CORP has no record; DOS spells 438 52ND ST (a Q22 lead)"}
+  - {bbl: "3008210012", reason: no_qualifying_linkage, label: "anchor D: HDFC abbreviation, no record under N3"}
+  - {bbl: "3008210019", reason: outside_method_input, label: "anchor E: individual owner, no entity name to look up"}
+  - {bbl: "3008970014", reason: outside_method_input, label: "anchor F: no registration, so no owner contact"}

@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: violationClass is functional, so one violation carries one class (the string values are distinct).
+id:bad-violation-9 a onto:Violation ; onto:violationId 3 ; onto:violationClass "B", "C" .

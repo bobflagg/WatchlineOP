@@ -87,3 +87,60 @@ def address_agreement(line_a, zip_a, line_b, zip_b, unit_a=None, unit_b=None) ->
     else:
         outcome = "differs"
     return {"outcome": outcome, "rule": A1_RULE, "units": [n1(unit_a), n1(unit_b)]}
+
+
+# ---- Q22: same entity or not. Rules apply in this order; the first that makes the names equal is reported. Derived, a lead only.
+#  N1/N2/N3 as above; S1  spaces removed (after N3): `KS` = `K S`, `COMPAN Y` = `COMPANY`;
+#  L1  legal-suffix words to short form (INCORPORATED, CORPORATION, COMPANY, DEVELOPMENT) on the space-free text;
+#  AB1 abbreviation table (HDFC = HOUSING DEVELOPMENT FUND COMPANY). Q3 and Q5 keep a space as a difference; only Q22 uses S1, L1, AB1.
+# differs-by-numeral-or-word: after N3 one name is the other plus trailing words or a numeral (`X HOLDINGS` / `X HOLDINGS II`); never a match.
+S1_RULE, L1_RULE, AB1_RULE = "S1", "L1", "AB1"
+_L1 = (("INCORPORATED", "INC"), ("CORPORATION", "CORP"), ("COMPANY", "CO"), ("DEVELOPMENT", "DEV"))
+_AB1 = (("HDFC", "HOUSINGDEVFUNDCO"),)
+
+
+def _nospace(value: str | None) -> str | None:
+    t = n3(value)
+    return t.replace(" ", "") if t else None
+
+
+def _l1(t: str) -> str:
+    for long, short in _L1:
+        t = t.replace(long, short)
+    return t
+
+
+def _ab1(t: str) -> str:
+    for ab, full in _AB1:
+        t = t.replace(ab, full)
+    return t
+
+
+def _core(text: str) -> list:
+    """Words of an N3 name without trailing legal-form words (LLC, INC, CORP, CO, LP, LTD)."""
+    words = text.split(" ")
+    while len(words) > 1 and words[-1] in ("LLC", "INC", "CORP", "CO", "LP", "LTD", "INCORPORATED", "CORPORATION", "COMPANY"):
+        words.pop()
+    return words
+
+
+def entity_name_comparison(a: str | None, b: str | None) -> dict:
+    """Q22.1. Returns {outcome, rule}. Outcomes (scheme entity-name-outcomes): exact-normalized, normalization-match
+    (rule N2, N3, S1 or L1), abbreviation-match (AB1), differs-by-numeral-or-word, different, not-comparable."""
+    if n1(a) is None or n1(b) is None:
+        return {"outcome": "not-comparable", "rule": None}
+    out = dos_name_agreement(a, b)
+    if out["outcome"] != "different":
+        return out
+    sa, sb = _nospace(a), _nospace(b)
+    if sa == sb:
+        return {"outcome": "normalization-match", "rule": S1_RULE}
+    if _l1(sa) == _l1(sb):
+        return {"outcome": "normalization-match", "rule": L1_RULE}
+    if _ab1(_l1(sa)) == _ab1(_l1(sb)):
+        return {"outcome": "abbreviation-match", "rule": AB1_RULE}
+    ta, tb = _core(n3(a)), _core(n3(b))
+    short, long_ = (ta, tb) if len(ta) <= len(tb) else (tb, ta)
+    if len(short) < len(long_) and long_[: len(short)] == short:
+        return {"outcome": "differs-by-numeral-or-word", "rule": None}
+    return {"outcome": "different", "rule": None}

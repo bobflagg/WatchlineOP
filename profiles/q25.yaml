@@ -1,0 +1,56 @@
+# Question schema: Q25 "When a recorded entity is registered outside New York State, what do the free public registries of that
+# jurisdiction show, and where does the search stop?" (sub-questions Q25.1 to Q25.4).
+# Retrieval-extraction only (stage 1, 2026-11-19): foreign registries are not in the snapshot, so no graph element, loader, lookup or
+# expected.sql. Every item is session evidence in the answer contract and is never loaded into the graph. Q25.1 reads the recorded
+# jurisdiction from the existing DosEntity (Q5); the rest is the contract the downstream consumer returns. Acceptance is pending a
+# versioned retrieval cache the user supplies.
+question: Q25
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: []   # web_research is not a dataset and has no column profile
+
+graph:
+  constraints: []
+  nodes: {}
+  relationships: {}
+
+answer:
+  Q25.1:
+    pending: "no retrieval cache supplied; acceptance waits on it"
+    fields:
+      entityName:   {concept: dos-entity-name, source: "DosEntity.name (or the HPD or deed name that is the recorded entity)", type: string, null_policy: "never absent; as recorded"}
+      jurisdiction: {concept: jurisdiction, source: "DosEntity.jurisdiction", type: string, null_policy: "never absent for a Q25 entry; the entry is an entity recorded outside New York. Absent jurisdiction is not Q25"}
+      recordedBy:   {concept: dos-entity, source: "the record that states the jurisdiction (DOS id)", type: string, null_policy: "never absent"}
+    note: "Entry point only; the recorded jurisdiction is the place of formation, not a finding about where the entity operates."
+  Q25.2:
+    pending: "no retrieval cache supplied; acceptance waits on it"
+    fields:
+      registry:     {concept: registry-search, source: "web_research: the public registry searched", type: string, null_policy: "never absent"}
+      query:        {concept: registry-search, source: "web_research: the search text used", type: string, null_policy: "never absent"}
+      retrievedOn:  {concept: registry-search, source: "retrieval log", type: date, null_policy: "never absent"}
+      outcome:      {concept: registry-outcome, source: "web_research: classified from the recorded response", type: string, allowed_scheme: registry-outcomes, allowed: [registry-record-found, registry-status-only, registry-no-record, registry-unreachable], null_policy: "never absent; unreachable is never an answer about the entity"}
+      filingId:     {concept: registry-search, source: "web_research: the registry's filing id", type: string, null_policy: "absent unless outcome is registry-record-found"}
+      status:       {concept: registry-search, source: "web_research: the registry's status wording", type: string, null_policy: "absent when no record or unreachable; as recorded"}
+      filingDate:   {concept: registry-search, source: "web_research", type: date, null_policy: "absent when the registry shows none"}
+      registeredAgent: {concept: registered-agent-name, source: "web_research", type: string, null_policy: "absent when not public; never inferred"}
+      sourceCategory: {concept: source-category, source: "assigned at retrieval", type: string, allowed_scheme: source-categories, allowed: [public-record, published-reporting, web-content, project-derived], null_policy: "never absent; a registry record is public-record"}
+    note: "Session evidence, not graph fact. Some registries show name and status only; officers and owners may not be public."
+  Q25.3:
+    pending: "no retrieval cache supplied; acceptance waits on it"
+    fields:
+      stopReason:  {concept: stop-reason, source: "answer contract", type: string, allowed_scheme: stop-reasons, allowed: [reached-service-address, no-further-link, needs-payment, budget-reached, unresolved-conflict], null_policy: "present on every unresolved lead; needs-payment when the next step needs payment or an account"}
+      leadStep:    {concept: lead, source: "answer contract: the step not taken", type: string, null_policy: "present with a stop reason"}
+    note: "The agent does not pay or bypass access."
+  Q25.4:
+    pending: "no retrieval cache supplied; acceptance waits on it"
+    fields:
+      matchBasis: {concept: match-basis, source: "derived at answer time: rule N3 on the name, plus any record other than the name that connects the two", type: string, allowed_scheme: match-bases, allowed: [exact-match, lead-only], null_policy: "never absent; a similar name, or a name match with no other connecting record, is lead-only"}
+      reviewStatus: {concept: review-status, source: "answer contract: starts item-unreviewed", type: string, allowed_scheme: review-statuses, allowed: [item-unreviewed, confirmed, refuted, inconclusive, contested], null_policy: "never absent; the project never sets confirmed or refuted itself"}
+    note: "A name match in another state is a lead until another record connects it."
+
+diagnostics: []
+
+not_stored:   # deliberately absent from the graph
+  - {term: registry search, reason: web findings are session evidence; promoting them needs a separately governed process}
+  - {term: registry outcome, reason: classified from the recorded response at retrieval; kept with the cache for replay}
+  - {term: match basis, reason: computed at answer time by rule N3 plus any other connecting record}

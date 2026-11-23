@@ -1,0 +1,12 @@
+# Q17.1 fixtures. hpd_registrations, pluto_latest (frozen baseline, data/README.md). check_missing.py re-derives each from the source with
+# tests/q17_1/expected.sql, so a stale fixture fails. One out-of-scope lot must be absent from the graph.
+cases:
+  - {bbl: "3008210019", missing: does-not-hold, registrations: 1, registered_buildings: 1, label: "anchor E: registered (lapsed, see Q17.2)"}
+  - {bbl: "3008970014", missing: holds, registrations: 0, registered_buildings: 0, label: "anchor F: 40 units, built 2025, no row in the registration data"}
+  - {bbl: "3008260002", missing: does-not-hold, registrations: 1, registered_buildings: 1, label: "anchor A: registered"}
+  - {bbl: "1018840001", missing: does-not-hold, no_usable_registration: true, registrations: 0, label: "placeholder registration id 0: registered, no usable registration"}
+  - {bbl: "1000190013", missing: does-not-hold, no_usable_registration: true, registrations: 0, label: "registered lot with no usable registration record, not in PLUTO for units"}
+  - {bbl: "4161550017", missing: holds, registrations: 0, label: "unregistered lot with 3 units: in the rental scope, missing"}
+  - {bbl: "1000247501", missing: does-not-hold, registrations: 2, label: "two registrations (one ended, one running)"}
+absent:
+  - {bbl: "4161690058", label: "unregistered lot with 2 units: outside the rental scope, not in the graph"}

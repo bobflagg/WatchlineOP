@@ -1,0 +1,25 @@
+# Q6.3 expected Owner Portfolio address masks (BOR release v0.3.0, run 2026-05-29-869bd299; decision_events.csv rule splink_address_evidence_mask
+# joined to identity_names.csv). The release records the mask on identities, so the address text is derived: house, street and apartment of
+# each masked identity, blanks left out, single spaces. check_portfolio_masked.py re-derives every value from the release and compares the
+# HPD contacts and ZIPs from the source with the graph, so a stale fixture fails.
+masked:
+  - {address: "575 FIFTH AVENUE 9FLOOR", degree: 229, maskedIdentities: 217, note: "the most identities at one text"}
+  - {address: "455 PARK AVENUE", degree: 110, maskedIdentities: 99, note: "also an Operational Network mask (A0000011, degree 99): the two methods' degrees differ"}
+  - {address: "909 THIRD AVENUE", degree: 281, maskedIdentities: 126, note: "also a network mask (degree 125 in the release); the highest degree"}
+  - {address: "4205 EIGHTH AVENUE", degree: 42, maskedIdentities: 32, note: "masked identities sit under two ZIPs (11232, 11204); the text names no ZIP"}
+  - {address: "199 LEE AVENUE 197", degree: 52, maskedIdentities: 1, note: "one identity, and its record has no ZIP"}
+  - {address: "670 MYRTLE 6110", degree: 40, maskedIdentities: 1, note: "one identity"}
+  - {address: "136 EAST 57TH STREET 14FLOOR", degree: 28, maskedIdentities: 30, note: "more masked identities than the degree"}
+not_masked:
+  - {address: "746 61ST STREET", note: "anchors A and B: no identity at this text was masked"}
+  - {address: "418 BROADWAY", note: "on the mail-drop list only"}
+totals:
+  addresses: 579
+  masked_identities: 5298
+  method_rule: splink_address_evidence_mask
+  stage: identity.splink_base
+  threshold: 25
+  degree_min: 26
+  degree_max: 281
+  also_network_masked: 30        # derived texts that equal one of the 73 network masks
+  degree_differs_from_network: 28

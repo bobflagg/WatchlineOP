@@ -1,0 +1,49 @@
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q9 example data. Values come from the verified fixtures in tests/q9_*/fixtures.yaml
+# (BOR release v0.3.0, run 2026-05-29-869bd299). The anchor of the portfolio is the same landlord record as the anchor of its network.
+# Landlord records and lots are the same individuals as in q08.ttl (one shared Landlord layer).
+
+# Anchor C: a five-lot portfolio (the same five lots as its network); two identity steps from Splink.
+id:op-98617 a onto:OwnerPortfolio ; onto:anchoredBy id:landlord-98618 ; onto:portfolioId "OP-98617" ; onto:portfolioComposition "identity" .
+id:lot-3008070024 a onto:TaxLot ; onto:bbl "3008070024" ; onto:inPortfolio id:op-98617 .
+id:lot-3008870067 a onto:TaxLot ; onto:bbl "3008870067" ; onto:inPortfolio id:op-98617 .
+id:lot-3053340026 a onto:TaxLot ; onto:bbl "3053340026" ; onto:inPortfolio id:op-98617 .
+id:lot-3067970008 a onto:TaxLot ; onto:bbl "3067970008" ; onto:inPortfolio id:op-98617 .
+id:lot-3067510012 a onto:TaxLot ; onto:bbl "3067510012" ; onto:inPortfolio id:op-98617 .
+id:landlord-98617 a onto:Landlord ; onto:connectedByIdentity id:landlord-98618, id:landlord-98619 .
+id:landlord-98618 onto:connectedByIdentity id:landlord-98619 .
+id:landlord-98618 a onto:Landlord .
+id:landlord-98619 a onto:Landlord .
+# The signal of a link is a property of the link; OWL has no domain for it, so it is shown on no individual.
+
+# Anchor D: a 33-lot portfolio, against 35 lots in its network.
+id:op-53559 a onto:OwnerPortfolio ; onto:portfolioId "OP-53559" ; onto:portfolioComposition "identity" .
+id:lot-3008210012 a onto:TaxLot ; onto:bbl "3008210012" ; onto:inPortfolio id:op-53559 .
+
+# Compositions from deeds.
+id:op-10201 a onto:OwnerPortfolio ; onto:portfolioId "OP-10201" ; onto:portfolioComposition "deed_only" .
+id:lot-4019660080 a onto:TaxLot ; onto:bbl "4019660080" ; onto:inPortfolio id:op-10201 .
+id:op-5346 a onto:OwnerPortfolio ; onto:portfolioId "OP-5346" ; onto:portfolioComposition "deed_bridged" .
+id:lot-4100220010 a onto:TaxLot ; onto:bbl "4100220010" ; onto:inPortfolio id:op-5346 .
+
+# Anchor A: in no portfolio; no accepted link.
+id:lot-3008260002 a onto:TaxLot ; onto:bbl "3008260002" ;
+    onto:portfolioAbsence "no_qualifying_linkage" ; onto:portfolioAbsenceDetail "no_linkage" .
+
+# Anchor F: in no portfolio; no HPD registration.
+id:lot-3008970014 a onto:TaxLot ; onto:bbl "3008970014" ;
+    onto:portfolioAbsence "outside_source_coverage" ; onto:portfolioAbsenceDetail "no_registration" .
+
+# A co-op or condo lot in a published group but outside its rental footprint: no inPortfolio.
+id:lot-1000317501 a onto:TaxLot ; onto:bbl "1000317501" ;
+    onto:portfolioAbsence "excluded_by_policy" ; onto:portfolioAbsenceDetail "coop_condo_excluded" .
+
+# A deed guard failed.
+id:lot-1008930036 a onto:TaxLot ; onto:bbl "1008930036" ;
+    onto:portfolioAbsence "below_eligibility_rule" ; onto:portfolioAbsenceDetail "successor_not_shell" .
+
+# A registered lot missing from PLUTO: BOR has no status row, so no absence is recorded.
+id:lot-1005560059 a onto:TaxLot ; onto:bbl "1005560059" .

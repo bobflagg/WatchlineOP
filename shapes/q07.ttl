@@ -1,0 +1,51 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix s2c:  <https://w3id.org/shacl2cypher#> .
+@prefix shp:  <https://watchline.example/shapes/> .
+
+# Q7 shapes: the rules OWL cannot express (ontology/ontology-notes.md, Q7 "Rules for Stage 6 shapes").
+# Compiled together with shapes/q03.ttl (document and address property names) and shapes/q05.ttl (DosEntity).
+
+# --- Graph names ---
+onto:Document s2c:label "Document" .
+onto:DocumentParty s2c:label "DocumentParty" .
+onto:hasParty s2c:relationship "HAS_PARTY" ; s2c:direction "out" .
+onto:partyName s2c:property "name" .
+onto:addressPartyCount s2c:property "addressNames" .
+onto:addressDocumentCount s2c:property "addressDocuments" .
+onto:processAddressEntities s2c:property "processAddressEntities" .
+
+# --- Rules ---
+shp:DocumentShape a sh:NodeShape ;
+    s2c:key "documentId" ;
+    sh:targetClass onto:Document ;
+    # R1 id and type present, dates are dates, amount is a whole number never negative
+    sh:property [ sh:path onto:documentId ; sh:minCount 1 ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:documentType ; sh:minCount 1 ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:recordedDate ; sh:datatype xsd:date ] ;
+    sh:property [ sh:path onto:documentDate ; sh:datatype xsd:date ] ;
+    sh:property [ sh:path onto:documentAmount ; sh:datatype xsd:integer ; sh:minInclusive 0 ] ;
+    # R2 a loaded document names at least one party (scope C documents name at least two by construction; 19 scope M mortgages
+    # record a single party, kept as recorded, decision 2026-11-16); HAS_PARTY ends on a document party
+    sh:property [ sh:path onto:hasParty ; sh:minCount 1 ; sh:class onto:DocumentParty ] .
+
+shp:DocumentPartyShape a sh:NodeShape ;
+    s2c:key "partyKey" ;
+    sh:targetClass onto:DocumentParty ;
+    # R3 a blank name or address part is absent, never an empty string
+    sh:property [ sh:path onto:partyName ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:mailingAddress ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:addressLineTwo ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:zipCode ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    # R2 every party belongs to a document
+    sh:property [ sh:path [ sh:inversePath onto:hasParty ] ; sh:minCount 1 ] ;
+    # R4 hub counts are whole numbers: documents at least 1; names at least 0 (a name with no letter is not counted, so a party whose own name is a symbol can sit at an address with 0 counted names)
+    sh:property [ sh:path onto:addressPartyCount ; sh:datatype xsd:integer ; sh:minInclusive 0 ] ;
+    sh:property [ sh:path onto:addressDocumentCount ; sh:datatype xsd:integer ; sh:minInclusive 1 ] .
+
+shp:DosHubShape a sh:NodeShape ;
+    s2c:key "dosId" ;
+    sh:targetClass onto:DosEntity ;
+    # R5 the process-address hub count is a positive whole number
+    sh:property [ sh:path onto:processAddressEntities ; sh:datatype xsd:integer ; sh:minInclusive 1 ] .

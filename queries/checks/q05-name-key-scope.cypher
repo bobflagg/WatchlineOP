@@ -12,7 +12,7 @@ CALL () {
   MATCH (e:DosEntity) RETURN count(e) AS total
 }
 CALL () {
-  CALL () { MATCH (c:OwnerContact {contactType: 'CorporateOwner'}) WHERE c.name IS NOT NULL RETURN collect(DISTINCT c.name) AS ownerNames }
+  CALL () { MATCH (c:Contact {contactType: 'CorporateOwner'}) WHERE c.corporationName IS NOT NULL RETURN collect(DISTINCT c.corporationName) AS ownerNames }
   CALL () { MATCH (g:Grantee) WHERE g.name IS NOT NULL RETURN collect(DISTINCT g.name) AS granteeNames }
   UNWIND (ownerNames + granteeNames) AS nm
   WITH DISTINCT trim(reduce(s = '', w IN split(replace(replace(replace(replace(replace(replace(toUpper(toString(nm)), '.', ''), ',', ' '), "'", ''), '\t', ' '), '\n', ' '), '\r', ' '), ' ') |

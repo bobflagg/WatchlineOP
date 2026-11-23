@@ -1,0 +1,128 @@
+# Question schema: Q28 "Litigation": the Housing Court cases HPD recorded against a building, and whether a respondent matches a registered owner
+# (sub-questions Q28.1 and Q28.2).
+# Adds one node, Litigation, and one relationship, HAS_LITIGATION (Building to Litigation), loaded by scripts/load_litigations.py (decision 2026-11-20).
+# The match to the registered owner is computed at answer time with rule N3, not stored.
+question: Q28
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [hpd_litigations, hpd_registrations, hpd_contacts]
+
+graph:
+  constraints:
+    - {name: litigation_id_unique, label: Litigation, property: litigationId, kind: unique}
+
+  nodes:
+    Litigation:
+      concept: litigation-case
+      key: litigationId
+      scope: >-
+        One Litigation per hpd_litigations row whose BBL is in hpd_registrations and whose BIN is a Building in the graph (valid, registered BIN).
+        211,652 cases are on registered lots; 210,169 load; 1,483 are excluded and counted. Data through 2026-07-09. Counting unit: distinct cases.
+      proved_by: tests/q28_1/expected.sql
+      properties:
+        litigationId:
+          concept: litigation-id
+          type: integer
+          source: hpd_litigations.litigationid
+          rule: Identity. Unique in the source.
+          null_policy: never absent
+        caseType:
+          concept: case-type
+          type: string
+          source: hpd_litigations.casetype
+          rule: As HPD spells it. Not normalised.
+          null_policy: never absent (no row lacks a type)
+        caseOpenDate:
+          concept: case-open-date
+          type: date
+          source: hpd_litigations.caseopendate
+          rule: "As recorded, including dates that cannot be right (3 before 1990, 1 in 2030); reported, never corrected."
+          null_policy: "absent when the source is null (289 loaded cases)"
+        caseStatus:
+          concept: case-status
+          type: string
+          source: hpd_litigations.casestatus
+          rule: Free text as recorded; not normalised.
+          null_policy: never absent (no row lacks a status)
+        openJudgement:
+          concept: open-judgement
+          type: string
+          source: hpd_litigations.openjudgement
+          allowed: [YES, NO]
+          rule: As recorded.
+          null_policy: never absent (no row lacks one)
+        harassmentFinding:
+          concept: harassment-finding
+          type: string
+          source: hpd_litigations.findingofharassment
+          allowed: [After Inquest, After Trial, No Harassment]
+          rule: As recorded. Only After Inquest and After Trial are findings; No Harassment is a recorded outcome.
+          null_policy: "absent when none is recorded"
+        findingDate:
+          concept: finding-date
+          type: date
+          source: hpd_litigations.findingdate
+          rule: As recorded; the time of day is dropped.
+          null_policy: "absent when none is recorded; one finding has none"
+        penalty:
+          concept: case-penalty
+          type: integer
+          source: hpd_litigations.penalty
+          rule: Whole dollars as recorded; 0 is a recorded zero.
+          null_policy: "absent when none is recorded (a blank is absent)"
+        respondent:
+          concept: respondent
+          type: string
+          source: hpd_litigations.respondent
+          rule: The recorded comma-joined string, trimmed.
+          null_policy: "absent when null or blank (2,919 loaded cases)"
+        respondentKeys:
+          concept: respondent
+          type: list of string
+          source: "derived: N3 key of each comma-separated part of hpd_litigations.respondent, blank parts dropped, sorted and distinct"
+          rule: A lead for matching to a registered owner; never a finding of identity.
+          null_policy: "absent when the respondent is absent or yields no key (never an empty list)"
+          proved_by: tests/q28_2/expected.sql
+      # not stored: case address, coordinates, districts, building id, the judgement amount (not in the source)
+
+  relationships:
+    HAS_LITIGATION:
+      concept: has-litigation-case
+      from: Building
+      to: Litigation
+      source: hpd_litigations.bin, hpd_litigations.litigationid
+      rule: One per loaded case, from the Building whose BIN the case records. A case belongs to the building, not the lot or an owner.
+      proved_by: tests/q28_1/expected.sql
+
+answer:
+  Q28.1:
+    lookup: tests/q28_1/lookup.cypher
+    fields:
+      litigationId:      {concept: litigation-id, source: Litigation.litigationId, type: integer, counting_unit: "distinct cases", null_policy: "never absent; no row for a building with no case"}
+      caseType:          {concept: case-type, source: Litigation.caseType, type: string, null_policy: never absent}
+      caseOpenDate:      {concept: case-open-date, source: Litigation.caseOpenDate, type: date, null_policy: "absent when none recorded; a date before 1990 or after the snapshot is a source error to report"}
+      caseStatus:        {concept: case-status, source: Litigation.caseStatus, type: string, null_policy: "never absent; as of the snapshot (data through 2026-07-09)"}
+      openJudgement:     {concept: open-judgement, source: Litigation.openJudgement, type: string, allowed: [YES, NO], null_policy: never absent}
+      harassmentFinding: {concept: harassment-finding, source: Litigation.harassmentFinding, type: string, allowed: [After Inquest, After Trial, No Harassment], null_policy: "absent when none recorded; only After Inquest or After Trial is a finding"}
+      findingDate:       {concept: finding-date, source: Litigation.findingDate, type: date, null_policy: "absent when none recorded"}
+      penalty:           {concept: case-penalty, source: Litigation.penalty, type: integer, null_policy: "absent when none recorded; 0 is a recorded zero"}
+      respondent:        {concept: respondent, source: Litigation.respondent, type: string, null_policy: "absent when none recorded; roles are not recorded"}
+      respondentKeys:    {concept: respondent, source: Litigation.respondentKeys, type: list of string, null_policy: "absent when the respondent is absent"}
+    note: "A case is an action brought, not a finding of fault. An empty result means no case in the snapshot for this building, or a BIN outside the registered scope (1,483 cases are excluded and counted). The answer names the snapshot date and the counting unit."
+  Q28.2:
+    lookup: tests/q28_2/lookup.cypher
+    fields:
+      cases:             {concept: litigation-case, source: "Litigation.litigationId, Litigation.respondent, Litigation.respondentKeys", type: string, counting_unit: "distinct cases", null_policy: "empty when the building has no case"}
+      owners:            {concept: contact, source: "Registration.registrationId and Contact.contactType, corporationName, personName for the owner types", type: string, null_policy: "empty when no owner contact is recorded"}
+      respondentOwnerMatch: {concept: respondent-owner-match, source: "derived: respondentKeys equal to an owner name after rule N3 (src/watchline/compare.py)", type: string, allowed: [matched, not matched, not comparable], null_policy: "never absent; not comparable when the respondent or every owner name is absent"}
+    note: "A name match is a lead, not proof the respondent is the owner; a respondent can be an agent or an individual. A non-match is reported, not reconciled."
+
+diagnostics: []
+
+not_stored:   # deliberately absent from the graph
+  - {term: respondent owner match, reason: "computed at answer time from respondentKeys and the owner contacts with rule N3"}
+  - {term: case address, coordinates and districts, reason: "the building carries its location; not needed to answer"}
+  - {term: judgement amount, reason: "not in the source"}
+  - {term: respondent role, reason: "not recorded by HPD"}
+  - {term: deed grantee comparison, reason: "Q3's comparison; not used here"}
+  - {term: excluded cases (no usable or unregistered BIN), reason: "1,483 rows are counted by the loader and the test, not stored"}

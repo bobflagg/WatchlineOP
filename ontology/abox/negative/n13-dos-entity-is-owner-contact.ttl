@@ -1,4 +1,4 @@
 @prefix onto: <https://watchline.example/onto/> .
 @prefix id:   <https://watchline.example/id/> .
 # Must be inconsistent: a DOS record is not an HPD owner contact. A name match is a lead; the two are never merged.
-id:bad-dos-1 a onto:DosEntity, onto:OwnerContact .
+id:bad-dos-1 a onto:DosEntity, onto:Contact .

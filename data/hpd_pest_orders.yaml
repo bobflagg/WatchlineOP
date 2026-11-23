@@ -1,0 +1,20 @@
+# HPD order codes (hpd_violations.ordernumber) that cite a pest infestation, Admin. Code 27-2017/27-2018.
+# No HPD code table is available locally; each kind is read from the violation descriptions in the frozen baseline (profiled 2026-11-21,
+# stage 1 of the Q15 pest extension). Descriptions name apartments and are never loaded. Loaded counts are rows on a registered BIN.
+# A code is listed under a kind only when the descriptions agree with it; mixed codes are kept apart, never counted as mice.
+version: 1
+snapshot: "hpd_violations, data through 2026-07-02"
+kinds:
+  mice:
+    codes: ["569", "869"]
+    evidence: "100% of descriptions say mice (569: 57,114 rows; 869: 4,275 rows, all sources)"
+  roaches:
+    codes: ["568", "868"]
+    evidence: "100% of descriptions say roaches (568: 65,654; 868: 4,198)"
+  rodents:
+    codes: ["567", "867"]
+    evidence: "rats or rodents at the cellar; 8 of 3,740 rows in 567 say mice and stay in this kind (567: 3,740; 867: 314)"
+  vermin-unspecified:
+    codes: ["566", "866"]
+    evidence: "'vermin' with a species in free text: 566 is mice 1,343, roaches 1,349, mice and roaches 1,068, rats 83, other (termites, waterbugs) 2,634. The code does not say mice."
+not_pest: "every other order code (364 distinct in scope); order 1509 (notice posting, 27-2018.1) is not an infestation"

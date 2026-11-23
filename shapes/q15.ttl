@@ -1,0 +1,36 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix s2c:  <https://w3id.org/shacl2cypher#> .
+@prefix shp:  <https://watchline.example/shapes/> .
+
+# Q15 shapes: the rules OWL cannot express (ontology/ontology-notes.md, Q15 "Rules for Stage 6 shapes").
+# Compiled together with shapes/q01.ttl, which names Building, bin and TaxLot.
+
+# --- Graph names ---
+onto:Violation s2c:label "Violation" .
+onto:hasViolation s2c:relationship "HAS_VIOLATION" ; s2c:direction "out" .
+onto:violationId s2c:property "violationId" .
+onto:violationClass s2c:property "violationClass" .
+onto:violationStatus s2c:property "status" .
+onto:inspectionDate s2c:property "inspectionDate" .
+onto:orderNumber s2c:property "orderNumber" .
+
+# --- Rules ---
+shp:ViolationShape a sh:NodeShape ;
+    s2c:key "violationId" ;
+    sh:targetClass onto:Violation ;
+    # R1 all five properties present and typed (orderNumber: numeric text, Q15.3); class and status are the HPD enums
+    sh:property [ sh:path onto:violationId ; sh:minCount 1 ; sh:datatype xsd:integer ] ;
+    sh:property [ sh:path onto:violationClass ; sh:minCount 1 ; sh:datatype xsd:string ; sh:in ( "A" "B" "C" "I" ) ] ;
+    sh:property [ sh:path onto:violationStatus ; sh:minCount 1 ; sh:datatype xsd:string ; sh:in ( "Open" "Close" ) ] ;
+    sh:property [ sh:path onto:inspectionDate ; sh:minCount 1 ; sh:datatype xsd:date ] ;
+    sh:property [ sh:path onto:orderNumber ; sh:minCount 1 ; sh:datatype xsd:string ; sh:pattern "^[1-9][0-9]*$" ] ;
+    # R2 exactly one building cites each violation
+    sh:property [ sh:path [ sh:inversePath onto:hasViolation ] ; sh:minCount 1 ; sh:maxCount 1 ] .
+
+shp:BuildingViolationShape a sh:NodeShape ;
+    s2c:key "bin" ;
+    sh:targetClass onto:Building ;
+    # R2 HAS_VIOLATION ends on a violation
+    sh:property [ sh:path onto:hasViolation ; sh:class onto:Violation ] .

@@ -1,0 +1,67 @@
+# Question schema: Q26 "What each absence means": for a lot, which sources hold no record (HPD registration, DOS entity, either layer, any violation)
+# and what each absence means (sub-questions Q26.1 to Q26.4).
+# Adds no graph element (stage 1, 2026-11-19). Answered from Lot, Contact (owner types), DosEntity, IN_NETWORK, IN_PORTFOLIO, the absence properties,
+# HAS_BUILDING and HAS_VIOLATION (Q1, Q2, Q5, Q8, Q9, Q15). The absence statement, reason and outcome are computed at answer time.
+question: Q26
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [hpd_registrations, hpd_contacts, nys_corporations, hpd_violations, bor_layers, pluto]
+
+graph:
+  constraints: []
+  nodes: {}
+  relationships: {}
+
+answer:
+  Q26.1:
+    lookup: tests/q26_1/lookup.cypher
+    proved_by: tests/q26_1/check_registration.py
+    fields:
+      bbl:           {concept: tax-lot, source: Lot.bbl, type: string, null_policy: "never absent; no row means the lot is outside the rental scope"}
+      hpdRegistered: {concept: hpd-registered, source: Lot.hpdRegistered, type: boolean, null_policy: "never absent; false is the absence: no registration row (snapshot 2026-05-29)"}
+      unitsRes:      {concept: residential-units, source: Lot.unitsRes, type: integer, counting_unit: "PLUTO residential units, lot-wide", null_policy: "absent when PLUTO has no unit count; 0 kept as recorded"}
+      yearBuilt:     {concept: year-built, source: Lot.yearBuilt, type: integer, null_policy: "absent when PLUTO records 0 or none"}
+      reason:        {concept: source-absence, source: "derived: outside_source_coverage when hpdRegistered is false", type: string, allowed_scheme: network-absence-reasons, allowed_level: top, allowed_subset: true, allowed: ["outside_source_coverage"], null_policy: "absent when the lot is registered. Whether an unregistered lot is exempt is not known"}
+    note: "Absence from the dataset is not a ruling that no registration exists. A new building can be unregistered for a legitimate reason."
+  Q26.2:
+    lookup: tests/q26_2/lookup.cypher
+    proved_by: tests/q26_2/check_dos_absence.py
+    fields:
+      bbl:             {concept: tax-lot, source: Lot.bbl, type: string, null_policy: "never absent"}
+      contactType:     {concept: contact-type, source: Contact.contactType, type: string, allowed: ["CorporateOwner", "IndividualOwner", "JointOwner"], null_policy: "absent when the lot has no owner contact"}
+      corporationName: {concept: corporation-name, source: Contact.corporationName, type: string, null_policy: "absent for a person owner"}
+      nameKey:         {concept: corporation-name, source: Contact.nameKey, type: string, null_policy: "absent when there is no corporation name; rule N3"}
+      dosRecords:      {concept: dos-entity, source: "derived: count of DosEntity with the same nameKey", type: integer, counting_unit: "DOS records sharing the name key", null_policy: "never absent; 0 is no record under this spelling, not a finding that the entity does not exist"}
+      reason:          {concept: source-absence, source: "derived: lot-level reason from the owner names (no record under any name; or no entity name to look up)", type: string, allowed_scheme: network-absence-reasons, allowed_level: top, allowed_subset: true, allowed: ["no_qualifying_linkage", "outside_method_input"], null_policy: "absent when any owner name has a record (snapshot 2026-07-06)"}
+    note: "A long-form DOS spelling (anchors C and D) is a Q22 lead, not a match. Only active New York entities are held; a non-New York entity is a Q25 retrieval lead."
+  Q26.3:
+    lookup: tests/q26_3/lookup.cypher
+    proved_by: tests/q26_3/check_layer_absence.py
+    fields:
+      bbl:                    {concept: tax-lot, source: Lot.bbl, type: string, null_policy: "never absent"}
+      networkGroupId:         {concept: network-group-id, source: OperationalNetwork.groupId, type: string, null_policy: "absent when the lot is in no network; run-local"}
+      networkAbsence:         {concept: network-absence, source: Lot.networkAbsence, type: string, allowed_scheme: network-absence-reasons, allowed_level: top, allowed: ["no_qualifying_linkage", "excluded_by_policy", "below_eligibility_rule", "outside_source_coverage", "outside_method_input"], null_policy: "absent when the lot is in a network or has no BOR status row"}
+      networkAbsenceDetail:   {concept: network-absence-detail, source: Lot.networkAbsenceDetail, type: string, allowed_scheme: network-absence-reasons, allowed_level: detail, allowed_subset: true, allowed: ["no_linkage", "no_registration", "no_owner_contact", "aggregator_address_masked", "address_evidence_masked", "first_name_veto", "common_name_veto", "shared_company_degree_unknown", "shared_company_name_not_rare", "shared_company_first_name_conflict", "shared_company_degree_cap"], null_policy: "absent exactly when networkAbsence is absent"}
+      portfolioGroupId:       {concept: portfolio-group-id, source: OwnerPortfolio.groupId, type: string, null_policy: "absent when the lot is in no portfolio; run-local"}
+      portfolioAbsence:       {concept: portfolio-absence, source: Lot.portfolioAbsence, type: string, allowed_scheme: network-absence-reasons, allowed_level: top, allowed: ["no_qualifying_linkage", "excluded_by_policy", "below_eligibility_rule", "outside_source_coverage", "outside_method_input"], null_policy: "absent when the lot is in a portfolio or has no BOR status row"}
+      portfolioAbsenceDetail: {concept: portfolio-absence-detail, source: Lot.portfolioAbsenceDetail, type: string, allowed_scheme: network-absence-reasons, allowed_level: detail, allowed_subset: true, allowed: ["no_linkage", "no_registration", "no_owner_contact", "unmatched_node", "address_evidence_masked", "coop_condo_excluded", "coop_condo_dominated", "institutional_screen", "first_name_veto", "common_name_veto", "shared_company_degree_unknown", "shared_company_name_not_rare", "shared_company_first_name_conflict", "shared_company_degree_cap", "deed_not_latest", "deed_parcels_out_of_range", "successor_not_shell", "successor_transfer_not_nominal"], null_policy: "absent exactly when portfolioAbsence is absent"}
+    note: "The two layers can give different reasons for one lot. Recall is unmeasured: a non-link is not a finding of different owners. Group ids are valid only within run 2026-05-29-869bd299 (release v0.3.0)."
+  Q26.4:
+    lookup: tests/q26_4/lookup.cypher
+    proved_by: tests/q26_4/check_violation_absence.py
+    fields:
+      bbl:         {concept: tax-lot, source: Lot.bbl, type: string, null_policy: "never absent"}
+      loadedScope: {concept: hpd-registered, source: Lot.hpdRegistered, type: boolean, null_policy: "never absent; false means violations are not loaded for the lot, not that it has none"}
+      violations:  {concept: violation, source: "derived: distinct Violations of the lot's Buildings", type: integer, counting_unit: "distinct violations (all statuses), data through 2026-07-02", null_policy: "never absent; 0 on a registered lot is none in the snapshot, not good conditions"}
+      outcome:     {concept: source-absence, source: "derived: not-loaded when loadedScope is false; none-in-snapshot when registered and violations is 0; present otherwise", type: string, allowed: ["present", "none-in-snapshot", "not-loaded"], null_policy: "never absent"}
+      reason:      {concept: source-absence, source: "derived: outside_source_coverage when outcome is none-in-snapshot", type: string, allowed_scheme: network-absence-reasons, allowed_level: top, allowed_subset: true, allowed: ["outside_source_coverage"], null_policy: "absent unless outcome is none-in-snapshot; not-loaded is an outcome, not one of the five reasons"}
+    note: "A violation is what an inspector cited, not a measure of conditions. The source holds violations for unregistered lots that the graph does not load (4064820003: 219)."
+
+diagnostics: []
+
+not_stored:   # deliberately absent from the graph
+  - {term: source absence, reason: "computed at answer time from existing lot, contact, DOS, layer and violation elements; a stored flag would go stale"}
+  - {term: absence reason for non-layer sources, reason: "derived by the rules in specs/questions/q26.md; only the layer reasons are stored (Lot.networkAbsence, Lot.portfolioAbsence)"}
+  - {term: not-loaded, reason: "an outcome for violations of an unregistered lot, computed from Lot.hpdRegistered"}
+  - {term: exempt or unregistered, reason: "the data does not say which; the answer states it does not know"}
+  - {term: recall, reason: "a fixed statement in the answer: recall of both layers is unmeasured"}

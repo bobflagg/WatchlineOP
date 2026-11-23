@@ -1,0 +1,4 @@
+-- Q26.4 expected answers: violations of a lot in the source. Independent of the graph. hpd_violations (data through 2026-07-02), hpd_registrations.
+-- SQL lives in tests/q26_support.py (VIOL_SQL, VIOL_LOADED_SQL). Rule (Q15): a violation loads when its BBL is HPD-registered and its BIN is a registered building; a lot has the violations of its buildings.
+-- Registered lot: graph count = loadable source count; zero = none in the snapshot. Unregistered lot: not loaded, whatever the source holds
+-- (4064820003: 210 units, no registration, 219 violations in the source, none in the graph). Lot 1000160180 (River Terrace): registered, none in source.

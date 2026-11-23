@@ -1,0 +1,19 @@
+# Q15.1 fixtures. hpd_violations (data through 2026-07-02) and hpd_registrations (frozen baseline, data/README.md).
+# check_violations.py re-derives each from the source, so a stale fixture fails. Counting unit: violations.
+buildings:
+  - bin: "3013901"
+    label: "anchor C (438 52 Street): 4 open (B 2, C 2), oldest open 2023-03-25; closed A 1, B 3, C 2"
+    open: {B: 2, C: 2}
+    closed: {A: 1, B: 3, C: 2}
+    oldest_open: "2023-03-25"
+  - bin: "3014788"
+    label: "anchor A (5413 7 Avenue): derived from the source; counts are re-derived, not fixed here"
+    derived: true
+  - bin: "3324448"
+    label: "anchor D building on a three-building lot: violations belong to the BIN, not the lot"
+    derived: true
+excluded:
+  # violations on registered lots that carry no usable BIN, or a BIN that is not a registered building: excluded and counted
+  rows: 10770
+totals:
+  loaded: 1901592

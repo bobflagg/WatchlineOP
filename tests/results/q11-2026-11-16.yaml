@@ -1,0 +1,27 @@
+# Q11 acceptance results, 2026-11-16. Database-backed checks run by the user on the loaded graph (make test, make shapes passed).
+question: Q11
+fixture_version: verified against the frozen baseline (2026-11-16)
+baseline: "Frozen baseline recorded 2026-11-16 in data/README.md: justfixwow-poc-baseline_2026-11-16.sql.gz, SHA-256 9124f6c0d0f0d2e453f1971247ed29c217d3d4b5f55338d95344e04a617b6278. BOR release v0.3.0 (run 2026-05-29-869bd299)."
+tools:
+  shacl2cypher: "0.3.0; Q11 adds no SHACL shape, so the compiled rule set is unchanged"
+  reasoner: "ROBOT with HermiT; offline ontology check 156/156 (2026-11-16)"
+acceptance:
+  graph:
+    status: passed
+    reason: "baseline identified 2026-11-16; make test and make shapes passed (user-reported 2026-11-16, after the load and the single-party shape relaxation)"
+    evidence:
+      load: "scripts/load_mortgages.py run by the user; tests/q11_1 reconciles the 492,092 MTGE total (scripts/profile_q11_scope.py) and the 19 single-party mortgages against the source"
+      sub_question_checks: "tests/q11_1 to q11_4 and the updated tests/q7_3 passed within make test (user-reported)"
+      shapes: "make shapes passed, including queries/checks/q11-mortgages.cypher (violationCount 0), the four negative cases in tests/negative/q11 and the relaxed DocumentShape.hasParty.minCount (user-reported)"
+      offline: "make profiles 757/757, taxonomy 89/89, thesaurus 11/11, ontology 156/156, SKOS clean"
+  retrieval_extraction:
+    status: pending
+    reason: "Q11.5 (reported claims, a documented parent company) needs a replayable retrieval cache that does not exist yet"
+  investigation:
+    status: pending
+    reason: "not declared for Q11"
+open_points:
+  - "19 mortgages record a single party in the source (kept as recorded); DocumentShape.hasParty.minCount is now 1."
+  - "Anchor C's mortgage 2015032301122001 is outside scope M: ACRIS spells the owner \"438 52ND STREET OWNERS' CORP.\" and HPD \"438 52 ST OWNERS CORP\" (a recorded gap, not a failure)."
+  - "No loaded source documents a parent company; reported claims are session evidence."
+  - "Scope M loads MTGE only; assignments, satisfactions and agreements stay out until a question needs them."

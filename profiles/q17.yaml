@@ -1,0 +1,64 @@
+# Question schema: Q17 "Is this building's registration missing, lapsed, or older than the latest deed transfer? Does the building meet the unit
+# threshold of the registration dataset (3+ units)?" (sub-questions Q17.1 to Q17.4).
+# Adds no graph element (stage 1, 2026-11-18). Answered per lot from Lot (Q1), Building and Registration (Q2) and Deed (Q3, Q12). Every condition, the
+# as-of date and the threshold are computed at answer time, not stored. The as-of date is the registration data's snapshot date (2026-05-29, an input).
+question: Q17
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [hpd_registrations, pluto, acris_master, acris_legals]
+
+graph:
+  constraints: []
+  nodes: {}
+  relationships: {}
+
+answer:
+  Q17.1:
+    lookup: tests/q17_1/lookup.cypher
+    proved_by: tests/q17_1/expected.sql
+    fields:
+      missing:                {concept: missing-registration, source: "derived: Lot.hpdRegistered", type: string, allowed: [holds, does-not-hold], null_policy: "never absent for a lot in the graph; holds only when the registration data has no row for the lot. A lot outside the rental scope (unregistered, under 3 units) is not in the graph and the answer says so. A dataset gap, not a ruling that none exists"}
+      hpdRegistered:          {concept: hpd-registered, source: Lot.hpdRegistered, type: boolean, null_policy: "never absent"}
+      noUsableRegistration:   {concept: no-usable-registration, source: "derived: Lot.hpdRegistered and no HAS_REGISTRATION on the lot's buildings", type: boolean, null_policy: "never absent; true means rows exist but only a placeholder id or BIN, so lapsed and older-than-deed are cannot-tell"}
+      registrations:          {concept: registration, source: "count of Building-[:HAS_REGISTRATION]->Registration on the lot's buildings", type: integer, counting_unit: "distinct (BIN, registration id) pairs", null_policy: "0 when none is usable"}
+      registeredBuildings:    {concept: building, source: "count of distinct Buildings with a HAS_REGISTRATION", type: integer, counting_unit: "distinct buildings", null_policy: "0 when none; a lot can hold an unregistered building, so no ruling on a single building"}
+      plutoNumBuildings:      {concept: pluto-building-count, source: Lot.plutoNumBuildings, type: integer, counting_unit: "buildings as PLUTO counts them", null_policy: "absent when the lot is not in PLUTO or PLUTO has no count; reported beside registeredBuildings, labelled by source"}
+    note: "Absence from the dataset is not a ruling that no registration exists or is required. A new building can be unregistered for a legitimate reason; the answer says it does not know why."
+  Q17.2:
+    lookup: tests/q17_2/lookup.cypher
+    proved_by: tests/q17_2/expected.sql
+    fields:
+      registrations:  {concept: registration, source: "Building-[:HAS_REGISTRATION]->Registration", type: "list of {bin, registrationId, lastRegistered, registrationEnd}", counting_unit: "distinct (BIN, registration id) pairs", null_policy: "empty list means no usable registration; each registration is listed with its dates and none is chosen"}
+      lastRegistered: {concept: last-registered-date, source: HAS_REGISTRATION.lastRegistered, type: date, null_policy: "absent when HPD has no date or its rows disagree; not used to judge lapsed"}
+      registrationEnd: {concept: registration-end-date, source: HAS_REGISTRATION.registrationEnd, type: date, null_policy: "absent when its rows disagree; never inferred"}
+      lapsed:         {concept: lapsed-registration, source: "derived: HAS_REGISTRATION.registrationEnd of every registration of the lot against the as-of date", type: string, allowed: [holds, does-not-hold, cannot-tell], null_policy: "never absent; holds when every registration ended before the as-of date, does-not-hold when any has not, cannot-tell with none or an absent end date and none running. HPD's period, not a ruling that the owner is in violation"}
+    note: "The as-of date (2026-05-29) is stated in every answer. A registration ending after it had not ended at the snapshot."
+  Q17.3:
+    lookup: tests/q17_3/lookup.cypher
+    proved_by: tests/q17_3/expected.sql
+    fields:
+      latestRegistered:   {concept: last-registered-date, source: "derived: max of HAS_REGISTRATION.lastRegistered over the lot", type: date, null_policy: "absent when no registration is dated; undated registrations are ignored"}
+      latestDeedRecorded: {concept: recorded-date, source: "derived: max of Deed.recordedDate over HAS_DEED", type: date, null_policy: "absent when the lot has no deed in the snapshot (no title record, not no transfer)"}
+      latestDeeds:        {concept: deed, source: "Lot-[:HAS_DEED]->Deed recorded on the latest date", type: "list of {documentId, docType, docDate, recordedDate, amount, notASale}", counting_unit: "distinct documents; a deed covering several lots is one deed", null_policy: "empty list means no deed; deeds tying on the latest date are all returned, none chosen"}
+      notASale:           {concept: not-a-sale, source: "derived: Deed.amount = 0 or Deed.docType in (CORRD, CONDEED)", type: boolean, null_policy: "never absent for a listed deed; true means a correction or $0 deed not read as a sale"}
+      olderThanDeed:      {concept: registration-older-than-deed, source: "derived: latestRegistered against latestDeedRecorded", type: string, allowed: [holds, does-not-hold, cannot-tell], null_policy: "never absent; holds when the registration is earlier than the deed's recorded date, does-not-hold when the same day or later, cannot-tell with no deed, no dated registration or no registration. Compares two dates only"}
+    note: "Both dates are returned beside the answer, each labelled by source (HPD, ACRIS)."
+  Q17.4:
+    lookup: tests/q17_4/lookup.cypher
+    proved_by: tests/q17_4/expected.sql
+    fields:
+      unitsRes:         {concept: residential-units, source: Lot.unitsRes, type: integer, counting_unit: "residential units, whole lot, never summed across buildings", null_policy: "0 means PLUTO records none; absent when PLUTO has no value"}
+      threshold:        {concept: unit-threshold, source: "input: the registration dataset's minimum (3)", type: integer, counting_unit: "residential units", null_policy: "never absent; stated in every answer"}
+      yearBuilt:        {concept: year-built, source: Lot.yearBuilt, type: integer, null_policy: "absent when PLUTO has no year (0 is stored as absent); reported so a newly built, unregistered lot shows its year"}
+      thresholdOutcome: {concept: unit-threshold, source: "derived: Lot.unitsRes against the threshold", type: string, allowed: [meets-threshold, below-threshold, units-not-recorded], null_policy: "never absent; 0 or absent units is units-not-recorded, not below. No ruling on legal applicability"}
+    note: "A smaller building can also be registrable; the threshold is a reporting aid only."
+
+diagnostics: []
+
+not_stored:   # deliberately absent from the graph
+  - {term: missing, lapsed and older-than-deed conditions, reason: computed at answer time from Lot, HAS_REGISTRATION and HAS_DEED; nothing is stored}
+  - {term: no usable registration flag, reason: computed from hpdRegistered and the absence of HAS_REGISTRATION}
+  - {term: as-of date and snapshot dates, reason: an input and answer contract, taken from data/sources.yaml (registrations and ACRIS through 2026-05-29, PLUTO 26v1)}
+  - {term: unit threshold value 3, reason: an input of the lookup}
+  - {term: lots outside the rental scope, reason: not loaded (unregistered with under 3 units); the answer says the lot is not in the graph}
+  - {term: registration start date or earlier filings, reason: the source has neither; the answer treats registrations as today's version of the past}

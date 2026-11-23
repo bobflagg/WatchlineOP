@@ -1,4 +1,4 @@
-# Q3.2 expected grantees per Deed. Provisional until the frozen dump is identified (data/README.md).
+# Q3.2 expected grantees per Deed. verified against the frozen baseline recorded in data/README.md (2026-11-16).
 # Checked read-only 2026-11-12. check_grantees.py re-derives each from the source, so a stale fixture fails.
 # grantees: [name, mailingAddress, addressLine2, zip] as recorded; null = absent. Compared as a set.
 # Person names are not repeated: a person named in a source row is given as "<person>".

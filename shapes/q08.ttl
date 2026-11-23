@@ -1,0 +1,55 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix s2c:  <https://w3id.org/shacl2cypher#> .
+@prefix shp:  <https://watchline.example/shapes/> .
+
+# Q8 shapes: the rules OWL cannot express (ontology/ontology-notes.md, Q8 "Rules for Stage 6 shapes").
+# Rules about relationship properties, sums, and comparisons across nodes are named Cypher checks (queries/checks/q08-*.cypher).
+
+# --- Graph names ---
+onto:OperationalNetwork s2c:label "OperationalNetwork" .
+onto:Landlord s2c:label "Landlord" .
+onto:inNetwork s2c:relationship "IN_NETWORK" ; s2c:direction "out" .
+onto:covers s2c:relationship "COVERS" ; s2c:direction "out" .
+onto:basedOnContact s2c:relationship "BASED_ON_CONTACT" ; s2c:direction "out" .
+onto:groupId s2c:property "groupId" .
+onto:landlordName s2c:property "name" .
+onto:networkSplit s2c:property "split" .
+onto:networkAbsence s2c:property "networkAbsence" .
+onto:networkAbsenceDetail s2c:property "networkAbsenceDetail" .
+
+# --- Rules ---
+shp:OperationalNetworkShape a sh:NodeShape ;
+    s2c:key "groupId" ;
+    sh:targetClass onto:OperationalNetwork ;
+    # R1 id present and well formed; split present and one of BOR's two codes
+    sh:property [ sh:path onto:groupId ; sh:minCount 1 ; sh:datatype xsd:string ; sh:pattern "^ON-[0-9]+$" ] ;
+    sh:property [ sh:path onto:networkSplit ; sh:minCount 1 ; sh:datatype xsd:string ; sh:in ( "wcc" "louvain" ) ] ;
+    # R2 a network has at least two member lots
+    sh:property [ sh:path [ sh:inversePath onto:inNetwork ] ; sh:minCount 2 ] .
+
+shp:LotNetworkShape a sh:NodeShape ;
+    s2c:key "bbl" ;
+    sh:targetClass onto:TaxLot ;
+    # R2 a lot is in at most one network, and that is a network
+    sh:property [ sh:path onto:inNetwork ; sh:maxCount 1 ; sh:class onto:OperationalNetwork ] ;
+    # R3 absence codes are BOR's top-level and detail codes
+    sh:property [ sh:path onto:networkAbsence ; sh:datatype xsd:string ;
+                  sh:in ( "no_qualifying_linkage" "excluded_by_policy" "below_eligibility_rule" "outside_source_coverage" "outside_method_input" ) ] ;
+    sh:property [ sh:path onto:networkAbsenceDetail ; sh:datatype xsd:string ;
+                  sh:in ( "no_linkage" "no_registration" "no_owner_contact" "aggregator_address_masked" "address_evidence_masked" "first_name_veto"
+                          "common_name_veto" "shared_company_degree_unknown" "shared_company_name_not_rare" "shared_company_first_name_conflict"
+                          "shared_company_degree_cap" ) ] .
+
+shp:LandlordShape a sh:NodeShape ;
+    s2c:key "nodeId" ;
+    sh:targetClass onto:Landlord ;
+    # R4 what a landlord covers is a lot. That it covers at least one lot, or is a portfolio link end, is the Q9 check
+    # queries/checks/q09-landlords.cypher (115 portfolio landlords cover only co-op or condo lots outside the graph).
+    sh:property [ sh:path onto:covers ; sh:class onto:TaxLot ] ;
+    # R9 the HPD contacts a landlord record is based on are contacts
+    sh:property [ sh:path onto:basedOnContact ; sh:class onto:Contact ] ;
+    # R8 a landlord record has a name: a non-blank string, as the release spells it (businessAddresses and the anchors are checked by
+    # queries/checks/q08-labels.cypher, because a list property and a relationship from two labels are outside what shacl2cypher compiles)
+    sh:property [ sh:path onto:landlordName ; sh:minCount 1 ; sh:datatype xsd:string ; sh:minLength 1 ] .

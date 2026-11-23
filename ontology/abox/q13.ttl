@@ -1,0 +1,42 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q13 example data. Values come from the verified fixtures in tests/q13_1/fixtures.yaml
+# (ACRIS through 2026-05-31, frozen baseline in data/README.md). Entities only; no person names.
+# The kind, description, counts by kind, other-lot count and borrower/lender roles are computed at answer time.
+
+# Anchor C: a $0 mortgage with a document date, an old mortgage with no document date, and a mortgage with its same-day assignment of leases and rents.
+id:lot-3008070024 a onto:TaxLot ; onto:bbl "3008070024" ;
+    onto:hasFinancingDocument id:fin-BK_8030114900597, id:fin-FT_3660005404666, id:fin-2015032301122001, id:fin-2015032301122003 .
+id:fin-BK_8030114900597 a onto:Document ; onto:documentId "BK_8030114900597" ; onto:documentType "MTGE" ;
+    onto:documentDate "1980-03-24"^^xsd:date ; onto:recordedDate "1980-03-24"^^xsd:date ; onto:documentAmount 0 .
+id:fin-FT_3660005404666 a onto:Document ; onto:documentId "FT_3660005404666" ; onto:documentType "MTGE" ;
+    onto:recordedDate "1996-10-31"^^xsd:date ; onto:documentAmount 500000 .
+id:fin-2015032301122001 a onto:Document ; onto:documentId "2015032301122001" ; onto:documentType "MTGE" ;
+    onto:documentDate "2015-03-20"^^xsd:date ; onto:recordedDate "2015-04-08"^^xsd:date ; onto:documentAmount 1546326 ;
+    onto:hasParty id:fin-2015032301122001-p1, id:fin-2015032301122001-p2 .
+id:fin-2015032301122001-p1 a onto:DocumentParty ; onto:partyRole 1 .
+id:fin-2015032301122001-p2 a onto:DocumentParty ; onto:partyRole 2 .
+id:fin-2015032301122003 a onto:Document ; onto:documentId "2015032301122003" ; onto:documentType "AL&R" ;
+    onto:documentDate "2015-03-20"^^xsd:date ; onto:recordedDate "2015-04-08"^^xsd:date ; onto:documentAmount 3200000 .
+
+# Anchor A: a mortgage and a termination of lease and rent assignment; no satisfaction follows the mortgage (absence is not an edge).
+id:lot-3008260002 a onto:TaxLot ; onto:bbl "3008260002" ;
+    onto:hasFinancingDocument id:fin-2021031601183001, id:fin-2023061200959001, id:fin-2023061400729001 .
+id:fin-2021031601183001 a onto:Document ; onto:documentId "2021031601183001" ; onto:documentType "MTGE" ;
+    onto:documentDate "2021-02-16"^^xsd:date ; onto:recordedDate "2021-03-22"^^xsd:date ; onto:documentAmount 8750000 .
+id:fin-2023061200959001 a onto:Document ; onto:documentId "2023061200959001" ; onto:documentType "TL&R" ;
+    onto:documentDate "2023-02-14"^^xsd:date ; onto:recordedDate "2023-06-15"^^xsd:date ; onto:documentAmount 0 .
+id:fin-2023061400729001 a onto:Document ; onto:documentId "2023061400729001" ; onto:documentType "SAGE" ;
+    onto:documentDate "2023-02-09"^^xsd:date ; onto:recordedDate "2023-06-16"^^xsd:date ; onto:documentAmount 0 .
+
+# A multi-lot mortgage: one document on two lots, one node.
+id:lot-3008080001 a onto:TaxLot ; onto:bbl "3008080001" ; onto:hasFinancingDocument id:fin-2003060300708001 .
+id:lot-3008080002 a onto:TaxLot ; onto:bbl "3008080002" ; onto:hasFinancingDocument id:fin-2003060300708001 .
+id:fin-2003060300708001 a onto:Document ; onto:documentId "2003060300708001" ; onto:documentType "MTGE" ;
+    onto:documentDate "2003-04-15"^^xsd:date ; onto:recordedDate "2003-08-07"^^xsd:date ; onto:documentAmount 65444 .
+
+# A registered lot with no financing document in the snapshot: no hasFinancingDocument edge, an empty list and not a finding.
+id:lot-1000077501 a onto:TaxLot ; onto:bbl "1000077501" .

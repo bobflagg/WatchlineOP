@@ -1,0 +1,10 @@
+# Same format as tests/negative/q21/cases.yaml: bad data inside a transaction that is always rolled back.
+# Cases reuse the existing property key `status` so no new key token is created and the check keeps its catalog fast path.
+# The Q26-only keys (sourceAbsence, absenceReason, notLoaded, ...) are guarded by the check but not seeded here.
+cases:
+  - {name: status stored on a lot,                  create: "MATCH (n:Lot) WITH n LIMIT 1 SET n.status = 'unregistered'", check: queries/checks/q26-computed-not-stored.cypher}
+  - {name: status stored on a building,             create: "MATCH (n:Building) WITH n LIMIT 1 SET n.status = 'absent'", check: queries/checks/q26-computed-not-stored.cypher}
+  - {name: status stored on a contact,              create: "MATCH (n:Contact) WITH n LIMIT 1 SET n.status = 'no_record'", check: queries/checks/q26-computed-not-stored.cypher}
+  - {name: status stored on a DOS entity,           create: "MATCH (n:DosEntity) WITH n LIMIT 1 SET n.status = 'no_record'", check: queries/checks/q26-computed-not-stored.cypher}
+  - {name: status stored on an operational network, create: "MATCH (n:OperationalNetwork) WITH n LIMIT 1 SET n.status = 'absent'", check: queries/checks/q26-computed-not-stored.cypher}
+  - {name: status stored on an owner portfolio,     create: "MATCH (n:OwnerPortfolio) WITH n LIMIT 1 SET n.status = 'absent'", check: queries/checks/q26-computed-not-stored.cypher}

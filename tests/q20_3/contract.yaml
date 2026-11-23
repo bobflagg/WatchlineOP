@@ -1,0 +1,21 @@
+# Q20 dossier contract (computed or retrieved at answer time; nothing here is stored in the graph).
+# Q20.4 and the investigation part of Q20.3 stay pending until a versioned retrieval cache exists (as Q5.4, Q11.5, Q16).
+question: Q20
+sections: [input_and_resolution, recorded_facts, groupings, transactions_and_conditions, retrieved_items, conflicts_and_gaps, run_and_stop]
+claim_fields: [text, label, sourceCategory, sourceRecordOrUrl, retrievedAt, reviewStatus]
+labels: [documented, hypothesized, reported]   # evidence-statuses scheme: Type I recorded, Type II derived lead, reported claim
+source_categories: [public_record, published_reporting, web_content, project_derived]
+stop_reasons: [reached_service_address, no_further_link, needs_payment, budget_reached, unresolved_conflict]   # kebab-case in the stop-reasons scheme
+rules:
+  - "a lead is a new name or address from a recorded or retrieved source, not masked, within the step and time budget; all others are logged, not followed"
+  - "no claim states ownership on the strength of a derived layer or a group's person anchor; shared management or a shared address is a record link only"
+  - "the Operational Network and Owner Portfolio are returned apart, each a lead to verify, with the run and release"
+  - "a hypothesis is a derived or reported lead, never a finding"
+  - "exactly one stop reason; the dossier never implies the investigation is complete in an absolute sense"
+  - "an entity registered elsewhere is searched in that state's free registry; a paid-only step is an unresolved lead with reason needs_payment"
+  - "complaints and litigation are not loaded: reported as a source gap, never as none found"
+  - "the run records snapshot dates, the retrieval log and the cache, so the investigation can be replayed"
+cache_needed: "versioned retrieval cache: queries, sources, dates, retrieved text, and the extraction results, for each case"
+cases:
+  ordinary: [anchor A trail to the entity's own process address]
+  difficult: [trail ends at a registered-agent address after two entities, parent company only in a news claim, DOB permits retrieved on demand, entity in another state, paid-only registry step]

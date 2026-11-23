@@ -1,0 +1,7 @@
+# Same format as tests/negative/q16/cases.yaml: bad data inside a transaction that is always rolled back.
+# Cases avoid minting a new property key; the Q25-only keys (registryOutcome, filingId, ...) are guarded by the check but not seeded here.
+cases:
+  - {name: status stored on a DOS entity,   create: "MATCH (e:DosEntity) WITH e LIMIT 1 SET e.status = 'ACTIVE'", check: queries/checks/q25-computed-not-stored.cypher}
+  - {name: registry search node created,    create: "CREATE (:RegistrySearch)", check: queries/checks/q25-computed-not-stored.cypher}
+  - {name: registry finding node created,   create: "CREATE (:RegistryFinding)", check: queries/checks/q25-computed-not-stored.cypher}
+  - {name: foreign entity node created,     create: "CREATE (:ForeignEntity)", check: queries/checks/q25-computed-not-stored.cypher}

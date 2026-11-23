@@ -1,6 +1,6 @@
 -- Q3.1 expected answers for Deed nodes and HAS_DEED, from the frozen JustFix/WoW snapshot.
 -- Independent of the loader. real_property_master (2026-05-29), real_property_legals (2026-05-31), checked read-only 2026-11-12.
--- Provisional until the dump is identified (data/README.md).
+-- verified against the frozen baseline recorded in data/README.md (2026-11-16).
 --
 -- Rules:
 --  * Scope: lots in the rental-market scope (HPD-registered, plus unregistered pluto_latest lots with unitsres >= 3).

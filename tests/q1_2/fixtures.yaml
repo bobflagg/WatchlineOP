@@ -1,4 +1,4 @@
-# Q1.2 expected Buildings per Lot. Provisional until the frozen dump is identified (data/README.md).
+# Q1.2 expected Buildings per Lot. verified against the frozen baseline recorded in data/README.md (2026-11-16).
 # Checked read-only on 2026-11-11. check_buildings.py re-derives each from the source, so a stale fixture fails.
 # mode: exact = the lot has exactly these buildings; includes = these buildings are among them.
 # plutoNumBuildings null = the property is absent (lot not in PLUTO). A building address of null = absent.

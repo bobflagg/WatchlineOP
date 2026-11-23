@@ -1,0 +1,18 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix s2c:  <https://w3id.org/shacl2cypher#> .
+@prefix shp:  <https://watchline.example/shapes/> .
+
+# Q13 shapes: the rules OWL cannot express (ontology/ontology-notes.md, Q13 "Rules for Stage 6 shapes").
+# Compiled together with shapes/q01.ttl (TaxLot) and shapes/q07.ttl (Document, which already requires a documentId, a documentType,
+# typed dates and amount, and at least one party).
+
+# --- Graph names ---
+onto:hasFinancingDocument s2c:relationship "HAS_FINANCING_DOCUMENT" ; s2c:direction "out" .
+
+# --- Rules ---
+shp:LotFinancingShape a sh:NodeShape ;
+    s2c:key "bbl" ;
+    sh:targetClass onto:TaxLot ;
+    # R1 HAS_FINANCING_DOCUMENT ends on a document
+    sh:property [ sh:path onto:hasFinancingDocument ; sh:class onto:Document ] .

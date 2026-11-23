@@ -1,0 +1,9 @@
+# Q23.1 fixtures: footprint of an agent name under rule N3. check_footprint.py re-derives each from the source (expected.sql), so a stale fixture fails.
+# Counting units: distinct registrations, distinct BIN, distinct BBL. Spellings are the recorded corporation names (case kept).
+agents:
+  - {nameKey: "BRIGHTON MANAGEMENT", registrations: 40, buildings: 40, lots: 39, spellings: {"BRIGHTON MANAGEMENT": 35, "Brighton Management": 5}, note: "the question's example: case variants combine under N3; all contact type Agent. HPD's contact description GEN.PART is not a contact type"}
+  - {nameKey: "BRIGHTON MANAGEMENT LLC", registrations: 2, buildings: 2, lots: 2, spellings: {"BRIGHTON MANAGEMENT LLC": 2}, note: "a legal suffix is a different key under N3; reported apart, never merged"}
+  - {nameKey: "DOUGLAS ELLIMAN PROPERTY MANAGEMENT", registrations: 435, buildings: 508, lots: 309, note: "large footprint: more buildings than registrations (one registration, several BINs); lots are the lots of those buildings"}
+  - {nameKey: "BRIGHTON MANAGMENT", registrations: 3, buildings: 3, lots: 3, note: "a misspelling is a different key; not merged"}
+absent:
+  - {nameKey: "NO SUCH AGENT CORP", note: "no agent: the lookup returns no rows"}

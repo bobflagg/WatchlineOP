@@ -1,0 +1,22 @@
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q14 example data. Values come from the verified fixtures in tests/q14_*/fixtures.yaml (ACRIS through 2026-05-31, HPD 2026-05-29,
+# frozen baseline in data/README.md). Q14 adds no ontology element: it reads the Q2 to Q12 elements. Entities only; no person names.
+# The supporting-deed flags, registration status and relation are computed at answer time and are not in the graph.
+
+# Lot 3008380044: a deed dated 2023-01-31 and recorded 2023-05-02 (unrecorded on a 2023-03-17 violation) after the 2019 deed.
+id:lot-3008380044 a onto:TaxLot ; onto:bbl "3008380044" ; onto:hasDeed id:deed-2019052000142001, id:deed-2023050100261001 .
+id:deed-2019052000142001 a onto:Deed ; onto:documentId "2019052000142001" ; onto:documentType "DEED" ;
+    onto:recordedDate "2019-05-23"^^xsd:date ; onto:documentAmount 262500 .
+id:deed-2023050100261001 a onto:Deed ; onto:documentId "2023050100261001" ; onto:documentType "DEED" ;
+    onto:documentDate "2023-01-31"^^xsd:date ; onto:recordedDate "2023-05-02"^^xsd:date .
+
+# Anchor A: registered 2025-09-30, so nothing is in force on a 2022 date; the corporate owner is a name lead.
+id:lot-3008260002-q14 a onto:TaxLot ; onto:bbl "3008260002" ; onto:hasBuilding id:bldg-3014788 .
+id:bldg-3014788 a onto:Building ; onto:bin "3014788" ; onto:hasRegistration id:reg-316103-q14 .
+id:reg-316103-q14 a onto:Registration ; onto:registrationId 316103 ;
+    onto:lastRegistered "2025-09-30"^^xsd:date ; onto:registrationEnd "2026-09-01"^^xsd:date ;
+    onto:hasContact id:q14-owner .
+id:q14-owner a onto:Contact ; onto:contactType "CorporateOwner" ; onto:corporationName "5413 PLAZA LLC" .

@@ -1,0 +1,16 @@
+# Q18.2 fixtures. Signals re-derived from the frozen baseline, PLUTO address and HPD corporate owners (rule N3) by check_signals.py.
+# Names are entities, never people; the 2021 grantor of anchor B is a person (name not repeated).
+lots:
+  - bbls: ["3008260005"]
+    label: "anchor B: 12 zero-transfer deeds; the 2021 one names the lot's house number and is followed the same day by a $6,800,000 deed from the same LLC; a lead, not a finding"
+    zero_transfers: 12
+    documents:
+      - {id: "2021022201130001", named: true, same: false, owner: false, follow_on: ["2021022201130002"]}
+  - bbls: ["3008260002"]
+    label: "anchor A: six zero-transfer deeds; the 2025 deed has the same name on both sides and the grantee is the registered owner"
+    zero_transfers: 6
+    documents:
+      - {id: "2025032100031001", named: true, same: true, owner: true, follow_on: []}
+  - bbls: ["2033260069", "2033280064", "2033280097"]
+    label: "a three-lot portfolio: six zero-transfer deeds"
+    zero_transfers: 6

@@ -1,0 +1,10 @@
+# Q14.1 fixtures. real_property_master, real_property_parties, real_property_legals (frozen baseline, data/README.md; DOS not used).
+# check_title.py re-derives each from the source with tests/q14_1/expected.sql, so a stale fixture fails. Names are entities, never people.
+cases:
+  - {bbl: "3008260002", date: "2022-10-20", basis: document, deeds: ["2021022201130003"], label: "anchor A, a violation inspected 2022-10-20: the 2021 sale deed supports the title holder"}
+  - {bbl: "3008260002", date: "2025-03-20", basis: document, deeds: ["2025032100031001"], recorded_after_date: true, label: "anchor A: the 2025 deed is dated 2025-03-14 and recorded 2025-04-02; as now known it supports the date, though it was not yet recorded"}
+  - {bbl: "3008260002", date: "2025-03-20", basis: recorded, deeds: ["2021022201130003"], recorded_after_date: false, label: "anchor A: on the recorded basis the same date is supported by the 2021 deed"}
+  - {bbl: "3008380044", date: "2023-03-17", basis: document, deeds: ["2023050100261001"], recorded_after_date: true, label: "deed dated 2023-01-31, recorded 2023-05-02, with a violation inspected in between (3 months unrecorded)"}
+  - {bbl: "3008380044", date: "2023-03-17", basis: recorded, deeds: ["2019052000142001"], recorded_after_date: false, label: "the same date on the recorded basis: the 2019 deed ($262,500)"}
+  - {bbl: "3008460011", date: "2022-02-22", basis: recorded, deeds: ["2016022400975001"], label: "a deed with two grantee rows; the 2022-01-25 deed is recorded the day after the date"}
+  - {bbl: "3008260002", date: "1960-01-01", basis: document, deeds: [], label: "before the first deed in the snapshot: no title record, not no owner"}

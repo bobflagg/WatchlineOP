@@ -10,7 +10,7 @@ sources: [hpd_registrations, hpd_contacts]
 graph:
   constraints:
     - {name: registration_id_unique, label: Registration, property: registrationId, kind: unique}
-    - {name: owner_contact_key_unique, label: OwnerContact, property: contactKey, kind: unique}
+    - {name: contact_key_unique, label: Contact, property: contactKey, kind: unique}
 
   nodes:
     Registration:
@@ -27,38 +27,51 @@ graph:
           rule: "registrationid 0 is a placeholder shared by three unrelated buildings; rows with it are excluded and counted (3 pairs; 27 contacts, 6 of owner type), never turned into a registration."
           null_policy: never absent
 
-    OwnerContact:
-      concept: owner-contact
+    Contact:
+      concept: contact
       key: contactKey
       scope: >-
-        One OwnerContact per distinct (registrationid, type, name) of an owner-type contact on a loaded Registration
-        (203802 contacts). Exact duplicates are one contact.
+        One Contact per distinct (registrationid, type, corporation name, person name, title) of a contact of any of the nine
+        HPD types on a loaded Registration (730693 contacts, 203804 of owner type). Exact duplicates are one contact.
+        Q2 uses the three owner types, Q4 the other six.
       proved_by: tests/q2_2/expected.sql
       properties:
         contactKey:
-          concept: owner-contact
+          concept: contact
           type: string
-          source: hpd_contacts.registrationid, hpd_contacts.type, hpd_contacts.corporationname
-          rule: "Identity only, joined as registrationid|type|name. registrationcontactid is not unique in the snapshot and is not used. Not an answer field."
+          source: hpd_contacts.registrationid, hpd_contacts.type, hpd_contacts.corporationname, hpd_contacts.firstname, hpd_contacts.middleinitial, hpd_contacts.lastname, hpd_contacts.title
+          rule: "Identity only, joined as registrationid|type|corporation|person|title with blanks empty. registrationcontactid is not unique in the snapshot and is not used. Not an answer field."
           identity_only: true
           null_policy: never absent
         contactType:
           concept: contact-type
           type: string
           source: hpd_contacts.type
-          allowed_scheme: owner-contact-types
-          allowed: [CorporateOwner, IndividualOwner, JointOwner]
-          rule: Only the three owner types are loaded (decision 2026-11-12). The stored values are HPD's spellings.
+          allowed_scheme: contact-types
+          allowed: [CorporateOwner, IndividualOwner, JointOwner, Agent, HeadOfficer, Officer, Shareholder, SiteManager, Lessee]
+          rule: The nine HPD types, as HPD spells them. The type is the role; a title never changes it. The three owner types answer Q2, the other six Q4 (decision 2026-11-15).
           null_policy: never absent
           proved_by: tests/q2_2/expected.sql
-        name:
-          concept: owner-name
+        corporationName:
+          concept: corporation-name
           type: string
-          source: hpd_contacts.corporationname, hpd_contacts.firstname, hpd_contacts.middleinitial, hpd_contacts.lastname
-          rule: >-
-            CorporateOwner: corporationname. IndividualOwner and JointOwner: first name, middle initial and last name
-            joined by single spaces, blank parts left out. As recorded, never normalized or merged.
-          null_policy: "absent when the source name is blank (422 contacts: 183 corporate, 239 individual or joint)"
+          source: hpd_contacts.corporationname
+          rule: Trimmed, as recorded, never normalized or merged.
+          null_policy: "absent when blank; present only on corporate owners, agents and lessees (192130 of 730693 contacts have one)"
+          proved_by: tests/q2_2/expected.sql
+        nameKey:
+          concept: corporation-name
+          type: string
+          source: hpd_contacts.corporationname
+          rule: "Lookup key only: rule N3 applied to the corporation name (as Q5 DosEntity.nameKey), so an entity's contacts are found by name at answer time (Q7.1). Not an answer field."
+          identity_only: true
+          null_policy: "absent when the corporation name is blank or has no letters"
+        personName:
+          concept: person-name
+          type: string
+          source: hpd_contacts.firstname, hpd_contacts.middleinitial, hpd_contacts.lastname
+          rule: First name, middle initial and last name joined by single spaces, blank parts left out. As recorded, never normalized or merged.
+          null_policy: "absent when blank; 1887 contacts have neither name (390 of owner type); 615846 have a person name"
           proved_by: tests/q2_2/expected.sql
 
   relationships:
@@ -86,12 +99,12 @@ graph:
           rule: "The pair's date when all its rows carry the same one; otherwise absent, never picked. The source has no period start date."
           null_policy: "absent when the rows of the pair disagree (8 pairs); 201755 pairs have a value"
           proved_by: tests/q2_1/expected.sql
-    HAS_OWNER_CONTACT:
-      concept: has-owner-contact
+    HAS_CONTACT:
+      concept: has-contact
       from: Registration
-      to: OwnerContact
+      to: Contact
       source: hpd_contacts.registrationid
-      rule: One relationship per OwnerContact, from the registration it was recorded on. Contacts belong to the registration, not to one building.
+      rule: One relationship per Contact, from the registration it was recorded on. Contacts belong to the registration, not to one building.
       proved_by: tests/q2_2/expected.sql
 
 answer:
@@ -108,9 +121,10 @@ answer:
     lookup: tests/q2_2/lookup.cypher
     fields:
       registrationId: {concept: registration-id, source: Registration.registrationId, type: integer}
-      owners:         {concept: owner-contact, source: "Registration-[:HAS_OWNER_CONTACT]->OwnerContact", type: "list of {contactType, name}", null_policy: "empty list means no owner contact is recorded; no owner is inferred"}
-      contactType:    {concept: contact-type, source: OwnerContact.contactType, type: string, allowed_scheme: owner-contact-types, allowed: [CorporateOwner, IndividualOwner, JointOwner]}
-      name:           {concept: owner-name, source: OwnerContact.name, type: string, null_policy: "absent when HPD's name is blank; reported exactly as recorded"}
+      owners:         {concept: owner-contact, source: "Registration-[:HAS_CONTACT]->Contact with an owner type", type: "list of {contactType, corporationName, personName}", null_policy: "empty list means no owner contact is recorded; no owner is inferred"}
+      contactType:    {concept: contact-type, source: Contact.contactType, type: string, allowed_scheme: owner-contact-types, allowed: [CorporateOwner, IndividualOwner, JointOwner]}
+      corporationName: {concept: corporation-name, source: Contact.corporationName, type: string, null_policy: "absent when HPD's name is blank; reported exactly as recorded"}
+      personName:     {concept: person-name, source: Contact.personName, type: string, null_policy: "absent when HPD's name is blank; reported exactly as recorded; never repeated outside the answer"}
     note: "All owner contacts of a registration are listed; none is chosen as the owner. Not proof of title; not the deed grantee, a process contact or the managing agent."
 
 diagnostics: []
@@ -118,6 +132,4 @@ diagnostics: []
 not_stored:   # deliberately absent from the graph
   - {term: registration period start, reason: not in the source; the answer says so}
   - {term: whether a registration is current, reason: the agent's reading of registrationEnd against a stated date}
-  - {term: other contact types (Agent, HeadOfficer, Officer, Shareholder, SiteManager, Lessee), reason: different roles; loaded as RoleContact for Q4}
-  - {term: contact title, reason: not needed for Q2; role contacts carry it (Q4)}
   - {term: hpd_contacts.registrationcontactid, reason: not unique in the snapshot}

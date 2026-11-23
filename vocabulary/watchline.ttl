@@ -8,7 +8,7 @@ vocab:watchline a skos:ConceptScheme ;
     dct:title "Watchline vocabulary"@en ;
     dct:created "2026-11-11"^^xsd:date ;
     dct:description "Controlled vocabulary for the WatchlineOP landlord research ontology pipeline."@en ;
-    skos:hasTopConcept vocab:tax-lot, vocab:building, vocab:has-building, vocab:bbl, vocab:bin, vocab:address, vocab:hpd-registered, vocab:pluto-building-count, vocab:year-built, vocab:building-class, vocab:residential-units, vocab:assessed-total-value, vocab:address-resolution-outcome, vocab:candidate-street-name, vocab:related-lot, vocab:in-graph, vocab:registration, vocab:has-registration, vocab:registration-id, vocab:last-registered-date, vocab:registration-end-date, vocab:owner-contact, vocab:has-owner-contact, vocab:contact-type, vocab:owner-name, vocab:deed, vocab:has-deed, vocab:document-id, vocab:document-type, vocab:document-date, vocab:recorded-date, vocab:document-amount, vocab:grantee, vocab:has-grantee, vocab:grantee-name, vocab:mailing-address, vocab:address-line-two, vocab:zip-code, vocab:name-agreement, vocab:address-agreement, vocab:comparison-rule, vocab:role-contact, vocab:has-role-contact, vocab:contact-title, vocab:corporation-name, vocab:person-name, vocab:dos-entity, vocab:dos-id, vocab:dos-entity-name, vocab:entity-type, vocab:jurisdiction, vocab:initial-filing-date, vocab:dos-process-name, vocab:dos-process-address, vocab:registered-agent-name, vocab:registered-agent-address .
+    skos:hasTopConcept vocab:set-aside, vocab:process-address-entity-count, vocab:document, vocab:document-party, vocab:has-party, vocab:party-name, vocab:party-role, vocab:address-party-count, vocab:address-document-count, vocab:tax-lot, vocab:building, vocab:has-building, vocab:bbl, vocab:bin, vocab:address, vocab:hpd-registered, vocab:pluto-building-count, vocab:year-built, vocab:building-class, vocab:residential-units, vocab:assessed-total-value, vocab:address-resolution-outcome, vocab:candidate-street-name, vocab:related-lot, vocab:in-graph, vocab:registration, vocab:has-registration, vocab:registration-id, vocab:last-registered-date, vocab:registration-end-date, vocab:contact, vocab:has-contact, vocab:contact-type, vocab:owner-name, vocab:deed, vocab:has-deed, vocab:document-id, vocab:document-type, vocab:document-date, vocab:recorded-date, vocab:document-amount, vocab:grantee, vocab:has-grantee, vocab:grantee-name, vocab:mailing-address, vocab:address-line-two, vocab:zip-code, vocab:name-agreement, vocab:address-agreement, vocab:comparison-rule, vocab:contact-title, vocab:corporation-name, vocab:person-name, vocab:dos-entity, vocab:dos-id, vocab:dos-entity-name, vocab:entity-type, vocab:jurisdiction, vocab:initial-filing-date, vocab:dos-process-name, vocab:dos-process-address, vocab:registered-agent-name, vocab:registered-agent-address, vocab:operational-network, vocab:network-group-id, vocab:network-split, vocab:in-network, vocab:landlord, vocab:covers, vocab:landlord-name, vocab:business-address, vocab:anchor-landlord, vocab:connected-by-name, vocab:connected-by-address, vocab:connected-by-identity, vocab:link-weight, vocab:network-absence, vocab:network-absence-detail, vocab:owner-portfolio, vocab:portfolio-group-id, vocab:portfolio-composition, vocab:in-portfolio, vocab:connected-by-deed, vocab:edge-id, vocab:evidence-type, vocab:evidence-id, vocab:masked-address-edges, vocab:ownership-signal, vocab:portfolio-absence, vocab:portfolio-absence-detail, vocab:based-on-contact, vocab:grantor, vocab:has-grantor, vocab:grantor-name, vocab:not-a-sale, vocab:attributable-transfer, vocab:affiliation, vocab:borrower, vocab:lender, vocab:financing-document, vocab:has-financing-document, vocab:supporting-deed, vocab:date-basis, vocab:registration-in-force, vocab:title-registration-relation, vocab:violation, vocab:violation-id, vocab:has-violation, vocab:violation-class, vocab:violation-status, vocab:inspection-date, vocab:open-violation-rate, vocab:complaint-problem, vocab:problem-id, vocab:complaint-id, vocab:has-problem, vocab:problem-type, vocab:major-category, vocab:problem-status, vocab:received-date, vocab:duplicate-flag, vocab:complaint-rate, vocab:lot-violation-ranking, vocab:violation-concentration, vocab:agent-footprint, vocab:name-search, vocab:legal-suffix-only, vocab:retrieved-item, vocab:reported-claim, vocab:extraction-method, vocab:source-category, vocab:review-status, vocab:fact-relation, vocab:match-basis, vocab:dossier, vocab:lead, vocab:stop-reason, vocab:registry-search, vocab:registry-outcome, vocab:source-absence, vocab:litigation-case, vocab:litigation-id, vocab:has-litigation-case, vocab:case-type, vocab:case-open-date, vocab:case-status, vocab:open-judgement, vocab:harassment-finding, vocab:finding-date, vocab:case-penalty, vocab:respondent, vocab:respondent-owner-match, vocab:order-number, vocab:pest-violation, vocab:minor-category, vocab:problem-code, vocab:pest-complaint .
 
 vocab:address-resolution-outcomes a skos:ConceptScheme ;
     skos:prefLabel "Address resolution outcomes"@en ;
@@ -16,6 +16,13 @@ vocab:address-resolution-outcomes a skos:ConceptScheme ;
     dct:created "2026-11-11"^^xsd:date ;
     dct:description "Controlled values for the outcome of resolving a typed address."@en ;
     skos:hasTopConcept vocab:matched-exactly, vocab:matched-by-variant, vocab:ambiguous, vocab:not-found, vocab:service-unavailable .
+
+vocab:contact-types a skos:ConceptScheme ;
+    skos:prefLabel "Contact types"@en ;
+    dct:title "Contact types"@en ;
+    dct:created "2026-11-15"^^xsd:date ;
+    dct:description "Controlled values for the type of an HPD contact: the three owner types and the six role types together."@en ;
+    skos:hasTopConcept vocab:corporate-owner, vocab:individual-owner, vocab:joint-owner, vocab:agent, vocab:head-officer, vocab:officer, vocab:shareholder, vocab:site-manager, vocab:lessee .
 
 vocab:owner-contact-types a skos:ConceptScheme ;
     skos:prefLabel "Owner contact types"@en ;
@@ -96,7 +103,7 @@ vocab:hpd-registered a skos:Concept ;
     skos:prefLabel "HPD registered"@en ;
     skos:definition "True when HPD has at least one multiple-dwelling registration for the tax lot."@en ;
     skos:scopeNote "A lot that is not registered can still be in the graph if PLUTO records 3 or more residential units."@en ;
-    skos:related vocab:registration ;
+    skos:related vocab:registration, vocab:missing-registration, vocab:no-usable-registration ;
     dct:source "data/sources.yaml" .
 
 vocab:pluto-building-count a skos:Concept ;
@@ -136,6 +143,7 @@ vocab:residential-units a skos:Concept ;
     skos:hiddenLabel "unitsres"@en ;
     skos:definition "PLUTO's count of residential units for the whole tax lot."@en ;
     skos:scopeNote "Lot-wide. Do not copy it to each building or sum it across a lot's BINs. 0 means PLUTO records none, not that no one lives there."@en ;
+    skos:related vocab:open-violation-rate, vocab:unit-threshold, vocab:complaint-rate ;
     dct:source "data/sources.yaml" .
 
 vocab:assessed-total-value a skos:Concept ;
@@ -172,7 +180,7 @@ vocab:related-lot a skos:Concept ;
     skos:prefLabel "related lot"@en ;
     skos:definition "Another tax lot in the graph that shares the resolved BIN, for example the second lot of a condominium building."@en ;
     skos:scopeNote "Found through shared BINs only. A condominium unit lot with a different BIN is not found this way."@en ;
-    skos:related vocab:bin, vocab:tax-lot ;
+    skos:related vocab:bin, vocab:tax-lot, vocab:operational-network, vocab:owner-portfolio ;
     dct:source "specs/questions/q01.md" .
 
 vocab:in-graph a skos:Concept ;
@@ -222,6 +230,7 @@ vocab:service-unavailable a skos:Concept ;
     skos:inScheme vocab:address-resolution-outcomes ;
     skos:topConceptOf vocab:address-resolution-outcomes ;
     skos:prefLabel "service unavailable"@en ;
+    skos:related vocab:registry-unreachable ;
     skos:definition "The address service could not be reached."@en ;
     skos:scopeNote "An outage, not a statement about the address. It is never reported as not found."@en ;
     dct:source "specs/questions/q01.md" .
@@ -235,7 +244,7 @@ vocab:registration a skos:Concept ;
     skos:altLabel "registration"@en, "multiple dwelling registration"@en ;
     skos:definition "A multiple-dwelling registration filed with HPD, identified by its registration id. One registration can cover several buildings."@en ;
     skos:scopeNote "An HPD registrant is who registered, not proof of title. The registration period start is not in the source; a registration is current only relative to a stated date."@en ;
-    skos:related vocab:registration-id, vocab:hpd-registered ;
+    skos:related vocab:registration-id, vocab:hpd-registered, vocab:registration-in-force ;
     dct:source "specs/questions/q02.md" .
 
 vocab:has-registration a skos:Concept ;
@@ -264,7 +273,7 @@ vocab:last-registered-date a skos:Concept ;
     skos:definition "The date the registration was last filed, as HPD records it for the building and registration."@en ;
     skos:scopeNote "Absent when the source has no date (3,237 source rows) or when the source rows for the building and registration disagree (9 pairs); a conflict is never resolved by picking one."@en ;
     skos:hiddenLabel "lastregistrationdate"@en ;
-    skos:related vocab:registration-end-date ;
+    skos:related vocab:registration-end-date, vocab:registration-in-force, vocab:registration-older-than-deed ;
     dct:source "specs/questions/q02.md" .
 
 vocab:registration-end-date a skos:Concept ;
@@ -275,33 +284,44 @@ vocab:registration-end-date a skos:Concept ;
     skos:definition "The date the registration period ends, as HPD records it. A registration whose end date is before the date asked about had ended then."@en ;
     skos:scopeNote "The source has no period start date. 51,713 source rows ended before the snapshot date (2026-05-29); the answer reports the dates and does not present such a registration as current."@en ;
     skos:hiddenLabel "registrationenddate"@en ;
-    skos:related vocab:last-registered-date ;
+    skos:related vocab:last-registered-date, vocab:registration-in-force, vocab:lapsed-registration ;
+    dct:source "specs/questions/q02.md" .
+
+vocab:contact a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "contact"@en ;
+    skos:altLabel "HPD contact"@en, "registration contact"@en ;
+    skos:related vocab:respondent, vocab:respondent-owner-match ;
+    skos:definition "A contact HPD records on a registration, of any of its nine types. Holds the type, the corporation name and person name as recorded, the title and the business address."@en ;
+    skos:scopeNote "A contact belongs to the registration, not to one building. Not proof of title or control. The type is the role: owner contacts and role contacts are narrower concepts of it, and reports keep them apart. The same person or corporation can hold two roles; roles are reported separately and never merged."@en ;
+    skos:narrower vocab:owner-contact, vocab:role-contact ;
     dct:source "specs/questions/q02.md" .
 
 vocab:owner-contact a skos:Concept ;
     skos:inScheme vocab:watchline ;
-    skos:topConceptOf vocab:watchline ;
+    skos:broader vocab:contact ;
     skos:prefLabel "registered owner contact"@en ;
     skos:altLabel "registered owner"@en, "owner of record"@en ;
-    skos:definition "A contact HPD records on a registration with an owner type: corporate owner, individual owner or joint owner. Holds the contact type and the name as recorded."@en ;
+    skos:definition "A contact HPD records on a registration with an owner type: corporate owner, individual owner or joint owner."@en ;
     skos:scopeNote "Not proof of title and not interchangeable with the deed grantee, a process contact or the managing agent. Other contact types (agent, head officer, officer, shareholder, site manager, lessee) are not owner contacts. A registration can have several; a registration can have none (12,827 have no owner contact), and then the answer says none is recorded."@en ;
-    skos:related vocab:grantee, vocab:role-contact, vocab:agent, vocab:dos-entity ;
+    skos:related vocab:grantee, vocab:role-contact, vocab:agent, vocab:dos-entity, vocab:landlord ;
     dct:source "specs/questions/q02.md" .
 
-vocab:has-owner-contact a skos:Concept ;
+vocab:has-contact a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:topConceptOf vocab:watchline ;
-    skos:prefLabel "has owner contact"@en ;
-    skos:definition "Links a registration to an owner contact recorded on it."@en ;
-    skos:scopeNote "Contacts belong to the registration, not to one building. All owner contacts of a registration are listed; none is chosen as the owner."@en ;
+    skos:prefLabel "has contact"@en ;
+    skos:definition "Links a registration to a contact recorded on it."@en ;
+    skos:scopeNote "Contacts belong to the registration, not to one building. All contacts of a registration are listed; none is chosen as the owner or as the contact to reach."@en ;
     dct:source "specs/questions/q02.md" .
 
 vocab:contact-type a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:topConceptOf vocab:watchline ;
     skos:prefLabel "contact type"@en ;
-    skos:definition "The type HPD gives a contact on a registration: for an owner contact corporate owner, individual owner or joint owner; for a role contact managing agent, head officer, officer, shareholder, site manager or lessee."@en ;
-    skos:scopeNote "Controlled values are in the schemes owner-contact-types and role-contact-types. A person is shown only in the role HPD records, and the role is not inferred from a title."@en ;
+    skos:definition "The type HPD gives a contact on a registration: corporate owner, individual owner, joint owner, managing agent, head officer, officer, shareholder, site manager or lessee."@en ;
+    skos:scopeNote "Controlled values are in the scheme contact-types; owner-contact-types holds the three owner types and role-contact-types the six others. A person is shown only in the role HPD records, and the role is not inferred from a title."@en ;
     dct:source "specs/questions/q02.md" .
 
 vocab:owner-name a skos:Concept ;
@@ -309,23 +329,24 @@ vocab:owner-name a skos:Concept ;
     skos:topConceptOf vocab:watchline ;
     skos:prefLabel "owner name"@en ;
     skos:altLabel "name as recorded"@en ;
-    skos:definition "The name of an owner contact as HPD records it: the corporation name, or the first name, middle initial and last name joined."@en ;
-    skos:scopeNote "Reported exactly as recorded; spellings of one entity differ across registrations (for example a trailing period). Absent when the source name is blank (422 contacts). Two spellings are not evidence that the owners differ or are the same."@en ;
-    skos:related vocab:name-agreement, vocab:corporation-name, vocab:dos-entity-name ;
+    skos:definition "The name of an owner contact as HPD records it: the corporation name of a corporate owner, or the person name (first name, middle initial and last name joined) of an individual or joint owner."@en ;
+    skos:scopeNote "Reported exactly as recorded; spellings of one entity differ across registrations (for example a trailing period). Absent when the source name is blank (390 owner contacts). Not stored as one property: the graph holds corporation name and person name. Two spellings are not evidence that the owners differ or are the same."@en ;
+    skos:related vocab:name-agreement, vocab:corporation-name, vocab:dos-entity-name, vocab:landlord-name ;
     dct:source "specs/questions/q02.md" .
 
 vocab:corporate-owner a skos:Concept ;
-    skos:inScheme vocab:owner-contact-types ;
-    skos:topConceptOf vocab:owner-contact-types ;
+    skos:inScheme vocab:owner-contact-types, vocab:contact-types ;
+    skos:topConceptOf vocab:owner-contact-types, vocab:contact-types ;
     skos:prefLabel "corporate owner"@en ;
     skos:definition "The owner is a corporation or other business entity; the name is its corporation name."@en ;
     skos:scopeNote "HPD contact type value as recorded. Not proof of title."@en ;
     skos:hiddenLabel "CorporateOwner"@en ;
+    skos:related vocab:attributable-transfer ;
     dct:source "specs/questions/q02.md" .
 
 vocab:individual-owner a skos:Concept ;
-    skos:inScheme vocab:owner-contact-types ;
-    skos:topConceptOf vocab:owner-contact-types ;
+    skos:inScheme vocab:owner-contact-types, vocab:contact-types ;
+    skos:topConceptOf vocab:owner-contact-types, vocab:contact-types ;
     skos:prefLabel "individual owner"@en ;
     skos:definition "The owner is a person; the name is first name, middle initial and last name."@en ;
     skos:scopeNote "HPD contact type value as recorded. Not proof of title."@en ;
@@ -333,8 +354,8 @@ vocab:individual-owner a skos:Concept ;
     dct:source "specs/questions/q02.md" .
 
 vocab:joint-owner a skos:Concept ;
-    skos:inScheme vocab:owner-contact-types ;
-    skos:topConceptOf vocab:owner-contact-types ;
+    skos:inScheme vocab:owner-contact-types, vocab:contact-types ;
+    skos:topConceptOf vocab:owner-contact-types, vocab:contact-types ;
     skos:prefLabel "joint owner"@en ;
     skos:definition "One of several persons recorded as joint owners of a registration; the name is first name, middle initial and last name."@en ;
     skos:scopeNote "HPD contact type value as recorded. Not proof of title."@en ;
@@ -352,7 +373,7 @@ vocab:deed a skos:Concept ;
     skos:hiddenLabel "real_property_master"@en ;
     skos:definition "A recorded document of a deed type that transfers or confirms title to real property, as ACRIS records it. The graph holds the deed types DEED, DEED TS, DEED LE, DEED RC, DEEDO, DEEDP, CORRD and CONDEED recorded against a lot in the rental-market scope."@en ;
     skos:scopeNote "A deed is a recorded document, not proof that the grantee holds title today. DEED COR (an index correction code) and mortgage, assignment and transfer-tax documents are not deeds here. An amount of 0 does not mean a free sale, and the document type can be a correction or a life estate deed."@en ;
-    skos:related vocab:document-id ;
+    skos:related vocab:document-id, vocab:document, vocab:not-a-sale, vocab:attributable-transfer, vocab:supporting-deed, vocab:deed-classification ;
     dct:source "specs/questions/q03.md" .
 
 vocab:has-deed a skos:Concept ;
@@ -361,6 +382,7 @@ vocab:has-deed a skos:Concept ;
     skos:prefLabel "has deed"@en ;
     skos:definition "Links a tax lot to a deed recorded against it."@en ;
     skos:scopeNote "Many to many: one deed can name several lots (8,031 of 160,873 newest deeds). The deed is never presented as lot-specific. Absence of a link means no deed in the snapshot, not that the lot never changed hands."@en ;
+    skos:related vocab:has-financing-document ;
     dct:source "specs/questions/q03.md" .
 
 vocab:document-id a skos:Concept ;
@@ -370,7 +392,7 @@ vocab:document-id a skos:Concept ;
     skos:hiddenLabel "documentid"@en ;
     skos:definition "ACRIS's identifier for a recorded document."@en ;
     skos:scopeNote "Identifies the document, not a lot or a party. The source repeats it across versions of the same document; the latest version is the current one."@en ;
-    skos:related vocab:deed ;
+    skos:related vocab:deed, vocab:document ;
     dct:source "specs/questions/q03.md" .
 
 vocab:document-type a skos:Concept ;
@@ -391,7 +413,7 @@ vocab:document-date a skos:Concept ;
     skos:hiddenLabel "docdate"@en ;
     skos:definition "The date written on the document, as ACRIS records it."@en ;
     skos:scopeNote "Absent on 56,929 of the 1,003,931 deeds in the graph scope (queried 2026-11-12). The recorded date, not this one, decides which deed is the most recent."@en ;
-    skos:related vocab:recorded-date ;
+    skos:related vocab:recorded-date, vocab:date-basis ;
     dct:source "specs/questions/q03.md" .
 
 vocab:recorded-date a skos:Concept ;
@@ -402,7 +424,7 @@ vocab:recorded-date a skos:Concept ;
     skos:hiddenLabel "recordedfiled"@en ;
     skos:definition "The date the document was recorded or filed with the city register."@en ;
     skos:scopeNote "The rule for the most recent deed: the latest recorded date. Deeds that tie on it are all returned and none is chosen."@en ;
-    skos:related vocab:document-date ;
+    skos:related vocab:document-date, vocab:date-basis, vocab:registration-older-than-deed ;
     dct:source "specs/questions/q03.md" .
 
 vocab:document-amount a skos:Concept ;
@@ -413,6 +435,7 @@ vocab:document-amount a skos:Concept ;
     skos:hiddenLabel "docamount"@en ;
     skos:definition "The dollar amount ACRIS records on the document, in whole US dollars."@en ;
     skos:scopeNote "0 is common and does not mean a free sale or a gift. Reported as recorded; the answer does not call a deed a sale or give a price."@en ;
+    skos:related vocab:not-a-sale, vocab:deed-classification ;
     dct:source "specs/questions/q03.md" .
 
 vocab:grantee a skos:Concept ;
@@ -422,8 +445,8 @@ vocab:grantee a skos:Concept ;
     skos:altLabel "party receiving title"@en ;
     skos:hiddenLabel "partytype 2"@en, "buyer"@en ;
     skos:definition "A party named on a deed as receiving title, with the name and address as recorded on that deed."@en ;
-    skos:scopeNote "One row per distinct name and address on the deed. A deed can have several (up to 20). A grantee is not an owner, the HPD registered owner or a resolved entity; the same name on two deeds is two grantees. Grantors are not in the graph."@en ;
-    skos:related vocab:owner-contact ;
+    skos:scopeNote "One row per distinct name and address on the deed. A deed can have several (up to 20). A grantee is not an owner, the HPD registered owner or a resolved entity; the same name on two deeds is two grantees. The grantors of the same deeds are grantors (Q12.1)."@en ;
+    skos:related vocab:owner-contact, vocab:grantor ;
     dct:source "specs/questions/q03.md" .
 
 vocab:has-grantee a skos:Concept ;
@@ -434,6 +457,76 @@ vocab:has-grantee a skos:Concept ;
     skos:scopeNote "All grantees of a deed are listed and none is chosen."@en ;
     dct:source "specs/questions/q03.md" .
 
+vocab:document a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "document"@en ;
+    skos:altLabel "ACRIS document"@en ;
+    skos:definition "A recorded ACRIS document of any type that names two or more parties whose names equal HPD corporate-owner names (scope C)."@en ;
+    skos:scopeNote "Not a Deed: a Deed is a deed-type document recorded against a lot in the graph, and the two are separate nodes that share a documentId. The party's role depends on the document type."@en ;
+    skos:related vocab:deed, vocab:document-id, vocab:document-party, vocab:mortgage ;
+    dct:source "specs/questions/q07.md" .
+
+vocab:document-party a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "document party"@en ;
+    skos:altLabel "party of a document"@en ;
+    skos:definition "A party row recorded on a loaded ACRIS document, with the name and address recorded for it."@en ;
+    skos:scopeNote "One node per distinct document, name and address; the role (the recorded partytype) is on the link. A name match to another party is a lead, not a finding of the same party."@en ;
+    skos:related vocab:document, vocab:has-party, vocab:party-name, vocab:party-role ;
+    dct:source "specs/questions/q07.md" .
+
+vocab:has-party a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "has party"@en ;
+    skos:altLabel "has party"@en ;
+    skos:definition "Links a document to a party recorded on it, with the party's role."@en ;
+    skos:scopeNote "All parties of a loaded document are listed."@en ;
+    skos:related vocab:document-party ;
+    dct:source "specs/questions/q07.md" .
+
+vocab:party-name a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "party name"@en ;
+    skos:altLabel "party name"@en ;
+    skos:definition "The name of a party on an ACRIS document, trimmed, as recorded."@en ;
+    skos:scopeNote "Compared by rule N3 through a lookup key, never by this value. The key is not an answer field."@en ;
+    skos:related vocab:document-party, vocab:grantee-name ;
+    dct:source "specs/questions/q07.md" .
+
+vocab:party-role a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "party role"@en ;
+    skos:altLabel "party role"@en ;
+    skos:definition "The recorded ACRIS partytype of a party on a document: 1, 2 or 3."@en ;
+    skos:scopeNote "Its meaning depends on the document type (borrower or lender on a mortgage, grantor or grantee on a deed), so it is kept as the code."@en ;
+    skos:related vocab:document-party ;
+    dct:source "specs/questions/q07.md" .
+
+vocab:address-party-count a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "address party count"@en ;
+    skos:altLabel "distinct names at an address"@en ;
+    skos:definition "The number of distinct names, by rule N3, that ACRIS records at the same street line and first five ZIP characters over all documents."@en ;
+    skos:scopeNote "A hub count. A high count says the address is shared widely and supports no link. Counts the party's own name."@en ;
+    skos:related vocab:address-document-count ;
+    dct:source "specs/questions/q07.md" .
+
+vocab:address-document-count a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "address document count"@en ;
+    skos:altLabel "documents at an address"@en ;
+    skos:definition "The number of distinct ACRIS documents that record a party at the same street line and first five ZIP characters."@en ;
+    skos:scopeNote "A hub count over all ACRIS, not only the loaded documents."@en ;
+    skos:related vocab:address-party-count ;
+    dct:source "specs/questions/q07.md" .
+
 vocab:grantee-name a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:topConceptOf vocab:watchline ;
@@ -442,7 +535,7 @@ vocab:grantee-name a skos:Concept ;
     skos:hiddenLabel "name"@en ;
     skos:definition "The name of a grantee exactly as the deed records it."@en ;
     skos:scopeNote "Not normalized in the graph. Absent when the party row has no name (a few deed rows hold a person's name in the address field instead). Compared with an owner name only at answer time, under a stated rule."@en ;
-    skos:related vocab:name-agreement, vocab:dos-entity-name ;
+    skos:related vocab:name-agreement, vocab:dos-entity-name, vocab:party-name, vocab:grantor-name ;
     dct:source "specs/questions/q03.md" .
 
 vocab:mailing-address a skos:Concept ;
@@ -453,7 +546,7 @@ vocab:mailing-address a skos:Concept ;
     skos:hiddenLabel "address1"@en, "businessstreetname"@en ;
     skos:definition "The street line of the address a party gives: for a grantee the first address line on the deed, for an owner contact or role contact the business house number and street name from the HPD registration, as recorded."@en ;
     skos:scopeNote "Not the address of the property. Can be a care-of line, a person's name or a mail drop. Equal addresses at a mail drop are not evidence of anything. Reported as recorded; abbreviations (AVE and AVENUE) are different strings."@en ;
-    skos:related vocab:address-agreement, vocab:address ;
+    skos:related vocab:address-agreement, vocab:address, vocab:network-masked-address, vocab:mail-drop-address, vocab:business-address, vocab:portfolio-masked-address ;
     dct:source "specs/questions/q03.md" .
 
 vocab:address-line-two a skos:Concept ;
@@ -484,7 +577,7 @@ vocab:name-agreement a skos:Concept ;
     skos:prefLabel "name agreement"@en ;
     skos:definition "The result of comparing a grantee name with a recorded owner name under a stated rule: exact normalized, normalization match, different or not comparable."@en ;
     skos:scopeNote "A recorded comparison of strings. It is not a finding that the parties are the same, and a near match is not a finding. The rule is stated with the result. Computed at answer time; not stored."@en ;
-    skos:related vocab:grantee-name, vocab:owner-name, vocab:comparison-rule, vocab:address-agreement, vocab:dos-entity-name ;
+    skos:related vocab:grantee-name, vocab:owner-name, vocab:comparison-rule, vocab:address-agreement, vocab:dos-entity-name, vocab:name-search ;
     dct:source "specs/questions/q03.md" .
 
 vocab:address-agreement a skos:Concept ;
@@ -500,9 +593,9 @@ vocab:comparison-rule a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:topConceptOf vocab:watchline ;
     skos:prefLabel "comparison rule"@en ;
-    skos:definition "The identifier of the rule that produced an agreement: N1, N2, N3 or A1."@en ;
-    skos:scopeNote "N1: uppercase, trim, collapse spaces. N2: N1, then remove periods and turn commas into spaces. Spaces inside a name are never removed. N3 (owner name against a DOS entity name only): N2, then remove apostrophes. A1: street line equal after N1 and the first five ZIP digits equal."@en ;
-    skos:related vocab:name-agreement, vocab:address-agreement, vocab:dos-entity-name ;
+    skos:definition "The identifier of the rule that produced an agreement: N1, N2, N3, S1, L1, AB1 or A1."@en ;
+    skos:scopeNote "N1: uppercase, trim, collapse spaces. N2: N1, then remove periods and turn commas into spaces. Spaces inside a name are never removed by N1 to N3. N3 (owner name against a DOS entity name): N2, then remove apostrophes. For the entity name question only: S1 removes spaces, L1 turns legal-suffix words (incorporated, corporation, company, development) to short form, AB1 expands a listed abbreviation (HDFC). A1: street line equal after N1 and the first five ZIP digits equal."@en ;
+    skos:related vocab:name-agreement, vocab:address-agreement, vocab:dos-entity-name, vocab:restructuring-signal, vocab:abbreviation-match, vocab:name-search ;
     dct:source "specs/questions/q03.md" .
 
 vocab:name-agreement-outcomes a skos:ConceptScheme ;
@@ -520,32 +613,34 @@ vocab:address-agreement-outcomes a skos:ConceptScheme ;
     skos:hasTopConcept vocab:same, vocab:differs, vocab:address-absent .
 
 vocab:exact-normalized a skos:Concept ;
-    skos:inScheme vocab:name-agreement-outcomes ;
-    skos:topConceptOf vocab:name-agreement-outcomes ;
+    skos:inScheme vocab:name-agreement-outcomes, vocab:entity-name-outcomes ;
+    skos:topConceptOf vocab:name-agreement-outcomes, vocab:entity-name-outcomes ;
     skos:prefLabel "exact normalized"@en ;
     skos:definition "The two names are equal after rule N1 (uppercase, trim, collapse whitespace)."@en ;
     skos:scopeNote "Not a finding that the parties are the same."@en ;
     dct:source "specs/questions/q03.md" .
 
 vocab:normalization-match a skos:Concept ;
-    skos:inScheme vocab:name-agreement-outcomes ;
-    skos:topConceptOf vocab:name-agreement-outcomes ;
+    skos:inScheme vocab:name-agreement-outcomes, vocab:entity-name-outcomes ;
+    skos:topConceptOf vocab:name-agreement-outcomes, vocab:entity-name-outcomes ;
     skos:prefLabel "normalization match"@en ;
-    skos:definition "The two names are not equal after N1 but are equal after rule N2 (N1, remove periods, commas to spaces). The answer states N2."@en ;
+    skos:definition "The two names are not equal after N1 but are equal after a named normalization rule: N2 (N1, remove periods, commas to spaces), N3 (N2, remove apostrophes), or, for the entity name question only, S1 (spaces removed) or L1 (legal-suffix words to short form). The answer states the rule."@en ;
     skos:scopeNote "Derived. A name match is a lead, not a link."@en ;
+    skos:related vocab:abbreviation-match, vocab:differs-by-numeral-or-word, vocab:legal-suffix-only ;
     dct:source "specs/questions/q03.md" .
 
 vocab:different a skos:Concept ;
-    skos:inScheme vocab:name-agreement-outcomes ;
-    skos:topConceptOf vocab:name-agreement-outcomes ;
+    skos:inScheme vocab:name-agreement-outcomes, vocab:entity-name-outcomes ;
+    skos:topConceptOf vocab:name-agreement-outcomes, vocab:entity-name-outcomes ;
     skos:prefLabel "different"@en ;
     skos:definition "Both names are present and not equal after N2. A difference of spacing inside a name counts."@en ;
     skos:scopeNote "Reported as a difference; whether the parties are the same is not decided here."@en ;
+    skos:related vocab:legal-suffix-only ;
     dct:source "specs/questions/q03.md" .
 
 vocab:not-comparable a skos:Concept ;
-    skos:inScheme vocab:name-agreement-outcomes ;
-    skos:topConceptOf vocab:name-agreement-outcomes ;
+    skos:inScheme vocab:name-agreement-outcomes, vocab:entity-name-outcomes ;
+    skos:topConceptOf vocab:name-agreement-outcomes, vocab:entity-name-outcomes ;
     skos:prefLabel "not comparable"@en ;
     skos:definition "One or both names are absent, so no comparison is made."@en ;
     skos:scopeNote "Not the same as different."@en ;
@@ -577,20 +672,12 @@ vocab:address-absent a skos:Concept ;
 
 vocab:role-contact a skos:Concept ;
     skos:inScheme vocab:watchline ;
-    skos:topConceptOf vocab:watchline ;
+    skos:broader vocab:contact ;
     skos:prefLabel "role contact"@en ;
     skos:altLabel "HPD contact role"@en ;
-    skos:definition "A contact HPD records on a registration with a role other than owner: managing agent, head officer, officer, shareholder, site manager or lessee. Holds the role, the corporation name and person name as recorded, the title and the business address."@en ;
+    skos:definition "A contact HPD records on a registration with a role other than owner: managing agent, head officer, officer, shareholder, site manager or lessee."@en ;
     skos:scopeNote "Not an owner contact and not proof of title or control. A managing agent is a management relationship, not ownership. A registration can have several, or none (16,190 of 192,808 loaded registrations have no role contact). The same person or corporation can hold two roles; roles are reported separately and never merged."@en ;
     skos:related vocab:owner-contact ;
-    dct:source "specs/questions/q04.md" .
-
-vocab:has-role-contact a skos:Concept ;
-    skos:inScheme vocab:watchline ;
-    skos:topConceptOf vocab:watchline ;
-    skos:prefLabel "has role contact"@en ;
-    skos:definition "Links a registration to a role contact recorded on it."@en ;
-    skos:scopeNote "Contacts belong to the registration, not to one building. All are listed; none is chosen as the contact to reach."@en ;
     dct:source "specs/questions/q04.md" .
 
 vocab:contact-title a skos:Concept ;
@@ -599,7 +686,7 @@ vocab:contact-title a skos:Concept ;
     skos:prefLabel "contact title"@en ;
     skos:hiddenLabel "title"@en ;
     skos:definition "The title HPD records beside a head officer, officer or (rarely) shareholder, as recorded, for example PRESIDENT or PRESIDENT OF CO."@en ;
-    skos:scopeNote "Free text with inconsistent spellings (PRES, President, PRESIDENT). Reported as recorded, never normalized and never used to change the role. Absent on 78% of role contacts, and always absent for managing agent, site manager and lessee."@en ;
+    skos:scopeNote "Free text with inconsistent spellings (PRES, President, PRESIDENT). Reported as recorded, never normalized and never used to change the role. Absent on 84% of contacts, and always absent for managing agent, site manager and lessee."@en ;
     skos:related vocab:head-officer ;
     dct:source "specs/questions/q04.md" .
 
@@ -608,8 +695,8 @@ vocab:corporation-name a skos:Concept ;
     skos:topConceptOf vocab:watchline ;
     skos:prefLabel "corporation name"@en ;
     skos:hiddenLabel "corporationname"@en ;
-    skos:definition "The corporation name HPD records on a role contact, as recorded."@en ;
-    skos:scopeNote "Present on about half of managing agents and on most lessees; a managing agent can carry both a corporation name and a person name. Reported as recorded; the corporation can be the owner itself."@en ;
+    skos:definition "The corporation name HPD records on a contact, as recorded."@en ;
+    skos:scopeNote "Present on corporate owners, on about half of managing agents and on most lessees; a managing agent can carry both a corporation name and a person name. Reported as recorded; the corporation can be the owner itself."@en ;
     skos:related vocab:owner-name ;
     dct:source "specs/questions/q04.md" .
 
@@ -617,23 +704,24 @@ vocab:person-name a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:topConceptOf vocab:watchline ;
     skos:prefLabel "person name"@en ;
-    skos:definition "The first name, middle initial and last name of a role contact joined by single spaces, as recorded."@en ;
-    skos:scopeNote "A personal name: stored in the graph, never repeated in fixtures, examples or logs. Absent when blank (1,497 role contacts have neither name). Two spellings are not evidence of two people."@en ;
+    skos:definition "The first name, middle initial and last name of a contact joined by single spaces, as recorded."@en ;
+    skos:scopeNote "A personal name: stored in the graph, never repeated in fixtures, examples or logs. Absent when blank (1,887 contacts have neither a corporation name nor a person name). Two spellings are not evidence of two people."@en ;
     dct:source "specs/questions/q04.md" .
 
 vocab:agent a skos:Concept ;
-    skos:inScheme vocab:role-contact-types ;
-    skos:topConceptOf vocab:role-contact-types ;
+    skos:inScheme vocab:role-contact-types, vocab:contact-types ;
+    skos:topConceptOf vocab:role-contact-types, vocab:contact-types ;
     skos:prefLabel "managing agent"@en ;
     skos:definition "The contact is the agent for the registration. HPD type Agent."@en ;
-    skos:scopeNote "A management relationship, not ownership. Shared management does not establish shared ownership. The agent can be the owners corporation itself."@en ;
+    skos:scopeNote "A management relationship, not ownership. Shared management does not establish shared ownership. The agent can be the owners corporation itself. HPD's contact description (for example GEN.PART) is not a contact type and is not stored. A corporation name is compared under rule N3 through its name key; a legal suffix or a misspelling is a different name and is not merged."@en ;
+    skos:altLabel "property manager"@en ;
     skos:hiddenLabel "Agent"@en ;
-    skos:related vocab:owner-contact, vocab:registered-agent-name ;
-    dct:source "specs/questions/q04.md" .
+    skos:related vocab:owner-contact, vocab:registered-agent-name, vocab:management-affiliation, vocab:agent-footprint ;
+    dct:source "specs/questions/q04.md", "specs/questions/q23.md" .
 
 vocab:head-officer a skos:Concept ;
-    skos:inScheme vocab:role-contact-types ;
-    skos:topConceptOf vocab:role-contact-types ;
+    skos:inScheme vocab:role-contact-types, vocab:contact-types ;
+    skos:topConceptOf vocab:role-contact-types, vocab:contact-types ;
     skos:prefLabel "head officer"@en ;
     skos:definition "The contact is the head officer of the registered entity. HPD type HeadOfficer."@en ;
     skos:scopeNote "The title, if any, is a separate field (contact title)."@en ;
@@ -642,8 +730,8 @@ vocab:head-officer a skos:Concept ;
     dct:source "specs/questions/q04.md" .
 
 vocab:officer a skos:Concept ;
-    skos:inScheme vocab:role-contact-types ;
-    skos:topConceptOf vocab:role-contact-types ;
+    skos:inScheme vocab:role-contact-types, vocab:contact-types ;
+    skos:topConceptOf vocab:role-contact-types, vocab:contact-types ;
     skos:prefLabel "officer"@en ;
     skos:definition "The contact is another officer of the registered entity. HPD type Officer."@en ;
     skos:scopeNote "Distinct from head officer; the title says more."@en ;
@@ -651,26 +739,28 @@ vocab:officer a skos:Concept ;
     dct:source "specs/questions/q04.md" .
 
 vocab:shareholder a skos:Concept ;
-    skos:inScheme vocab:role-contact-types ;
-    skos:topConceptOf vocab:role-contact-types ;
+    skos:inScheme vocab:role-contact-types, vocab:contact-types ;
+    skos:topConceptOf vocab:role-contact-types, vocab:contact-types ;
     skos:prefLabel "shareholder"@en ;
     skos:definition "The contact is a shareholder of the registered entity. HPD type Shareholder."@en ;
     skos:scopeNote "Shareholding recorded on a registration is not a finding of beneficial ownership."@en ;
     skos:hiddenLabel "Shareholder"@en ;
+    skos:related vocab:ownership-affiliation ;
     dct:source "specs/questions/q04.md" .
 
 vocab:site-manager a skos:Concept ;
-    skos:inScheme vocab:role-contact-types ;
-    skos:topConceptOf vocab:role-contact-types ;
+    skos:inScheme vocab:role-contact-types, vocab:contact-types ;
+    skos:topConceptOf vocab:role-contact-types, vocab:contact-types ;
     skos:prefLabel "site manager"@en ;
     skos:definition "The contact is the site manager listed on the registration. HPD type SiteManager."@en ;
     skos:scopeNote "HPD records no business address for any site manager (all 162,187 rows), so the address is always absent."@en ;
     skos:hiddenLabel "SiteManager"@en ;
+    skos:related vocab:management-affiliation ;
     dct:source "specs/questions/q04.md" .
 
 vocab:lessee a skos:Concept ;
-    skos:inScheme vocab:role-contact-types ;
-    skos:topConceptOf vocab:role-contact-types ;
+    skos:inScheme vocab:role-contact-types, vocab:contact-types ;
+    skos:topConceptOf vocab:role-contact-types, vocab:contact-types ;
     skos:prefLabel "lessee"@en ;
     skos:definition "The contact is a lessee of the property as registered. HPD type Lessee."@en ;
     skos:scopeNote "Rare (8,896 rows). Not a tenant of an apartment."@en ;
@@ -716,6 +806,7 @@ vocab:jurisdiction a skos:Concept ;
     skos:inScheme vocab:watchline ;
     skos:topConceptOf vocab:watchline ;
     skos:prefLabel "jurisdiction"@en ;
+    skos:related vocab:registry-search ;
     skos:definition "The place of formation recorded for the entity, for example New York for a domestic entity."@en ;
     skos:scopeNote "Absent for a small number of records. A foreign entity is registered to do business in New York but was formed elsewhere."@en ;
     dct:source "specs/questions/q05.md" .
@@ -743,8 +834,28 @@ vocab:dos-process-address a skos:Concept ;
     skos:prefLabel "DOS process address"@en ;
     skos:definition "The address to which the Department of State forwards legal papers: street line, second line, city, state and ZIP."@en ;
     skos:scopeNote "Where papers are forwarded. It can be the entity's own premises, a lawyer's office or a service company, so sharing it is not evidence of common ownership."@en ;
-    skos:related vocab:dos-process-name ;
+    skos:related vocab:dos-process-name, vocab:process-address-entity-count, vocab:reached-service-address ;
     dct:source "specs/questions/q05.md" .
+
+vocab:set-aside a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "set aside"@en ;
+    skos:altLabel "non-evidence"@en ;
+    skos:definition "A shared item that the answer does not count as evidence because a method's address mask or the curated mail-drop list marks its address."@en ;
+    skos:scopeNote "Reported with the reason: the Operational Network mask, the Owner Portfolio mask or the mail-drop list, each apart. A mask is a method's decision and the list is a preliminary project classification, so setting an item aside says the address is shared widely, not that the parties are unrelated. Computed at answer time and not stored."@en ;
+    skos:related vocab:mail-drop-address, vocab:network-masked-address, vocab:portfolio-masked-address ;
+    dct:source "specs/questions/q07.md" .
+
+vocab:process-address-entity-count a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "process address entity count"@en ;
+    skos:altLabel "entities at a process address"@en ;
+    skos:definition "The number of distinct active DOS entities that list the same process street line and first five ZIP characters, over the whole DOS active-entity table."@en ;
+    skos:scopeNote "A hub count over all active DOS entities, not only the entities in the graph. A high count says the address is shared widely, as at a service company, and supports no link."@en ;
+    skos:related vocab:dos-process-address ;
+    dct:source "specs/questions/q07.md" .
 
 vocab:registered-agent-name a skos:Concept ;
     skos:inScheme vocab:watchline ;
@@ -763,3 +874,2005 @@ vocab:registered-agent-address a skos:Concept ;
     skos:scopeNote "Absent when no agent is listed or when none is recorded for the agent. Shared by every client of a commercial agent."@en ;
     skos:related vocab:registered-agent-name ;
     dct:source "specs/questions/q05.md" .
+
+# --- Q8 operational network terms ---
+
+vocab:operational-network a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "operational network"@en ;
+    skos:altLabel "Operational Network"@en, "network"@en ;
+    skos:definition "A group of rental lots that connect through registration infrastructure in one pipeline run: shared names, business addresses or resolved identities, with aggregator addresses masked. It is a whole connected component, or a community cut from a component of more than 300 lots by the Louvain method."@en ;
+    skos:scopeNote "A derived grouping and a lead, not a finding of common ownership or control. Its id is run-local: it means something only inside the selected run and release. The graph holds only the network's rental lots."@en ;
+    skos:related vocab:landlord, vocab:related-lot, vocab:owner-portfolio, vocab:anchor-landlord, vocab:other-affiliation, vocab:lot-violation-ranking, vocab:agent-footprint ;
+    dct:source "specs/questions/q08.md" .
+
+vocab:network-group-id a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "network id"@en ;
+    skos:hiddenLabel "group_id", "groupId" ;
+    skos:definition "The identifier of an operational network within the selected run, such as ON-98617 (the smallest landlord id in it)."@en ;
+    skos:scopeNote "Run-local: the same id in another run can mean a different group."@en ;
+    dct:source "specs/questions/q08.md" .
+
+vocab:network-split a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "network split"@en ;
+    skos:hiddenLabel "split" ;
+    skos:definition "Whether the operational network is a whole connected component or a community cut from a larger one."@en ;
+    skos:scopeNote "Controlled values are in the network splits scheme. A louvain community is a cut made for size, so its boundary is a method choice, not a gap in the evidence."@en ;
+    dct:source "specs/questions/q08.md" .
+
+vocab:in-network a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "in network"@en ;
+    skos:definition "Links a tax lot to the operational network it belongs to in the selected run."@en ;
+    skos:scopeNote "A lot is in at most one network. A lot with no such link is in no network; the reason is its network absence."@en ;
+    skos:related vocab:network-absence ;
+    dct:source "specs/questions/q08.md" .
+
+vocab:landlord-name a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "landlord name"@en ;
+    skos:hiddenLabel "node_names.name" ;
+    skos:definition "The name Who Owns What gives a landlord record, as the release spells it."@en ;
+    skos:scopeNote "A label on a record the method built, not the legal name of an owner. Case and leading punctuation are kept as filed (for example ',MARIA CROSS'), so the same person can appear under several spellings."@en ;
+    skos:related vocab:landlord, vocab:owner-name ;
+    dct:source "specs/questions/q08.md" .
+
+vocab:business-address a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "landlord business address"@en ;
+    skos:hiddenLabel "businessAddresses", "business_house", "business_street" ;
+    skos:definition "A business address filed on an HPD contact that Who Owns What chose for a landlord record's lots: house, street, apartment, city, state and ZIP as filed."@en ;
+    skos:scopeNote "A landlord record can have several, mostly spelling variants (BROOKLYN, BROOKYLN, Brooklyn); each is kept as filed and none is preferred. A filed address, not a finding of where the landlord operates. It can be a mail-drop or registered-agent address; the address mask and the mail-drop list report that apart."@en ;
+    skos:related vocab:landlord, vocab:mailing-address ;
+    dct:source "specs/questions/q08.md" .
+
+vocab:anchor-landlord a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "anchor landlord"@en ;
+    skos:altLabel "group anchor"@en ;
+    skos:hiddenLabel "anchor_node_id", "ANCHORED_BY" ;
+    skos:definition "The member landlord record of an operational network or owner portfolio with the most lots, ties to the smallest record id. The group is shown under its name."@en ;
+    skos:scopeNote "A display rule, not the owner or controller of the group. Record ids are renumbered by every rebuild, so an anchor holds for the pinned release only. Lots are counted for all of the record's lots, co-op and condo included."@en ;
+    skos:related vocab:landlord, vocab:owner-portfolio, vocab:operational-network ;
+    dct:source "specs/questions/q09.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:landlord a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "landlord"@en ;
+    skos:altLabel "landlord record"@en ;
+    skos:hiddenLabel "node_id", "nodeId" ;
+    skos:definition "A landlord record as Who Owns What builds it from HPD registration contacts: one distinct contact kind, name and business address, with the lots where it appears."@en ;
+    skos:scopeNote "Not a verified person or owner. One person can have several landlord records (different spellings or addresses) and one record can stand for several people with the same name and address. Its id is run-local."@en ;
+    skos:related vocab:operational-network, vocab:owner-contact, vocab:owner-portfolio, vocab:landlord-name, vocab:business-address, vocab:anchor-landlord ;
+    dct:source "specs/questions/q08.md" .
+
+vocab:covers a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "covers"@en ;
+    skos:definition "Links a landlord to a tax lot where its record appears, through the HPD registration the pipeline used for that lot."@en ;
+    skos:scopeNote "Carries the registration id. Appearing on a registration is a record link, not proof of ownership."@en ;
+    dct:source "specs/questions/q08.md" .
+
+vocab:based-on-contact a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "based on contact"@en ;
+    skos:hiddenLabel "BASED_ON_CONTACT" ;
+    skos:definition "Links a landlord record to the HPD contacts Who Owns What selected to stand for it: those on the registration of one of its selected observations with that observation's type, corporation name and person name."@en ;
+    skos:scopeNote "The record the pipeline used, not a finding that the landlord is the owner or that the contact is the landlord. The release has no title, so contacts that differ only in title are all linked. A registration or contact the graph does not hold is not linked."@en ;
+    dct:source "specs/questions/q08.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:link-weight a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "link weight"@en ;
+    skos:definition "The strength the Operational Network gave a link: 1.5 times the name match, 1.0 times the address match, and 100 for an identity link."@en ;
+    skos:scopeNote "A method score, not a probability. Compare weights only inside one run. Owner Portfolio links carry no weight: the layer uses plain connected components."@en ;
+    dct:source "specs/questions/q08.md" .
+
+vocab:network-absence a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "network absence"@en ;
+    skos:hiddenLabel "top_level_reason", "networkAbsence" ;
+    skos:definition "The top-level reason a rental lot is in no operational network."@en ;
+    skos:scopeNote "Absence is not a finding that the lot has no common operator: it says what the method did or did not have to link it. A lot missing from PLUTO has no reason recorded. Controlled values are in the absence reasons scheme."@en ;
+    skos:related vocab:in-network, vocab:network-absence-detail, vocab:portfolio-absence, vocab:source-absence ;
+    dct:source "specs/questions/q08.md" .
+
+vocab:network-absence-detail a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "network absence detail"@en ;
+    skos:hiddenLabel "reason_code", "networkAbsenceDetail" ;
+    skos:definition "The specific reason code behind a lot's network absence."@en ;
+    skos:scopeNote "Each detail value is narrower than one top-level reason."@en ;
+    skos:related vocab:network-absence, vocab:portfolio-absence-detail ;
+    dct:source "specs/questions/q08.md" .
+
+# --- Q8 controlled values ---
+
+vocab:network-splits a skos:ConceptScheme ;
+    skos:prefLabel "Network splits"@en ;
+    dct:title "Network splits"@en ;
+    dct:created "2026-11-13"^^xsd:date ;
+    dct:description "Controlled values for how an operational network was formed."@en ;
+    skos:hasTopConcept vocab:whole-component, vocab:louvain-community .
+
+vocab:network-absence-reasons a skos:ConceptScheme ;
+    skos:prefLabel "Absence reasons"@en ;
+    dct:title "Absence reasons"@en ;
+    dct:created "2026-11-13"^^xsd:date ;
+    dct:description "Controlled values for why a rental lot is in no operational network or no owner portfolio: five top-level reasons, each with narrower detail codes (the IRI keeps its first name). The graph stores the source codes."@en ;
+    skos:hasTopConcept vocab:no-qualifying-linkage, vocab:excluded-by-policy, vocab:below-eligibility-rule, vocab:outside-source-coverage, vocab:outside-method-input .
+
+vocab:whole-component a skos:Concept ;
+    skos:inScheme vocab:network-splits ;
+    skos:topConceptOf vocab:network-splits ;
+    skos:prefLabel "whole component"@en ;
+    skos:hiddenLabel "wcc" ;
+    skos:definition "The operational network is a whole connected component of the link graph."@en ;
+    dct:source "specs/questions/q08.md" .
+
+vocab:louvain-community a skos:Concept ;
+    skos:inScheme vocab:network-splits ;
+    skos:topConceptOf vocab:network-splits ;
+    skos:prefLabel "Louvain community"@en ;
+    skos:hiddenLabel "louvain" ;
+    skos:related vocab:pre-subdivision-connectivity ;
+    skos:definition "The operational network is a community cut from a connected component of more than 300 lots by the Louvain method."@en ;
+    skos:scopeNote "The cut is a size choice of the method; links across it are kept as boundary links."@en ;
+    dct:source "specs/questions/q08.md" .
+
+vocab:no-qualifying-linkage a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:topConceptOf vocab:network-absence-reasons ;
+    skos:narrower vocab:no-linkage ;
+    skos:prefLabel "no qualifying linkage"@en ;
+    skos:hiddenLabel "no_qualifying_linkage" ;
+    skos:definition "The lot's landlord records were in the method's input but no accepted link connected them to another landlord."@en ;
+    skos:scopeNote "Not a finding that the lot has no common operator."@en ;
+    dct:source "specs/questions/q08.md", "BOR release v0.3.0 DATA.md, absence reason codes and levels" .
+
+vocab:excluded-by-policy a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:topConceptOf vocab:network-absence-reasons ;
+    skos:narrower vocab:aggregator-address-masked, vocab:address-evidence-masked, vocab:coop-condo-excluded, vocab:coop-condo-dominated, vocab:institutional-screen ;
+    skos:prefLabel "excluded by policy"@en ;
+    skos:hiddenLabel "excluded_by_policy" ;
+    skos:definition "A rule of the method left the lot's evidence out on purpose (for example a masked aggregator address)."@en ;
+    dct:source "specs/questions/q08.md", "BOR release v0.3.0 DATA.md, absence reason codes and levels" .
+
+vocab:below-eligibility-rule a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:topConceptOf vocab:network-absence-reasons ;
+    skos:narrower vocab:first-name-veto, vocab:common-name-veto, vocab:shared-company-degree-unknown, vocab:shared-company-name-not-rare, vocab:shared-company-first-name-conflict, vocab:shared-company-degree-cap, vocab:deed-not-latest, vocab:deed-parcels-out-of-range, vocab:successor-not-shell, vocab:successor-transfer-not-nominal ;
+    skos:prefLabel "below eligibility rule"@en ;
+    skos:hiddenLabel "below_eligibility_rule" ;
+    skos:definition "Candidate evidence existed but failed a guard or threshold of the method."@en ;
+    dct:source "specs/questions/q08.md", "BOR release v0.3.0 DATA.md, absence reason codes and levels" .
+
+vocab:outside-source-coverage a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:topConceptOf vocab:network-absence-reasons ;
+    skos:narrower vocab:no-registration ;
+    skos:prefLabel "outside source coverage"@en ;
+    skos:hiddenLabel "outside_source_coverage" ;
+    skos:definition "The source has nothing for this lot, such as no HPD registration."@en ;
+    dct:source "specs/questions/q08.md", "BOR release v0.3.0 DATA.md, absence reason codes and levels" .
+
+vocab:outside-method-input a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:topConceptOf vocab:network-absence-reasons ;
+    skos:narrower vocab:no-owner-contact, vocab:unmatched-node ;
+    skos:prefLabel "outside method input"@en ;
+    skos:hiddenLabel "outside_method_input" ;
+    skos:definition "The lot is registered but the method had no usable input for it, such as no qualifying owner contact."@en ;
+    dct:source "specs/questions/q08.md", "BOR release v0.3.0 DATA.md, absence reason codes and levels" .
+
+vocab:no-linkage a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:broader vocab:no-qualifying-linkage ;
+    skos:prefLabel "no linkage"@en ;
+    skos:hiddenLabel "no_linkage" ;
+    skos:definition "No accepted link connected the landlord record to another."@en ;
+    dct:source "specs/questions/q08.md", "BOR release v0.3.0 DATA.md, absence reason codes and levels" .
+
+vocab:no-registration a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:broader vocab:outside-source-coverage ;
+    skos:prefLabel "no registration"@en ;
+    skos:hiddenLabel "no_registration" ;
+    skos:definition "The lot has no HPD registration."@en ;
+    dct:source "specs/questions/q08.md", "BOR release v0.3.0 DATA.md, absence reason codes and levels" .
+
+vocab:no-owner-contact a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:broader vocab:outside-method-input ;
+    skos:prefLabel "no owner contact"@en ;
+    skos:hiddenLabel "no_owner_contact" ;
+    skos:definition "The lot is registered but has no qualifying owner contact record."@en ;
+    dct:source "specs/questions/q08.md", "BOR release v0.3.0 DATA.md, absence reason codes and levels" .
+
+vocab:aggregator-address-masked a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:broader vocab:excluded-by-policy ;
+    skos:prefLabel "aggregator address masked"@en ;
+    skos:hiddenLabel "aggregator_address_masked" ;
+    skos:definition "The landlord's address is shared by more landlords than the method's threshold, so address links through it were masked."@en ;
+    skos:related vocab:network-masked-address ;
+    dct:source "specs/questions/q08.md", "BOR release v0.3.0 DATA.md, absence reason codes and levels" .
+
+vocab:address-evidence-masked a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:broader vocab:excluded-by-policy ;
+    skos:prefLabel "address evidence masked"@en ;
+    skos:hiddenLabel "address_evidence_masked" ;
+    skos:definition "The address is shared by more landlords than the threshold for address evidence in identity scoring, so that evidence was masked."@en ;
+    dct:source "specs/questions/q08.md", "BOR release v0.3.0 DATA.md, absence reason codes and levels" .
+
+vocab:first-name-veto a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:broader vocab:below-eligibility-rule ;
+    skos:prefLabel "first name veto"@en ;
+    skos:hiddenLabel "first_name_veto" ;
+    skos:definition "A candidate link was blocked because the landlords' first names conflict."@en ;
+    dct:source "specs/questions/q08.md", "BOR release v0.3.0 DATA.md, absence reason codes and levels" .
+
+vocab:common-name-veto a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:broader vocab:below-eligibility-rule ;
+    skos:prefLabel "common name veto"@en ;
+    skos:hiddenLabel "common_name_veto" ;
+    skos:definition "A candidate link was blocked because the shared name is too common."@en ;
+    dct:source "specs/questions/q08.md", "BOR release v0.3.0 DATA.md, absence reason codes and levels" .
+
+vocab:shared-company-degree-unknown a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:broader vocab:below-eligibility-rule ;
+    skos:prefLabel "shared company degree unknown"@en ;
+    skos:hiddenLabel "shared_company_degree_unknown" ;
+    skos:definition "A shared-company link was left out because the company has no recorded contact count."@en ;
+    dct:source "specs/questions/q08.md", "BOR release v0.3.0 DATA.md, absence reason codes and levels" .
+
+vocab:shared-company-name-not-rare a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:broader vocab:below-eligibility-rule ;
+    skos:prefLabel "shared company name not rare"@en ;
+    skos:hiddenLabel "shared_company_name_not_rare" ;
+    skos:definition "A shared-company link was left out because the company name is not rare enough."@en ;
+    dct:source "specs/questions/q08.md", "BOR release v0.3.0 DATA.md, absence reason codes and levels" .
+
+vocab:shared-company-first-name-conflict a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:broader vocab:below-eligibility-rule ;
+    skos:prefLabel "shared company first name conflict"@en ;
+    skos:hiddenLabel "shared_company_first_name_conflict" ;
+    skos:definition "A shared-company link was left out because the first names are not compatible."@en ;
+    dct:source "specs/questions/q08.md", "BOR release v0.3.0 DATA.md, absence reason codes and levels" .
+
+vocab:shared-company-degree-cap a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:broader vocab:below-eligibility-rule ;
+    skos:prefLabel "shared company degree cap"@en ;
+    skos:hiddenLabel "shared_company_degree_cap" ;
+    skos:definition "A shared-company link was left out because too many contacts sit under the company."@en ;
+    dct:source "specs/questions/q08.md", "BOR release v0.3.0 DATA.md, absence reason codes and levels" .
+
+# --- Q9 owner portfolio terms ---
+
+vocab:owner-portfolio a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "owner portfolio"@en ;
+    skos:altLabel "Owner Portfolio"@en, "apparent owner footprint"@en ;
+    skos:definition "The rental lots attributed to one apparent owner in one pipeline run, from ownership signals only: a resolved shared identity or a qualifying shared deed. Co-op and condo lots are left out of the footprint by policy."@en ;
+    skos:scopeNote "A derived attribution and a lead, not a legal determination of beneficial ownership. Its id is run-local. The eligibility rule counts member registration identities, not buildings, and a group is dropped when rental buildings are under half its footprint. The lot count covers rental lots only, so it is not the full footprint. A group's anchor is a display choice, not a named owner."@en ;
+    skos:related vocab:operational-network, vocab:landlord, vocab:related-lot, vocab:anchor-landlord, vocab:ownership-affiliation, vocab:reported-claim, vocab:restructuring-signal, vocab:lot-violation-ranking, vocab:agent-footprint ;
+    dct:source "specs/questions/q09.md" .
+
+vocab:portfolio-group-id a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "portfolio id"@en ;
+    skos:hiddenLabel "portfolioGroupId" ;
+    skos:definition "The identifier of an owner portfolio within the selected run, such as OP-98617 (the smallest landlord id in it)."@en ;
+    skos:scopeNote "Run-local: the same id in another run can mean a different group."@en ;
+    dct:source "specs/questions/q09.md" .
+
+vocab:portfolio-composition a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "portfolio composition"@en ;
+    skos:hiddenLabel "composition" ;
+    skos:definition "How the portfolio's ownership signals combine: resolved identities, a qualifying deed, or identity groups joined by a deed."@en ;
+    skos:scopeNote "Controlled values are in the portfolio compositions scheme. Composition describes the signals, not the strength of the case for common ownership."@en ;
+    dct:source "specs/questions/q09.md" .
+
+vocab:in-portfolio a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "in portfolio"@en ;
+    skos:definition "Links a tax lot to the owner portfolio it belongs to in the selected run."@en ;
+    skos:scopeNote "A lot is in at most one portfolio. A co-op or condo lot left out of the rental footprint, and a lot with no portfolio, have none; the reason is the portfolio absence."@en ;
+    skos:related vocab:portfolio-absence ;
+    dct:source "specs/questions/q09.md" .
+
+vocab:connected-by-name a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "connected by name"@en ;
+    skos:hiddenLabel "CONNECTED_BY_NAME", "network.name" ;
+    skos:definition "Links two landlord records whose names Who Owns What's fuzzy match judged alike. Used by the Operational Network only."@en ;
+    skos:scopeNote "A name match is a lead, not evidence of common ownership. It carries the network's weight and the id of the network edge."@en ;
+    skos:related vocab:connected-by-address, vocab:connected-by-identity ;
+    dct:source "specs/questions/q08.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:connected-by-address a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "connected by address"@en ;
+    skos:hiddenLabel "CONNECTED_BY_ADDRESS", "network.address" ;
+    skos:definition "Links two landlord records that share a business address in Who Owns What's address match. Used by the Operational Network only."@en ;
+    skos:scopeNote "A shared address is not evidence of common ownership by itself. Address links at an aggregator address are set aside and are not stored; the count per address is on the masked address."@en ;
+    skos:related vocab:connected-by-name, vocab:connected-by-identity ;
+    dct:source "specs/questions/q08.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:connected-by-identity a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "connected by identity"@en ;
+    skos:altLabel "identity link"@en ;
+    skos:hiddenLabel "CONNECTED_BY_IDENTITY", "CONNECTED_BY_SPLINK", "network.identity" ;
+    skos:definition "Links two landlord records judged to be one party: they share a resolved identity cluster, a curated owner or a registered-company entity."@en ;
+    skos:scopeNote "Used by both layers, so one link carries the ids of both. Its stage says which kind of evidence (Splink model, feedback, curated list, registered company); only the first two are model output. A link is a signal the method counted, not a finding of ownership. The release and the earlier graph call this CONNECTED_BY_SPLINK."@en ;
+    skos:related vocab:connected-by-deed, vocab:connected-by-name, vocab:connected-by-address, vocab:ownership-signal ;
+    dct:source "specs/questions/q08.md", "specs/questions/q09.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:connected-by-deed a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "connected by deed"@en ;
+    skos:hiddenLabel "CONNECTED_BY_DEED" ;
+    skos:definition "Links two landlord records whose buildings one joint deed conveyed, with the stage (still held, or conveyed on into shell companies) and the deed evidence."@en ;
+    skos:scopeNote "Used by the Owner Portfolio only: a deed shows ownership, not shared operation. Landlord records on more than 20 joint deeds are left out. A pair can be joined by one deed at both stages."@en ;
+    skos:related vocab:connected-by-identity, vocab:ownership-signal ;
+    dct:source "specs/questions/q09.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:edge-id a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "edge id"@en ;
+    skos:hiddenLabel "edge_id", "edgeId", "networkEdgeId", "portfolioEdgeId" ;
+    skos:definition "The release's id for one edge of one layer's graph."@en ;
+    skos:scopeNote "Run-local, an identity key only. An identity link has two, one per layer."@en ;
+    dct:source "specs/questions/q08.md" .
+
+vocab:evidence-type a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "evidence type"@en ;
+    skos:hiddenLabel "evidence_type", "evidenceType" ;
+    skos:definition "The kind of release record a link cites as its evidence: an identity cluster, a curated or registered-company set, or a deed evidence item."@en ;
+    skos:scopeNote "Controlled values are in the link evidence types scheme."@en ;
+    skos:related vocab:evidence-id ;
+    dct:source "specs/questions/q09.md" .
+
+vocab:evidence-id a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "evidence id"@en ;
+    skos:hiddenLabel "evidence_id", "evidenceId" ;
+    skos:definition "The id, in the release, of the cluster, set or deed evidence item a link cites."@en ;
+    skos:scopeNote "Run-local, an identity key only. The record it names is in the release, not in the graph."@en ;
+    skos:related vocab:evidence-type ;
+    dct:source "specs/questions/q09.md" .
+
+vocab:masked-address-edges a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "masked address edges"@en ;
+    skos:hiddenLabel "maskedEdges" ;
+    skos:definition "How many address links the pipeline offered between landlord records at this masked address and set aside."@en ;
+    skos:scopeNote "Counted from the release. An edge touching two masked addresses is counted at the one with the lower id. The edges themselves are not stored."@en ;
+    skos:related vocab:network-masked-address ;
+    dct:source "specs/questions/q06.md" .
+
+vocab:ownership-signal a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "ownership signal"@en ;
+    skos:hiddenLabel "signal" ;
+    skos:definition "The stage that produced a link between two landlord records: an identity signal or a deed signal."@en ;
+    skos:scopeNote "Controlled values are in the ownership signals scheme. A signal says how two records were joined, not that they are one owner."@en ;
+    skos:related vocab:connected-by-identity, vocab:connected-by-deed, vocab:stage-precision ;
+    dct:source "specs/questions/q09.md" .
+
+vocab:portfolio-absence a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "portfolio absence"@en ;
+    skos:hiddenLabel "portfolioAbsence" ;
+    skos:definition "The top-level reason a rental lot is in no owner portfolio."@en ;
+    skos:scopeNote "Absence is not a finding that the lot has no common owner. A lot with no pipeline status row (an HPD lot missing from PLUTO) has none recorded. A co-op or condo lot left out of a portfolio's rental footprint has the excluded-by-policy reason. Controlled values are in the absence reasons scheme."@en ;
+    skos:related vocab:in-portfolio, vocab:network-absence, vocab:portfolio-absence-detail, vocab:source-absence ;
+    dct:source "specs/questions/q09.md" .
+
+vocab:portfolio-absence-detail a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "portfolio absence detail"@en ;
+    skos:hiddenLabel "portfolioAbsenceDetail" ;
+    skos:definition "The specific reason code behind a lot's portfolio absence."@en ;
+    skos:scopeNote "Each detail value is narrower than one top-level reason."@en ;
+    skos:related vocab:portfolio-absence, vocab:network-absence-detail ;
+    dct:source "specs/questions/q09.md" .
+
+# --- Q9 controlled values ---
+
+vocab:portfolio-compositions a skos:ConceptScheme ;
+    skos:prefLabel "Portfolio compositions"@en ;
+    dct:title "Portfolio compositions"@en ;
+    dct:created "2026-11-13"^^xsd:date ;
+    dct:description "Controlled values for how an owner portfolio's signals combine. The graph stores the source codes."@en ;
+    skos:hasTopConcept vocab:identity-based, vocab:deed-only, vocab:deed-bridged .
+
+vocab:ownership-signals a skos:ConceptScheme ;
+    skos:prefLabel "Ownership signals"@en ;
+    dct:title "Ownership signals"@en ;
+    dct:created "2026-11-13"^^xsd:date ;
+    dct:description "Controlled values for the stage that joined two landlord records in an owner portfolio. The graph stores the source codes."@en ;
+    skos:hasTopConcept vocab:identity-splink-base, vocab:identity-splink-feedback, vocab:identity-curated, vocab:identity-registered-llc, vocab:deed-held-since, vocab:deed-linked-successor .
+
+vocab:link-evidence-types a skos:ConceptScheme ;
+    skos:prefLabel "Link evidence types"@en ;
+    dct:title "Link evidence types"@en ;
+    dct:created "2026-11-15"^^xsd:date ;
+    dct:description "Controlled values for the kind of release record an identity or deed link cites. The graph stores the source codes."@en ;
+    skos:hasTopConcept vocab:identity-cluster-evidence, vocab:link-set-evidence, vocab:deed-evidence-item .
+
+vocab:identity-cluster-evidence a skos:Concept ;
+    skos:inScheme vocab:link-evidence-types ;
+    skos:topConceptOf vocab:link-evidence-types ;
+    skos:prefLabel "identity cluster"@en ;
+    skos:hiddenLabel "identity_cluster" ;
+    skos:definition "A cluster of identities the Splink model resolved as one, cited by splink-stage links."@en ;
+    dct:source "BOR release v0.3.0 DATA.md" .
+
+vocab:link-set-evidence a skos:Concept ;
+    skos:inScheme vocab:link-evidence-types ;
+    skos:topConceptOf vocab:link-evidence-types ;
+    skos:prefLabel "link set"@en ;
+    skos:hiddenLabel "link_set" ;
+    skos:definition "A curated owner or a registered-company entity that ties several landlord records, cited by curated and registered-company links."@en ;
+    dct:source "BOR release v0.3.0 DATA.md" .
+
+vocab:deed-evidence-item a skos:Concept ;
+    skos:inScheme vocab:link-evidence-types ;
+    skos:topConceptOf vocab:link-evidence-types ;
+    skos:prefLabel "deed evidence item"@en ;
+    skos:hiddenLabel "evidence_item" ;
+    skos:definition "A joint deed and the parcels it conveyed, cited by deed links."@en ;
+    dct:source "BOR release v0.3.0 DATA.md" .
+
+vocab:identity-based a skos:Concept ;
+    skos:inScheme vocab:portfolio-compositions ;
+    skos:topConceptOf vocab:portfolio-compositions ;
+    skos:prefLabel "identity-based"@en ;
+    skos:hiddenLabel "identity" ;
+    skos:definition "The portfolio's links rest on resolved shared identities of the landlord records."@en ;
+    dct:source "specs/questions/q09.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:deed-only a skos:Concept ;
+    skos:inScheme vocab:portfolio-compositions ;
+    skos:topConceptOf vocab:portfolio-compositions ;
+    skos:prefLabel "deed only"@en ;
+    skos:hiddenLabel "deed_only" ;
+    skos:definition "The portfolio's links rest on a qualifying shared deed."@en ;
+    dct:source "specs/questions/q09.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:deed-bridged a skos:Concept ;
+    skos:inScheme vocab:portfolio-compositions ;
+    skos:topConceptOf vocab:portfolio-compositions ;
+    skos:prefLabel "deed bridged"@en ;
+    skos:hiddenLabel "deed_bridged" ;
+    skos:definition "Groups tied by resolved identities are joined through a qualifying deed."@en ;
+    dct:source "specs/questions/q09.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:identity-splink-base a skos:Concept ;
+    skos:inScheme vocab:ownership-signals ;
+    skos:topConceptOf vocab:ownership-signals ;
+    skos:prefLabel "Splink identity match"@en ;
+    skos:hiddenLabel "identity.splink_base" ;
+    skos:definition "The records belong to one identity cluster from the Splink record-linkage model."@en ;
+    skos:scopeNote "A model score above its threshold, not a verified identity."@en ;
+    dct:source "specs/questions/q09.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:identity-splink-feedback a skos:Concept ;
+    skos:inScheme vocab:ownership-signals ;
+    skos:topConceptOf vocab:ownership-signals ;
+    skos:prefLabel "Splink identity match with feedback"@en ;
+    skos:hiddenLabel "identity.splink_feedback" ;
+    skos:definition "The records were joined by the feedback pass that follows the Splink model."@en ;
+    skos:scopeNote "Not a verified identity."@en ;
+    dct:source "specs/questions/q09.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:identity-curated a skos:Concept ;
+    skos:inScheme vocab:ownership-signals ;
+    skos:topConceptOf vocab:ownership-signals ;
+    skos:prefLabel "curated owner list match"@en ;
+    skos:hiddenLabel "identity.curated" ;
+    skos:definition "A curated owner list ties the records to one owner."@en ;
+    dct:source "specs/questions/q09.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:identity-registered-llc a skos:Concept ;
+    skos:inScheme vocab:ownership-signals ;
+    skos:topConceptOf vocab:ownership-signals ;
+    skos:prefLabel "registered LLC owner match"@en ;
+    skos:hiddenLabel "identity.registered_llc" ;
+    skos:definition "One Department of Finance owner-of-record entity owns a lot that puts both records in the same set."@en ;
+    dct:source "specs/questions/q09.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:deed-held-since a skos:Concept ;
+    skos:inScheme vocab:ownership-signals ;
+    skos:topConceptOf vocab:ownership-signals ;
+    skos:prefLabel "deed held since"@en ;
+    skos:hiddenLabel "deed.held_since" ;
+    skos:definition "A qualifying joint deed under which the parcels were held ties the records."@en ;
+    skos:scopeNote "Counts deeds of 2 to 25 parcels that are still the parcels' latest deed."@en ;
+    dct:source "specs/questions/q09.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:deed-linked-successor a skos:Concept ;
+    skos:inScheme vocab:ownership-signals ;
+    skos:topConceptOf vocab:ownership-signals ;
+    skos:prefLabel "deed linked successor"@en ;
+    skos:hiddenLabel "deed.linked_successor" ;
+    skos:definition "A deed moved parcels onward to a successor that holds few buildings, at nominal consideration, and so ties the records."@en ;
+    dct:source "specs/questions/q09.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:unmatched-node a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:broader vocab:outside-method-input ;
+    skos:prefLabel "unmatched node"@en ;
+    skos:hiddenLabel "unmatched_node" ;
+    skos:definition "The landlord record matched no resolved identity."@en ;
+    dct:source "specs/questions/q09.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:coop-condo-excluded a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:broader vocab:excluded-by-policy ;
+    skos:prefLabel "co-op or condo excluded"@en ;
+    skos:hiddenLabel "coop_condo_excluded" ;
+    skos:definition "The building is a co-op or condo, left out of a surviving portfolio's rental footprint."@en ;
+    dct:source "specs/questions/q09.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:coop-condo-dominated a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:broader vocab:excluded-by-policy ;
+    skos:prefLabel "co-op or condo dominated"@en ;
+    skos:hiddenLabel "coop_condo_dominated" ;
+    skos:definition "Dropped: co-op and condo lots are the majority of a group's footprint or of a deed's parcels."@en ;
+    dct:source "specs/questions/q09.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:institutional-screen a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:broader vocab:excluded-by-policy ;
+    skos:prefLabel "institutional screen"@en ;
+    skos:hiddenLabel "institutional_screen" ;
+    skos:definition "The deed parties were screened as institutional or public."@en ;
+    dct:source "specs/questions/q09.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:deed-not-latest a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:broader vocab:below-eligibility-rule ;
+    skos:prefLabel "deed not latest"@en ;
+    skos:hiddenLabel "deed_not_latest" ;
+    skos:definition "Staleness guard: the joint deed is no longer the parcel's latest deed."@en ;
+    dct:source "specs/questions/q09.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:deed-parcels-out-of-range a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:broader vocab:below-eligibility-rule ;
+    skos:prefLabel "deed parcels out of range"@en ;
+    skos:hiddenLabel "deed_parcels_out_of_range" ;
+    skos:definition "The deed is outside the 2 to 25 parcel range."@en ;
+    dct:source "specs/questions/q09.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:successor-not-shell a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:broader vocab:below-eligibility-rule ;
+    skos:prefLabel "successor not shell"@en ;
+    skos:hiddenLabel "successor_not_shell" ;
+    skos:definition "Linked-successor guard: the successor holds more buildings than the shell cap."@en ;
+    dct:source "specs/questions/q09.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:successor-transfer-not-nominal a skos:Concept ;
+    skos:inScheme vocab:network-absence-reasons ;
+    skos:broader vocab:below-eligibility-rule ;
+    skos:prefLabel "successor transfer not nominal"@en ;
+    skos:hiddenLabel "successor_transfer_not_nominal" ;
+    skos:definition "Linked-successor guard: the onward transfer is not at nominal consideration."@en ;
+    dct:source "specs/questions/q09.md", "BOR release v0.3.0 DATA.md" .
+
+# --- Q6 concepts ---
+
+vocab:network-masked-address a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "network masked address"@en ;
+    skos:altLabel "aggregator address"@en, "masked address"@en ;
+    skos:definition "An address text that the Operational Network method masked as an aggregator address in one pipeline run, because more landlord records share it than the method's threshold. Address links through it were left out."@en ;
+    skos:scopeNote "Masking is a method's decision, not a finding about the address or its users; name the method and the run. The release's text has no ZIP, no city, and keeps floor and unit text, so one text can name several HPD addresses. Reported apart from the mail-drop list. Co-location at a masked address supports no ownership or identity claim."@en ;
+    skos:related vocab:mail-drop-address, vocab:mailing-address, vocab:aggregator-address-masked, vocab:masked-address-edges, vocab:portfolio-masked-address, vocab:set-aside, vocab:agent-footprint ;
+    dct:source "specs/questions/q06.md" .
+
+vocab:portfolio-masked-address a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "portfolio masked address"@en ;
+    skos:altLabel "address-evidence mask"@en ;
+    skos:definition "An address text at which the Owner Portfolio method gave the identity model's address evidence no weight in one pipeline run, because more landlord records share the address than the method's threshold."@en ;
+    skos:scopeNote "The release records this mask on identities, not on addresses, so the address text is derived from the masked identities' own business addresses (house, street and apartment as filed, no ZIP). A mask is a method's decision, not a finding about the address or its users. Reported apart from the network mask and the mail-drop list; an address can be in any, all or none."@en ;
+    skos:related vocab:network-masked-address, vocab:mail-drop-address, vocab:mailing-address, vocab:set-aside, vocab:agent-footprint ;
+    dct:source "specs/questions/q06.md", "BOR release v0.3.0 DATA.md" .
+
+vocab:portfolio-masked-address-text a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "portfolio masked address text"@en ;
+    skos:definition "The derived address of a masked identity as filed: house, street and apartment joined by single spaces, blanks left out; uppercase, no city or ZIP, floor and unit text kept."@en ;
+    skos:scopeNote "Derived by this project, not named by the release. Not normalized further, so an internal double space in the filing stays and an HPD spelling that differs does not match."@en ;
+    dct:source "specs/questions/q06.md" .
+
+vocab:portfolio-masked-address-degree a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "portfolio masked address degree"@en ;
+    skos:hiddenLabel "addr_degree" ;
+    skos:definition "The release's address degree for the masked identities at the address text: the count that put the address above the method's threshold of 25."@en ;
+    skos:scopeNote "One value per text. It differs from the network method's degree for 28 of the 30 texts both masked, so the two are never compared as one number."@en ;
+    dct:source "specs/questions/q06.md" .
+
+vocab:masked-identities a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "masked identities"@en ;
+    skos:definition "How many resolved identities with this address text the Owner Portfolio method masked."@en ;
+    skos:scopeNote "Counted in identities, not landlord records, people or buildings; can be above or below the degree."@en ;
+    dct:source "specs/questions/q06.md" .
+
+vocab:masked-address-id a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "masked address id"@en ;
+    skos:hiddenLabel "address_id", "addressId" ;
+    skos:definition "The identifier of a masked address within the selected run, such as A0000011."@en ;
+    skos:scopeNote "Run-local: the same id in another run can mean a different address."@en ;
+    dct:source "specs/questions/q06.md" .
+
+vocab:masked-address-text a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "masked address text"@en ;
+    skos:definition "The address as the release writes it: uppercase, trailing city and ZIP removed, whitespace collapsed, floor and unit text kept (the HPD street line, a space, then the second line)."@en ;
+    skos:scopeNote "Not HPD's spelling of an address with a ZIP: \"120 BROADWAY 22 FL\" and \"120 BROADWAY\" are different texts."@en ;
+    dct:source "specs/questions/q06.md" .
+
+vocab:masked-address-degree a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "masked address degree"@en ;
+    skos:hiddenLabel "degree" ;
+    skos:definition "The number of landlord records that share the masked address in the run."@en ;
+    skos:scopeNote "Counted in landlord records (Who Owns What nodes), not in people or buildings. The method masks an address above its threshold (25 in this release); the threshold, method and normalizer version are the same for every mask and are recorded once with the release."@en ;
+    dct:source "specs/questions/q06.md" .
+
+vocab:mail-drop-address a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "mail-drop address"@en ;
+    skos:altLabel "mail drop address"@en, "registered-agent address"@en, "service address"@en ;
+    skos:definition "An address on the project's curated list of mail-drop and registered-agent addresses, with a kind and a basis."@en ;
+    skos:scopeNote "A project classification, separate from any method's masking. The list is preliminary and every entry is unreviewed. Co-location at a listed address supports no ownership or identity claim. A miss is not a clearance: the list spells addresses its own way."@en ;
+    skos:related vocab:network-masked-address, vocab:mailing-address, vocab:portfolio-masked-address, vocab:set-aside ;
+    dct:source "specs/questions/q06.md" .
+
+vocab:mail-drop-address-key a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "mail-drop address key"@en ;
+    skos:hiddenLabel "address_key" ;
+    skos:definition "The address as the list spells it: uppercase street line with street types abbreviated, ordinals such as 116TH, hyphens as spaces, and no unit or floor."@en ;
+    skos:scopeNote "Not HPD's spelling: the list has \"575 FIFTH AVE\", HPD has \"575 FIFTH AVENUE\". The normalizer that wrote the list is not in this project."@en ;
+    dct:source "specs/questions/q06.md" .
+
+vocab:zip-five a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "ZIP five"@en ;
+    skos:hiddenLabel "zip5" ;
+    skos:definition "The first five digits of a ZIP code."@en ;
+    skos:scopeNote "One list entry (120 BROADWAY) has none and matches any ZIP."@en ;
+    dct:source "specs/questions/q06.md" .
+
+vocab:mail-drop-kind a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "mail-drop kind"@en ;
+    skos:hiddenLabel "kind" ;
+    skos:definition "The project's classification of a listed address: a registered agent, a law firm, a management office, or unknown."@en ;
+    skos:scopeNote "Controlled values are in the mail-drop kinds scheme. A kind describes the address, not the parties that use it."@en ;
+    dct:source "specs/questions/q06.md" .
+
+vocab:mail-drop-basis a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "mail-drop basis"@en ;
+    skos:hiddenLabel "basis" ;
+    skos:definition "The evidence the list's classification rests on, in the list's own words (for example the top process names at the address, or the count of HPD agent registrations)."@en ;
+    skos:scopeNote "As recorded in the list; not normalized."@en ;
+    dct:source "specs/questions/q06.md" .
+
+vocab:list-review-status a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "list review status"@en ;
+    skos:hiddenLabel "review_status", "reviewStatus" ;
+    skos:definition "Whether a person has reviewed the list entry."@en ;
+    skos:scopeNote "Every entry is unreviewed in this release of the list; an unreviewed entry is a lead."@en ;
+    dct:source "specs/questions/q06.md" .
+
+# --- Q6 controlled values ---
+
+vocab:mail-drop-kinds a skos:ConceptScheme ;
+    skos:prefLabel "Mail-drop kinds"@en ;
+    dct:title "Mail-drop kinds"@en ;
+    dct:created "2026-11-13"^^xsd:date ;
+    dct:description "Controlled values for the kind of a listed mail-drop or registered-agent address. The graph stores the source codes."@en ;
+    skos:hasTopConcept vocab:listed-registered-agent, vocab:listed-law-firm, vocab:listed-management-office, vocab:listed-unknown .
+
+vocab:list-review-statuses a skos:ConceptScheme ;
+    skos:prefLabel "List review statuses"@en ;
+    dct:title "List review statuses"@en ;
+    dct:created "2026-11-13"^^xsd:date ;
+    dct:description "Controlled values for whether a mail-drop list entry has been reviewed. The graph stores the source codes."@en ;
+    skos:hasTopConcept vocab:unreviewed .
+
+vocab:listed-registered-agent a skos:Concept ;
+    skos:inScheme vocab:mail-drop-kinds ;
+    skos:topConceptOf vocab:mail-drop-kinds ;
+    skos:prefLabel "registered agent"@en ;
+    skos:hiddenLabel "registered_agent" ;
+    skos:definition "A company that receives legal papers for other companies; many entities name it as their process address."@en ;
+    dct:source "specs/questions/q06.md", "data/sources.yaml" .
+
+vocab:listed-law-firm a skos:Concept ;
+    skos:inScheme vocab:mail-drop-kinds ;
+    skos:topConceptOf vocab:mail-drop-kinds ;
+    skos:prefLabel "law firm"@en ;
+    skos:hiddenLabel "law_firm" ;
+    skos:definition "A law office that receives papers or mail for its clients."@en ;
+    dct:source "specs/questions/q06.md", "data/sources.yaml" .
+
+vocab:listed-management-office a skos:Concept ;
+    skos:inScheme vocab:mail-drop-kinds ;
+    skos:topConceptOf vocab:mail-drop-kinds ;
+    skos:prefLabel "management office"@en ;
+    skos:hiddenLabel "management_office" ;
+    skos:definition "An office that HPD agent contacts or the Operational Network mask show serving many registrations."@en ;
+    dct:source "specs/questions/q06.md", "data/sources.yaml" .
+
+vocab:listed-unknown a skos:Concept ;
+    skos:inScheme vocab:mail-drop-kinds ;
+    skos:topConceptOf vocab:mail-drop-kinds ;
+    skos:prefLabel "unknown kind"@en ;
+    skos:hiddenLabel "unknown" ;
+    skos:definition "The address is shared by many parties but the list could not tell what kind of office it is."@en ;
+    dct:source "specs/questions/q06.md", "data/sources.yaml" .
+
+vocab:unreviewed a skos:Concept ;
+    skos:inScheme vocab:list-review-statuses ;
+    skos:topConceptOf vocab:list-review-statuses ;
+    skos:prefLabel "unreviewed"@en ;
+    skos:hiddenLabel "unreviewed" ;
+    skos:related vocab:item-unreviewed ;
+    skos:definition "No person has reviewed the entry; it is a lead."@en ;
+    dct:source "specs/questions/q06.md", "data/sources.yaml" .
+
+vocab:affiliation-types a skos:ConceptScheme ;
+    skos:prefLabel "Affiliation types"@en ;
+    dct:title "Affiliation types"@en ;
+    dct:created "2026-11-16"^^xsd:date ;
+    dct:description "Controlled values for the kind of relationship an affiliation answer reports."@en ;
+    skos:hasTopConcept vocab:ownership-affiliation, vocab:parent-affiliation, vocab:management-affiliation, vocab:financing-affiliation, vocab:other-affiliation .
+
+vocab:evidence-statuses a skos:ConceptScheme ;
+    skos:prefLabel "Evidence statuses"@en ;
+    dct:title "Evidence statuses"@en ;
+    dct:created "2026-11-16"^^xsd:date ;
+    dct:description "Controlled values for how firmly an affiliation is supported."@en ;
+    skos:hasTopConcept vocab:documented, vocab:hypothesized, vocab:reported .
+
+vocab:affiliation a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "affiliation"@en ;
+    skos:altLabel "relationship involving an entity"@en ;
+    skos:definition "A relationship between an entity and another party, reported with its affiliation type, its evidence status and the source record behind it."@en ;
+    skos:scopeNote "An answer item, computed from recorded and derived evidence; not a graph element. Never a finding of control, and the type is never inferred from the strength of the evidence."@en ;
+    skos:related vocab:retrieved-item ;
+    dct:source "specs/questions/q11.md" .
+
+vocab:ownership-affiliation a skos:Concept ;
+    skos:inScheme vocab:affiliation-types ;
+    skos:topConceptOf vocab:affiliation-types ;
+    skos:prefLabel "ownership"@en ;
+    skos:definition "A party is recorded as an owner, co-owner or shareholder of the entity or its building."@en ;
+    skos:scopeNote "From HPD owner and shareholder roles. A shareholder is an interest of unstated size; it does not establish a parent company."@en ;
+    skos:related vocab:shareholder, vocab:owner-portfolio, vocab:parent-affiliation, vocab:management-affiliation ;
+    dct:source "specs/questions/q11.md" .
+
+vocab:parent-affiliation a skos:Concept ;
+    skos:inScheme vocab:affiliation-types ;
+    skos:topConceptOf vocab:affiliation-types ;
+    skos:prefLabel "parent company"@en ;
+    skos:definition "A company is documented as the parent of the entity."@en ;
+    skos:scopeNote "No loaded source documents a parent. The answer calls a relationship a parent only when a document states it; a reported claim is shown as reported."@en ;
+    skos:related vocab:ownership-affiliation, vocab:financing-affiliation ;
+    dct:source "specs/questions/q11.md" .
+
+vocab:management-affiliation a skos:Concept ;
+    skos:inScheme vocab:affiliation-types ;
+    skos:topConceptOf vocab:affiliation-types ;
+    skos:prefLabel "management"@en ;
+    skos:definition "A party is recorded as managing agent or site manager for a registration of the entity."@en ;
+    skos:scopeNote "Shared management does not establish shared ownership."@en ;
+    skos:related vocab:agent, vocab:site-manager, vocab:ownership-affiliation ;
+    dct:source "specs/questions/q11.md" .
+
+vocab:financing-affiliation a skos:Concept ;
+    skos:inScheme vocab:affiliation-types ;
+    skos:topConceptOf vocab:affiliation-types ;
+    skos:prefLabel "financing"@en ;
+    skos:definition "A party is the lender on a recorded mortgage naming the entity as borrower, or the entity is the lender."@en ;
+    skos:scopeNote "A lender is a financing relationship, not control or parenthood. A co-borrower is a shared-borrower record, not common control."@en ;
+    skos:related vocab:mortgage, vocab:parent-affiliation ;
+    dct:source "specs/questions/q11.md" .
+
+vocab:other-affiliation a skos:Concept ;
+    skos:inScheme vocab:affiliation-types ;
+    skos:topConceptOf vocab:affiliation-types ;
+    skos:prefLabel "other affiliation"@en ;
+    skos:definition "A recorded or derived relationship that is not ownership, parenthood, management or financing: an officer, a lessee, a service-of-process contact, a shared borrower or an operational network member."@en ;
+    skos:scopeNote "The answer names the specific relationship and its source."@en ;
+    skos:related vocab:operational-network ;
+    dct:source "specs/questions/q11.md" .
+
+vocab:documented a skos:Concept ;
+    skos:inScheme vocab:evidence-statuses ;
+    skos:topConceptOf vocab:evidence-statuses ;
+    skos:prefLabel "documented"@en ;
+    skos:definition "A source states the relationship, or records join on an official identifier (a recorded assertion, evidence Type I)."@en ;
+    skos:scopeNote "Describes how the relationship was obtained, not that it is correct or current."@en ;
+    skos:related vocab:hypothesized, vocab:reported ;
+    dct:source "specs/questions/q11.md" .
+
+vocab:hypothesized a skos:Concept ;
+    skos:inScheme vocab:evidence-statuses ;
+    skos:topConceptOf vocab:evidence-statuses ;
+    skos:prefLabel "hypothesized"@en ;
+    skos:definition "A method groups, resolves or infers the relationship beyond what a source states (a derived lead, evidence Type II)."@en ;
+    skos:scopeNote "A lead to verify. Operational Network and Owner Portfolio membership and name matches are hypothesized."@en ;
+    skos:related vocab:documented, vocab:reported, vocab:lead ;
+    dct:source "specs/questions/q11.md" .
+
+vocab:reported a skos:Concept ;
+    skos:inScheme vocab:evidence-statuses ;
+    skos:topConceptOf vocab:evidence-statuses ;
+    skos:prefLabel "reported"@en ;
+    skos:definition "A publication states the relationship; the publication is recorded evidence and the claim's truth is not assessed."@en ;
+    skos:scopeNote "Not loaded in the graph. Retrieved claims are session evidence."@en ;
+    skos:related vocab:documented, vocab:hypothesized, vocab:reported-claim ;
+    dct:source "specs/questions/q11.md" .
+
+vocab:mortgage a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:broader vocab:financing-document ;
+    skos:prefLabel "mortgage"@en ;
+    skos:altLabel "MTGE"@en ;
+    skos:hiddenLabel "loan"@en ;
+    skos:definition "An ACRIS document of current type MTGE: a recorded mortgage naming borrowers (party role 1) and lenders (party role 2)."@en ;
+    skos:scopeNote "Loaded for every mortgage recorded against a lot in the rental-market scope (Q13) and for any mortgage naming an HPD corporate owner (rule N3, Q11). The amount is whole dollars as recorded, and 0 is kept: it does not mean a free loan."@en ;
+    skos:related vocab:document, vocab:borrower, vocab:lender, vocab:financing-affiliation, vocab:satisfaction, vocab:agreement ;
+    dct:source "specs/questions/q11.md", "specs/questions/q13.md" .
+
+vocab:borrower a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "borrower"@en ;
+    skos:definition "A party recorded with party role 1 on a mortgage."@en ;
+    skos:scopeNote "Several borrowers on one mortgage are a shared-borrower record, not common ownership or control."@en ;
+    skos:related vocab:lender, vocab:mortgage ;
+    dct:source "specs/questions/q11.md" .
+
+vocab:lender a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "lender"@en ;
+    skos:definition "A party recorded with party role 2 on a mortgage."@en ;
+    skos:scopeNote "A financing relationship, not control or parenthood."@en ;
+    skos:related vocab:borrower, vocab:mortgage ;
+    dct:source "specs/questions/q11.md" .
+
+vocab:grantor a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "grantor"@en ;
+    skos:altLabel "party giving title"@en ;
+    skos:hiddenLabel "partytype 1"@en, "seller"@en ;
+    skos:definition "A party named on a deed as giving title, with the name and address as recorded on that deed."@en ;
+    skos:scopeNote "One row per distinct name and address on the deed. A grantor is not a prior owner of record or a resolved entity, and the same name on two deeds is two grantors. A blank name is absent. The same name can appear as grantor and grantee on one deed; that is reported as recorded and is not a sale."@en ;
+    skos:related vocab:grantee ;
+    dct:source "specs/questions/q12.md" .
+
+vocab:has-grantor a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "has grantor"@en ;
+    skos:definition "Links a deed to a grantor named on it."@en ;
+    skos:scopeNote "All grantors of a deed are listed and none is chosen."@en ;
+    dct:source "specs/questions/q12.md" .
+
+vocab:grantor-name a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "grantor name"@en ;
+    skos:definition "The name of a grantor on a deed, trimmed, as recorded."@en ;
+    skos:scopeNote "A personal name is stored but never repeated outside the answer. Compared by rule N3 through a lookup key, never by this value; the key is not an answer field."@en ;
+    skos:related vocab:grantee-name ;
+    dct:source "specs/questions/q12.md" .
+
+vocab:not-a-sale a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "not a sale"@en ;
+    skos:altLabel "deed without consideration"@en ;
+    skos:definition "A deed whose recorded amount is 0, or whose type is a correction or confirmatory deed (CORRD, CONDEED); the answer counts it among the deeds but not among the sales."@en ;
+    skos:scopeNote "Derived at answer time. 0 is the recorded amount, not proof of a gift or an intrafamily transfer, and 79 percent of the deeds in the graph have it (many are old). A deed with an amount is reported as recorded; the answer does not call it a sale of the building and says nothing about intent."@en ;
+    skos:related vocab:document-amount, vocab:deed, vocab:registration-older-than-deed, vocab:deed-classification, vocab:zero-transfer ;
+    dct:source "specs/questions/q12.md" .
+
+vocab:attributable-transfer a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "attributable transfer"@en ;
+    skos:definition "A deed with a grantee or grantor whose name equals, by rule N3, the name of a currently registered HPD corporate owner of a lot the deed covers."@en ;
+    skos:scopeNote "Derived at answer time (evidence Type II), a name lead and never a finding of the same party. Current registration is not historical ownership, so an old deed can match the present owner by name only. A lot with no corporate owner is owner not comparable, and an owner spelled differently in the two sources is missed."@en ;
+    skos:related vocab:deed, vocab:corporate-owner, vocab:title-registration-relation, vocab:restructuring-signal ;
+    dct:source "specs/questions/q12.md" .
+
+
+# --- Q13 graph terms ---
+
+vocab:financing-document a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:narrower vocab:mortgage, vocab:assignment, vocab:satisfaction, vocab:termination, vocab:agreement ;
+    skos:prefLabel "financing document"@en ;
+    skos:altLabel "financing record"@en ;
+    skos:hiddenLabel "loan document"@en ;
+    skos:definition "An ACRIS document whose current type is MTGE, ASST, SAT, AGMT, AL&R, TL&R or SAGE and that is recorded against a lot: a mortgage or a document that assigns, satisfies, terminates or supplements one."@en ;
+    skos:scopeNote "The graph reports the documents recorded; it does not say which loan is outstanding. Each of the five kinds (mortgage, assignment, satisfaction, termination, agreement) is narrower than it. Other document types (deeds, transfer-tax returns) are not financing documents here. A document that names several lots is one document."@en ;
+    dct:source "specs/questions/q13.md" .
+
+vocab:has-financing-document a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "has financing document"@en ;
+    skos:definition "Links a tax lot to a financing document that names it in the ACRIS legals."@en ;
+    skos:scopeNote "A record link. A document on several lots links to each of them."@en ;
+    skos:related vocab:has-deed ;
+    dct:source "specs/questions/q13.md" .
+
+vocab:assignment a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:broader vocab:financing-document ;
+    skos:prefLabel "assignment"@en ;
+    skos:altLabel "ASST"@en, "AL&R"@en ;
+    skos:hiddenLabel "assignment of mortgage"@en, "assignment of leases and rents"@en ;
+    skos:definition "A financing document of type ASST (assignment of mortgage) or AL&R (assignment of leases and rents)."@en ;
+    skos:scopeNote "An assignment is a recorded transfer of a lender's interest or of rents, not proof of who holds the loan today. Answer-contract grouping, not a stored field."@en ;
+    skos:related vocab:termination ;
+    dct:source "specs/questions/q13.md" .
+
+vocab:satisfaction a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:broader vocab:financing-document ;
+    skos:prefLabel "satisfaction"@en ;
+    skos:altLabel "SAT"@en ;
+    skos:hiddenLabel "satisfaction of mortgage"@en ;
+    skos:definition "A financing document of type SAT: a recorded satisfaction of a mortgage."@en ;
+    skos:scopeNote "No satisfaction recorded is not proof a loan is outstanding, and a satisfaction does not say which mortgage it releases."@en ;
+    skos:related vocab:mortgage, vocab:termination ;
+    dct:source "specs/questions/q13.md" .
+
+vocab:termination a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:broader vocab:financing-document ;
+    skos:prefLabel "termination"@en ;
+    skos:altLabel "TL&R"@en ;
+    skos:hiddenLabel "termination of assignment of leases and rents"@en ;
+    skos:definition "A financing document of type TL&R: a recorded termination of an assignment of leases and rents."@en ;
+    skos:scopeNote "A termination is not proof the loan was paid. A conclusion drawn from one is derived (Type II), not recorded."@en ;
+    skos:related vocab:satisfaction, vocab:assignment ;
+    dct:source "specs/questions/q13.md" .
+
+vocab:agreement a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:broader vocab:financing-document ;
+    skos:prefLabel "agreement"@en ;
+    skos:altLabel "AGMT"@en, "SAGE"@en, "sundry agreement"@en ;
+    skos:definition "A financing document of type AGMT (agreement) or SAGE (sundry agreement) recorded against a lot."@en ;
+    skos:scopeNote "It can accompany a mortgage on the same day, so a later loan may consolidate earlier ones; the record does not say so. Answer-contract grouping, not a stored field."@en ;
+    skos:related vocab:mortgage ;
+    dct:source "specs/questions/q13.md" .
+
+vocab:supporting-deed a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "supporting deed"@en ;
+    skos:hiddenLabel "title holder on a date"@en ;
+    skos:definition "A deed whose date is the latest on or before a given date for a lot, under the chosen date basis. It supports the title holder lead for that date."@en ;
+    skos:scopeNote "Deeds that tie are all supporting deeds and none is chosen. A supporting deed can be unrecorded on the date, or confirmatory (CORRD, CONDEED). No supporting deed means no title record in the snapshot, not no owner. Computed at answer time, not stored."@en ;
+    skos:related vocab:deed, vocab:date-basis, vocab:title-registration-relation ;
+    dct:source "specs/questions/q14.md" .
+
+vocab:date-basis a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "date basis"@en ;
+    skos:definition "Which date of a deed places it in time for a given date: the document date (else the recorded date), as now known, or the recorded date, as public record showed."@en ;
+    skos:scopeNote "The two can give different title holders for one date. The answer names the basis; a document date is not the date the transfer became public. Answer-contract input, not stored."@en ;
+    skos:related vocab:supporting-deed, vocab:document-date, vocab:recorded-date ;
+    dct:source "specs/questions/q14.md" .
+
+vocab:registration-in-force a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "registration in force"@en ;
+    skos:hiddenLabel "registered owner on a date"@en ;
+    skos:definition "A registration whose last registered date is on or before a given date and whose end date is on or after it. The other statuses are registered-later, ended, undated and end-unknown."@en ;
+    skos:scopeNote "HPD records the last registration date and an end date, no start and no earlier filing, so a registration filed after the date is not in force even if one existed. In force is HPD's registration period, not a finding that its owner was responsible. Computed at answer time, not stored."@en ;
+    skos:related vocab:registration, vocab:last-registered-date, vocab:registration-end-date, vocab:title-registration-relation, vocab:lapsed-registration ;
+    dct:source "specs/questions/q14.md" .
+
+vocab:title-registration-relation a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "title and registration relation"@en ;
+    skos:definition "How the grantees of the supporting deeds relate to the corporate owners of the registrations in force on a date: coincide, differ, not-comparable, no-title-record or no-registration-in-force."@en ;
+    skos:scopeNote "A name lead under rule N3, never a finding of the same party or of responsibility. A difference can be a spelling difference. Individual owners are not comparable. Computed, not stored."@en ;
+    skos:related vocab:supporting-deed, vocab:registration-in-force, vocab:attributable-transfer ;
+    dct:source "specs/questions/q14.md" .
+
+vocab:violation a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "violation"@en ;
+    skos:altLabel "HPD violation"@en, "housing maintenance code violation"@en ;
+    skos:definition "A condition HPD recorded as a violation of the housing maintenance code against a building, with a class, a status and an inspection date."@en ;
+    skos:scopeNote "A violation is what an inspector cited, not a measure of conditions or of a landlord's conduct. The counting unit is violations. Loaded only for HPD-registered lots and registered buildings; the apartment is not stored."@en ;
+    skos:related vocab:open-violation-rate, vocab:violation-concentration, vocab:source-absence, vocab:complaint-problem, vocab:litigation-case, vocab:pest-violation ;
+    dct:source "specs/questions/q15.md" .
+
+vocab:violation-id a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "violation id"@en ;
+    skos:definition "HPD's identifier for a violation."@en ;
+    skos:scopeNote "Unique in the source. It identifies one violation, never a building, a lot or an apartment."@en ;
+    skos:hiddenLabel "violationid"@en ;
+    dct:source "specs/questions/q15.md" .
+
+vocab:has-violation a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "has violation"@en ;
+    skos:definition "Links a building to a violation recorded against its BIN."@en ;
+    skos:scopeNote "A record link. Violations belong to the building (BIN), not to the lot; a lot's violations are those of its buildings."@en ;
+    dct:source "specs/questions/q15.md" .
+
+vocab:violation-class a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "violation class"@en ;
+    skos:altLabel "class"@en ;
+    skos:hiddenLabel "hazard class"@en ;
+    skos:definition "HPD's class of a violation: A (non-hazardous), B (hazardous), C (immediately hazardous) or I (information)."@en ;
+    skos:scopeNote "The class is the inspector's classification at citation. Counts by class are counts of violations; classes are not added into a severity score."@en ;
+    dct:source "specs/questions/q15.md" .
+
+vocab:violation-status a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "violation status"@en ;
+    skos:altLabel "open or closed"@en ;
+    skos:hiddenLabel "violationstatus"@en ;
+    skos:definition "Whether HPD records a violation as Open or Close (closed or dismissed) at the snapshot date."@en ;
+    skos:scopeNote "Open means open at the snapshot date (data through 2026-07-02); it can differ from the live source. HPD's finer current status is not stored."@en ;
+    skos:related vocab:open-violation-rate ;
+    dct:source "specs/questions/q15.md" .
+
+vocab:inspection-date a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "inspection date"@en ;
+    skos:definition "The date HPD's inspector recorded the condition behind a violation."@en ;
+    skos:scopeNote "Not the notice date or the date the violation was entered. The age of an open violation is measured from the oldest open inspection date."@en ;
+    skos:hiddenLabel "inspectiondate"@en ;
+    dct:source "specs/questions/q15.md" .
+
+vocab:order-number a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "order number"@en ;
+    skos:altLabel "order code"@en ;
+    skos:hiddenLabel "ordernumber"@en ;
+    skos:related vocab:pest-violation ;
+    skos:definition "The number of the Housing Maintenance Code order a violation cites, as HPD records it (text, for example 569)."@en ;
+    skos:scopeNote "A code, not a count. HPD's code table is not in the snapshot, so a code's meaning is read from the violation descriptions and recorded in data/hpd_pest_orders.yaml for the pest codes only. Present on every loaded violation. The description text names apartments and is not stored."@en ;
+    dct:source "specs/questions/q15.md" .
+
+vocab:pest-violation a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "pest violation"@en ;
+    skos:altLabel "infestation violation"@en ;
+    skos:hiddenLabel "mice violation"@en ;
+    skos:related vocab:violation, vocab:order-number, vocab:complaint-problem, vocab:pest-complaint ;
+    skos:definition "A violation whose order number is one of the eight codes that cite a pest infestation, with a kind taken from the code: mice (569, 869), roaches (568, 868), rodents (567, 867) or vermin-unspecified (566, 866)."@en ;
+    skos:scopeNote "An inspector's citation of an infestation, not a count of pests or of affected apartments. Codes 566 and 866 say vermin and cover mice, roaches, rats and other pests, so they are never reported as mice. Open means open at the snapshot date. Computed at answer time from the order number and the list in data/hpd_pest_orders.yaml, not stored."@en ;
+    dct:source "specs/questions/q15.md" .
+
+vocab:open-violation-rate a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "open violation rate"@en ;
+    skos:altLabel "open violations per unit"@en ;
+    skos:hiddenLabel "violations per residential unit"@en ;
+    skos:definition "A building's open violations divided by the PLUTO residential units of its lot."@en ;
+    skos:scopeNote "The denominator is lot-wide and the numerator is the building's, so the rate is rough on lots with several buildings. A lot with 0 or no unit count gives rate unavailable, never 0. A building on several lots gets one rate per lot, never a sum. Computed at answer time, not stored."@en ;
+    skos:related vocab:violation, vocab:violation-status, vocab:residential-units, vocab:lot-violation-ranking, vocab:complaint-rate ;
+    dct:source "specs/questions/q15.md" .
+
+vocab:lot-violation-ranking a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "lot violation ranking"@en ;
+    skos:altLabel "worst lots in a layer"@en ;
+    skos:definition "The member lots of one group (an Operational Network or an Owner Portfolio) ordered by open violations per residential unit, with each lot's open count by class and its unit count."@en ;
+    skos:scopeNote "Classes A, B and C (and I) are reported apart and never combined as hazardous. A lot's figures are those of its buildings, so a building on several lots counts toward each. A lot with 0 or no units is ranked last with rate unavailable. Both layers are derived leads, not findings of common ownership, and the ranking changes with the layer. Computed at answer time, not stored."@en ;
+    skos:related vocab:open-violation-rate, vocab:operational-network, vocab:owner-portfolio, vocab:violation-concentration ;
+    dct:source "specs/questions/q21.md" .
+
+vocab:violation-concentration a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "violation concentration"@en ;
+    skos:altLabel "share held by the top lots"@en ;
+    skos:definition "The share of a group's open violations held by its top three lots, stated with the number of member lots and of lots with any open violation."@en ;
+    skos:scopeNote "A share of recorded open violations at the snapshot date, not a measure of conditions. The sum of lot counts can exceed the group's distinct violations when a building sits on several lots; the distinct total is returned beside it. Computed at answer time, not stored."@en ;
+    skos:related vocab:lot-violation-ranking, vocab:violation ;
+    dct:source "specs/questions/q21.md" .
+
+vocab:agent-footprint a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "agent footprint"@en ;
+    skos:definition "The registrations, buildings and lots that disclose one managing agent name under rule N3, by recorded spelling, with how many of its lots are in a reference building's Operational Network and Owner Portfolio, in another group, or in none, and whether the agent's business address was masked."@en ;
+    skos:scopeNote "A large footprint suggests a commercial service and does not prove one; a small one does not show an operator tied to an owner. Shared management does not establish shared ownership, and both groupings are derived leads. Counting units are distinct registrations, buildings (BIN) and lots (BBL), never links. The mail-drop list is not used; the Q6 masks are. Computed at answer time, not stored."@en ;
+    skos:hiddenLabel "buildings managed by this agent"@en, "management company footprint"@en ;
+    skos:related vocab:agent, vocab:operational-network, vocab:owner-portfolio, vocab:network-masked-address, vocab:portfolio-masked-address ;
+    dct:source "specs/questions/q23.md" .
+
+vocab:name-search a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "name search"@en ;
+    skos:altLabel "starting from a name"@en ;
+    skos:hiddenLabel "search by name"@en ;
+    skos:definition "The records that carry a given entity or person name: for each, the source, the recorded role, the registration, deed or DOS record, the building and lot, and the matching basis, with near names shown apart as leads."@en ;
+    skos:scopeNote "A name match is a lead, not a link: common personal names return unrelated people, and a name in a role is not a finding about ownership. An entity name is compared under rule N3 and a person name in uppercase with single spaces, in HPD's order and, for ACRIS deed parties, also last name first. No match is 'no match in these sources', never 'does not exist'. Computed at answer time, not stored."@en ;
+    skos:related vocab:lead, vocab:name-agreement, vocab:comparison-rule, vocab:legal-suffix-only ;
+    dct:source "specs/questions/q24.md" .
+
+vocab:legal-suffix-only a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "legal suffix only"@en ;
+    skos:hiddenLabel "differs by LLC or INC"@en ;
+    skos:definition "A near-name lead whose name has the same words as the given name once the legal-form words (LLC, INC, CORP, CO, LP, LTD, INCORPORATED, CORPORATION, COMPANY) are removed, but one has such a word and the other does not."@en ;
+    skos:scopeNote "A lead, not a match: whether the two names are one entity is not in the records. Rule N3 and the normalization outcomes of Q22 call such names different; this kind is reported only in a name search. Computed at answer time, not stored."@en ;
+    skos:related vocab:name-search, vocab:different, vocab:normalization-match ;
+    dct:source "specs/questions/q24.md" .
+
+vocab:source-categories a skos:ConceptScheme ;
+    skos:prefLabel "Source categories"@en ;
+    dct:title "Source categories"@en ;
+    dct:created "2026-11-18"^^xsd:date ;
+    dct:description "Controlled values for where a retrieved item comes from."@en ;
+    skos:hasTopConcept vocab:public-record, vocab:published-reporting, vocab:web-content, vocab:project-derived .
+
+vocab:review-statuses a skos:ConceptScheme ;
+    skos:prefLabel "Review statuses"@en ;
+    dct:title "Review statuses"@en ;
+    dct:created "2026-11-18"^^xsd:date ;
+    dct:description "Controlled values for how far a retrieved item has been checked."@en ;
+    skos:hasTopConcept vocab:item-unreviewed, vocab:confirmed, vocab:refuted, vocab:inconclusive, vocab:contested .
+
+vocab:fact-relations a skos:ConceptScheme ;
+    skos:prefLabel "Relations to recorded facts"@en ;
+    dct:title "Relations to recorded facts"@en ;
+    dct:created "2026-11-18"^^xsd:date ;
+    dct:description "Controlled values for how a retrieved item relates to the recorded facts."@en ;
+    skos:hasTopConcept vocab:agrees, vocab:adds, vocab:conflicts, vocab:unrelated .
+
+vocab:match-bases a skos:ConceptScheme ;
+    skos:prefLabel "Match bases"@en ;
+    dct:title "Match bases"@en ;
+    dct:created "2026-11-18"^^xsd:date ;
+    dct:description "Controlled values for why a retrieved item is treated as about the entity."@en ;
+    skos:hasTopConcept vocab:exact-match, vocab:lead-only .
+
+vocab:retrieved-item a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "retrieved item"@en ;
+    skos:altLabel "report or filing document"@en ;
+    skos:definition "A published report or a retrieved filing document that names the entity or address, returned with its publisher or filing body, date, locator, quoted claim or extracted value, extraction method, source category, review status, relation to the recorded facts and match basis."@en ;
+    skos:scopeNote "An answer item and session evidence, not a graph element. The record that it was published or filed is recorded evidence; whether its content is true and applies is a separate, derived judgment."@en ;
+    skos:related vocab:affiliation, vocab:dossier, vocab:registry-search ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:reported-claim a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "reported claim"@en ;
+    skos:definition "A statement a publication makes about an entity, quoted with its publisher and date."@en ;
+    skos:scopeNote "A claim that was published, not a fact. It is kept apart from the Owner Portfolio and the recorded facts, and is never stated in the answer's own voice."@en ;
+    skos:hiddenLabel "news claim"@en, "article claim"@en ;
+    skos:related vocab:reported, vocab:owner-portfolio ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:extraction-method a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "extraction method"@en ;
+    skos:definition "How a value was taken from a retrieved document: read from text, read from a scan by character recognition, or entered by a person, with a confidence flag."@en ;
+    skos:scopeNote "A scanned name read with low confidence is reported with a low-confidence flag and used as a lead only, never as a link."@en ;
+    skos:hiddenLabel "OCR"@en, "scanned text"@en ;
+    skos:related vocab:match-basis ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:source-category a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "source category"@en ;
+    skos:definition "Where a retrieved item comes from: a public record, published reporting, web content or a project-derived item."@en ;
+    skos:scopeNote "Tracked apart from reliability type (I, II). Controlled values are in the source categories scheme."@en ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:review-status a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "review status"@en ;
+    skos:definition "How far a retrieved item's claim has been checked against other evidence."@en ;
+    skos:scopeNote "Starts unreviewed. Controlled values are in the review statuses scheme."@en ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:fact-relation a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "relation to recorded facts"@en ;
+    skos:definition "Whether a retrieved item agrees with, adds to, conflicts with or is unrelated to the recorded facts for the entity."@en ;
+    skos:scopeNote "Computed at answer time against the cited recorded item; not stored. A conflict is shown beside the recorded value, never resolved."@en ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:match-basis a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "match basis"@en ;
+    skos:definition "Why a retrieved item is treated as about the entity: an exact name or address, or a lead only."@en ;
+    skos:scopeNote "A name match is a lead (rule N3). Controlled values are in the match bases scheme."@en ;
+    skos:related vocab:extraction-method ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:public-record a skos:Concept ;
+    skos:inScheme vocab:source-categories ;
+    skos:topConceptOf vocab:source-categories ;
+    skos:prefLabel "public record"@en ;
+    skos:definition "A record an agency or registry publishes, or a filing retrieved from one."@en ;
+    skos:scopeNote "Describes the source, not that the content is correct."@en ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:published-reporting a skos:Concept ;
+    skos:inScheme vocab:source-categories ;
+    skos:topConceptOf vocab:source-categories ;
+    skos:prefLabel "published reporting"@en ;
+    skos:definition "A news article or other publication that states something."@en ;
+    skos:scopeNote "The claim is reported, not verified."@en ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:web-content a skos:Concept ;
+    skos:inScheme vocab:source-categories ;
+    skos:topConceptOf vocab:source-categories ;
+    skos:prefLabel "web content"@en ;
+    skos:definition "A page, such as a business web page, that is neither a public record nor reporting."@en ;
+    skos:scopeNote "Self-description by the page owner; unreviewed."@en ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:project-derived a skos:Concept ;
+    skos:inScheme vocab:source-categories ;
+    skos:topConceptOf vocab:source-categories ;
+    skos:prefLabel "project derived"@en ;
+    skos:definition "An item produced by a project method from other evidence."@en ;
+    skos:scopeNote "A derived lead, not a source statement."@en ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:item-unreviewed a skos:Concept ;
+    skos:inScheme vocab:review-statuses ;
+    skos:topConceptOf vocab:review-statuses ;
+    skos:prefLabel "item unreviewed"@en ;
+    skos:hiddenLabel "not yet reviewed"@en ;
+    skos:related vocab:unreviewed ;
+    skos:definition "No check against other evidence has been made."@en ;
+    skos:scopeNote "The starting status of every retrieved item. Not the unreviewed status of a mail-drop list entry (Q6), which is a different scheme."@en ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:confirmed a skos:Concept ;
+    skos:inScheme vocab:review-statuses ;
+    skos:topConceptOf vocab:review-statuses ;
+    skos:prefLabel "confirmed"@en ;
+    skos:definition "Other evidence supports the claim."@en ;
+    skos:scopeNote "Set by a reviewer, not by retrieval."@en ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:refuted a skos:Concept ;
+    skos:inScheme vocab:review-statuses ;
+    skos:topConceptOf vocab:review-statuses ;
+    skos:prefLabel "refuted"@en ;
+    skos:definition "Other evidence contradicts the claim."@en ;
+    skos:scopeNote "Set by a reviewer; the item is kept and shown."@en ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:inconclusive a skos:Concept ;
+    skos:inScheme vocab:review-statuses ;
+    skos:topConceptOf vocab:review-statuses ;
+    skos:prefLabel "inconclusive"@en ;
+    skos:definition "A check was made and neither supports nor contradicts the claim."@en ;
+    skos:scopeNote "Not the same as unreviewed."@en ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:contested a skos:Concept ;
+    skos:inScheme vocab:review-statuses ;
+    skos:topConceptOf vocab:review-statuses ;
+    skos:prefLabel "contested"@en ;
+    skos:definition "Items disagree and none is chosen."@en ;
+    skos:related vocab:conflicts ;
+    skos:scopeNote "Both items are shown."@en ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:agrees a skos:Concept ;
+    skos:inScheme vocab:fact-relations ;
+    skos:topConceptOf vocab:fact-relations ;
+    skos:prefLabel "agrees"@en ;
+    skos:definition "The item states what a recorded fact states."@en ;
+    skos:scopeNote "Agreement is not proof of either."@en ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:adds a skos:Concept ;
+    skos:inScheme vocab:fact-relations ;
+    skos:topConceptOf vocab:fact-relations ;
+    skos:prefLabel "adds"@en ;
+    skos:definition "The item states something the recorded facts do not carry."@en ;
+    skos:scopeNote "Shown as a lead, apart from the recorded facts."@en ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:conflicts a skos:Concept ;
+    skos:inScheme vocab:fact-relations ;
+    skos:topConceptOf vocab:fact-relations ;
+    skos:prefLabel "conflicts"@en ;
+    skos:definition "The item states a value that differs from a recorded fact."@en ;
+    skos:related vocab:contested ;
+    skos:scopeNote "Both values are shown, labelled by source."@en ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:unrelated a skos:Concept ;
+    skos:inScheme vocab:fact-relations ;
+    skos:topConceptOf vocab:fact-relations ;
+    skos:prefLabel "unrelated"@en ;
+    skos:definition "The item names a similar entity or concerns a different matter."@en ;
+    skos:scopeNote "Reported as a lead about another entity."@en ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:exact-match a skos:Concept ;
+    skos:inScheme vocab:match-bases ;
+    skos:topConceptOf vocab:match-bases ;
+    skos:prefLabel "exact match"@en ;
+    skos:definition "The item names the exact entity name (rule N3) or the exact address."@en ;
+    skos:scopeNote "Still a record link, not a finding of identity."@en ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:lead-only a skos:Concept ;
+    skos:inScheme vocab:match-bases ;
+    skos:topConceptOf vocab:match-bases ;
+    skos:prefLabel "lead only"@en ;
+    skos:hiddenLabel "similar name"@en ;
+    skos:related vocab:lead ;
+    skos:definition "The item matches only loosely: a similar name, an uncertain scan or a partial address."@en ;
+    skos:scopeNote "Never used as a link."@en ;
+    dct:source "specs/questions/q16.md" .
+
+vocab:missing-registration a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "missing registration"@en ;
+    skos:altLabel "no registration in the dataset"@en ;
+    skos:related vocab:hpd-registered, vocab:no-usable-registration ;
+    skos:hiddenLabel "not registered"@en ;
+    skos:definition "Whether the registration data holds no row at all for the lot: holds, does-not-hold, as an answer to Q17."@en ;
+    skos:scopeNote "Absence from the dataset is not a ruling that no registration exists or is required. A new building can be unregistered for a legitimate reason, and the answer says it does not know why. Answered per lot, not per building. Computed at answer time, not stored."@en ;
+    dct:source "specs/questions/q17.md" .
+
+vocab:lapsed-registration a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "lapsed registration"@en ;
+    skos:altLabel "registration period ended"@en ;
+    skos:related vocab:registration-end-date, vocab:registration-in-force, vocab:registration-older-than-deed ;
+    skos:hiddenLabel "expired registration"@en ;
+    skos:definition "Whether every registration of the lot has an end date before the as-of date: holds, does-not-hold (some registration has not ended) or cannot-tell (none, or an end date is absent)."@en ;
+    skos:scopeNote "Judged by the end date alone, against the registration data's snapshot date. A record of HPD's period, not a ruling that the owner is in violation. Computed at answer time, not stored."@en ;
+    dct:source "specs/questions/q17.md" .
+
+vocab:registration-older-than-deed a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "registration older than the latest deed"@en ;
+    skos:altLabel "stale registration"@en ;
+    skos:related vocab:lapsed-registration, vocab:last-registered-date, vocab:recorded-date, vocab:not-a-sale ;
+    skos:hiddenLabel "outdated registration"@en ;
+    skos:definition "Whether the lot's latest registration date is before the date its latest deed was recorded: holds, does-not-hold (same day or later) or cannot-tell (no deed, no dated registration, or no registration)."@en ;
+    skos:scopeNote "Compares two recorded dates and says nothing about whether the owner changed or the registration is wrong. Deeds recorded the same day are all returned; a $0, correction or confirmatory deed carries the not-a-sale flag. Computed at answer time, not stored."@en ;
+    dct:source "specs/questions/q17.md" .
+
+vocab:unit-threshold a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "unit threshold"@en ;
+    skos:altLabel "3 units threshold"@en ;
+    skos:related vocab:residential-units ;
+    skos:hiddenLabel "3+ units"@en, "three or more units"@en ;
+    skos:definition "The minimum residential unit count of the registration dataset (3), against which the lot's PLUTO unit count is reported: meets-threshold, below-threshold or units-not-recorded."@en ;
+    skos:scopeNote "A reporting threshold, not a ruling on legal applicability: a smaller building can also be registrable. PLUTO 0 units means none recorded, so it is units-not-recorded, not below. Lot-wide, never summed across buildings."@en ;
+    dct:source "specs/questions/q17.md" .
+
+vocab:no-usable-registration a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "no usable registration"@en ;
+    skos:related vocab:hpd-registered, vocab:missing-registration ;
+    skos:definition "A lot that has rows in the registration data but no usable registration: a placeholder registration id of 0, or a missing or placeholder BIN."@en ;
+    skos:scopeNote "The lot is registered in the data, so it is not missing, but lapsed and older-than-deed are cannot-tell. Reported as recorded, not repaired."@en ;
+    dct:source "specs/questions/q17.md" .
+
+vocab:deed-classification a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "deed classification"@en ;
+    skos:altLabel "deed kind for restructuring review"@en ;
+    skos:related vocab:deed, vocab:document-amount, vocab:not-a-sale, vocab:zero-transfer ;
+    skos:definition "The class of a deed read from its type and recorded amount: correction (type CORRD or CONDEED), zero-transfer (recorded amount 0, not a correction) or priced (an amount above 0, not a correction)."@en ;
+    skos:scopeNote "Computed at answer time, not stored. Priced does not mean an arm's-length sale at market value, and the class says nothing about intent."@en ;
+    dct:source "specs/questions/q18.md" .
+
+vocab:zero-transfer a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "zero-transfer deed"@en ;
+    skos:altLabel "$0 deed"@en ;
+    skos:related vocab:deed-classification, vocab:not-a-sale, vocab:restructuring-signal ;
+    skos:hiddenLabel "no-money deed"@en, "zero-dollar deed"@en, "nominal deed"@en ;
+    skos:definition "A deed recorded with an amount of 0 that is not a correction or confirmatory deed."@en ;
+    skos:scopeNote "A hint that the transfer may be internal, not a finding of restructuring. A buyer with no recorded relationship is 'no relationship established'."@en ;
+    dct:source "specs/questions/q18.md" .
+
+vocab:restructuring-signal a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "restructuring signal"@en ;
+    skos:altLabel "support for a restructuring reading"@en ;
+    skos:hiddenLabel "LLC shuffle"@en, "re-deed into an LLC"@en ;
+    skos:related vocab:zero-transfer, vocab:attributable-transfer, vocab:comparison-rule, vocab:owner-portfolio ;
+    skos:definition "One of four name or record leads for a zero-transfer deed: the grantee's name starts with the house number of a covered lot; a grantor and a grantee carry the same name; a grantee of the deed is a grantor of a deed on the same lot recorded the same day or later; a grantee is a current registered corporate owner of a covered lot."@en ;
+    skos:scopeNote "Derived (Type II), by name key under rule N3, and never from Operational Network or Owner Portfolio membership, so the grouping is not its own evidence. No signal holding means no independent support found, not a clearance. Computed at answer time, not stored."@en ;
+    dct:source "specs/questions/q18.md" .
+
+
+# --- Q19 answer-contract terms (no new graph element) ---
+
+vocab:pair-layer-state a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "pair state in a layer"@en ;
+    skos:altLabel "grouped together, different groups or ungrouped"@en ;
+    skos:related vocab:representative-path, vocab:pre-subdivision-connectivity ;
+    skos:definition "For two lots and one layer (Operational Network or Owner Portfolio) in one run: same group, different groups, or ungrouped (one or both lots in no group, with BOR's reason code for each)."@en ;
+    skos:scopeNote "Computed at answer time from group membership and absence reasons, not stored. A pair in different groups, or with an ungrouped lot, is not a finding of different owners: absence of a link is not evidence about ownership. The group id is run-local."@en ;
+    dct:source "specs/questions/q19.md" .
+
+vocab:representative-path a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "representative path"@en ;
+    skos:altLabel "connecting path"@en ;
+    skos:hiddenLabel "witness path"@en ;
+    skos:related vocab:pair-layer-state, vocab:stage-precision ;
+    skos:definition "One chain with the fewest links, between landlord records covering two lots of the same group, using only that group's links, each shown with its stage code and evidence id."@en ;
+    skos:scopeNote "Computed at answer time. Other chains of the same length may exist. A path through a third record is not a direct record between the two lots, and a direct link is a record link, not a finding of common ownership."@en ;
+    dct:source "specs/questions/q19.md" .
+
+vocab:pre-subdivision-connectivity a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "connectivity before subdivision"@en ;
+    skos:altLabel "connected in the original component"@en ;
+    skos:related vocab:pair-layer-state, vocab:louvain-community ;
+    skos:definition "Whether two lots are joined by a chain of the network's links, including links that cross a cut between Louvain communities, so that they belong to one connected component before it was subdivided."@en ;
+    skos:scopeNote "Computed at answer time. It is not network membership: two lots with such a chain can be in different networks. Only Operational Networks are subdivided; a portfolio is never cut."@en ;
+    dct:source "specs/questions/q19.md" .
+
+vocab:stage-precision a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "stage precision"@en ;
+    skos:altLabel "benchmark precision of a stage"@en ;
+    skos:related vocab:representative-path, vocab:ownership-signal ;
+    skos:definition "The benchmark precision BOR reports for one linkage stage on its evaluation sample, or the statement that the stage was not evaluated."@en ;
+    skos:scopeNote "A method property, stated per stage with its evaluation status. It is never the probability that a particular link is correct. In release v0.3.0 no stage joining portfolio landlords has a figure (all provisional or not evaluated). Not stored on links."@en ;
+    dct:source "specs/questions/q19.md" .
+
+vocab:stop-reasons a skos:ConceptScheme ;
+    skos:prefLabel "Stop reasons"@en ;
+    dct:title "Stop reasons"@en ;
+    dct:created "2026-11-19"^^xsd:date ;
+    dct:description "Controlled values for why an investigation stopped, or why one lead was not followed."@en ;
+    skos:hasTopConcept vocab:reached-service-address, vocab:no-further-link, vocab:needs-payment, vocab:budget-reached, vocab:unresolved-conflict .
+
+vocab:dossier a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "dossier"@en ;
+    skos:altLabel "landlord dossier"@en ;
+    skos:hiddenLabel "investigation summary"@en ;
+    skos:related vocab:stop-reason, vocab:lead, vocab:retrieved-item ;
+    skos:definition "The traced, source-cited record an investigation returns for an address: input and resolution, recorded facts, groupings, transactions and conditions, retrieved items, conflicts and gaps, and the run with its stop reason."@en ;
+    skos:scopeNote "Assembled at answer time from the component answers; it adds no fact and joins none, and it is never stored in the graph. It never states that the investigation is complete in an absolute sense."@en ;
+    dct:source "specs/questions/q20.md" .
+
+vocab:lead a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "lead"@en ;
+    skos:hiddenLabel "qualified lead"@en ;
+    skos:related vocab:dossier, vocab:stop-reason, vocab:lead-only, vocab:hypothesized, vocab:name-search ;
+    skos:definition "A new entity name or address that appears in a recorded or retrieved source, is not masked as an aggregator, service or mail-drop address, and falls within the step and time budget."@en ;
+    skos:scopeNote "A candidate to follow, not a finding. Names and addresses that fail the rule are logged, not followed, with the reason. A hypothesis is a lead, never a finding. Computed at answer time, not stored."@en ;
+    dct:source "specs/questions/q20.md" .
+
+vocab:stop-reason a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "stop reason"@en ;
+    skos:hiddenLabel "where the trail stops"@en ;
+    skos:related vocab:dossier, vocab:lead ;
+    skos:definition "Why the investigation stopped: exactly one value from the stop reasons scheme."@en ;
+    skos:scopeNote "One per dossier. The same values give the reason an individual lead was not followed or not resolved. Controlled values are in the stop reasons scheme."@en ;
+    dct:source "specs/questions/q20.md" .
+
+vocab:reached-service-address a skos:Concept ;
+    skos:inScheme vocab:stop-reasons ;
+    skos:topConceptOf vocab:stop-reasons ;
+    skos:prefLabel "reached service address"@en ;
+    skos:related vocab:dos-process-address ;
+    skos:definition "The trail reached a registered-agent, process, mail-drop or masked address."@en ;
+    skos:scopeNote "Such an address links nothing on its own; co-location does not support ownership or identity."@en ;
+    dct:source "specs/questions/q20.md" .
+
+vocab:no-further-link a skos:Concept ;
+    skos:inScheme vocab:stop-reasons ;
+    skos:topConceptOf vocab:stop-reasons ;
+    skos:prefLabel "no further link"@en ;
+    skos:definition "No further recorded link exists from the entity or address reached."@en ;
+    skos:scopeNote "Absence in the sources searched, not proof that no link exists."@en ;
+    dct:source "specs/questions/q20.md" .
+
+vocab:needs-payment a skos:Concept ;
+    skos:inScheme vocab:stop-reasons ;
+    skos:topConceptOf vocab:stop-reasons ;
+    skos:prefLabel "needs payment"@en ;
+    skos:related vocab:registry-status-only ;
+    skos:definition "The next source needs payment or is inaccessible."@en ;
+    skos:scopeNote "Recorded as an unresolved lead; the agent does not pay or bypass access."@en ;
+    dct:source "specs/questions/q20.md" .
+
+vocab:budget-reached a skos:Concept ;
+    skos:inScheme vocab:stop-reasons ;
+    skos:topConceptOf vocab:stop-reasons ;
+    skos:prefLabel "budget reached"@en ;
+    skos:definition "The step or time budget is exhausted."@en ;
+    skos:scopeNote "Leads not yet followed are listed as unresolved."@en ;
+    dct:source "specs/questions/q20.md" .
+
+vocab:unresolved-conflict a skos:Concept ;
+    skos:inScheme vocab:stop-reasons ;
+    skos:topConceptOf vocab:stop-reasons ;
+    skos:prefLabel "unresolved conflict"@en ;
+    skos:definition "Conflicting records are left unresolved."@en ;
+    skos:scopeNote "Both values are shown with their sources; none is chosen."@en ;
+    dct:source "specs/questions/q20.md" .
+
+vocab:entity-name-outcomes a skos:ConceptScheme ;
+    skos:prefLabel "Entity name outcomes"@en ;
+    dct:title "Entity name outcomes"@en ;
+    dct:created "2026-11-19"^^xsd:date ;
+    dct:description "Controlled values for the result of asking whether two recorded names may be one entity (Q22). Extends the name agreement outcomes."@en ;
+    skos:hasTopConcept vocab:exact-normalized, vocab:normalization-match, vocab:abbreviation-match, vocab:differs-by-numeral-or-word, vocab:different, vocab:not-comparable .
+
+vocab:abbreviation-match a skos:Concept ;
+    skos:inScheme vocab:entity-name-outcomes ;
+    skos:topConceptOf vocab:entity-name-outcomes ;
+    skos:prefLabel "abbreviation match"@en ;
+    skos:definition "The two names are equal only after rule AB1, which expands a listed abbreviation (HDFC to housing development fund company). The answer states AB1."@en ;
+    skos:scopeNote "Derived. An abbreviation rule must be named; the match is a lead, not a link."@en ;
+    skos:hiddenLabel "abbreviation expansion"@en ;
+    skos:related vocab:normalization-match, vocab:comparison-rule ;
+    dct:source "specs/questions/q22.md" .
+
+vocab:differs-by-numeral-or-word a skos:Concept ;
+    skos:inScheme vocab:entity-name-outcomes ;
+    skos:topConceptOf vocab:entity-name-outcomes ;
+    skos:prefLabel "differs by numeral or word"@en ;
+    skos:definition "After rule N3 and ignoring a trailing legal form, one name is the other plus a trailing word or numeral, such as Holdings and Holdings II."@en ;
+    skos:scopeNote "Never a match: the names are not one entity unless a record other than the name connects them."@en ;
+    skos:hiddenLabel "numeral difference"@en ;
+    skos:related vocab:normalization-match ;
+    dct:source "specs/questions/q22.md" .
+
+vocab:registry-outcomes a skos:ConceptScheme ;
+    skos:prefLabel "Registry outcomes"@en ;
+    dct:title "Registry outcomes"@en ;
+    dct:created "2026-11-19"^^xsd:date ;
+    dct:description "Controlled values for what a search of another jurisdiction's public registry returned."@en ;
+    skos:hasTopConcept vocab:registry-record-found, vocab:registry-status-only, vocab:registry-no-record, vocab:registry-unreachable .
+
+vocab:registry-search a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "registry search"@en ;
+    skos:altLabel "other-state registry search"@en ;
+    skos:hiddenLabel "foreign registry"@en ;
+    skos:related vocab:retrieved-item, vocab:jurisdiction, vocab:registry-outcome ;
+    skos:definition "One search of a free public registry of a jurisdiction outside New York for an entity recorded as registered there, returned with the registry, the query, the retrieval date, the outcome and any filing id, status, filing date and registered agent."@en ;
+    skos:scopeNote "An answer item and session evidence, not a graph element. The recorded jurisdiction comes from the DOS or HPD record that names it. A step that needs payment or an account is reported as the stop reason needs payment. The entity found is the same one only if a record other than the name connects them; otherwise it is a lead."@en ;
+    dct:source "specs/questions/q25.md" .
+
+vocab:registry-outcome a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "registry outcome"@en ;
+    skos:related vocab:registry-search ;
+    skos:definition "What a registry search returned: a public record, a name and status only, no record, or the registry could not be reached."@en ;
+    skos:scopeNote "Answer contract field with four values. An unreachable registry is never an answer about the entity."@en ;
+    dct:source "specs/questions/q25.md" .
+
+vocab:registry-record-found a skos:Concept ;
+    skos:inScheme vocab:registry-outcomes ;
+    skos:topConceptOf vocab:registry-outcomes ;
+    skos:prefLabel "registry record found"@en ;
+    skos:definition "The public registry returned a record with a filing id, status, filing date or registered agent."@en ;
+    skos:scopeNote "Reported with the retrieval date. Officers and owners may still not be public."@en ;
+    dct:source "specs/questions/q25.md" .
+
+vocab:registry-status-only a skos:Concept ;
+    skos:inScheme vocab:registry-outcomes ;
+    skos:topConceptOf vocab:registry-outcomes ;
+    skos:prefLabel "registry status only"@en ;
+    skos:definition "The public registry shows the entity name and status only; the next step needs payment or an account."@en ;
+    skos:related vocab:needs-payment ;
+    skos:scopeNote "The remainder is an unresolved lead with the reason needs payment."@en ;
+    dct:source "specs/questions/q25.md" .
+
+vocab:registry-no-record a skos:Concept ;
+    skos:inScheme vocab:registry-outcomes ;
+    skos:topConceptOf vocab:registry-outcomes ;
+    skos:prefLabel "registry no record"@en ;
+    skos:definition "The registry was reached and returned no entity under the name searched, or only entities with other names."@en ;
+    skos:scopeNote "Reported as no record in the registry searched, on the date and query given. Entities with similar names are leads about different entities, never matches."@en ;
+    dct:source "specs/questions/q25.md" .
+
+vocab:registry-unreachable a skos:Concept ;
+    skos:inScheme vocab:registry-outcomes ;
+    skos:topConceptOf vocab:registry-outcomes ;
+    skos:prefLabel "registry unreachable"@en ;
+    skos:definition "The registry could not be reached or did not answer."@en ;
+    skos:related vocab:service-unavailable ;
+    skos:scopeNote "Reported as such, with no inference about the entity."@en ;
+    dct:source "specs/questions/q25.md" .
+
+vocab:source-absence a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "source absence"@en ;
+    skos:altLabel "what an absence means"@en ;
+    skos:hiddenLabel "nothing found", "no record" ;
+    skos:definition "For one lot and one source (HPD registration, DOS entity, Operational Network, Owner Portfolio, HPD violations), the statement that the source holds no record, with its snapshot date and one of five reasons: no qualifying linkage, excluded by policy, below eligibility rule, outside source coverage or outside method input."@en ;
+    skos:scopeNote "Absence from a snapshot is not a finding about the world: no registration does not say the lot is exempt or unregistered, no layer membership does not say the owners differ (recall is unmeasured), and no violation does not say conditions are good. Violations are loaded for registered lots only, so an unregistered lot is reported as not loaded, never as none. Computed at answer time, not stored."@en ;
+    skos:related vocab:network-absence, vocab:portfolio-absence, vocab:violation ;
+    dct:source "specs/questions/q26.md" .
+
+vocab:complaint-problem a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "complaint problem"@en ;
+    skos:altLabel "HPD complaint problem"@en, "complaint"@en ;
+    skos:related vocab:violation, vocab:complaint-rate, vocab:pest-violation, vocab:pest-complaint ;
+    skos:definition "One problem a tenant reported to HPD in a complaint, with a type, a major category, a status and a received date."@en ;
+    skos:scopeNote "A record of what was reported, not of what was found or cited. One complaint can have several problems, so the counting unit is problem records. Loaded only since 2021-01-01 and only for HPD-registered lots and registered buildings; the apartment, anonymity and coordinates are not stored."@en ;
+    dct:source "specs/questions/q27.md" .
+
+vocab:problem-id a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "problem id"@en ;
+    skos:hiddenLabel "problemid"@en ;
+    skos:definition "HPD's identifier for a complaint problem."@en ;
+    skos:scopeNote "Unique in the source. It identifies one problem, never a complaint, a building or an apartment."@en ;
+    dct:source "specs/questions/q27.md" .
+
+vocab:complaint-id a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "complaint id"@en ;
+    skos:hiddenLabel "complaintid"@en ;
+    skos:definition "HPD's identifier for the complaint a problem belongs to."@en ;
+    skos:scopeNote "Shared by every problem of the same complaint, so the number of distinct complaint ids is lower than the number of problems."@en ;
+    dct:source "specs/questions/q27.md" .
+
+vocab:has-problem a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "has problem"@en ;
+    skos:definition "Links a building to a complaint problem recorded against its BIN."@en ;
+    skos:scopeNote "A record link. Problems belong to the building (BIN), not to the lot; a lot's problems are those of its buildings."@en ;
+    dct:source "specs/questions/q27.md" .
+
+vocab:problem-type a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "problem type"@en ;
+    skos:altLabel "complaint type"@en ;
+    skos:definition "HPD's urgency type of a problem: EMERGENCY, IMMEDIATE EMERGENCY, NON EMERGENCY, and rarely HAZARDOUS or REFERRAL."@en ;
+    skos:scopeNote "The type is as HPD records it at intake. Counts by type are counts of problems; types are not added into a severity score."@en ;
+    dct:source "specs/questions/q27.md" .
+
+vocab:major-category a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "major category"@en ;
+    skos:hiddenLabel "majorcategory"@en ;
+    skos:definition "HPD's main category of a problem, such as HEAT/HOT WATER, PLUMBING or PAINT/PLASTER."@en ;
+    skos:scopeNote "The categories are HPD's and overlap in everyday use (HEAT/HOT WATER and HEATING are separate values). The minor category and the problem code are stored too (Q27.3) and read with it."@en ;
+    skos:related vocab:minor-category ;
+    dct:source "specs/questions/q27.md" .
+
+vocab:minor-category a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "minor category"@en ;
+    skos:hiddenLabel "minorcategory"@en ;
+    skos:definition "HPD's finer category of a complaint problem within its major category, such as PESTS under UNSANITARY CONDITION or RADIATOR under PAINT/PLASTER."@en ;
+    skos:scopeNote "Kept as HPD records it (text, 59 values on the loaded problems, none missing). A minor category can sit under two major categories (CABINET, RADIATOR), so it is read with its major category. PESTS is under UNSANITARY CONDITION only."@en ;
+    skos:related vocab:major-category, vocab:problem-code, vocab:pest-complaint ;
+    dct:source "specs/questions/q27.md" .
+
+vocab:problem-code a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "problem code"@en ;
+    skos:hiddenLabel "problemcode"@en ;
+    skos:definition "HPD's code for the specific problem a tenant reported within a minor category, such as MICE, ROACHES or BED BUGS under PESTS."@en ;
+    skos:scopeNote "Kept as HPD records it (text, 142 values on the loaded problems, none missing). OTHER is a catch-all that appears under many minor categories and never means mice, so a code is read with its minor category. A code is what was reported, not what was found."@en ;
+    skos:related vocab:minor-category, vocab:pest-complaint ;
+    dct:source "specs/questions/q27.md" .
+
+vocab:pest-complaint a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "pest complaint"@en ;
+    skos:altLabel "pest complaint problem"@en ;
+    skos:hiddenLabel "mice complaint"@en ;
+    skos:definition "A complaint problem whose minor category is PESTS, with the pest named by its problem code: MICE, ROACHES, BED BUGS, FLIES, TERMITES, FLEAS or OTHER."@en ;
+    skos:scopeNote "What a tenant reported, not what was found; the count is per building, never per unit or apartment. OTHER is not a pest name and never means mice. A pest violation (an inspector's citation) is counted apart. Open means open at the snapshot date. Computed at answer time from the minor category and the problem code, not stored."@en ;
+    skos:related vocab:complaint-problem, vocab:minor-category, vocab:problem-code, vocab:pest-violation ;
+    dct:source "specs/questions/q27.md" .
+
+vocab:problem-status a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "problem status"@en ;
+    skos:altLabel "open or closed problem"@en ;
+    skos:hiddenLabel "problemstatus"@en ;
+    skos:definition "Whether HPD records a problem as OPEN or CLOSE at the snapshot date."@en ;
+    skos:scopeNote "Open means open at the snapshot date (data through 2026-07-07). It is the problem's own status; the complaint's status can differ and is not stored."@en ;
+    dct:source "specs/questions/q27.md" .
+
+vocab:received-date a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "received date"@en ;
+    skos:hiddenLabel "receiveddate"@en ;
+    skos:definition "The date HPD received the complaint a problem belongs to."@en ;
+    skos:scopeNote "Not the date a problem was inspected, cited or closed. Periods are measured on this date."@en ;
+    dct:source "specs/questions/q27.md" .
+
+vocab:duplicate-flag a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "duplicate flag"@en ;
+    skos:hiddenLabel "problemduplicateflag"@en ;
+    skos:definition "HPD's flag marking a problem as a duplicate of another report."@en ;
+    skos:scopeNote "Kept as recorded and counted in totals; the answer reports duplicate-flagged problems apart and does not remove them."@en ;
+    dct:source "specs/questions/q27.md" .
+
+vocab:complaint-rate a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "complaint rate"@en ;
+    skos:altLabel "problems per unit"@en ;
+    skos:related vocab:complaint-problem, vocab:residential-units, vocab:open-violation-rate ;
+    skos:definition "A building's complaint problems in a period divided by the PLUTO residential units of its lot."@en ;
+    skos:scopeNote "The denominator is lot-wide and the numerator is the building's, so the rate is rough on lots with several buildings. It is over the whole period, not annualized. A lot with 0 or no unit count gives rate unavailable, never 0. A building on several lots gets one rate per lot, never a sum. Computed at answer time, not stored."@en ;
+    dct:source "specs/questions/q27.md" .
+
+vocab:litigation-case a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "litigation case"@en ;
+    skos:altLabel "Housing Court case"@en ;
+    skos:altLabel "HPD litigation"@en ;
+    skos:hiddenLabel "litigation"@en ;
+    skos:related vocab:violation ;
+    skos:definition "An action HPD brought in Housing Court against a building's respondent, recorded with a type, an open date, a status, an open judgement and, where made, a harassment finding and a penalty."@en ;
+    skos:scopeNote "A case is an action brought, not a finding of fault. It is recorded against a building (BIN); who it is against is the respondent as recorded. Counting unit: cases. Data through 2026-07-09."@en ;
+    dct:source "specs/questions/q28.md" .
+
+vocab:litigation-id a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "litigation id"@en ;
+    skos:hiddenLabel "litigationid"@en ;
+    skos:definition "HPD's identifier of one litigation case."@en ;
+    skos:scopeNote "Unique in the snapshot; it identifies a case, not a building or an owner."@en ;
+    dct:source "specs/questions/q28.md" .
+
+vocab:has-litigation-case a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "has litigation case"@en ;
+    skos:definition "Links a building to a litigation case recorded against it."@en ;
+    skos:scopeNote "Building, not lot or owner: a case on one building of a multi-building lot is not a case on its sibling buildings."@en ;
+    dct:source "specs/questions/q28.md" .
+
+vocab:case-type a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "case type"@en ;
+    skos:altLabel "litigation type"@en ;
+    skos:hiddenLabel "casetype"@en ;
+    skos:related vocab:harassment-finding ;
+    skos:definition "HPD's category of a litigation case, such as Tenant Action, Heat and Hot Water, Comprehensive or Access Warrant."@en ;
+    skos:scopeNote "Kept as HPD spells it, including 'Tenant Action/Harrassment'; 14 values in the snapshot. The value does not by itself say a harassment finding was made."@en ;
+    dct:source "specs/questions/q28.md" .
+
+vocab:case-open-date a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "case open date"@en ;
+    skos:altLabel "date opened"@en ;
+    skos:hiddenLabel "caseopendate"@en ;
+    skos:definition "The date HPD records a litigation case as opened."@en ;
+    skos:scopeNote "Absent for 289 loaded cases. Three loaded cases are dated before 1990 and one after the snapshot (2030): source errors, kept as recorded, reported and never corrected."@en ;
+    dct:source "specs/questions/q28.md" .
+
+vocab:case-status a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "case status"@en ;
+    skos:altLabel "litigation status"@en ;
+    skos:hiddenLabel "casestatus"@en ;
+    skos:definition "HPD's recorded status of a litigation case at the snapshot date."@en ;
+    skos:scopeNote "Free text as recorded (CLOSED, PENDING, and rare forms with a date such as 'GRANTED - 10/20/2006'); not normalised. Pending means open at the snapshot, which can differ from the live source."@en ;
+    dct:source "specs/questions/q28.md" .
+
+vocab:open-judgement a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "open judgement"@en ;
+    skos:altLabel "open judgment"@en ;
+    skos:hiddenLabel "openjudgement"@en ;
+    skos:definition "Whether HPD records a judgement in the case as open (YES) or not (NO)."@en ;
+    skos:scopeNote "As recorded; the amount of a judgement is not in the source. It does not say who owes it."@en ;
+    dct:source "specs/questions/q28.md" .
+
+vocab:harassment-finding a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "harassment finding"@en ;
+    skos:altLabel "finding of harassment"@en ;
+    skos:hiddenLabel "findingofharassment"@en ;
+    skos:related vocab:case-type, vocab:finding-date ;
+    skos:definition "The recorded outcome of a harassment determination in a case: After Inquest or After Trial is a finding of harassment; No Harassment is a recorded outcome that is not a finding."@en ;
+    skos:scopeNote "Absent means none recorded, not that none was sought. The finding date is absent for one finding in the snapshot, and is never invented. A finding is the court's, as HPD records it."@en ;
+    dct:source "specs/questions/q28.md" .
+
+vocab:finding-date a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "finding date"@en ;
+    skos:altLabel "date of finding"@en ;
+    skos:hiddenLabel "findingdate"@en ;
+    skos:related vocab:harassment-finding ;
+    skos:definition "The date HPD records for a harassment finding."@en ;
+    skos:scopeNote "Present only with a finding; absent otherwise, and absent for one finding in the snapshot."@en ;
+    dct:source "specs/questions/q28.md" .
+
+vocab:case-penalty a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "case penalty"@en ;
+    skos:altLabel "penalty"@en ;
+    skos:definition "The penalty in whole dollars HPD records on a litigation case."@en ;
+    skos:scopeNote "Recorded on 217 loaded cases; absent otherwise, and a recorded 0 is a zero penalty, not absent."@en ;
+    dct:source "specs/questions/q28.md" .
+
+vocab:respondent a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "respondent"@en ;
+    skos:altLabel "named respondent"@en ;
+    skos:related vocab:contact, vocab:respondent-owner-match ;
+    skos:definition "The party or parties HPD names as defendant in a litigation case, kept as one recorded string of comma-separated names."@en ;
+    skos:scopeNote "Roles are not recorded: a respondent can be an owner, an agent or an individual. Absent for 2,919 loaded cases. Matching to the registered owner is by name only, so a match is a lead."@en ;
+    dct:source "specs/questions/q28.md" .
+
+vocab:respondent-owner-match a skos:Concept ;
+    skos:inScheme vocab:watchline ;
+    skos:topConceptOf vocab:watchline ;
+    skos:prefLabel "respondent owner match"@en ;
+    skos:altLabel "respondent matches registered owner"@en ;
+    skos:related vocab:contact, vocab:respondent ;
+    skos:definition "Answer contract: for each case, which respondent parts equal a registered owner's name after rule N3, with the owner and registration, or not matched, or not comparable."@en ;
+    skos:scopeNote "Computed at answer time. A name match is a lead and does not show the respondent is the owner. No respondent or no owner name is not comparable, never different."@en ;
+    dct:source "specs/questions/q28.md" .

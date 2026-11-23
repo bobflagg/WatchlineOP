@@ -1,0 +1,5 @@
+# Q23.3 fixtures: agent business addresses and the Q6 masks (BOR release v0.3.0, run 2026-05-29-869bd299). check_masks.py re-derives the masks from the
+# release and the address candidates from the source, so a stale fixture fails. The graph's address text must be one of the source's candidates.
+agents:
+  - {nameKey: "DOUGLAS ELLIMAN PROPERTY MANAGEMENT", maskedAddress: "909 THIRD AVENUE", networkDegree: 125, portfolioDegree: 281, note: "its main address is masked by both methods, with different degrees"}
+  - {nameKey: "BRIGHTON MANAGEMENT", maskedAddress: null, note: "6 East 45th Street (several spellings): no method masked it"}

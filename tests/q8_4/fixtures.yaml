@@ -1,0 +1,36 @@
+# Q8.4 expected reason a lot is in no Operational Network (BOR release v0.3.0, bbl_status.csv).
+# check_absence.py re-derives each from the release, so a stale fixture fails. null means no value.
+# One lot per detail code that occurs in this layer (11), plus a network member and a lot outside BOR's universe.
+lots:
+  - {bbl: "3008070024", networkAbsence: null, networkAbsenceDetail: null, note: "anchor C is in a network: no absence"}
+  - {bbl: "3008260002", networkAbsence: no_qualifying_linkage, networkAbsenceDetail: no_linkage, note: "anchor A"}
+  - {bbl: "1014920061", networkAbsence: no_qualifying_linkage, networkAbsenceDetail: no_linkage, note: "a second no_linkage lot"}
+  - {bbl: "3008970014", networkAbsence: outside_source_coverage, networkAbsenceDetail: no_registration, note: "anchor F: no HPD registration"}
+  - {bbl: "3004350027", networkAbsence: outside_method_input, networkAbsenceDetail: no_owner_contact, note: ""}
+  - {bbl: "1014247501", networkAbsence: excluded_by_policy, networkAbsenceDetail: aggregator_address_masked, note: ""}
+  - {bbl: "3038260001", networkAbsence: excluded_by_policy, networkAbsenceDetail: address_evidence_masked, note: ""}
+  - {bbl: "3054390076", networkAbsence: below_eligibility_rule, networkAbsenceDetail: first_name_veto, note: ""}
+  - {bbl: "3066550022", networkAbsence: below_eligibility_rule, networkAbsenceDetail: common_name_veto, note: ""}
+  - {bbl: "3053630034", networkAbsence: below_eligibility_rule, networkAbsenceDetail: shared_company_degree_unknown, note: ""}
+  - {bbl: "4052967502", networkAbsence: below_eligibility_rule, networkAbsenceDetail: shared_company_name_not_rare, note: ""}
+  - {bbl: "3016520015", networkAbsence: below_eligibility_rule, networkAbsenceDetail: shared_company_first_name_conflict, note: ""}
+  - {bbl: "1008607505", networkAbsence: below_eligibility_rule, networkAbsenceDetail: shared_company_degree_cap, note: ""}
+  - {bbl: "1005560059", networkAbsence: null, networkAbsenceDetail: null, note: "registered with HPD, not in PLUTO: BOR has no row, so no reason"}
+absent_from_graph:
+  - {bbl: "2046000009", note: "unregistered PLUTO lot with fewer than 3 residential units: BOR reason no_registration, but no Lot"}
+totals:   # over the lots in the graph (214,799), queried 2026-11-13
+  lots_with_reason: 142534
+  lots_in_network: 71256
+  lots_with_neither: 1009
+  by_detail:
+    no_linkage: 92991
+    no_registration: 32936
+    no_owner_contact: 9507
+    aggregator_address_masked: 5470
+    first_name_veto: 778
+    common_name_veto: 523
+    address_evidence_masked: 113
+    shared_company_degree_unknown: 112
+    shared_company_name_not_rare: 74
+    shared_company_first_name_conflict: 18
+    shared_company_degree_cap: 12

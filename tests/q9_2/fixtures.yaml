@@ -1,0 +1,12 @@
+# Q9.2 expected members of an Owner Portfolio, in three counting units (BOR release v0.3.0 + PLUTO 26v1 + HPD registrations).
+# check_members.py re-derives rental lots from the release and buildings, units and missing units from the source
+# database with expected.sql, so a stale fixture fails. Queried 2026-11-13.
+portfolios:
+  - {groupId: OP-98617,  composition: identity,     lots: 5,  buildings: 5,  units: 116, lotsMissingUnits: 0, note: "anchor C: 116 residential units; not excluded as a co-op"}
+  - {groupId: OP-53559,  composition: identity,     lots: 33, buildings: 42, units: 454, lotsMissingUnits: 0, note: "anchor D: more buildings than lots (42 vs 33)"}
+  - {groupId: OP-84986,  composition: identity,     lots: 6,  buildings: 6,  units: 105, lotsMissingUnits: 0, note: "six lots"}
+  - {groupId: OP-5346,   composition: deed_bridged, lots: 4,  buildings: 4,  units: 12,  lotsMissingUnits: 0, note: "deed-bridged"}
+  - {groupId: OP-10201,  composition: deed_only,    lots: 2,  buildings: 2,  units: 6,   lotsMissingUnits: 0, note: "deed-only"}
+  - {groupId: OP-100619, composition: identity,     lots: 1,  buildings: 1,  units: 3,   lotsMissingUnits: 0, note: "one rental lot; the group's co-op lot 3027677501 is outside the footprint and not counted"}
+hub:   # the largest portfolio: only its lot count is fixed; buildings and units are compared with the source at check time
+  - {groupId: OP-42365, composition: identity, lots: 424}

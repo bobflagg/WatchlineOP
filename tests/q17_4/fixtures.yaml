@@ -1,0 +1,9 @@
+# Q17.4 fixtures. pluto_latest 26v1 (frozen baseline, data/README.md). check_threshold.py re-derives each with tests/q17_4/expected.sql.
+threshold: 3
+cases:
+  - {bbl: "3008210019", outcome: meets-threshold, units: 6, label: "anchor E"}
+  - {bbl: "3008970014", outcome: meets-threshold, units: 40, year_built: 2025, label: "anchor F: built 2025"}
+  - {bbl: "4161550017", outcome: meets-threshold, units: 3, label: "exactly at the threshold"}
+  - {bbl: "4083440022", outcome: below-threshold, units: 2, label: "registered, 2 units"}
+  - {bbl: "1000650024", outcome: units-not-recorded, units: 0, label: "PLUTO records 0 units: not recorded"}
+  - {bbl: "1000190013", outcome: units-not-recorded, label: "no PLUTO unit value"}

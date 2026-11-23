@@ -1,14 +1,15 @@
 # Q4 acceptance results, 2026-11-12. Shapes compile (checked here); the rebuild, `make graph`, `make ontology` and `make thesaurus` are run by the user and are NOT yet recorded.
 question: Q4
-fixture_version: provisional (not yet verified against an identified frozen dump)
-baseline: "Pending: dump filename and SHA-256 are not recorded in data/README.md. No result below is 'passed' for acceptance."
+fixture_version: verified against the frozen baseline (2026-11-16)
+baseline: "Frozen baseline recorded 2026-11-16 in data/README.md: justfixwow-poc-baseline_2026-11-16.sql.gz, SHA-256 9124f6c0d0f0d2e453f1971247ed29c217d3d4b5f55338d95344e04a617b6278 (plain-SQL dump of the 11 public source tables)."
 tools:
   neo4j: "Neo4j Kernel 2026.04.0 enterprise (tests/results/shapes.json)"
   shacl2cypher: "0.3.0 (strict mode; all 82 rules of Q1 to Q4 compile, no static diagnostics; coverage names match)"
 acceptance:
   graph:
-    status: pending
-    reason: "baseline not identified"
+    status: passed
+    reason: \"baseline identified 2026-11-16; every graph check passed\"
+    rerun_2026_11_16: "All database-backed checks (make test, make shapes 414/414 including the Q7 rules) passed on the rebuilt graph on 2026-11-16 (user-reported). The graph now has the merged Contact node and Landlord-to-Contact links, so older counts in this file are history, not the current counts."
     evidence:
       shapes_compile: "passed (compile only, no database)"
       shapes_on_graph: "166/166 (Q1 to Q4: rules, supplemental checks, coverage, seeded bad-data cases with rollback)"

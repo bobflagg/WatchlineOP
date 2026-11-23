@@ -1,0 +1,3 @@
+# Q7.2 fixtures. dos_active_corporations (2026-07-06).
+pairs:
+  - {a: "5413 PLAZA LLC", dosIdA: "5857246", b: "702 PLAZA LLC", dosIdB: "5857608", street: "5 CROMWELL CIRCLE", zip5: "10304", entities: 5, shared: true, filedA: "2020-10-14", filedB: "2020-10-15"}

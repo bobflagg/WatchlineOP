@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: a masked address is not a mail-drop address (disjoint classes).
+id:bad-1 a onto:NetworkMaskedAddress, onto:MailDropAddress ; onto:maskedAddressId "A0000011" .

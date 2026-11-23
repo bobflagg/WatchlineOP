@@ -1,0 +1,18 @@
+# Q6.4 expected mail-drop and registered-agent list entries (data/mail_drop_addresses.csv, preliminary, all unreviewed).
+# Provisional until the list is reviewed. check_list.py re-derives each from the file, so a stale fixture fails.
+# rows: [list ZIP or null, kind]
+listed:
+  - {address: "418 BROADWAY", zip5: "12207", rows: [["12207", registered_agent]], note: "registered-agent address (DOS process basis); links nothing on its own"}
+  - {address: "575 FIFTH AVE", zip5: "10017", rows: [["10017", management_office]], note: "management office, from the Operational Network mask (list basis bor_masked)"}
+  - {address: "1 MAIDEN LANE", zip5: "10038", rows: [["10038", law_firm]], note: "law firm"}
+  - {address: "228 PARK AVE S", zip5: "10003", rows: [["10003", unknown]], note: "kind unknown"}
+  - {address: "120 BROADWAY", zip5: "10271", rows: [[null, unknown], ["10271", management_office]], note: "one row has no ZIP and matches any ZIP: both are reported"}
+not_listed:
+  - {address: "746 61ST STREET", zip5: "11220", note: "anchors A and B: not on the list"}
+  - {address: "418 BROADWAY", zip5: "11207", note: "same street text, different ZIP: not the listed address"}
+  - {address: "575 FIFTH AVENUE", zip5: "10017", note: "HPD's spelling; the list spells it AVE, so no match: a miss is not a clearance"}
+totals:
+  rows: 122
+  by_kind: {management_office: 64, registered_agent: 28, unknown: 29, law_firm: 1}
+  review_status: {unreviewed: 122}
+  rows_without_zip: 1

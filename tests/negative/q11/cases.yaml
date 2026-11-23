@@ -1,0 +1,6 @@
+# Same format as tests/negative/q07/cases.yaml: bad data inside a transaction that is always rolled back.
+cases:
+  - {name: mortgage with party type 3,   create: "CREATE (d:Document {documentId: 'q11-x', docType: 'MTGE'})-[:HAS_PARTY {partyType: 3}]->(:DocumentParty {partyKey: 'q11-x'})", check: queries/checks/q11-mortgages.cypher}
+  - {name: mortgage naming no HPD owner, create: "CREATE (d:Document {documentId: 'q11-x', docType: 'MTGE'})-[:HAS_PARTY {partyType: 1}]->(:DocumentParty {partyKey: 'q11-x1', nameKey: 'NO SUCH OWNER LLC'}), (d)-[:HAS_PARTY {partyType: 2}]->(:DocumentParty {partyKey: 'q11-x2', nameKey: 'NO SUCH BANK'})", check: queries/checks/q11-mortgages.cypher}
+  - {name: affiliation type stored on a document, create: "MATCH (d:Document) WITH d LIMIT 1 SET d.affiliationType = 'financing-affiliation'", check: queries/checks/q11-mortgages.cypher}
+  - {name: evidence status stored on a link, create: "MATCH (:Document)-[r:HAS_PARTY]->(:DocumentParty) WITH r LIMIT 1 SET r.evidenceStatus = 'documented'", check: queries/checks/q11-mortgages.cypher}

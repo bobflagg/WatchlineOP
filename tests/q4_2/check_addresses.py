@@ -1,4 +1,4 @@
-"""Check the business address of RoleContact nodes against the frozen source. Read-only on both databases.
+"""Check the business address of non-owner Contact nodes against the frozen source. Read-only on both databases.
 
 1. Each fixture is re-derived from the source with SQL, so a stale fixture fails.
 2. Each fixture is looked up in the graph with tests/q4_2/lookup.cypher (street line and ZIP compared).
@@ -36,7 +36,7 @@ FROM (SELECT count(DISTINCT {STREET}) na, count({STREET}) nn, count(*) n FROM hp
       WHERE {NOT_OWNER} AND c.registrationid IN (SELECT registrationid FROM hpd_registrations WHERE bbl IS NOT NULL AND {VALID})
       GROUP BY c.registrationid, c.type, nullif(btrim(c.corporationname), ''), {PERSON}, nullif(btrim(c.title), '')) k
 """
-GRAPH_TOTALS = "MATCH (c:RoleContact) RETURN count(c) AS contacts, count(c.mailingAddress) AS with_addr"
+GRAPH_TOTALS = "MATCH (c:Contact) WHERE NOT c.contactType IN ['CorporateOwner','IndividualOwner','JointOwner'] RETURN count(c) AS contacts, count(c.mailingAddress) AS with_addr"
 results = []
 
 

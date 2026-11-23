@@ -1,0 +1,27 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q28 example data. Values follow the fixtures in tests/q28_1/fixtures.yaml and tests/q28_2/fixtures.yaml (hpd_litigations through 2026-07-09).
+# Entities only; no individuals' names. The owner match is computed at answer time with rule N3 and never stored.
+
+# Anchor C (438 52 Street): one closed Tenant Action, no finding, no penalty. The case belongs to the building, never the lot.
+id:lot-3008070024 a onto:TaxLot ; onto:bbl "3008070024" ; onto:hasBuilding id:bldg-3013901 .
+id:bldg-3013901 a onto:Building ; onto:bin "3013901" ; onto:hasLitigation id:case-424938 .
+id:case-424938 a onto:Litigation ; onto:litigationId 424938 ; onto:caseType "Tenant Action" ;
+    onto:caseOpenDate "2023-05-15"^^xsd:date ; onto:caseStatus "CLOSED" ; onto:openJudgement "NO" ;
+    onto:respondent "438 52 STREET OWNERS CORPORATION" ; onto:respondentKeys "438 52 STREET OWNERS CORPORATION" .
+
+# A case with a harassment finding After Trial, a finding date and a penalty. A finding is the court's, as HPD records it.
+id:bldg-1020357 a onto:Building ; onto:bin "1020357" ; onto:hasLitigation id:case-246506 .
+id:case-246506 a onto:Litigation ; onto:litigationId 246506 ; onto:caseType "Tenant Action/Harrassment" ;
+    onto:caseOpenDate "2014-10-01"^^xsd:date ; onto:caseStatus "CLOSED" ; onto:openJudgement "NO" ;
+    onto:harassmentFinding "After Trial" ; onto:findingDate "2017-09-22"^^xsd:date ; onto:penalty 2000 .
+
+# A case with no respondent and no open date: both absent, not empty.
+id:bldg-1053600 a onto:Building ; onto:bin "1053600" ; onto:hasLitigation id:case-31582 .
+id:case-31582 a onto:Litigation ; onto:litigationId 31582 ; onto:caseType "CONH" ; onto:caseStatus "CLOSED" ; onto:openJudgement "NO" .
+
+# A building with no case in the snapshot: no hasLitigation edge. An empty answer, not evidence that none was ever brought.
+id:bldg-3324448 a onto:Building ; onto:bin "3324448" .

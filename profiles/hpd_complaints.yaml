@@ -1,0 +1,87 @@
+# Source profile: HPD housing maintenance code complaints and problems. Facts about the source only.
+# Queried 2026-11-19 against the frozen database (information_schema, whole-table counts, and the subset received since 2021-01-01 on HPD-registered lots).
+source_key: hpd_complaints
+table: public.hpd_complaints_and_problems
+data_through: 2026-07-07
+row_count: 16167204
+queried_on: 2026-11-19   # minorcategory and problemcode added 2026-11-21 (Q27.3 pest extension)
+key: problemid
+key_notes: "problemid is unique and never null (16,167,204 distinct). One row is one problem; complaintid repeats across the problems of a complaint (8,827,077 distinct complaints in the table, 2,490,792 in the loaded subset)."
+columns:
+  - name: problemid
+    physical_type: integer
+    allowed: positive integer
+    sentinels: {null: "none"}
+    unique: true
+    used_by: [Q27.1]
+    notes: "4,061,388 distinct values in the subset (received since 2021-01-01 on registered lots), one per row."
+  - name: complaintid
+    physical_type: integer
+    allowed: positive integer
+    sentinels: {null: "none in the subset"}
+    used_by: [Q27.1]
+    notes: "Shared by the problems of one complaint. Used only to count distinct complaints."
+  - name: type
+    physical_type: text
+    allowed: "EMERGENCY, NON EMERGENCY, IMMEDIATE EMERGENCY (also HAZARDOUS and REFERRAL in the whole table)"
+    sentinels: {null: "none in the subset"}
+    used_by: [Q27.1]
+    notes: "As HPD records at intake. Whole table: EMERGENCY 10,395,890; NON EMERGENCY 4,935,009; IMMEDIATE EMERGENCY 555,904; HAZARDOUS 280,397; REFERRAL 4. The subset holds none of HAZARDOUS or REFERRAL."
+  - name: majorcategory
+    physical_type: text
+    allowed: "19 values in the whole table (HEAT/HOT WATER, HEATING, PLUMBING, PAINT/PLASTER, GENERAL, UNSANITARY CONDITION, ELECTRIC, NONCONST, DOOR/WINDOW, WATER LEAK, APPLIANCE, FLOORING/STAIRS, SAFETY, OUTSIDE BUILDING, ELEVATOR, CONSTRUCTION, LINE OF TRAVEL, ...)"
+    sentinels: {null: "none in the subset"}
+    used_by: [Q27.1]
+    notes: "HPD's own categories, kept as recorded. HEAT/HOT WATER and HEATING are separate values. The minor category and problem code are used for Q27.3 (below)."
+  - name: minorcategory
+    physical_type: text
+    allowed: "92 values in the whole table; 59 on loaded rows (PESTS, RADIATOR, CABINET, ...)"
+    sentinels: {null: "none in the whole table"}
+    used_by: [Q27.3]
+    notes: >-
+      HPD's finer category within a major category, kept as recorded. Uppercase on every loaded row (the whole table has 3,007 rows with some lower-case
+      minor category or problem code, all received before 2021 and not loaded). A minor category can sit under two major categories (CABINET, RADIATOR):
+      103 distinct (major, minor) pairs in the whole table, 61 on loaded rows. PESTS sits under UNSANITARY CONDITION only: 349,021 loaded rows (3,874 open,
+      714 flagged duplicate). An older value, VERMIN (under NONCONST), ends 2014 and is not loaded. Queried 2026-11-21.
+  - name: problemcode
+    physical_type: text
+    allowed: "441 values in the whole table; 142 on loaded rows; seven under PESTS: MICE, ROACHES, OTHER, BED BUGS, FLIES, TERMITES, FLEAS"
+    sentinels: {null: "none in the whole table"}
+    used_by: [Q27.3]
+    notes: >-
+      HPD's code for the specific problem within a minor category, kept as recorded. Uppercase, trimmed on every loaded row; 181 distinct (minor, code) pairs
+      on loaded rows. OTHER is a catch-all that appears under many minor categories and never means mice. Under PESTS on loaded rows: MICE 147,185 (1,508 open,
+      313 duplicate), ROACHES 130,774, OTHER 41,677, BED BUGS 15,259, FLIES 10,853, TERMITES 1,637, FLEAS 1,636. MICE occurs under PESTS only. Queried 2026-11-21.
+  - name: problemstatus
+    physical_type: text
+    allowed: "OPEN, CLOSE"
+    sentinels: {null: "none in the subset"}
+    used_by: [Q27.1]
+    notes: "The problem's own status at the snapshot (data through 2026-07-07). 26,660 open in the subset; the complaint's status (complaintstatus) differs on 7,423 loaded rows and is not used."
+  - name: receiveddate
+    physical_type: date
+    allowed: "2001-12-16 to 2026-07-07 in the whole table; 2021-01-01 to 2026-07-07 in the subset"
+    sentinels: {null: "none"}
+    used_by: [Q27.1, Q27.2]
+    notes: "The date HPD received the complaint. Not an inspection, citation or closure date."
+  - name: problemduplicateflag
+    physical_type: boolean
+    allowed: "true, false"
+    sentinels: {null: "none in the subset"}
+    used_by: [Q27.1]
+    notes: "HPD's flag. 2,621,726 true in the whole table; 682,192 on loaded rows. Kept as recorded and reported apart; duplicates are not removed."
+  - name: bin
+    physical_type: "char(7)"
+    allowed: "7 digits; first digit 1 to 5; not ending 000000"
+    sentinels:
+      blank_or_null: "no BIN (none in the subset)"
+      "x000000": "placeholder BIN"
+      other_invalid: "malformed value"
+    used_by: [Q27.1, Q27.2]
+    notes: "In the subset 8,461 rows have no usable BIN; 19,100 more have a valid BIN that is not a registered building. Both groups (27,561) are excluded and counted."
+  - name: bbl
+    physical_type: "char(10)"
+    allowed: "10 digits; first digit 1 to 5"
+    sentinels: {null: "none"}
+    used_by: [Q27.1]
+    notes: "Used only to select problems on HPD-registered lots (a BBL present in hpd_registrations). Never malformed in the subset."

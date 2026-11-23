@@ -1,0 +1,28 @@
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q17 example data. Values come from the verified fixtures in tests/q17_*/fixtures.yaml (HPD registrations 2026-05-29, ACRIS through
+# 2026-05-31, PLUTO 26v1, frozen baseline in data/README.md). Q17 adds no ontology element: it reads the Q1, Q2 and Q3 elements.
+# Missing, lapsed, older-than-deed, no-usable-registration and the threshold outcome are computed at answer time and are not in the graph.
+
+# Anchor E: 6 units; registered 2020-08-31, period ended 2021-09-01 (lapsed); a deed recorded 2026-04-21 (registration older than the deed).
+id:lot-3008210019-q17 a onto:TaxLot ; onto:bbl "3008210019" ; onto:hpdRegistered true ; onto:residentialUnits 6 ;
+    onto:hasBuilding id:bldg-q17-e ; onto:hasDeed id:deed-2026042100334001 .
+id:bldg-q17-e a onto:Building ; onto:bin "3999001" ; onto:hasRegistration id:reg-306882 .
+id:reg-306882 a onto:Registration ; onto:registrationId 306882 ;
+    onto:lastRegistered "2020-08-31"^^xsd:date ; onto:registrationEnd "2021-09-01"^^xsd:date .
+id:deed-2026042100334001 a onto:Deed ; onto:documentId "2026042100334001" ; onto:documentType "DEED" ;
+    onto:recordedDate "2026-04-21"^^xsd:date ; onto:documentAmount 800000 .
+
+# Anchor F: 40 units, built 2025, no registration row: missing. No building, so no registration.
+id:lot-3008970014-q17 a onto:TaxLot ; onto:bbl "3008970014" ; onto:hpdRegistered false ; onto:residentialUnits 40 ; onto:yearBuilt 2025 .
+
+# Anchor A: registered 2025-09-30, period ends 2026-09-01: not ended on the snapshot date, so not lapsed.
+id:lot-3008260002-q17 a onto:TaxLot ; onto:bbl "3008260002" ; onto:hpdRegistered true ; onto:hasBuilding id:bldg-3014788-q17 .
+id:bldg-3014788-q17 a onto:Building ; onto:bin "3014788" ; onto:hasRegistration id:reg-316103-q17 .
+id:reg-316103-q17 a onto:Registration ; onto:registrationId 316103 ;
+    onto:lastRegistered "2025-09-30"^^xsd:date ; onto:registrationEnd "2026-09-01"^^xsd:date .
+
+# Registered lot with no usable registration (placeholder id 0): the flag is true and no registration is stored.
+id:lot-1018840001-q17 a onto:TaxLot ; onto:bbl "1018840001" ; onto:hpdRegistered true .

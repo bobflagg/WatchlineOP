@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: an operational network is not a tax lot (OperationalNetwork and TaxLot are disjoint).
+id:bad-1 a onto:OperationalNetwork, onto:TaxLot ; onto:groupId "ON-98617" ; onto:bbl "3008070024" .

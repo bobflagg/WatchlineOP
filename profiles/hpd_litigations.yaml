@@ -1,0 +1,77 @@
+# Source profile: HPD Housing Litigations. Facts about the source only.
+# Queried 2026-11-20 against the frozen database (information_schema and counts over the whole table and the registered-building subset).
+source_key: hpd_litigations
+table: public.hpd_litigations
+data_through: 2026-07-09
+row_count: 239434
+queried_on: 2026-11-20
+key: litigationid
+key_notes: "litigationid is unique (239,434 distinct, 16 to 515,776). Cases carry a BIN and a BBL; the Q28 scope is a registered lot and a registered, valid BIN: 210,169 load, 1,483 on registered lots do not."
+columns:
+  - name: litigationid
+    physical_type: integer
+    allowed: positive integer
+    sentinels: {null: "none"}
+    unique: true
+    used_by: [Q28.1, Q28.2]
+    notes: "One row per case."
+  - name: casetype
+    physical_type: text
+    allowed: "14 values (Tenant Action, Heat and Hot Water, Tenant Action/Harrassment, Access Warrant - Non-Lead, Comprehensive, ...)"
+    sentinels: {null: "none"}
+    used_by: [Q28.1]
+    notes: "Kept as HPD spells it, including 'Harrassment'. The value does not say a harassment finding was made."
+  - name: caseopendate
+    physical_type: date
+    allowed: "as recorded; some values cannot be right"
+    sentinels: {null: "298 rows (289 loaded)", before_1990: "3 loaded rows, the earliest 0204-03-28 (source typo; 1930-02-26 is another)", after_snapshot: "2 rows (1 loaded), latest 2030-10-05"}
+    used_by: [Q28.1]
+    notes: "Odd dates are kept as recorded, counted and reported, never corrected or dropped."
+  - name: casestatus
+    physical_type: text
+    allowed: "free text (CLOSED, PENDING, APPLICATION PENDING, and rare forms such as 'GRANTED - 10/20/2006')"
+    sentinels: {null: "none"}
+    used_by: [Q28.1]
+    notes: "Not normalised."
+  - name: openjudgement
+    physical_type: text
+    allowed: "YES, NO"
+    sentinels: {null: "none"}
+    used_by: [Q28.1]
+    notes: "Whether a judgement is open; the amount is not in the source."
+  - name: findingofharassment
+    physical_type: text
+    allowed: "After Inquest, After Trial, No Harassment"
+    sentinels: {null: "231,184 rows: none recorded"}
+    used_by: [Q28.1]
+    notes: "After Inquest or After Trial is a finding (217 loaded); 'No Harassment' (5,990 loaded) is a recorded outcome, not a finding."
+  - name: findingdate
+    physical_type: "timestamp without time zone"
+    allowed: "as recorded"
+    sentinels: {null: "present only with a finding; 1 loaded finding has none"}
+    used_by: [Q28.1]
+    notes: "Stored as a date."
+  - name: penalty
+    physical_type: text
+    allowed: "digits only (whole dollars)"
+    sentinels: {null: "239,104 rows", "0": "a recorded zero penalty"}
+    used_by: [Q28.1]
+    notes: "330 rows have one (217 loaded). Stored as an integer."
+  - name: respondent
+    physical_type: text
+    allowed: "comma-joined names, up to 13 parts, blank parts and 'ET AL' occur"
+    sentinels: {null_or_blank: "3,114 rows (2,919 loaded)"}
+    used_by: [Q28.1, Q28.2]
+    notes: "Roles are not recorded. A blank is absent."
+  - name: bin
+    physical_type: "char(7)"
+    allowed: "7 digits; first digit 1 to 5; not ending 000000"
+    sentinels: {invalid_or_placeholder: "1,212 rows"}
+    used_by: [Q28.1]
+    notes: "Never null. Selects the building."
+  - name: bbl
+    physical_type: "char(10)"
+    allowed: "10 digits"
+    sentinels: {null: "none"}
+    used_by: [Q28.1]
+    notes: "Used only to select cases on HPD-registered lots."

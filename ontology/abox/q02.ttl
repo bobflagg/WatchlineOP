@@ -11,39 +11,39 @@
 id:building-3014788 a onto:Building ; onto:bin "3014788" ; onto:hasRegistration id:reg-316103 .
 id:reg-316103 a onto:Registration ; onto:registrationId 316103 ;
     onto:lastRegistered "2025-09-30"^^xsd:date ; onto:registrationEnd "2026-09-01"^^xsd:date ;
-    onto:hasOwnerContact id:owner-316103-a .
-id:owner-316103-a a onto:OwnerContact ; onto:contactType "CorporateOwner" ; onto:ownerName "5413 PLAZA LLC" .
+    onto:hasContact id:owner-316103-a .
+id:owner-316103-a a onto:Contact ; onto:contactType "CorporateOwner" ; onto:corporationName "5413 PLAZA LLC" .
 
 # Anchor C: co-op. HPD spells the owner differently from PLUTO; reported as recorded.
 id:building-3013901 a onto:Building ; onto:bin "3013901" ; onto:hasRegistration id:reg-350423 .
 id:reg-350423 a onto:Registration ; onto:registrationId 350423 ;
     onto:lastRegistered "2025-10-23"^^xsd:date ; onto:registrationEnd "2026-09-01"^^xsd:date ;
-    onto:hasOwnerContact id:owner-350423-a .
-id:owner-350423-a a onto:OwnerContact ; onto:contactType "CorporateOwner" ; onto:ownerName "438 52 ST OWNERS CORP" .
+    onto:hasContact id:owner-350423-a .
+id:owner-350423-a a onto:Contact ; onto:contactType "CorporateOwner" ; onto:corporationName "438 52 ST OWNERS CORP" .
 
 # Anchor D: three buildings, three registrations, the owner spelled two ways.
 id:building-3324448 a onto:Building ; onto:bin "3324448" ; onto:hasRegistration id:reg-302437 .
 id:reg-302437 a onto:Registration ; onto:registrationId 302437 ;
     onto:lastRegistered "2025-07-16"^^xsd:date ; onto:registrationEnd "2026-09-01"^^xsd:date ;
-    onto:hasOwnerContact id:owner-302437-a .
-id:owner-302437-a a onto:OwnerContact ; onto:contactType "CorporateOwner" ; onto:ownerName "HP SUNSET PARK I HDFC INC." .
+    onto:hasContact id:owner-302437-a .
+id:owner-302437-a a onto:Contact ; onto:contactType "CorporateOwner" ; onto:corporationName "HP SUNSET PARK I HDFC INC." .
 id:building-3324450 a onto:Building ; onto:bin "3324450" ; onto:hasRegistration id:reg-344220 .
 id:reg-344220 a onto:Registration ; onto:registrationId 344220 ;
     onto:lastRegistered "2025-07-16"^^xsd:date ; onto:registrationEnd "2026-09-01"^^xsd:date ;
-    onto:hasOwnerContact id:owner-344220-a .
-id:owner-344220-a a onto:OwnerContact ; onto:contactType "CorporateOwner" ; onto:ownerName "HP SUNSET PARK I HDFC INC." .
+    onto:hasContact id:owner-344220-a .
+id:owner-344220-a a onto:Contact ; onto:contactType "CorporateOwner" ; onto:corporationName "HP SUNSET PARK I HDFC INC." .
 id:building-3324451 a onto:Building ; onto:bin "3324451" ; onto:hasRegistration id:reg-331116 .
 id:reg-331116 a onto:Registration ; onto:registrationId 331116 ;
     onto:lastRegistered "2025-07-16"^^xsd:date ; onto:registrationEnd "2026-09-01"^^xsd:date ;
-    onto:hasOwnerContact id:owner-331116-a .
-id:owner-331116-a a onto:OwnerContact ; onto:contactType "CorporateOwner" ; onto:ownerName "HP SUNSET PARK I HDFC INC" .
+    onto:hasContact id:owner-331116-a .
+id:owner-331116-a a onto:Contact ; onto:contactType "CorporateOwner" ; onto:corporationName "HP SUNSET PARK I HDFC INC" .
 
 # Registration ended before the snapshot (2021-09-01); individual owner, name not repeated.
 id:building-3014490 a onto:Building ; onto:bin "3014490" ; onto:hasRegistration id:reg-306882 .
 id:reg-306882 a onto:Registration ; onto:registrationId 306882 ;
     onto:lastRegistered "2020-08-31"^^xsd:date ; onto:registrationEnd "2021-09-01"^^xsd:date ;
-    onto:hasOwnerContact id:owner-306882-a .
-id:owner-306882-a a onto:OwnerContact ; onto:contactType "IndividualOwner" .
+    onto:hasContact id:owner-306882-a .
+id:owner-306882-a a onto:Contact ; onto:contactType "IndividualOwner" .
 
 # No last-registered date in the source, and no owner contact: the registration stands alone.
 id:building-3014601 a onto:Building ; onto:bin "3014601" ; onto:hasRegistration id:reg-345930 .
@@ -51,18 +51,18 @@ id:reg-345930 a onto:Registration ; onto:registrationId 345930 ; onto:registrati
 
 # Rows of one building and registration disagree on both dates, so both are absent.
 id:building-5114047 a onto:Building ; onto:bin "5114047" ; onto:hasRegistration id:reg-15905 .
-id:reg-15905 a onto:Registration ; onto:registrationId 15905 ; onto:hasOwnerContact id:owner-15905-a .
-id:owner-15905-a a onto:OwnerContact ; onto:contactType "CorporateOwner" ; onto:ownerName "Focca Holdings LLC" .
+id:reg-15905 a onto:Registration ; onto:registrationId 15905 ; onto:hasContact id:owner-15905-a .
+id:owner-15905-a a onto:Contact ; onto:contactType "CorporateOwner" ; onto:corporationName "Focca Holdings LLC" .
 
 # Two corporate owner contacts on one registration: all are listed, none is chosen.
 id:building-1060822 a onto:Building ; onto:bin "1060822" ; onto:hasRegistration id:reg-121720 .
 id:reg-121720 a onto:Registration ; onto:registrationId 121720 ;
-    onto:hasOwnerContact id:owner-121720-a, id:owner-121720-b .
-id:owner-121720-a a onto:OwnerContact ; onto:contactType "CorporateOwner" ; onto:ownerName "HP PLAZA LLC" .
-id:owner-121720-b a onto:OwnerContact ; onto:contactType "CorporateOwner" ; onto:ownerName "HP PLAZA LP" .
+    onto:hasContact id:owner-121720-a, id:owner-121720-b .
+id:owner-121720-a a onto:Contact ; onto:contactType "CorporateOwner" ; onto:corporationName "HP PLAZA LLC" .
+id:owner-121720-b a onto:Contact ; onto:contactType "CorporateOwner" ; onto:corporationName "HP PLAZA LP" .
 
 # Blank corporate owner name beside a named individual owner: the name is absent, not empty.
 id:building-3110187 a onto:Building ; onto:bin "3110187" ; onto:hasRegistration id:reg-332569 .
-id:reg-332569 a onto:Registration ; onto:registrationId 332569 ; onto:hasOwnerContact id:owner-332569-a, id:owner-332569-b .
-id:owner-332569-a a onto:OwnerContact ; onto:contactType "CorporateOwner" .
-id:owner-332569-b a onto:OwnerContact ; onto:contactType "IndividualOwner" .
+id:reg-332569 a onto:Registration ; onto:registrationId 332569 ; onto:hasContact id:owner-332569-a, id:owner-332569-b .
+id:owner-332569-a a onto:Contact ; onto:contactType "CorporateOwner" .
+id:owner-332569-b a onto:Contact ; onto:contactType "IndividualOwner" .

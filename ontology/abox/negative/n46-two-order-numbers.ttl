@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: orderNumber is functional, so one violation cites one order number (the string values are distinct).
+id:bad-violation-10 a onto:Violation ; onto:violationId 4 ; onto:orderNumber "569", "568" .

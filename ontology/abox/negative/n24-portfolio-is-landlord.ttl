@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: a portfolio is not a landlord record (disjoint classes).
+id:bad-1 a onto:OwnerPortfolio, onto:Landlord ; onto:portfolioId "OP-98617" .

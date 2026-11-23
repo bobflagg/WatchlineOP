@@ -15,7 +15,7 @@ graph:
       concept: dos-entity
       key: dosId
       scope: >-
-        One DosEntity per NY DOS active-entity record whose name key (rule N3) equals the key of a CorporateOwner OwnerContact name or a
+        One DosEntity per NY DOS active-entity record whose name key (rule N3) equals the key of a CorporateOwner Contact's corporation name or a
         Grantee name in the graph (119999 records, queried 2026-11-13). Every record sharing a key is loaded; none is chosen.
         Decision 2026-11-12 counted 55694 against HPD owner names only; Grantee names widen the scope.
       proved_by: tests/q5_1/expected.sql
@@ -104,6 +104,13 @@ graph:
           rule: Trimmed, as recorded, not normalized.
           null_policy: "absent when blank (216 of 119999 records)"
           proved_by: tests/q5_2/expected.sql
+        processAddressEntities:
+          concept: process-address-entity-count
+          type: integer
+          source: nys_corporations.dosid, nys_corporations.dosprocessaddress1, nys_corporations.dosprocesszip
+          rule: "Hub count: distinct dosid over the WHOLE dos_active_corporations table at the same upper-cased process street line and first five ZIP characters (not only loaded entities). Fixed when loaded. Q7.2."
+          counting_unit: DOS entities
+          null_policy: "absent when the record has no process street line"
         agentName:
           concept: registered-agent-name
           type: string
@@ -182,6 +189,6 @@ not_stored:   # deliberately absent from the graph
   - {term: nys_corporations.ceoname and ceo address, reason: "empty for every LLC; the answer says 'not carried for this entity type'"}
   - {term: nys_corporations.locationname and location address, reason: "empty for every LLC; not needed for Q5"}
   - {term: nys_corporations.county, reason: not needed for Q5}
-  - {term: link from OwnerContact or Grantee to DosEntity, reason: "a name match is a lead; the comparison is computed at answer time"}
+  - {term: link from Contact or Grantee to DosEntity, reason: "a name match is a lead; the comparison is computed at answer time"}
   - {term: officers, managers and members, reason: "not carried in the dataset; Q5.4 retrieval (later) reports them from filings as session evidence"}
   - {term: name-agreement outcome and rule, reason: computed by compare.py at answer time}

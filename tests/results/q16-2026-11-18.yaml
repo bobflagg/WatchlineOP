@@ -1,0 +1,23 @@
+# Q16 acceptance results, 2026-11-18. make shapes passed (user-reported 2026-11-18): new check and six negative cases.
+question: Q16
+fixture_version: "none: no retrieval cache exists; tests/q16/contract.yaml is the contract the cache is built against"
+baseline: "Frozen baseline recorded 2026-11-16 in data/README.md: justfixwow-poc-baseline_2026-11-16.sql.gz, SHA-256 9124f6c0d0f0d2e453f1971247ed29c217d3d4b5f55338d95344e04a617b6278 (Q16 uses no database source)."
+tools:
+  shacl2cypher: "0.3.0; Q16 adds no SHACL shape, so the compiled rule set is unchanged"
+acceptance:
+  graph:
+    status: passed
+    reason: "Q16 stores nothing. The only graph rule is the absence check queries/checks/q16-computed-not-stored.cypher and its six negative cases; make shapes passed (user-reported 2026-11-18)"
+    evidence:
+      shapes: "none (no graph element)"
+      supplemental_checks: "queries/checks/q16-computed-not-stored.cypher (coverage Q16-R1)"
+      negative_cases: "6 in tests/negative/q16/cases.yaml (3 review-status, 3 label; none mints a property key, so the check keeps its catalog fast path)"
+  retrieval_extraction:
+    status: pending
+    reason: "needs a versioned, replayable retrieval cache supplied by the user and a downstream run of tests/q16/contract.yaml; never reported as passed because the graph is ready"
+  investigation:
+    status: pending
+    reason: "not declared for Q16"
+open_points:
+  - "No cache of reports and filings exists. Neutral Sunset Park buildings may have no coverage, which is itself a case ('no reports or documents found in the sources searched', with queries and dates)."
+  - "The Q6 `unreviewed` label carries a duplicate hidden literal (validate_skos info S13); left as is."

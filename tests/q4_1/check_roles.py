@@ -1,8 +1,8 @@
-"""Check RoleContact nodes and HAS_ROLE_CONTACT against the frozen source. Read-only on both databases.
+"""Check the non-owner Contact nodes and HAS_CONTACT against the frozen source. Read-only on both databases.
 
 1. Each fixture is re-derived from the source with SQL, so a stale fixture fails.
 2. Each fixture is looked up in the graph with tests/q4_1/lookup.cypher.
-3. Graph totals must equal the totals computed from the source, and every RoleContact must be linked.
+3. Graph totals must equal the totals computed from the source, and every such Contact must be linked.
 Person names are never printed or stored: only whether a name is recorded is compared.
 Run: uv run python tests/q4_1/check_roles.py
 """
@@ -33,10 +33,10 @@ FROM (SELECT c.registrationid, c.type, nullif(btrim(c.corporationname), '') corp
       GROUP BY 1, 2, 3, 4, 5) k
 """
 GRAPH_TOTALS = """
-CALL () { MATCH (c:RoleContact) RETURN count(c) AS contacts, count(CASE WHEN c.corporationName IS NULL AND c.personName IS NULL THEN 1 END) AS unnamed, count(c.title) AS titled }
-CALL () { MATCH (:Registration)-[:HAS_ROLE_CONTACT]->(c:RoleContact) RETURN count(DISTINCT c) AS linked }
-CALL () { MATCH (r:Registration)-[:HAS_ROLE_CONTACT]->(:RoleContact) RETURN count(DISTINCT r) AS regs }
-CALL () { MATCH (c:RoleContact) WHERE c.contactType IN ['CorporateOwner','IndividualOwner','JointOwner'] RETURN count(c) AS badtype }
+CALL () { MATCH (c:Contact) WHERE NOT c.contactType IN ['CorporateOwner','IndividualOwner','JointOwner'] RETURN count(c) AS contacts, count(CASE WHEN c.corporationName IS NULL AND c.personName IS NULL THEN 1 END) AS unnamed, count(c.title) AS titled }
+CALL () { MATCH (:Registration)-[:HAS_CONTACT]->(c:Contact) WHERE NOT c.contactType IN ['CorporateOwner','IndividualOwner','JointOwner'] RETURN count(DISTINCT c) AS linked }
+CALL () { MATCH (r:Registration)-[:HAS_CONTACT]->(c:Contact) WHERE NOT c.contactType IN ['CorporateOwner','IndividualOwner','JointOwner'] RETURN count(DISTINCT r) AS regs }
+CALL () { MATCH (c:Contact) WHERE NOT c.contactType IN ['CorporateOwner','IndividualOwner','JointOwner','Agent','HeadOfficer','Officer','Shareholder','SiteManager','Lessee'] RETURN count(c) AS badtype }
 RETURN contacts, unnamed, titled, linked, regs, badtype
 """
 results = []
@@ -89,8 +89,8 @@ def main() -> int:
             check("source totals match fixture", src == (t["contacts"], t["unnamed"], t["titled"], t["regs"]), f"source gives {src}")
             g = session.run(GRAPH_TOTALS).single()
             check("graph totals match source", (g["contacts"], g["unnamed"], g["titled"], g["regs"]) == src, f"graph {tuple(g[k] for k in ('contacts','unnamed','titled','regs'))} vs source {src}")
-            check("every RoleContact is linked to a Registration", g["linked"] == g["contacts"], f"{g['contacts'] - g['linked']} unlinked")
-            check("no owner contact type is a RoleContact", g["badtype"] == 0, f"{g['badtype']} owner types")
+            check("every non-owner Contact is linked to a Registration", g["linked"] == g["contacts"], f"{g['contacts'] - g['linked']} unlinked")
+            check("every Contact has one of the nine HPD types", g["badtype"] == 0, f"{g['badtype']} other types")
     failed = results.count(False)
     print(f"{len(results) - failed}/{len(results)} checks passed")
     return 0 if failed == 0 else 1

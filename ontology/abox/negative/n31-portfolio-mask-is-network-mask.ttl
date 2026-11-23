@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: a portfolio mask is not a network mask (disjoint classes).
+id:bad-1 a onto:PortfolioMaskedAddress, onto:NetworkMaskedAddress ; onto:portfolioMaskedAddressText "455 PARK AVENUE" .

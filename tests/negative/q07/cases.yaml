@@ -1,0 +1,18 @@
+# Same format as tests/negative/q03/cases.yaml: bad data inside a transaction that is always rolled back.
+cases:
+  - {name: document without type,     create: "CREATE (d:Document {documentId: 'x'})-[:HAS_PARTY {partyType: 1}]->(:DocumentParty {partyKey: 'x1'}), (d)-[:HAS_PARTY {partyType: 2}]->(:DocumentParty {partyKey: 'x2'})", rule: DocumentShape.documentType.minCount}
+  - {name: document without id,       create: "CREATE (d:Document {docType: 'MTGE'})-[:HAS_PARTY {partyType: 1}]->(:DocumentParty {partyKey: 'x1'}), (d)-[:HAS_PARTY {partyType: 2}]->(:DocumentParty {partyKey: 'x2'})", rule: DocumentShape.documentId.minCount}
+  - {name: negative amount,           create: "CREATE (d:Document {documentId: 'x', docType: 'MTGE', amount: -1})-[:HAS_PARTY {partyType: 1}]->(:DocumentParty {partyKey: 'x1'}), (d)-[:HAS_PARTY {partyType: 2}]->(:DocumentParty {partyKey: 'x2'})", rule: DocumentShape.documentAmount.minInclusive}
+  - {name: recorded date as text,     create: "CREATE (d:Document {documentId: 'x', docType: 'MTGE', recordedDate: '2020-01-01'})-[:HAS_PARTY {partyType: 1}]->(:DocumentParty {partyKey: 'x1'}), (d)-[:HAS_PARTY {partyType: 2}]->(:DocumentParty {partyKey: 'x2'})", rule: DocumentShape.recordedDate.datatype}
+  - {name: document with no party,    create: "CREATE (:Document {documentId: 'x', docType: 'MTGE'})", rule: DocumentShape.hasParty.minCount}
+  - {name: HAS_PARTY ends on a document party, create: "MATCH (a:Document), (b:Document) WHERE a <> b WITH a, b LIMIT 1 CREATE (a)-[:HAS_PARTY {partyType: 1}]->(b)", rule: DocumentShape.hasParty.class}
+  - {name: party with no document,    create: "CREATE (:DocumentParty {partyKey: 'x'})", rule: DocumentPartyShape.inv_hasParty.minCount}
+  - {name: party with empty name,     create: "MATCH (d:Document) WITH d LIMIT 1 CREATE (d)-[:HAS_PARTY {partyType: 1}]->(:DocumentParty {partyKey: 'x', name: ''})", rule: DocumentPartyShape.partyName.minLength}
+  - {name: party with empty address,  create: "MATCH (d:Document) WITH d LIMIT 1 CREATE (d)-[:HAS_PARTY {partyType: 1}]->(:DocumentParty {partyKey: 'x', mailingAddress: ''})", rule: DocumentPartyShape.mailingAddress.minLength}
+  - {name: negative hub count,        create: "MATCH (d:Document) WITH d LIMIT 1 CREATE (d)-[:HAS_PARTY {partyType: 1}]->(:DocumentParty {partyKey: 'x', mailingAddress: 'A', addressNames: -1, addressDocuments: 1})", rule: DocumentPartyShape.addressPartyCount.minInclusive}
+  - {name: hub count as text,         create: "MATCH (d:Document) WITH d LIMIT 1 CREATE (d)-[:HAS_PARTY {partyType: 1}]->(:DocumentParty {partyKey: 'x', mailingAddress: 'A', addressNames: 1, addressDocuments: 'many'})", rule: DocumentPartyShape.addressDocumentCount.datatype}
+  - {name: DOS hub count of zero,     create: "CREATE (:DosEntity {dosId: -1, name: 'x', nameKey: 'X', processAddress: 'A', processAddressEntities: 0})", rule: DosHubShape.processAddressEntities.minInclusive}
+  - {name: party type 4,              create: "MATCH (d:Document) WITH d LIMIT 1 CREATE (d)-[:HAS_PARTY {partyType: 4}]->(:DocumentParty {partyKey: 'x'})", check: queries/checks/q07-documents.cypher}
+  - {name: hub count without address, create: "MATCH (d:Document) WITH d LIMIT 1 CREATE (d)-[:HAS_PARTY {partyType: 1}]->(:DocumentParty {partyKey: 'x', addressNames: 1, addressDocuments: 1})", check: queries/checks/q07-documents.cypher}
+  - {name: duplicate documentId,      create: "MATCH (d:Document) WITH d LIMIT 1 CREATE (:Document {documentId: d.documentId})", error: constraint}
+  - {name: duplicate partyKey,        create: "MATCH (p:DocumentParty) WITH p LIMIT 1 CREATE (:DocumentParty {partyKey: p.partyKey})", error: constraint}

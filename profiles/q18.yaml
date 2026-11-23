@@ -1,0 +1,56 @@
+# Question schema: Q18 "Which deed transfers among a portfolio's lots look like restructuring (a $0 re-deed into single-purpose LLCs) rather than a
+# sale, what supports that reading independently of the grouping itself, and what remains uncertain?" (sub-questions Q18.1 to Q18.3).
+# Adds no graph element (stage 1, 2026-11-18). Answered from Lot (Q1), Deed, Grantor and Grantee (Q3, Q12) and Contact (Q2). The portfolio only
+# chooses the lots (Q12.2); classification, signals, counts and uncertainty are computed at answer time, not stored. No lookup reads group membership.
+question: Q18
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [acris_master, acris_parties, acris_legals, pluto, hpd_contacts]
+
+graph:
+  constraints: []
+  nodes: {}
+  relationships: {}
+
+answer:
+  Q18.1:
+    lookup: tests/q18_1/lookup.cypher
+    proved_by: tests/q12_1/expected.sql
+    fields:
+      documentId:     {concept: document-id, source: Deed.documentId, type: string, counting_unit: "distinct documents; a deed covering several lots is one deed"}
+      docType:        {concept: document-type, source: Deed.docType, type: string}
+      docDate:        {concept: document-date, source: Deed.docDate, type: date, null_policy: "absent when ACRIS has none"}
+      recordedDate:   {concept: recorded-date, source: Deed.recordedDate, type: date, null_policy: "the period filter applies to this date; a deed with none (rare) is in no bounded period"}
+      amount:         {concept: document-amount, source: Deed.amount, type: integer, counting_unit: "whole US dollars", null_policy: "0 reported as recorded, never as a free sale"}
+      classification: {concept: deed-classification, source: "derived: Deed.docType in (CORRD, CONDEED) then correction; Deed.amount = 0 then zero-transfer; else priced", type: string, allowed: [correction, zero-transfer, priced], null_policy: "never absent for a listed deed. Priced is not a finding of an arm's-length sale; zero-transfer is a hint, not a finding of restructuring"}
+      lots:           {concept: has-deed, source: "the asked lots on HAS_DEED to the Deed", type: "list of string (BBL)", counting_unit: "graph lots inside the asked set", null_policy: "never empty for a listed deed"}
+      grantors:       {concept: grantor, source: "Deed-[:HAS_GRANTOR]->Grantor name", type: "list of string", null_policy: "empty list means none recorded; a person is shown with role and source, never repeated in logs or notes"}
+      grantees:       {concept: grantee, source: "Deed-[:HAS_GRANTEE]->Grantee name", type: "list of string", null_policy: "empty list means none recorded"}
+    note: "Count distinct deeds, not lots. The Owner Portfolio (Q12.2, run 2026-05-29-869bd299) only chooses the lots; it is a lead to verify."
+  Q18.2:
+    lookup: tests/q18_2/lookup.cypher
+    proved_by: tests/q12_3/expected.sql
+    fields:
+      documentId:             {concept: document-id, source: Deed.documentId, type: string, counting_unit: "distinct zero-transfer documents"}
+      recordedDate:           {concept: recorded-date, source: Deed.recordedDate, type: date, null_policy: "never absent for a zero-transfer deed in a bounded period"}
+      lots:                   {concept: has-deed, source: "the asked lots on HAS_DEED to the Deed", type: "list of string (BBL)", counting_unit: "graph lots inside the asked set", null_policy: "never empty"}
+      granteeNamedForLot:     {concept: restructuring-signal, source: "derived: a Grantee.nameKey starts with the house number of a covered Lot.address (PLUTO)", type: boolean, null_policy: "never absent; false when the lot has no address. A naming habit, not proof of a single-purpose entity"}
+      sameName:               {concept: restructuring-signal, source: "derived: a Grantor.nameKey equals a Grantee.nameKey on the deed (rule N3)", type: boolean, null_policy: "never absent; a name lead, not proof of the same party"}
+      hasFollowOn:            {concept: restructuring-signal, source: "derived: a grantee nameKey is a Grantor.nameKey on another deed of the same lot recorded the same day or later", type: boolean, null_policy: "never absent; the same-day order is not recorded, so order is not inferred"}
+      followOn:               {concept: deed, source: "the follow-on Deed", type: "list of {documentId, amount, recordedDate}", counting_unit: "distinct documents", null_policy: "empty list means none found, not a clearance"}
+      granteeRegisteredOwner: {concept: restructuring-signal, source: "derived: a Grantee.nameKey equals the nameKey of a CorporateOwner Contact on a registration of a covered lot (rule N3)", type: boolean, null_policy: "never absent; false for an individual owner (names not comparable). Current registration is not historical ownership"}
+      signals:                {concept: restructuring-signal, source: "derived: count of the four signals that hold", type: integer, counting_unit: "signals, 0 to 4", null_policy: "0 means no independent support found, not a clearance; never added into a score of likelihood"}
+    note: "No signal reads Operational Network or Owner Portfolio membership, so the grouping is not its own evidence. A buyer with no recorded relationship is 'no relationship established'."
+  Q18.3:
+    lookup: tests/q18_3/contract.yaml
+    fields:
+      caveats:   {concept: restructuring-signal, source: "answer contract: tests/q18_3/contract.yaml", type: "list of string", null_policy: "never empty; repeated in every answer"}
+      uncertain: {concept: zero-transfer, source: "answer contract: tests/q18_3/contract.yaml", type: "list of string", null_policy: "never empty; names what the record cannot show (beneficial ownership, spelling differences, market value)"}
+    note: "Uncertainty is part of the answer contract, not a graph element."
+
+diagnostics: []
+
+not_stored:   # deliberately absent from the graph
+  - {term: deed classification, reason: computed at answer time from Deed.docType and Deed.amount}
+  - {term: restructuring signals and their count, reason: computed at answer time from Deed, Grantor, Grantee, Lot and Contact; the verdict "restructuring" is never stored or asserted}
+  - {term: caveats and uncertainty, reason: answer contract, tests/q18_3/contract.yaml}

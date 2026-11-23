@@ -1,0 +1,7 @@
+# Q13.2 fixtures. real_property_parties (frozen baseline, data/README.md). check_parties.py re-derives each from the source. Names are entities.
+# Party type is the recorded code: on MTGE 1 borrower and 2 lender; on every other type the code is repeated without a role.
+documents:
+  - {id: "2021031601183001", bbl: "3008260002", type: MTGE, party_types: {1: 2, 2: 1}, borrowers: ["5413 PLAZA LLC", "702 PLAZA LLC"], note: "anchors A and B: two borrowers, one lender"}
+  - {id: "2015032301122001", bbl: "3008070024", type: MTGE, party_types: {1: 1, 2: 1}, note: "anchor C: borrower spelled as ACRIS spells it; lender recorded as party type 2"}
+  - {id: "2018111500579001", bbl: "3008260002", type: SAT, party_types: {1: 1, 2: 6}, note: "a satisfaction with six party type 2 rows: the code is not named as a role"}
+  - {id: "FT_3080008345608", bbl: "3008070024", type: SAGE, party_types: {1: 1}, note: "anchor C: a sundry agreement with one party row only"}

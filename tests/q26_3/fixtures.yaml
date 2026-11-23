@@ -1,0 +1,9 @@
+# Q26.3 fixtures (BOR release v0.3.0, run 2026-05-29-869bd299). check_layer_absence.py re-derives each from bbl_status and group_bbls.
+# network / portfolio: in_group, or the top-level reason and detail code. Group ids are not asserted here (see Q19.1).
+cases:
+  - {bbl: "1000160180", network: in_group, portfolio: {reason: excluded_by_policy, detail: coop_condo_dominated}, label: "20 River Terrace: in ON-1710, out of the portfolio by policy"}
+  - {bbl: "3008260002", network: {reason: no_qualifying_linkage, detail: no_linkage}, portfolio: {reason: no_qualifying_linkage, detail: no_linkage}, label: "anchor A"}
+  - {bbl: "3008260005", network: {reason: no_qualifying_linkage, detail: no_linkage}, portfolio: {reason: no_qualifying_linkage, detail: no_linkage}, label: "anchor B"}
+  - {bbl: "3008070024", network: in_group, portfolio: in_group, label: "anchor C: in both layers (OP-98617), not a co-op exclusion"}
+  - {bbl: "3008970014", network: {reason: outside_source_coverage, detail: no_registration}, portfolio: {reason: outside_source_coverage, detail: no_registration}, label: "anchor F: no registration"}
+  - {bbl: "1000167501", network: {reason: excluded_by_policy, detail: aggregator_address_masked}, portfolio: {reason: excluded_by_policy, detail: address_evidence_masked}, label: "masked aggregator address"}

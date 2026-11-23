@@ -1,0 +1,24 @@
+# Q15 acceptance results, 2026-11-18. Stage 6 written; shapes compile offline (223 rules over Q1 to Q15). Graph acceptance passed (user-reported).
+question: Q15
+fixture_version: verified against the frozen baseline (2026-11-16) by the checks once run
+baseline: "Frozen baseline recorded 2026-11-16 in data/README.md: justfixwow-poc-baseline_2026-11-16.sql.gz, SHA-256 9124f6c0d0f0d2e453f1971247ed29c217d3d4b5f55338d95344e04a617b6278."
+tools:
+  shacl2cypher: "0.3.0, strict mode; all 223 rules over Q1 to Q15 compile, no static diagnostics; coverage names and negative-case rules match (offline)"
+acceptance:
+  graph:
+    status: passed
+    reason: "make test, make shapes, make ontology and make thesaurus all passed (user-reported 2026-11-18; counts not given). Earlier: make shapes passed (user-reported 2026-11-18; count not given). make test, make ontology and make thesaurus not yet reported after the Q15.2 fixture fix (BIN 3343256 now 1 open, scope by violation BBL)"
+    evidence:
+      shapes: "shapes/q15.ttl: ViolationShape (four typed properties, class and status enums, exactly one incoming HAS_VIOLATION) and BuildingViolationShape (HAS_VIOLATION ends on a Violation); 13 compiled rules"
+      supplemental_checks: "queries/checks/q15-violations.cypher (HAS_VIOLATION from buildings only and property-free; no stored count, date, rate or units; violation keeps four properties). queries/checks/q14-computed-not-stored.cypher relaxed (no-Violation-node rule dropped)"
+      negative_cases: "18 in tests/negative/q15/cases.yaml (10 shape, 1 native constraint, 7 supplemental check); the Q14 violation-node case was removed"
+      sub_question_checks: "tests/q15_1 (class, status, oldest open date, load counts) and tests/q15_2 (rate, null for 0 or absent units, one row per lot) compare lookups with independent SQL; anchor C: open B 2, C 2, oldest 2023-03-25, 32 units, 0.125"
+  retrieval_extraction:
+    status: pending
+    reason: "not declared for Q15"
+  investigation:
+    status: pending
+    reason: "not declared for Q15"
+open_points:
+  - "Excluded violations: 10,770 on registered lots (3,540 no usable BIN, 7,230 BIN not a registered building), counted by the loader and test."
+  - "Status is Open or Close as HPD records at the snapshot (2026-07-02); finer status and the apartment are not loaded."

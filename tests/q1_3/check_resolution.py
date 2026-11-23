@@ -17,7 +17,7 @@ from neo4j import GraphDatabase
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1] / "src"))
 from watchline.geosupport import Client  # noqa: E402
-from watchline.resolution import Neo4jGraph, resolve_address  # noqa: E402
+from watchline.resolution import BoroughRequired, Neo4jGraph, parse_address, resolve_address, resolve_text  # noqa: E402
 
 REQUIRED_ENV = ("NEO4J_URI", "NEO4J_USER", "NEO4J_PASSWORD", "NEO4J_DATABASE")
 
@@ -68,6 +68,32 @@ def main() -> int:
                 total += 1
                 if got[k] != v:
                     fails.append(f"{case['id']}: {k} expected {v!r}, got {got[k]!r}")
+        for t in fixtures.get("text_cases", []):
+            try:
+                ans = resolve_text(client, graph, t["input"], borough=t.get("borough"), zip5=t.get("zip"))
+            except (BoroughRequired, ValueError) as exc:
+                total += 1
+                if type(exc).__name__ != t.get("raises"):
+                    fails.append(f"text {t['input']!r}: raised {type(exc).__name__}, expected {t.get('raises')}")
+                continue
+            got = {"outcome": ans.outcome.value, "bbl": ans.bbl, "bin": ans.bin, "inferred": ans.inferred, "tried": len(ans.tried),
+                   "borough_inferred_from": ans.borough_inferred_from}
+            total += 1
+            if t.get("raises"):
+                fails.append(f"text {t['input']!r}: expected {t['raises']}, got an answer")
+            for k, v in t.get("expect", {}).items():
+                total += 1
+                if got[k] != v:
+                    fails.append(f"text {t['input']!r}: {k} expected {v!r}, got {got[k]!r}")
+    for t in fixtures.get("parse_cases", []):
+        p = parse_address(t["input"])
+        for k in ("house", "street", "borough", "zip5"):
+            total += 1
+            if getattr(p, k) != t[k]:
+                fails.append(f"parse {t['input']!r}: {k} expected {t[k]!r}, got {getattr(p, k)!r}")
+        total += 1
+        if list(p.locality) != t["locality"]:
+            fails.append(f"parse {t['input']!r}: locality expected {t['locality']!r}, got {list(p.locality)!r}")
     for f in fails:
         print("FAIL", f)
     print(f"{total - len([f for f in fails if ': ' in f])}/{total} checks passed" if not fails else f"{len(fails)} failure(s)")

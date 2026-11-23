@@ -1,0 +1,12 @@
+# Q17.3 fixtures. hpd_registrations, real_property_master/legals/parties (frozen baseline, data/README.md). check_stale.py re-derives each with
+# tests/q17_3/expected.sql. Deeds recorded on the latest day all come back.
+cases:
+  - {bbl: "3008210019", older_than_deed: holds, deeds: ["2026042100334001"], label: "anchor E: registered 2020-08-31, deed recorded 2026-04-21"}
+  - {bbl: "3008260002", older_than_deed: does-not-hold, deeds: ["2025032100031001"], label: "anchor A: registered 2025-09-30, after the deed recorded 2025-04-02"}
+  - {bbl: "3008770052", older_than_deed: holds, deeds: ["2018010501014001"], label: "registered 2017-09-18, deed recorded 2018-01-08"}
+  - {bbl: "4083440022", older_than_deed: holds, deeds: ["2013010801131001"], label: "registered 2012-11-14, deed recorded 2013-01-15"}
+  - {bbl: "1000650024", older_than_deed: does-not-hold, deeds: ["2003031100722001"], label: "registered 2025, deed recorded 2003"}
+  - {bbl: "1000247501", older_than_deed: cannot-tell, deeds: [], label: "registered lot with no deed in the snapshot"}
+  - {bbl: "1001450005", older_than_deed: cannot-tell, deeds: ["2024071500270001"], label: "an undated registration: no dated registration to compare, and a $0 deed"}
+  - {bbl: "3008970014", older_than_deed: cannot-tell, deeds: ["2024091700040001"], label: "anchor F: a 2024 deed, no registration"}
+  - {bbl: "1018840001", older_than_deed: cannot-tell, deeds: ["FT_1770008606677", "FT_1780008606678"], label: "two deeds recorded the same day, both returned; no usable registration"}

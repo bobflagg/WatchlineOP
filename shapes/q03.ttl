@@ -5,7 +5,7 @@
 @prefix shp:  <https://watchline.example/shapes/> .
 
 # Q3 shapes: the rules OWL cannot express (ontology/ontology-notes.md, Q3 "Rules for Stage 6 shapes").
-# Compiled together with shapes/q01.ttl and shapes/q02.ttl, which name TaxLot and OwnerContact.
+# Compiled together with shapes/q01.ttl and shapes/q02.ttl, which name TaxLot and Contact.
 
 # --- Graph names ---
 onto:Deed s2c:label "Deed" .
@@ -57,10 +57,10 @@ shp:LotDeedShape a sh:NodeShape ;
     sh:targetClass onto:TaxLot ;
     sh:property [ sh:path onto:hasDeed ; sh:class onto:Deed ] .
 
-# Address parts added to owner contacts for Q3.5: same blank-is-absent rule.
-shp:OwnerContactAddressShape a sh:NodeShape ;
+# Address parts added to contacts for Q3.5 (read for the role types by Q4.2): same blank-is-absent rule.
+shp:ContactAddressShape a sh:NodeShape ;
     s2c:key "contactKey" ;
-    sh:targetClass onto:OwnerContact ;
+    sh:targetClass onto:Contact ;
     sh:property [ sh:path onto:mailingAddress ; sh:datatype xsd:string ; sh:minLength 1 ] ;
     sh:property [ sh:path onto:addressLineTwo ; sh:datatype xsd:string ; sh:minLength 1 ] ;
     sh:property [ sh:path onto:zipCode ; sh:datatype xsd:string ; sh:minLength 1 ] .

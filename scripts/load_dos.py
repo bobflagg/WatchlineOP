@@ -2,8 +2,8 @@
 
 Run after scripts/load_registrations.py and scripts/load_deeds.py. Rules (see tests/q5_1/expected.sql):
   - Scope: a DOS record is loaded when its name key (rule N3, src/watchline/compare.py) equals the key of a
-    CorporateOwner OwnerContact name or of a Grantee name already in the graph. Nothing else from the 4.2M-row table.
-  - nameKey is a lookup key (N3 of the DOS name), not an answer field. No link to OwnerContact or Grantee is stored:
+    CorporateOwner Contact's corporation name or of a Grantee name already in the graph. Nothing else from the 4.2M-row table.
+  - nameKey is a lookup key (N3 of the DOS name), not an answer field. No link to Contact or Grantee is stored:
     a name match is a lead and the comparison is computed at answer time.
   - Every record that shares a key is loaded (15+ keys carry two DOS ids); none is chosen.
   - Blank text is absent. Process name 'THE COMPANY' and 'THE LIMITED LIABILITY COMPANY' are kept as recorded.
@@ -38,12 +38,18 @@ SELECT dosid, nullif(btrim(currententityname), ''), nullif(btrim(entitytype), ''
        nullif(btrim(registeredagentcity), ''), nullif(btrim(registeredagentstate), ''), nullif(btrim(registeredagentzip), '')
 FROM dos_active_corporations WHERE dosid = ANY(%(ids)s)
 """
+HUB_SQL = """
+WITH a AS (SELECT unnest(%(streets)s::text[]) AS s, unnest(%(zips)s::text[]) AS z)
+SELECT upper(btrim(d.dosprocessaddress1)), left(btrim(coalesce(d.dosprocesszip, '')), 5), count(DISTINCT d.dosid)
+FROM dos_active_corporations d JOIN a ON a.s = upper(btrim(d.dosprocessaddress1)) AND a.z = left(btrim(coalesce(d.dosprocesszip, '')), 5)
+GROUP BY 1, 2
+"""
 CONSTRAINTS = [
     "CREATE CONSTRAINT dos_entity_id_unique IF NOT EXISTS FOR (e:DosEntity) REQUIRE e.dosId IS UNIQUE",
     "CREATE INDEX dos_entity_name_key IF NOT EXISTS FOR (e:DosEntity) ON (e.nameKey)",
 ]
 GRAPH_NAMES = """
-CALL () { MATCH (c:OwnerContact {contactType: 'CorporateOwner'}) WHERE c.name IS NOT NULL RETURN collect(DISTINCT c.name) AS a }
+CALL () { MATCH (c:Contact {contactType: 'CorporateOwner'}) WHERE c.corporationName IS NOT NULL RETURN collect(DISTINCT c.corporationName) AS a }
 CALL () { MATCH (g:Grantee) WHERE g.name IS NOT NULL RETURN collect(DISTINCT g.name) AS b }
 RETURN a + b AS names
 """
@@ -52,7 +58,7 @@ UNWIND $rows AS row
 MERGE (e:DosEntity {dosId: row.id})
 SET e.name = row.name, e.nameKey = row.key, e.entityType = row.type, e.jurisdiction = row.jur, e.filingDate = date(row.filed),
     e.processName = row.pname, e.processAddress = row.paddr, e.processAddressLine2 = row.paddr2, e.processCity = row.pcity,
-    e.processState = row.pstate, e.processZip = row.pzip,
+    e.processState = row.pstate, e.processZip = row.pzip, e.processAddressEntities = row.hub,
     e.agentName = row.aname, e.agentAddress = row.aaddr, e.agentAddressLine2 = row.aaddr2, e.agentCity = row.acity,
     e.agentState = row.astate, e.agentZip = row.azip
 RETURN count(*) AS loaded
@@ -97,12 +103,21 @@ def main() -> int:
                 staged = [i for i, nm in scan if n3(nm) in keys]
             print(f"  matching DOS records: {len(staged):,} ({time.time() - started:.0f}s)", flush=True)
             with pg.cursor() as cur:
+                records = []
                 for i in range(0, len(staged), CHUNK):
                     cur.execute(RECORDS_SQL, {"ids": staged[i:i + CHUNK]})
+                    records += cur.fetchall()
+                addrs = sorted({(r[6].upper(), (r[10] or "")[:5]) for r in records if r[6]})
+                cur.execute("SET statement_timeout = 0")
+                cur.execute(HUB_SQL, {"streets": [a for a, _ in addrs], "zips": [z for _, z in addrs]})
+                hub = {(s, z): n for s, z, n in cur.fetchall()}
+                print(f"  process addresses hub-counted: {len(addrs):,} ({time.time() - started:.0f}s)", flush=True)
+                for i in range(0, len(records), CHUNK):
                     rows = [{"id": r[0], "name": r[1], "key": n3(r[1]), "type": r[2], "jur": r[3], "filed": r[4].isoformat(),
                              "pname": r[5], "paddr": r[6], "paddr2": r[7], "pcity": r[8], "pstate": r[9], "pzip": r[10],
-                             "aname": r[11], "aaddr": r[12], "aaddr2": r[13], "acity": r[14], "astate": r[15], "azip": r[16]}
-                            for r in cur.fetchall()]
+                             "aname": r[11], "aaddr": r[12], "aaddr2": r[13], "acity": r[14], "astate": r[15], "azip": r[16],
+                             "hub": hub.get((r[6].upper(), (r[10] or "")[:5])) if r[6] else None}
+                            for r in records[i:i + CHUNK]]
                     loaded += session.execute_write(lambda tx, b=rows: tx.run(LOAD, rows=b).single()["loaded"])
         g = session.run(COUNTS).single()
     print(f"staged: DOS records {len(staged):,}")

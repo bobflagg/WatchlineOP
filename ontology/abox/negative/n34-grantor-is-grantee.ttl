@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: Grantor and Grantee are disjoint. The same name on both sides of a deed is two party nodes, never one.
+id:bad-party-2 a onto:Grantor, onto:Grantee .

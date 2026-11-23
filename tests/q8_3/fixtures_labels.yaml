@@ -1,0 +1,15 @@
+# Q8.3 expected landlord names, business addresses and group anchors (BOR release v0.3.0, run 2026-05-29-869bd299).
+# check_labels.py re-derives each from node_names, node_observations, observation_contacts and groups, so a stale fixture fails.
+landlords:
+  - {nodeId: 98617, name: SAHIT HADZOVIC, businessAddresses: ["300 EAST 2ND STREET D, BROOKLYN, NY 11218"], note: "anchor C: one address"}
+  - {nodeId: 98618, name: SAHIT HADZOVIC, businessAddresses: ["300 EAST SECOND STREET D, BROOKLYN, NY 11218", "300 EAST SECOND STREET D, Brooklyn, NY 11218"], note: "two spellings of one address stay two values"}
+  - {nodeId: 98619, name: SAHIT HADZOVIC, businessAddresses: ["300 EAST SECOND STREET, BROOKLYn, NY 11218"], note: "a third spelling"}
+anchors:
+  - {layer: operational_network, groupId: ON-98617, anchor: 98618, name: SAHIT HADZOVIC, note: "98618 covers three of the five lots"}
+  - {layer: owner_portfolio, groupId: OP-98617, anchor: 98618, name: SAHIT HADZOVIC}
+  - {layer: operational_network, groupId: ON-675, anchor: 24258, name: DANIEL BROWNSTEIN, note: "a Louvain community"}
+  - {layer: owner_portfolio, groupId: OP-53559, anchor: 53559, name: JENNIFER LAU}
+totals:
+  landlords: 31035
+  with_address: 30940
+  anchors: {operational_network: 9673, owner_portfolio: 6523}

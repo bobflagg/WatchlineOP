@@ -57,7 +57,7 @@ graph:
       key: partyKey
       scope: >-
         One Grantee per distinct party row of partytype 2 on a loaded Deed (same document, name, street line, second line and ZIP are one).
-        Grantors are not loaded (1520638 grantees, queried 2026-11-12).
+        Grantors are loaded by Q12 (1520638 grantees, queried 2026-11-12).
       proved_by: tests/q3_2/expected.sql
       properties:
         partyKey:
@@ -96,10 +96,10 @@ graph:
           null_policy: "absent when blank"
           proved_by: tests/q3_2/expected.sql
 
-    OwnerContact:   # properties Q3 adds to the Q2 node
-      concept: owner-contact
+    Contact:   # properties Q3 adds to the Q2 node
+      concept: contact
       key: contactKey
-      scope: Same nodes as Q2; Q3.5 adds the contact's mailing address.
+      scope: Same nodes as Q2; Q3.5 adds the contact's business address, for contacts of every type (Q4.2 reads it for the role types).
       proved_by: tests/q3_5/expected.sql
       properties:
         mailingAddress:
@@ -164,12 +164,12 @@ answer:
   Q3.3:
     lookup: tests/q3_3/lookup.cypher
     fields:
-      owners: {concept: owner-contact, source: "Lot-[:HAS_BUILDING]->Building-[:HAS_REGISTRATION]->Registration-[:HAS_OWNER_CONTACT]->OwnerContact", type: "list of {registrationId, name, mailingAddress, addressLine2, zip}", null_policy: "empty list means no owner contact is recorded; none is chosen"}
+      owners: {concept: owner-contact, source: "Lot-[:HAS_BUILDING]->Building-[:HAS_REGISTRATION]->Registration-[:HAS_CONTACT]->Contact with an owner type", type: "list of {registrationId, corporationName, personName, mailingAddress, addressLine2, zip}", null_policy: "empty list means no owner contact is recorded; none is chosen"}
     note: "Answered by Q2.2 through the lot's buildings; no new graph element."
   Q3.4:
     lookup: tests/q3_4/lookup.cypher
     fields:
-      nameAgreement: {concept: name-agreement, source: "derived: src/watchline/compare.py name_agreement(Grantee.name, OwnerContact.name)", type: "list of {grantee, owner, outcome, rule}", allowed_scheme: name-agreement-outcomes, allowed: [exact-normalized, normalization-match, different, not-comparable], counting_unit: "one entry per grantee and owner pair", null_policy: "rule is N1 or N2 for a match, absent otherwise. Not a finding of the same party"}
+      nameAgreement: {concept: name-agreement, source: "derived: src/watchline/compare.py name_agreement(Grantee.name, the owner contact's corporationName or personName)", type: "list of {grantee, owner, outcome, rule}", allowed_scheme: name-agreement-outcomes, allowed: [exact-normalized, normalization-match, different, not-comparable], counting_unit: "one entry per grantee and owner pair", null_policy: "rule is N1 or N2 for a match, absent otherwise. Not a finding of the same party"}
       rule:          {concept: comparison-rule, source: "derived: compare.py", type: string, allowed: [N1, N2, A1]}
   Q3.5:
     lookup: tests/q3_5/lookup.cypher
@@ -184,7 +184,7 @@ not_stored:   # deliberately absent from the graph
   - {term: address agreement, reason: computed at answer time (Q3.5)}
   - {term: comparison rule, reason: tool output (src/watchline/compare.py)}
   - {term: snapshots (answer field), reason: dataset-level provenance in data/sources.yaml (ACRIS 2026-05-31, HPD 2026-05-29); no per-record evidence fields yet}
-  - {term: grantors (partytype 1), reason: out of scope; decision 2026-11-12}
+  - {term: grantors (partytype 1), reason: out of scope for Q3 (decision 2026-11-12); loaded by Q12, see profiles/q12.yaml}
   - {term: other party types and document types, reason: not needed until a later question}
   - {term: crfn, reel and page, pcttransferred, reason: not needed for Q3}
   - {term: mail-drop flag, reason: no curated list exists (open point)}

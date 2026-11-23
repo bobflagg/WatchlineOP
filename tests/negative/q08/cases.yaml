@@ -1,0 +1,101 @@
+# Same format as tests/negative/q05/cases.yaml: bad data inside a transaction that is always rolled back.
+cases:
+- name: network id with wrong format
+  create: 'CREATE (:OperationalNetwork {groupId: ''X-1'', split: ''wcc''})'
+  rule: OperationalNetworkShape.groupId.pattern
+- name: network id as number
+  create: 'CREATE (:OperationalNetwork {groupId: 5, split: ''wcc''})'
+  rule: OperationalNetworkShape.groupId.datatype
+- name: network without id
+  create: 'CREATE (:OperationalNetwork {split: ''wcc''})'
+  rule: OperationalNetworkShape.groupId.minCount
+- name: network without split
+  create: 'CREATE (:OperationalNetwork {groupId: ''ON-999999999''})'
+  rule: OperationalNetworkShape.networkSplit.minCount
+- name: network split outside the two codes
+  create: 'CREATE (:OperationalNetwork {groupId: ''ON-999999999'', split: ''component''})'
+  rule: OperationalNetworkShape.networkSplit.in
+- name: network with one member lot
+  create: 'CREATE (n:OperationalNetwork {groupId: ''ON-999999999'', split: ''wcc''}) WITH n MATCH (l:Lot) WHERE NOT (l)-[:IN_NETWORK]->() WITH n, l LIMIT 1 CREATE (l)-[:IN_NETWORK]->(n)'
+  rule: OperationalNetworkShape.inv_inNetwork.minCount
+- name: lot in two networks
+  create: 'MATCH (l:Lot)-[:IN_NETWORK]->(:OperationalNetwork) WITH l LIMIT 1 CREATE (l)-[:IN_NETWORK]->(:OperationalNetwork {groupId: ''ON-999999998'', split: ''wcc''})'
+  rule: LotNetworkShape.inNetwork.maxCount
+- name: top-level absence outside the five codes
+  create: MATCH (l:Lot) WHERE NOT (l)-[:IN_NETWORK]->() WITH l LIMIT 1 SET l.networkAbsence = 'unknown'
+  rule: LotNetworkShape.networkAbsence.in
+- name: absence detail outside the eleven codes
+  create: MATCH (l:Lot) WHERE NOT (l)-[:IN_NETWORK]->() WITH l LIMIT 1 SET l.networkAbsenceDetail = 'unknown'
+  rule: LotNetworkShape.networkAbsenceDetail.in
+- name: detail without a top-level reason
+  create: MATCH (l:Lot) WHERE NOT (l)-[:IN_NETWORK]->() AND l.networkAbsence IS NULL WITH l LIMIT 1 SET l.networkAbsenceDetail = 'no_linkage'
+  check: queries/checks/q08-absence.cypher
+- name: absence reason on a lot in a network
+  create: MATCH (l:Lot)-[:IN_NETWORK]->(:OperationalNetwork) WITH l LIMIT 1 SET l.networkAbsence = 'no_qualifying_linkage', l.networkAbsenceDetail = 'no_linkage'
+  check: queries/checks/q08-absence.cypher
+- name: detail under the wrong top-level reason
+  create: MATCH (l:Lot) WHERE NOT (l)-[:IN_NETWORK]->() WITH l LIMIT 1 SET l.networkAbsence = 'excluded_by_policy', l.networkAbsenceDetail = 'no_linkage'
+  check: queries/checks/q08-absence.cypher
+- name: duplicate network id
+  create: 'MATCH (n:OperationalNetwork) WITH n LIMIT 1 CREATE (:OperationalNetwork {groupId: n.groupId})'
+  error: constraint
+- name: duplicate landlord id
+  create: 'MATCH (a:Landlord) WITH a LIMIT 1 CREATE (:Landlord {nodeId: a.nodeId})'
+  error: constraint
+- name: covers without a registration id
+  create: MATCH (a:Landlord) WITH a LIMIT 1 MATCH (l:Lot) WHERE NOT (l)-[:IN_NETWORK]->() WITH a, l LIMIT 1 CREATE (a)-[:COVERS]->(l)
+  check: queries/checks/q08-covers.cypher
+- name: covers with a registration id as text
+  create: MATCH (a:Landlord)-[c:COVERS]->(:Lot) WITH c LIMIT 1 SET c.registrationId = 'x'
+  check: queries/checks/q08-covers.cypher
+- name: lot in a network that no landlord covers
+  create: MATCH (:Landlord)-[c:COVERS]->(:Lot)-[:IN_NETWORK]->(:OperationalNetwork) WITH c LIMIT 1 DELETE c
+  check: queries/checks/q08-covers.cypher
+- name: landlord covering a lot of another network
+  create: 'MATCH (a:Landlord)-[:COVERS]->(:Lot)-[:IN_NETWORK]->(:OperationalNetwork) WITH DISTINCT a LIMIT 1 MATCH (l:Lot)-[:IN_NETWORK]->(n:OperationalNetwork) WHERE NOT (a)-[:COVERS]->(:Lot)-[:IN_NETWORK]->(n) WITH a, l LIMIT 1 CREATE (a)-[:COVERS {registrationId: 1}]->(l)'
+  check: queries/checks/q08-covers.cypher
+- name: link from a landlord to itself
+  create: 'MATCH (a:Landlord) WITH a LIMIT 1 CREATE (a)-[:CONNECTED_BY_NAME {networkEdgeId: ''GE9999999'', weight: 1.0}]->(a)'
+  check: queries/checks/q08-links.cypher
+- name: link with the higher landlord id first
+  create: 'MATCH (a:Landlord)-[:COVERS]->(:Lot)-[:IN_NETWORK]->(n:OperationalNetwork)<-[:IN_NETWORK]-(:Lot)<-[:COVERS]-(b:Landlord) WHERE a.nodeId < b.nodeId AND NOT (a)-[:CONNECTED_BY_NAME|CONNECTED_BY_ADDRESS|CONNECTED_BY_IDENTITY]-(b) WITH a, b, n LIMIT 1 CREATE (b)-[:CONNECTED_BY_NAME {networkEdgeId: ''GE9999999'', weight: 1.0, networkGroupId: n.groupId}]->(a)'
+  check: queries/checks/q08-links.cypher
+- name: name link without an edge id
+  create: 'MATCH (a:Landlord)-[:COVERS]->(:Lot)-[:IN_NETWORK]->(n:OperationalNetwork)<-[:IN_NETWORK]-(:Lot)<-[:COVERS]-(b:Landlord) WHERE a.nodeId < b.nodeId AND NOT (a)-[:CONNECTED_BY_NAME|CONNECTED_BY_ADDRESS|CONNECTED_BY_IDENTITY]-(b) WITH a, b, n LIMIT 1 CREATE (a)-[:CONNECTED_BY_NAME {weight: 1.0, networkGroupId: n.groupId}]->(b)'
+  check: queries/checks/q08-links.cypher
+- name: address link with a weight of zero
+  create: 'MATCH (a:Landlord)-[:COVERS]->(:Lot)-[:IN_NETWORK]->(n:OperationalNetwork)<-[:IN_NETWORK]-(:Lot)<-[:COVERS]-(b:Landlord) WHERE a.nodeId < b.nodeId AND NOT (a)-[:CONNECTED_BY_NAME|CONNECTED_BY_ADDRESS|CONNECTED_BY_IDENTITY]-(b) WITH a, b, n LIMIT 1 CREATE (a)-[:CONNECTED_BY_ADDRESS {networkEdgeId: ''GE9999999'', weight: 0.0, networkGroupId: n.groupId}]->(b)'
+  check: queries/checks/q08-links.cypher
+- name: identity link with a weight other than 100
+  create: 'MATCH (a:Landlord)-[:COVERS]->(:Lot)-[:IN_NETWORK]->(n:OperationalNetwork)<-[:IN_NETWORK]-(:Lot)<-[:COVERS]-(b:Landlord) WHERE a.nodeId < b.nodeId AND NOT (a)-[:CONNECTED_BY_NAME|CONNECTED_BY_ADDRESS|CONNECTED_BY_IDENTITY]-(b) WITH a, b, n LIMIT 1 CREATE (a)-[:CONNECTED_BY_IDENTITY {networkEdgeId: ''GE9999999'', weight: 2.0, networkGroupId: n.groupId}]->(b)'
+  check: queries/checks/q08-links.cypher
+- name: link inside a network with no group id
+  create: 'MATCH (a:Landlord)-[:COVERS]->(:Lot)-[:IN_NETWORK]->(n:OperationalNetwork)<-[:IN_NETWORK]-(:Lot)<-[:COVERS]-(b:Landlord) WHERE a.nodeId < b.nodeId AND NOT (a)-[:CONNECTED_BY_NAME|CONNECTED_BY_ADDRESS|CONNECTED_BY_IDENTITY]-(b) WITH a, b, n LIMIT 1 CREATE (a)-[:CONNECTED_BY_NAME {networkEdgeId: ''GE9999999'', weight: 1.0}]->(b)'
+  check: queries/checks/q08-links.cypher
+- name: network with no link inside it
+  create: 'MATCH (l:Lot) WHERE NOT (l)-[:IN_NETWORK]->() WITH l LIMIT 2 WITH collect(l) AS ls CREATE (n:OperationalNetwork {groupId: ''ON-999999999'', split: ''wcc''}) WITH n, ls UNWIND ls AS l CREATE (l)-[:IN_NETWORK]->(n)'
+  check: queries/checks/q08-links.cypher
+- name: landlord without a name
+  create: 'CREATE (:Landlord {nodeId: -1})'
+  rule: LandlordShape.landlordName.minCount
+- name: landlord with a blank name
+  create: 'CREATE (:Landlord {nodeId: -1, name: ''''})'
+  rule: LandlordShape.landlordName.minLength
+- name: landlord name as number
+  create: 'CREATE (:Landlord {nodeId: -1, name: 5})'
+  rule: LandlordShape.landlordName.datatype
+- name: landlord with an empty address list
+  create: 'CREATE (:Landlord {nodeId: -1, name: ''A NAME'', businessAddresses: []})'
+  check: queries/checks/q08-labels.cypher
+- name: landlord with unsorted addresses
+  create: 'CREATE (:Landlord {nodeId: -1, name: ''A NAME'', businessAddresses: [''2 B STREET'', ''1 A STREET'']})'
+  check: queries/checks/q08-labels.cypher
+- name: network with no anchor
+  create: 'CREATE (:OperationalNetwork {groupId: ''ON-999999998'', split: ''wcc''})'
+  check: queries/checks/q08-labels.cypher
+- name: portfolio with two anchors
+  create: 'MATCH (p:OwnerPortfolio)-[:ANCHORED_BY]->(a:Landlord) WITH p, a LIMIT 1 MATCH (b:Landlord) WHERE b <> a WITH p, b LIMIT 1 CREATE (p)-[:ANCHORED_BY]->(b)'
+  check: queries/checks/q08-labels.cypher
+- name: BASED_ON_CONTACT ends on a registration
+  create: 'MATCH (a:Landlord) WITH a LIMIT 1 MATCH (r:Registration) WITH a, r LIMIT 1 CREATE (a)-[:BASED_ON_CONTACT]->(r)'
+  rule: LandlordShape.basedOnContact.class

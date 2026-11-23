@@ -1,0 +1,32 @@
+# Q27.1 fixtures. hpd_complaints_and_problems (data through 2026-07-07) and hpd_registrations (frozen baseline, data/README.md).
+# check_problems.py re-derives each from the source, so a stale fixture fails. Counting unit: problem records.
+buildings:
+  - bin: "3013901"
+    label: "anchor C (438 52 Street), 2023 to 2025: 27 problems (EMERGENCY 12, IMMEDIATE EMERGENCY 2, NON EMERGENCY 13), none open, 1 flagged duplicate"
+    start: "2023-01-01"
+    end: "2025-12-31"
+    by_type: {"EMERGENCY": 12, "IMMEDIATE EMERGENCY": 2, "NON EMERGENCY": 13}
+    open: 0
+    duplicates: 1
+  - bin: "3013901"
+    label: "anchor C, period before the loaded window: only 2021 onward is loaded, so the 2021-onward part equals the source"
+    start: "2019-01-01"
+    end: "2025-12-31"
+    derived: true
+  - bin: "3014788"
+    label: "anchor A (5413 7 Avenue): derived from the source; counts are re-derived, not fixed here"
+    start: "2021-01-01"
+    end: "2026-12-31"
+    derived: true
+  - bin: "3324448"
+    label: "anchor D building on a three-building lot: problems belong to the BIN, not the lot"
+    start: "2021-01-01"
+    end: "2026-12-31"
+    derived: true
+excluded:
+  # problems since 2021-01-01 on registered lots that carry no usable BIN, or a BIN that is not a registered building: excluded and counted
+  rows: 27561
+totals:
+  loaded: 4033827
+  open: 26221
+  duplicates: 682192

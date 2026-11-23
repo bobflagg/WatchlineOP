@@ -1,0 +1,13 @@
+# Q9.4 expected comparison of a lot's Owner Portfolio footprint with its Operational Network (BOR release v0.3.0, run 2026-05-29-869bd299).
+# check_compare.py re-derives each from the release (group_bbls.csv, rental lots only), so a stale fixture fails.
+lots:
+  - {bbl: "3008210012", portfolioId: OP-53559, networkId: ON-18742, portfolioLots: 33, networkLots: 35, inBoth: 33, portfolioOnly: [], networkOnly: ["3031990043", "3033190036"], note: "anchor D: 33 lots in the portfolio, 35 in the network"}
+  - {bbl: "3008070024", portfolioId: OP-98617, networkId: ON-98617, portfolioLots: 5, networkLots: 5, inBoth: 5, portfolioOnly: [], networkOnly: [], note: "anchor C: the same five lots"}
+  - {bbl: "1012120025", portfolioId: OP-84986, networkId: ON-675, portfolioLots: 6, networkLots: 27, inBoth: 6, portfolioOnly: [], networkOnly_count: 21, note: "a Louvain community far larger than the portfolio"}
+  - {bbl: "1000050010", portfolioId: null, networkId: ON-2792, portfolioLots: 0, networkLots: 98, inBoth: 0, portfolioOnly: [], networkOnly_count: 98, note: "in a network, in no portfolio"}
+  - {bbl: "1003490020", portfolioId: OP-34557, networkId: null, portfolioLots: 23, networkLots: 0, inBoth: 0, portfolioOnly_count: 23, networkOnly: [], note: "in a portfolio, in no network"}
+  - {bbl: "3008260002", portfolioId: null, networkId: null, portfolioLots: 0, networkLots: 0, inBoth: 0, portfolioOnly: [], networkOnly: [], note: "anchor A: in neither"}
+totals:   # rental lots of the two layers in the release
+  in_both: 43149
+  portfolio_only: 169
+  network_only: 28107

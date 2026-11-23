@@ -1,0 +1,110 @@
+# Question schema: Q15 "Open violations of a building": counts by class and status with the oldest open inspection date, and the rate of open
+# violations per residential unit (sub-questions Q15.1 and Q15.2), and the pest violations of a building (Q15.3, extension of 2026-11-21).
+# Adds one node, Violation, and one relationship, HAS_VIOLATION (Building to Violation), loaded by scripts/load_violations.py (decision 2026-11-18).
+# Counts, the oldest open date, the rate and the pest kind are computed at answer time, not stored. The apartment is never loaded.
+# Extension (2026-11-21): one property, orderNumber, on Violation; the pest kind is read from data/hpd_pest_orders.yaml, not stored.
+question: Q15
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [hpd_violations, hpd_registrations, pluto]
+
+graph:
+  constraints:
+    - {name: violation_id_unique, label: Violation, property: violationId, kind: unique}
+
+  nodes:
+    Violation:
+      concept: violation
+      key: violationId
+      scope: >-
+        One Violation per hpd_violations row whose BBL is in hpd_registrations and whose BIN is a Building in the graph (valid, registered BIN).
+        1,912,362 violations are on registered lots (471,058 open); 1,901,592 load; 10,770 are excluded and counted (3,540 with no usable BIN, 7,230
+        with a BIN that is not a registered building). Queried 2026-11-18; data through 2026-07-02. Counting unit: distinct violations.
+      proved_by: tests/q15_1/expected.sql
+      properties:
+        violationId:
+          concept: violation-id
+          type: integer
+          source: hpd_violations.violationid
+          rule: Identity. Unique in the source.
+          null_policy: never absent
+        violationClass:
+          concept: violation-class
+          type: string
+          source: hpd_violations.class
+          allowed: [A, B, C, I]
+          rule: As the inspector classed it. Classes are counted, never added into a severity score.
+          null_policy: never absent (no registered-lot row lacks a class)
+        status:
+          concept: violation-status
+          type: string
+          source: hpd_violations.violationstatus
+          allowed: [Open, Close]
+          rule: As HPD records at the snapshot. 'Close' covers closed and dismissed; finer status is not stored.
+          null_policy: never absent (no registered-lot row lacks a status)
+        inspectionDate:
+          concept: inspection-date
+          type: date
+          source: hpd_violations.inspectiondate
+          rule: As recorded. Not the notice or entry date.
+          null_policy: never absent (no registered-lot row lacks one)
+        orderNumber:
+          concept: order-number
+          type: string
+          source: hpd_violations.ordernumber
+          proved_by: tests/q15_3/expected.sql
+          rule: HPD's order number as recorded, text, numeric, no leading zero. Not converted to an integer. Eight codes cite a pest infestation (data/hpd_pest_orders.yaml); the kind is read from that list at answer time and is not stored.
+          null_policy: never absent (no loaded row lacks one; 4 source rows lack one, none on a registered lot)
+      # not stored: apartment, description, pest kind, story, notice, status detail, dates other than inspection, location
+
+  relationships:
+    HAS_VIOLATION:
+      concept: has-violation
+      from: Building
+      to: Violation
+      source: hpd_violations.bin, hpd_violations.violationid
+      rule: >-
+        One per loaded violation, from the Building whose BIN the violation records. Violations belong to the building, not the lot; a lot's
+        violations are those of its buildings.
+      proved_by: tests/q15_1/expected.sql
+
+answer:
+  Q15.1:
+    lookup: tests/q15_1/lookup.cypher
+    fields:
+      violationClass:    {concept: violation-class, source: Violation.violationClass, type: string, allowed: [A, B, C, I], null_policy: "absent only on the empty row of a building with no violation"}
+      status:            {concept: violation-status, source: Violation.status, type: string, allowed: [Open, Close], null_policy: "open at the snapshot date (data through 2026-07-02); absent only on the empty row of a building with no violation"}
+      violations:        {concept: violation, source: "derived: count of Violations of the building per class and status", type: integer, counting_unit: "distinct violations", null_policy: "0 on the empty row; zero violations is not evidence of good conditions"}
+      oldestInspection:  {concept: inspection-date, source: "derived: earliest Violation.inspectionDate per class and status; the answer takes it over the Open rows", type: date, null_policy: "absent when the building has no violation of that class and status; the age of an open violation is measured from the oldest open inspection date"}
+    note: "A violation is what an inspector cited, not a measure of conditions. An empty result means no violation in the snapshot for this building, or a BIN outside the registered scope (10,770 violations are excluded and counted). The answer names the snapshot date and the counting unit."
+  Q15.2:
+    lookup: tests/q15_2/lookup.cypher
+    fields:
+      bbl:             {concept: bbl, source: Lot.bbl, type: string, null_policy: "one row per lot the building sits on; never summed across lots"}
+      unitsRes:        {concept: residential-units, source: Lot.unitsRes, type: integer, counting_unit: "residential units, whole lot (PLUTO)", null_policy: "absent when PLUTO has no value or the lot is not in PLUTO; 0 means PLUTO records none"}
+      openViolations:  {concept: violation, source: "derived: count of the building's Violations with status Open", type: integer, counting_unit: "distinct violations", null_policy: "never absent; 0 when none is open"}
+      rate:            {concept: open-violation-rate, source: "derived: openViolations / unitsRes", type: float, counting_unit: "open violations per residential unit", null_policy: "absent (rate unavailable) when unitsRes is absent or 0; never 0 or infinity"}
+    note: "The rate uses PLUTO residential units, which are lot-wide, so a building on a larger lot is diluted. The answer states the numerator, the unit count and the unit count's source (PLUTO 26v1)."
+
+  Q15.3:
+    lookup: tests/q15_3/lookup.cypher
+    recorded: data/hpd_pest_orders.yaml
+    fields:
+      orderNumber:      {concept: order-number, source: Violation.orderNumber, type: string, allowed: "the pest order codes in data/hpd_pest_orders.yaml (566, 567, 568, 569, 866, 867, 868, 869)", null_policy: "absent only on the empty row of a building with no pest violation"}
+      pestKind:         {concept: pest-violation, source: "derived: the kind of the order code in data/hpd_pest_orders.yaml", type: string, allowed: [mice, roaches, rodents, vermin-unspecified], null_policy: "absent only on the empty row; 566 and 866 are vermin-unspecified, never mice"}
+      status:           {concept: violation-status, source: Violation.status, type: string, allowed: [Open, Close], null_policy: "open at the snapshot date (data through 2026-07-02); absent only on the empty row"}
+      violations:       {concept: pest-violation, source: "derived: count of the building's Violations per order code and status", type: integer, counting_unit: "distinct violations", null_policy: "0 on the empty row; zero pest violations is not evidence of no pests"}
+      oldestInspection: {concept: inspection-date, source: "derived: earliest Violation.inspectionDate per order code and status; the answer takes it over the Open rows", type: date, null_policy: "absent when the building has no pest violation of that code and status"}
+    note: "A pest violation is an inspector's citation of an infestation, not a count of pests or of apartments. Only codes 569 and 869 say mice; 566 and 866 say vermin and are reported as unspecified. The answer names the snapshot date, the counting unit and the order codes behind each kind. HPD complaints (Q27) are tenant reports and are not pest violations."
+
+diagnostics: []
+
+not_stored:   # deliberately absent from the graph
+  - {term: pest kind (mice, roaches, rodents, vermin-unspecified), reason: "computed at answer time from orderNumber and data/hpd_pest_orders.yaml, so a wrong mapping is fixed in one file"}
+  - {term: violation description (novdescription), reason: "names apartments; the order number suffices"}
+  - {term: apartment, reason: "source column not returned or loaded (tenant privacy and relevance); only the building is the unit"}
+  - {term: violation counts by class and status, reason: computed from the Violations at answer time}
+  - {term: oldest open inspection date, reason: computed at answer time}
+  - {term: open violation rate, reason: "computed from the open count and the lot's PLUTO units; answer contract"}
+  - {term: finer HPD status, notice, certification and correction dates, reason: "not needed to answer; 'Close' covers closed and dismissed"}
+  - {term: excluded violations (no usable or unregistered BIN), reason: "10,770 rows are counted by the loader and the test, not stored"}

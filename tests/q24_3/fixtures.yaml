@@ -1,0 +1,8 @@
+# Q24.3 fixtures: near-match leads for an entity name (rule N3 key and its legal-suffix core). check_near.py re-derives the HPD candidates from the source
+# and classifies every candidate with compare.entity_name_comparison plus one Q24 kind, legal-suffix-only (same core, a legal-form word added or removed; compare calls that `different`). Near-matches are leads, never matches.
+names:
+  - {name: "BRIGHTON MANAGEMENT LLC", core: "BRIGHTON MANAGEMENT", expect: [{nameKey: "BRIGHTON MANAGEMENT", outcome: legal-suffix-only, rule: core}], note: "a legal suffix: the agent name without LLC is a lead (legal-suffix-only, same core)"}
+  - {name: "BRIGHTON MANAGEMENT", core: "BRIGHTON MANAGEMENT", expect: [{nameKey: "BRIGHTON MANAGEMENT LLC", outcome: legal-suffix-only, rule: core}], note: "the reverse direction"}
+  - {name: "702 PLAZA LLC", core: "702 PLAZA", note: "longer names that start with the core are returned and classified by compare; counts come from the source"}
+not_found:
+  - {name: "BRIGHTON MANAGMENT", core: "BRIGHTON MANAGMENT", missing: "BRIGHTON MANAGEMENT", note: "a misspelling is not found by prefix: a documented limit, reported as 'no near-match found', never as 'no such record'"}

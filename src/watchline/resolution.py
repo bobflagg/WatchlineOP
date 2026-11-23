@@ -9,13 +9,17 @@ Geosupport decides the outcome. The graph only says whether the BBL it returned 
 which other Lots share its BIN (relatedLots, for example the second lot of a condominium building).
 """
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from enum import StrEnum
 from typing import Protocol
 
 from neo4j import Driver, RoutingControl
 
-from .geosupport import Client, Outcome, Result
+from pathlib import Path
+
+import yaml
+
+from .geosupport import Client, Outcome, Result, clean, street_key
 
 
 class Match(StrEnum):
@@ -79,6 +83,7 @@ class Answer:
     message: str | None = None
     tried: tuple[str, ...] = ()             # every spelling sent to Geosupport
     inferred: bool = False                  # the lot came from a respelled address, not the one typed
+    borough_inferred_from: str | None = None  # resolve_text: the neighborhood the borough was taken from (never exact)
 
 
 def resolve_address(client: Client, graph: Graph, house: str, street: str, *,
@@ -93,3 +98,99 @@ def resolve_address(client: Client, graph: Graph, house: str, street: str, *,
     return Answer(input=f"{house} {street}", outcome=outcome, bbl=result.bbl, bin=result.bin, in_graph=in_graph,
                   related_lots=related, candidates=result.candidates, grc=result.grc, message=result.message,
                   tried=tuple(tried), inferred=result.inferred)
+
+
+# ---- an address typed as one string ------------------------------------------------------------------------------
+
+class BoroughRequired(ValueError):
+    """The text names no borough or ZIP, and none was given. Geosupport needs one: ask, never guess."""
+
+
+_BOROUGHS = {"MANHATTAN": "Manhattan", "BROOKLYN": "Brooklyn", "QUEENS": "Queens", "BRONX": "Bronx", "THE BRONX": "Bronx",
+             "STATEN ISLAND": "Staten Island", "NEW YORK": "Manhattan"}  # "New York" only as a comma part, never trailing text
+_HOUSE = re.compile(r"^\d+[A-Za-z]?(?:-\d+[A-Za-z]?)?$")  # 218, 5413A, Queens 37-20
+_ZIP = re.compile(r"^(?:NY\s+)?(\d{5})(?:-\d{4})?$|^NY$", re.I)
+
+
+@dataclass(frozen=True)
+class Parsed:
+    house: str
+    street: str
+    borough: str | None = None
+    zip5: str | None = None
+    locality: tuple[str, ...] = ()   # comma parts that are neither borough nor ZIP, e.g. a neighborhood; never used to look up
+
+
+def parse_address(text: str) -> Parsed:
+    """Split 'house street[, locality][, borough][, NY zip]' (or a trailing borough or ZIP without commas). Pure.
+    A neighborhood is kept as `locality` and not turned into a borough. Raises ValueError when no house number leads."""
+    first, *rest = [clean("", part)[1] for part in text.split(",")]  # per part: units, periods and non-ASCII handled
+    borough = zip5 = None
+    locality: list[str] = []
+    for part in rest:
+        m = _ZIP.match(part)
+        if m:
+            zip5 = m.group(1) or zip5
+        elif part.upper() in _BOROUGHS:
+            borough = _BOROUGHS[part.upper()]
+        elif part:
+            locality.append(part)
+    tokens = first.split()
+    if not rest:  # no commas: take a trailing ZIP, then a trailing borough, but never the whole street
+        if len(tokens) > 2 and re.fullmatch(r"\d{5}", tokens[-1]):
+            zip5 = tokens.pop()
+        for name in sorted(_BOROUGHS, key=len, reverse=True):
+            n = name.split()
+            if name != "NEW YORK" and len(tokens) > len(n) + 1 and [t.upper() for t in tokens[-len(n):]] == n:
+                borough = _BOROUGHS[name]
+                tokens = tokens[:-len(n)]
+                break
+    if len(tokens) < 2 or not _HOUSE.match(tokens[0]):
+        raise ValueError(f"no house number and street in {text!r}")
+    return Parsed(tokens[0], " ".join(tokens[1:]), borough, zip5, tuple(locality))
+
+
+_NEIGHBORHOODS: dict[str, set[str]] | None = None
+
+
+def boroughs_of(name: str) -> set[str]:
+    """Boroughs that list this neighborhood in data/neighborhoods.yaml (curated). Empty set when unknown."""
+    global _NEIGHBORHOODS
+    if _NEIGHBORHOODS is None:
+        table = yaml.safe_load((Path(__file__).resolve().parents[2] / "data" / "neighborhoods.yaml").read_text())
+        _NEIGHBORHOODS = {}
+        for borough, names in table.items():
+            for n in names:
+                _NEIGHBORHOODS.setdefault(street_key(n), set()).add(borough)
+    return _NEIGHBORHOODS.get(street_key(name), set())
+
+
+def resolve_text(client: Client, graph: Graph, text: str, *, borough: str | None = None, zip5: str | None = None) -> Answer:
+    """Resolve an address typed as one string.
+
+    Borough order: the argument, the text, then a neighborhood in the text (data/neighborhoods.yaml, curated). A neighborhood
+    is used only when it names exactly one borough; the answer then says so (`borough_inferred_from`) and is never `exact`.
+    Raises ValueError when borough, ZIP or neighborhood disagree, and BoroughRequired when no single borough or ZIP results
+    (none given, an unknown neighborhood, or one that spans boroughs): ask, never guess."""
+    p = parse_address(text)
+    for given, found, what in ((borough, p.borough, "borough"), (zip5, p.zip5, "ZIP")):
+        if given and found and _norm(given) != _norm(found):
+            raise ValueError(f"{what} {given!r} given, but the text says {found!r}")
+    borough, zip5 = borough or p.borough, zip5 or p.zip5
+    hood = None
+    if not zip5:
+        hoods = {n: boroughs_of(n) for n in p.locality if boroughs_of(n)}
+        if borough and hoods and not any(_norm(borough) in {_norm(b) for b in bs} for bs in hoods.values()):
+            raise ValueError(f"borough {borough!r}, but {', '.join(hoods)} is in {sorted(set().union(*hoods.values()))}")
+        if not borough and hoods:
+            found = set().union(*hoods.values())
+            if len(found) == 1:
+                borough, hood = next(iter(found)), ", ".join(hoods)
+            else:
+                raise BoroughRequired(f"{', '.join(hoods)} is in more than one borough: {sorted(found)}")
+    if not borough and not zip5:
+        raise BoroughRequired(f"{text!r} names no borough or ZIP")
+    ans = resolve_address(client, graph, p.house, p.street, borough=borough, zip5=zip5)
+    if hood:
+        ans = replace(ans, borough_inferred_from=hood, outcome=Match.VARIANT if ans.outcome is Match.EXACT else ans.outcome)
+    return ans

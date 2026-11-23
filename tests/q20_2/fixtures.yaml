@@ -1,0 +1,6 @@
+# Q20.2 layers are returned apart (BOR release v0.3.0, run 2026-05-29-869bd299). Ids and states match tests/q10_1/fixtures.yaml.
+lots:
+  - {bbl: "3008260002", network: false, portfolio: false, note: "anchor A: in neither layer; the dossier says so, and infers nothing about its owner"}
+  - {bbl: "3008070024", network: true, portfolio: true, note: "anchor C: both layers, kept as two results"}
+  - {bbl: "1000050010", network: true, portfolio: false, note: "network only"}
+  - {bbl: "1003490020", network: false, portfolio: true, note: "portfolio only"}

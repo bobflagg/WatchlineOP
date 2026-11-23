@@ -1,0 +1,36 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q12 example data. Values come from the verified fixtures in tests/q12_*/fixtures.yaml
+# (ACRIS through 2026-05-31, frozen baseline in data/README.md). Entities only; no person names.
+# The period, counts, not-a-sale flag and attribution are computed at answer time and are not in the graph.
+
+# Anchor A: a sale and a no-money deed with the same name on both sides (two nodes, never merged).
+id:lot-3008260002 a onto:TaxLot ; onto:bbl "3008260002" ; onto:hasDeed id:deed-2021022201130003, id:deed-2025032100031001 .
+id:deed-2021022201130003 a onto:Deed ; onto:documentId "2021022201130003" ; onto:documentType "DEED" ;
+    onto:recordedDate "2021-02-26"^^xsd:date ; onto:documentAmount 5000000 ;
+    onto:hasGrantor id:grantor-2021022201130003-1 ; onto:hasGrantee id:grantee-2021022201130003-1 .
+id:grantor-2021022201130003-1 a onto:Grantor ; onto:grantorName "5413 7TH AVENUE LLC" .
+id:grantee-2021022201130003-1 a onto:Grantee ; onto:granteeName "5413 PLAZA LLC" .
+id:deed-2025032100031001 a onto:Deed ; onto:documentId "2025032100031001" ; onto:documentType "DEED" ;
+    onto:recordedDate "2025-04-02"^^xsd:date ; onto:documentAmount 0 ;
+    onto:hasGrantor id:grantor-2025032100031001-1 ; onto:hasGrantee id:grantee-2025032100031001-1 .
+id:grantor-2025032100031001-1 a onto:Grantor ; onto:grantorName "5413 PLAZA LLC" .
+id:grantee-2025032100031001-1 a onto:Grantee ; onto:granteeName "5413 PLAZA LLC" .
+
+# A multi-lot deed: one deed, three lots, four grantors, one grantee.
+id:lot-1003060006 a onto:TaxLot ; onto:bbl "1003060006" ; onto:hasDeed id:deed-2020021400087001 .
+id:deed-2020021400087001 a onto:Deed ; onto:documentId "2020021400087001" ; onto:documentType "DEED" ;
+    onto:recordedDate "2020-02-18"^^xsd:date ; onto:documentAmount 0 ;
+    onto:hasGrantor id:grantor-2020021400087001-1, id:grantor-2020021400087001-2, id:grantor-2020021400087001-3, id:grantor-2020021400087001-4 ;
+    onto:hasGrantee id:grantee-2020021400087001-1 .
+id:grantor-2020021400087001-1 a onto:Grantor ; onto:grantorName "BP FORYSTH INVESTORS LLC" .
+id:grantor-2020021400087001-2 a onto:Grantor ; onto:grantorName "MS FORSYTH LLC" .
+id:grantor-2020021400087001-3 a onto:Grantor ; onto:grantorName "PBL FORSYTH LLC" .
+id:grantor-2020021400087001-4 a onto:Grantor ; onto:grantorName "SAL FORSYTH LLC" .
+id:grantee-2020021400087001-1 a onto:Grantee ; onto:granteeName "FORSYTH OWNER LLC" .
+
+# A registered lot with no deed in the snapshot: no hasDeed edge, an empty timeline and not a finding.
+id:lot-1000077501 a onto:TaxLot ; onto:bbl "1000077501" .

@@ -13,6 +13,10 @@ Run after scripts/load_lots.py. Rules (see tests/q3_1/expected.sql and tests/q3_
     name, mailingAddress (address1), addressLine2 (address2) and zip are as recorded, blank is absent.
     Grantors are not loaded (decision 2026-11-12).
 
+Q12.1 adds the grantors (decision 2026-11-16): Grantor, one per distinct party row of partytype 1 on a loaded deed, with the same
+    fields as a Grantee, and Deed-[:HAS_GRANTOR]->Grantor. Both Grantee and Grantor also carry nameKey (rule N3 of the name, a lookup
+    key; absent when the name is absent), so a deed party is found by name as in Q5 to Q7.
+
 Safe to rerun (MERGE). Reads the source read-only and writes only to the POC database.
 Run: uv run python scripts/load_deeds.py
 """
@@ -25,6 +29,9 @@ from pathlib import Path
 import psycopg
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+from watchline.compare import n3  # noqa: E402
 
 POC_DATABASE = "watchline"
 REQUIRED_ENV = ("JUSTFIX_DATABASE_URL", "NEO4J_URI", "NEO4J_USER", "NEO4J_PASSWORD", "NEO4J_DATABASE")
@@ -49,9 +56,13 @@ GRANTEES_SQL = """
 SELECT DISTINCT documentid, nullif(btrim(name), ''), nullif(btrim(address1), ''), nullif(btrim(address2), ''), nullif(btrim(zip), '')
 FROM real_property_parties WHERE partytype = 2 AND documentid = ANY(%(docs)s)
 """
+GRANTORS_SQL = GRANTEES_SQL.replace("partytype = 2", "partytype = 1")
 CONSTRAINTS = [
     "CREATE CONSTRAINT deed_document_id_unique IF NOT EXISTS FOR (d:Deed) REQUIRE d.documentId IS UNIQUE",
     "CREATE CONSTRAINT grantee_key_unique IF NOT EXISTS FOR (g:Grantee) REQUIRE g.partyKey IS UNIQUE",
+    "CREATE CONSTRAINT grantor_key_unique IF NOT EXISTS FOR (g:Grantor) REQUIRE g.partyKey IS UNIQUE",
+    "CREATE INDEX grantee_name_key IF NOT EXISTS FOR (g:Grantee) ON (g.nameKey)",
+    "CREATE INDEX grantor_name_key IF NOT EXISTS FOR (g:Grantor) ON (g.nameKey)",
 ]
 LOAD_DEEDS = """
 UNWIND $rows AS row
@@ -70,15 +81,24 @@ LOAD_GRANTEES = """
 UNWIND $rows AS row
 MATCH (d:Deed {documentId: row.id})
 MERGE (g:Grantee {partyKey: row.key})
-SET g.name = row.name, g.mailingAddress = row.addr, g.addressLine2 = row.line2, g.zip = row.zip
+SET g.name = row.name, g.nameKey = row.nameKey, g.mailingAddress = row.addr, g.addressLine2 = row.line2, g.zip = row.zip
 MERGE (d)-[:HAS_GRANTEE]->(g)
+RETURN count(*) AS linked
+"""
+LOAD_GRANTORS = """
+UNWIND $rows AS row
+MATCH (d:Deed {documentId: row.id})
+MERGE (g:Grantor {partyKey: row.key})
+SET g.name = row.name, g.nameKey = row.nameKey, g.mailingAddress = row.addr, g.addressLine2 = row.line2, g.zip = row.zip
+MERGE (d)-[:HAS_GRANTOR]->(g)
 RETURN count(*) AS linked
 """
 COUNTS = """
 CALL () { MATCH (d:Deed) RETURN count(d) AS deeds, count(d.docDate) AS with_docdate }
 CALL () { MATCH (:Lot)-[h:HAS_DEED]->(:Deed) RETURN count(h) AS pairs }
 CALL () { MATCH (g:Grantee) RETURN count(g) AS grantees, count(g.name) AS named, count(g.mailingAddress) AS with_addr }
-RETURN deeds, with_docdate, pairs, grantees, named, with_addr
+CALL () { MATCH (g:Grantor) RETURN count(g) AS grantors, count(g.name) AS gnamed, count(g.mailingAddress) AS gwith_addr }
+RETURN deeds, with_docdate, pairs, grantees, named, with_addr, grantors, gnamed, gwith_addr
 """
 
 
@@ -136,19 +156,33 @@ def main() -> int:
                 staged_grantees = staged_named = staged_addr = linked_grantees = 0
                 for part in chunks(sorted(deed_ids), PARTY_CHUNK):
                     cur.execute(GRANTEES_SQL, {"docs": part})
-                    batch = [{"id": i, "name": n, "addr": a, "line2": l, "zip": z,
+                    batch = [{"id": i, "name": n, "nameKey": n3(n) if n else None, "addr": a, "line2": l, "zip": z,
                               "key": f"{i}|{n or ''}|{a or ''}|{l or ''}|{z or ''}"} for i, n, a, l, z in cur.fetchall()]
                     staged_grantees += len(batch)
                     staged_named += sum(1 for b in batch if b["name"])
                     staged_addr += sum(1 for b in batch if b["addr"])
                     linked_grantees += session.execute_write(lambda tx, b=batch: tx.run(LOAD_GRANTEES, rows=b).single()["linked"])
+                print(f"  grantees loaded: {staged_grantees:,} ({time.time() - started:.0f}s)", flush=True)
+
+                staged_grantors = staged_gnamed = staged_gaddr = linked_grantors = 0
+                for part in chunks(sorted(deed_ids), PARTY_CHUNK):
+                    cur.execute(GRANTORS_SQL, {"docs": part})
+                    batch = [{"id": i, "name": n, "nameKey": n3(n) if n else None, "addr": a, "line2": l, "zip": z,
+                              "key": f"{i}|{n or ''}|{a or ''}|{l or ''}|{z or ''}"} for i, n, a, l, z in cur.fetchall()]
+                    staged_grantors += len(batch)
+                    staged_gnamed += sum(1 for b in batch if b["name"])
+                    staged_gaddr += sum(1 for b in batch if b["addr"])
+                    linked_grantors += session.execute_write(lambda tx, b=batch: tx.run(LOAD_GRANTORS, rows=b).single()["linked"])
         g = session.run(COUNTS).single()
 
     print(f"staged: deeds {len(deed_ids):,}, lot-deed pairs {staged_pairs:,}, grantees {staged_grantees:,} "
           f"(named {staged_named:,}, with address {staged_addr:,})")
     print(f"graph:  deeds {g['deeds']:,} (document date {g['with_docdate']:,}), HAS_DEED {g['pairs']:,}, "
           f"grantees {g['grantees']:,} (named {g['named']:,}, with address {g['with_addr']:,})")
-    ok = (linked_pairs == staged_pairs and linked_grantees == staged_grantees
+    print(f"grantors: staged {staged_grantors:,} (named {staged_gnamed:,}, with address {staged_gaddr:,}), "
+          f"graph {g['grantors']:,} (named {g['gnamed']:,}, with address {g['gwith_addr']:,})")
+    ok = (linked_grantors == staged_grantors and (staged_grantors, staged_gnamed, staged_gaddr) == (g["grantors"], g["gnamed"], g["gwith_addr"])
+          and linked_pairs == staged_pairs and linked_grantees == staged_grantees
           and (len(deed_ids), staged_pairs, staged_grantees, staged_named, staged_addr)
           == (g["deeds"], g["pairs"], g["grantees"], g["named"], g["with_addr"]))
     print("reconciled" if ok else "MISMATCH between staged and graph counts", file=sys.stdout if ok else sys.stderr)

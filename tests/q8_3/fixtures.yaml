@@ -1,0 +1,29 @@
+# Q8.3 expected landlords and links of a network (BOR release v0.3.0, run 2026-05-29-869bd299).
+# check_links.py re-derives each from the release (node_observations, graph_edges, network_membership) and checks the
+# registration of every covered lot against hpd_registrations, so a stale fixture fails.
+networks:
+  - groupId: ON-98617
+    note: "anchor C: three landlords; one covers three lots through three registrations"
+    landlords:
+      - {nodeId: 98617, lots: [{bbl: "3008070024", registrationId: 350423}]}
+      - {nodeId: 98618, lots: [{bbl: "3008870067", registrationId: 309739}, {bbl: "3053340026", registrationId: 374013}, {bbl: "3067970008", registrationId: 309029}]}
+      - {nodeId: 98619, lots: [{bbl: "3067510012", registrationId: 328096}]}
+    links:   # one row per relationship the network used; weight and networkGroupId as stored
+      - {type: CONNECTED_BY_IDENTITY, nodeA: 98617, nodeB: 98618, weight: 100.0, stage: identity.splink_base, evidenceId: C0044503, networkGroupId: ON-98617}
+      - {type: CONNECTED_BY_IDENTITY, nodeA: 98617, nodeB: 98619, weight: 100.0, stage: identity.splink_base, evidenceId: C0044503, networkGroupId: ON-98617}
+      - {type: CONNECTED_BY_IDENTITY, nodeA: 98618, nodeB: 98619, weight: 100.0, stage: identity.splink_base, evidenceId: C0044503, networkGroupId: ON-98617}
+      - {type: CONNECTED_BY_NAME, nodeA: 98618, nodeB: 98619, weight: 7.5, stage: null, evidenceId: null, networkGroupId: ON-98617}
+      - {type: CONNECTED_BY_ADDRESS, nodeA: 98618, nodeB: 98619, weight: 6.0, stage: null, evidenceId: null, networkGroupId: ON-98617}
+counts:   # landlords, links inside the network, links crossing its boundary
+  - {groupId: ON-18742, landlords: 4,  inside: 6,  boundary: 0,  note: "anchor D: 35 lots in four landlords"}
+  - {groupId: ON-675,   landlords: 19, inside: 41, boundary: 25, note: "a Louvain community: 25 links reach landlords of other networks"}
+  - {groupId: ON-60782, landlords: 2,  inside: 1,  boundary: 1,  note: "smallest Louvain community"}
+  - {groupId: ON-1,     landlords: 2,  inside: 1,  boundary: 0,  note: "two lots"}
+hub_landlord: {nodeId: 42365, groupId: ON-42365, lots: 384, note: "the landlord covering the most lots"}
+totals:   # Operational Network layer of the release
+  landlords: 30924
+  covers: 71256
+  links: 57202            # distinct landlord pairs the network used (the old network_edges rows)
+  boundary_links: 416     # of those, pairs whose landlords sit in different networks
+  relationships: {CONNECTED_BY_NAME: 4582, CONNECTED_BY_ADDRESS: 49027, CONNECTED_BY_IDENTITY: 14206}
+  masked_edges_not_loaded: 230305

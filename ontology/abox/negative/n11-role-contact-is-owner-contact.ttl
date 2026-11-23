@@ -1,4 +1,0 @@
-@prefix onto: <https://watchline.example/onto/> .
-@prefix id:   <https://watchline.example/id/> .
-# Must be inconsistent: RoleContact and OwnerContact are disjoint. A managing agent is a management relationship, not ownership.
-id:bad-contact-1 a onto:RoleContact, onto:OwnerContact .

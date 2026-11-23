@@ -1,6 +1,6 @@
 -- Q3.2 expected answers for Grantee and HAS_GRANTEE, from the frozen JustFix/WoW snapshot.
 -- Independent of the loader. real_property_parties (2026-05-31), checked read-only 2026-11-12.
--- Provisional until the dump is identified (data/README.md).
+-- verified against the frozen baseline recorded in data/README.md (2026-11-16).
 --
 -- Rules:
 --  * A Grantee is a distinct party row of partytype 2 on a loaded deed (Q3.1 scope and deed types).

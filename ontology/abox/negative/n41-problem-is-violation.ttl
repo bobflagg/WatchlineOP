@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: Problem and Violation are disjoint. What was reported is not what an inspector cited.
+id:bad-problem-10 a onto:Problem, onto:Violation ; onto:problemId 2 ; onto:violationId 4 .

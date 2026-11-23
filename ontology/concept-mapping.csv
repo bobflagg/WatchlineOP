@@ -13,14 +13,13 @@ https://watchline.example/vocab/building-class,https://watchline.example/onto/bu
 https://watchline.example/vocab/residential-units,https://watchline.example/onto/residentialUnits,datatype_property,Lot.unitsRes,Q1.4,lot-wide
 https://watchline.example/vocab/assessed-total-value,https://watchline.example/onto/assessedTotalValue,datatype_property,Lot.assessedTotal,Q1.4,
 https://watchline.example/vocab/registration,https://watchline.example/onto/Registration,class,Registration,Q2.1;Q2.2,
-https://watchline.example/vocab/owner-contact,https://watchline.example/onto/OwnerContact,class,OwnerContact,Q2.2,
+https://watchline.example/vocab/contact,https://watchline.example/onto/Contact,class,Contact,Q2.2;Q4.1;Q4.2,
 https://watchline.example/vocab/has-registration,https://watchline.example/onto/hasRegistration,object_property,HAS_REGISTRATION,Q2.1,
-https://watchline.example/vocab/has-owner-contact,https://watchline.example/onto/hasOwnerContact,object_property,HAS_OWNER_CONTACT,Q2.2,
+https://watchline.example/vocab/has-contact,https://watchline.example/onto/hasContact,object_property,HAS_CONTACT,Q2.2;Q4.1,
 https://watchline.example/vocab/registration-id,https://watchline.example/onto/registrationId,datatype_property,Registration.registrationId,Q2.1,
 https://watchline.example/vocab/last-registered-date,https://watchline.example/onto/lastRegistered,datatype_property,HAS_REGISTRATION.lastRegistered,Q2.1,graph: relationship property; ontology: on the registration
 https://watchline.example/vocab/registration-end-date,https://watchline.example/onto/registrationEnd,datatype_property,HAS_REGISTRATION.registrationEnd,Q2.1,graph: relationship property; ontology: on the registration
-https://watchline.example/vocab/contact-type,https://watchline.example/onto/contactType,datatype_property,OwnerContact.contactType,Q2.2,values are the owner-contact-types concepts, stored as HPD spells them
-https://watchline.example/vocab/owner-name,https://watchline.example/onto/ownerName,datatype_property,OwnerContact.name,Q2.2,
+https://watchline.example/vocab/contact-type,https://watchline.example/onto/contactType,datatype_property,Contact.contactType,Q2.2;Q4.1,"values are the contact-types concepts, stored as HPD spells them"
 https://watchline.example/vocab/deed,https://watchline.example/onto/Deed,class,Deed,Q3.1;Q3.2,
 https://watchline.example/vocab/grantee,https://watchline.example/onto/Grantee,class,Grantee,Q3.2,
 https://watchline.example/vocab/has-deed,https://watchline.example/onto/hasDeed,object_property,HAS_DEED,Q3.1,
@@ -31,21 +30,15 @@ https://watchline.example/vocab/document-date,https://watchline.example/onto/doc
 https://watchline.example/vocab/recorded-date,https://watchline.example/onto/recordedDate,datatype_property,Deed.recordedDate,Q3.1,
 https://watchline.example/vocab/document-amount,https://watchline.example/onto/documentAmount,datatype_property,Deed.amount,Q3.1,
 https://watchline.example/vocab/grantee-name,https://watchline.example/onto/granteeName,datatype_property,Grantee.name,Q3.2,
-https://watchline.example/vocab/mailing-address,https://watchline.example/onto/mailingAddress,datatype_property,Grantee.mailingAddress,Q3.2,one property for grantees and owner contacts
-https://watchline.example/vocab/mailing-address,https://watchline.example/onto/mailingAddress,datatype_property,OwnerContact.mailingAddress,Q3.5,one property for grantees and owner contacts
-https://watchline.example/vocab/address-line-two,https://watchline.example/onto/addressLineTwo,datatype_property,Grantee.addressLine2,Q3.2,one property for grantees and owner contacts
-https://watchline.example/vocab/address-line-two,https://watchline.example/onto/addressLineTwo,datatype_property,OwnerContact.addressLine2,Q3.5,one property for grantees and owner contacts
-https://watchline.example/vocab/zip-code,https://watchline.example/onto/zipCode,datatype_property,Grantee.zip,Q3.2,one property for grantees and owner contacts
-https://watchline.example/vocab/zip-code,https://watchline.example/onto/zipCode,datatype_property,OwnerContact.zip,Q3.5,one property for grantees and owner contacts
-https://watchline.example/vocab/role-contact,https://watchline.example/onto/RoleContact,class,RoleContact,Q4.1;Q4.2,
-https://watchline.example/vocab/has-role-contact,https://watchline.example/onto/hasRoleContact,object_property,HAS_ROLE_CONTACT,Q4.1,
-https://watchline.example/vocab/contact-type,https://watchline.example/onto/contactType,datatype_property,RoleContact.contactType,Q4.1,one property for owner and role contacts; values are the role-contact-types concepts as HPD spells them
-https://watchline.example/vocab/contact-title,https://watchline.example/onto/contactTitle,datatype_property,RoleContact.title,Q4.1,
-https://watchline.example/vocab/corporation-name,https://watchline.example/onto/corporationName,datatype_property,RoleContact.corporationName,Q4.1,
-https://watchline.example/vocab/person-name,https://watchline.example/onto/personName,datatype_property,RoleContact.personName,Q4.1,
-https://watchline.example/vocab/mailing-address,https://watchline.example/onto/mailingAddress,datatype_property,RoleContact.mailingAddress,Q4.2,one property for grantees and owner and role contacts
-https://watchline.example/vocab/address-line-two,https://watchline.example/onto/addressLineTwo,datatype_property,RoleContact.addressLine2,Q4.2,one property for grantees and owner and role contacts
-https://watchline.example/vocab/zip-code,https://watchline.example/onto/zipCode,datatype_property,RoleContact.zip,Q4.2,one property for grantees and owner and role contacts
+https://watchline.example/vocab/mailing-address,https://watchline.example/onto/mailingAddress,datatype_property,Grantee.mailingAddress,Q3.2,one property for grantees and contacts
+https://watchline.example/vocab/mailing-address,https://watchline.example/onto/mailingAddress,datatype_property,Contact.mailingAddress,Q3.5;Q4.2,one property for grantees and contacts
+https://watchline.example/vocab/address-line-two,https://watchline.example/onto/addressLineTwo,datatype_property,Grantee.addressLine2,Q3.2,one property for grantees and contacts
+https://watchline.example/vocab/address-line-two,https://watchline.example/onto/addressLineTwo,datatype_property,Contact.addressLine2,Q3.5;Q4.2,one property for grantees and contacts
+https://watchline.example/vocab/zip-code,https://watchline.example/onto/zipCode,datatype_property,Grantee.zip,Q3.2,one property for grantees and contacts
+https://watchline.example/vocab/zip-code,https://watchline.example/onto/zipCode,datatype_property,Contact.zip,Q3.5;Q4.2,one property for grantees and contacts
+https://watchline.example/vocab/contact-title,https://watchline.example/onto/contactTitle,datatype_property,Contact.title,Q4.1,
+https://watchline.example/vocab/corporation-name,https://watchline.example/onto/corporationName,datatype_property,Contact.corporationName,Q2.2;Q4.1,
+https://watchline.example/vocab/person-name,https://watchline.example/onto/personName,datatype_property,Contact.personName,Q2.2;Q4.1,
 https://watchline.example/vocab/dos-entity,https://watchline.example/onto/DosEntity,class,DosEntity,Q5.1;Q5.2;Q5.3,
 https://watchline.example/vocab/dos-id,https://watchline.example/onto/dosId,datatype_property,DosEntity.dosId,Q5.1,
 https://watchline.example/vocab/dos-entity-name,https://watchline.example/onto/dosEntityName,datatype_property,DosEntity.name,Q5.1,
@@ -53,14 +46,118 @@ https://watchline.example/vocab/entity-type,https://watchline.example/onto/entit
 https://watchline.example/vocab/jurisdiction,https://watchline.example/onto/jurisdiction,datatype_property,DosEntity.jurisdiction,Q5.1,
 https://watchline.example/vocab/initial-filing-date,https://watchline.example/onto/initialFilingDate,datatype_property,DosEntity.filingDate,Q5.1,
 https://watchline.example/vocab/dos-process-name,https://watchline.example/onto/processName,datatype_property,DosEntity.processName,Q5.2,
-https://watchline.example/vocab/dos-process-address,https://watchline.example/onto/processAddress,datatype_property,DosEntity.processAddress,Q5.2,address part; the concept covers all parts, so the label repeats
-https://watchline.example/vocab/dos-process-address,https://watchline.example/onto/processAddressLineTwo,datatype_property,DosEntity.processAddressLine2,Q5.2,address part; the concept covers all parts, so the label repeats
-https://watchline.example/vocab/dos-process-address,https://watchline.example/onto/processCity,datatype_property,DosEntity.processCity,Q5.2,address part; the concept covers all parts, so the label repeats
-https://watchline.example/vocab/dos-process-address,https://watchline.example/onto/processState,datatype_property,DosEntity.processState,Q5.2,address part; the concept covers all parts, so the label repeats
-https://watchline.example/vocab/dos-process-address,https://watchline.example/onto/processZip,datatype_property,DosEntity.processZip,Q5.2,address part; the concept covers all parts, so the label repeats
+https://watchline.example/vocab/dos-process-address,https://watchline.example/onto/processAddress,datatype_property,DosEntity.processAddress,Q5.2,"address part; the concept covers all parts, so the label repeats"
+https://watchline.example/vocab/dos-process-address,https://watchline.example/onto/processAddressLineTwo,datatype_property,DosEntity.processAddressLine2,Q5.2,"address part; the concept covers all parts, so the label repeats"
+https://watchline.example/vocab/dos-process-address,https://watchline.example/onto/processCity,datatype_property,DosEntity.processCity,Q5.2,"address part; the concept covers all parts, so the label repeats"
+https://watchline.example/vocab/dos-process-address,https://watchline.example/onto/processState,datatype_property,DosEntity.processState,Q5.2,"address part; the concept covers all parts, so the label repeats"
+https://watchline.example/vocab/dos-process-address,https://watchline.example/onto/processZip,datatype_property,DosEntity.processZip,Q5.2,"address part; the concept covers all parts, so the label repeats"
 https://watchline.example/vocab/registered-agent-name,https://watchline.example/onto/registeredAgentName,datatype_property,DosEntity.agentName,Q5.3,
-https://watchline.example/vocab/registered-agent-address,https://watchline.example/onto/registeredAgentAddress,datatype_property,DosEntity.agentAddress,Q5.3,address part; the concept covers all parts, so the label repeats
-https://watchline.example/vocab/registered-agent-address,https://watchline.example/onto/registeredAgentAddressLineTwo,datatype_property,DosEntity.agentAddressLine2,Q5.3,address part; the concept covers all parts, so the label repeats
-https://watchline.example/vocab/registered-agent-address,https://watchline.example/onto/registeredAgentCity,datatype_property,DosEntity.agentCity,Q5.3,address part; the concept covers all parts, so the label repeats
-https://watchline.example/vocab/registered-agent-address,https://watchline.example/onto/registeredAgentState,datatype_property,DosEntity.agentState,Q5.3,address part; the concept covers all parts, so the label repeats
-https://watchline.example/vocab/registered-agent-address,https://watchline.example/onto/registeredAgentZip,datatype_property,DosEntity.agentZip,Q5.3,address part; the concept covers all parts, so the label repeats
+https://watchline.example/vocab/registered-agent-address,https://watchline.example/onto/registeredAgentAddress,datatype_property,DosEntity.agentAddress,Q5.3,"address part; the concept covers all parts, so the label repeats"
+https://watchline.example/vocab/registered-agent-address,https://watchline.example/onto/registeredAgentAddressLineTwo,datatype_property,DosEntity.agentAddressLine2,Q5.3,"address part; the concept covers all parts, so the label repeats"
+https://watchline.example/vocab/registered-agent-address,https://watchline.example/onto/registeredAgentCity,datatype_property,DosEntity.agentCity,Q5.3,"address part; the concept covers all parts, so the label repeats"
+https://watchline.example/vocab/registered-agent-address,https://watchline.example/onto/registeredAgentState,datatype_property,DosEntity.agentState,Q5.3,"address part; the concept covers all parts, so the label repeats"
+https://watchline.example/vocab/registered-agent-address,https://watchline.example/onto/registeredAgentZip,datatype_property,DosEntity.agentZip,Q5.3,"address part; the concept covers all parts, so the label repeats"
+https://watchline.example/vocab/operational-network,https://watchline.example/onto/OperationalNetwork,class,OperationalNetwork,Q8.1;Q8.2,
+https://watchline.example/vocab/landlord,https://watchline.example/onto/Landlord,class,Landlord,Q8.3,Landlord.nodeId is identity only and not modeled
+https://watchline.example/vocab/in-network,https://watchline.example/onto/inNetwork,object_property,IN_NETWORK,Q8.1;Q8.2,
+https://watchline.example/vocab/covers,https://watchline.example/onto/covers,object_property,COVERS,Q8.3,
+https://watchline.example/vocab/based-on-contact,https://watchline.example/onto/basedOnContact,object_property,BASED_ON_CONTACT,Q8.3,
+https://watchline.example/vocab/registration-id,https://watchline.example/onto/registrationId,datatype_property,COVERS.registrationId,Q8.3,graph: relationship property; ontology: the id of the registration BOR used for the lot (not attached to the relationship)
+https://watchline.example/vocab/connected-by-name,https://watchline.example/onto/connectedByName,object_property,CONNECTED_BY_NAME,Q8.3,networkEdgeId is identity only and not modeled
+https://watchline.example/vocab/connected-by-address,https://watchline.example/onto/connectedByAddress,object_property,CONNECTED_BY_ADDRESS,Q8.3,networkEdgeId is identity only and not modeled
+https://watchline.example/vocab/connected-by-identity,https://watchline.example/onto/connectedByIdentity,object_property,CONNECTED_BY_IDENTITY,Q8.3;Q9.3,edge ids and evidenceId are identity only and not modeled
+https://watchline.example/vocab/network-group-id,https://watchline.example/onto/groupId,datatype_property,OperationalNetwork.groupId,Q8.1,
+https://watchline.example/vocab/network-split,https://watchline.example/onto/networkSplit,datatype_property,OperationalNetwork.split,Q8.1,"values are the network-splits concepts, stored as BOR spells them"
+https://watchline.example/vocab/network-absence,https://watchline.example/onto/networkAbsence,datatype_property,Lot.networkAbsence,Q8.4,"values are the top level of network-absence-reasons, stored as BOR spells them"
+https://watchline.example/vocab/network-absence-detail,https://watchline.example/onto/networkAbsenceDetail,datatype_property,Lot.networkAbsenceDetail,Q8.4,"values are the detail level of network-absence-reasons, stored as BOR spells them"
+https://watchline.example/vocab/link-weight,https://watchline.example/onto/linkWeight,datatype_property,CONNECTED_BY_NAME.weight,Q8.3,"graph: relationship property; ontology: a property of the link, no domain"
+https://watchline.example/vocab/link-weight,https://watchline.example/onto/linkWeight,datatype_property,CONNECTED_BY_ADDRESS.weight,Q8.3,"graph: relationship property; ontology: a property of the link, no domain"
+https://watchline.example/vocab/link-weight,https://watchline.example/onto/linkWeight,datatype_property,CONNECTED_BY_IDENTITY.weight,Q8.3,"graph: relationship property; ontology: a property of the link, no domain"
+https://watchline.example/vocab/owner-portfolio,https://watchline.example/onto/OwnerPortfolio,class,OwnerPortfolio,Q9.1;Q9.2;Q9.4,"The lots, buildings and units of a portfolio are computed at query time"
+https://watchline.example/vocab/in-portfolio,https://watchline.example/onto/inPortfolio,object_property,IN_PORTFOLIO,Q9.1;Q9.2;Q9.4,
+https://watchline.example/vocab/connected-by-deed,https://watchline.example/onto/connectedByDeed,object_property,CONNECTED_BY_DEED,Q9.3,portfolioEdgeId and evidenceId are identity only and not modeled
+https://watchline.example/vocab/portfolio-group-id,https://watchline.example/onto/portfolioId,datatype_property,OwnerPortfolio.groupId,Q9.1,run-local; not the id of the network with the same number
+https://watchline.example/vocab/portfolio-composition,https://watchline.example/onto/portfolioComposition,datatype_property,OwnerPortfolio.composition,Q9.1,"values are the portfolio-compositions concepts, stored as BOR spells them"
+https://watchline.example/vocab/portfolio-absence,https://watchline.example/onto/portfolioAbsence,datatype_property,Lot.portfolioAbsence,Q9.5,"values are the top level of network-absence-reasons, stored as BOR spells them"
+https://watchline.example/vocab/portfolio-absence-detail,https://watchline.example/onto/portfolioAbsenceDetail,datatype_property,Lot.portfolioAbsenceDetail,Q9.5,"values are the detail level of network-absence-reasons, stored as BOR spells them"
+https://watchline.example/vocab/ownership-signal,https://watchline.example/onto/ownershipSignal,datatype_property,CONNECTED_BY_IDENTITY.stage,Q9.3,"values are the ownership-signals concepts, stored as BOR spells them; as linkWeight, no domain"
+https://watchline.example/vocab/ownership-signal,https://watchline.example/onto/ownershipSignal,datatype_property,CONNECTED_BY_DEED.stage,Q9.3,"values are the ownership-signals concepts, stored as BOR spells them; as linkWeight, no domain"
+https://watchline.example/vocab/network-masked-address,https://watchline.example/onto/NetworkMaskedAddress,class,NetworkMaskedAddress,Q6.2,"one node per masked address text in the pinned run; method, threshold and normalizer are recorded once in data/sources.yaml"
+https://watchline.example/vocab/masked-address-id,https://watchline.example/onto/maskedAddressId,datatype_property,NetworkMaskedAddress.addressId,Q6.2,run-local
+https://watchline.example/vocab/masked-address-text,https://watchline.example/onto/maskedAddressText,datatype_property,NetworkMaskedAddress.address,Q6.2,"the release text: uppercase, no ZIP, unit kept"
+https://watchline.example/vocab/masked-address-degree,https://watchline.example/onto/maskedAddressDegree,datatype_property,NetworkMaskedAddress.degree,Q6.2,landlord records at the address
+https://watchline.example/vocab/mail-drop-address,https://watchline.example/onto/MailDropAddress,class,MailDropAddress,Q6.4,MailDropAddress.listKey is identity only and not modeled
+https://watchline.example/vocab/mail-drop-address-key,https://watchline.example/onto/mailDropAddressKey,datatype_property,MailDropAddress.address,Q6.4,"the list spelling, not HPD spelling"
+https://watchline.example/vocab/zip-five,https://watchline.example/onto/zipFive,datatype_property,MailDropAddress.zip5,Q6.4,absent for the one row that matches any ZIP
+https://watchline.example/vocab/mail-drop-kind,https://watchline.example/onto/mailDropKind,datatype_property,MailDropAddress.kind,Q6.4,"values are the mail-drop-kinds concepts, stored as the list spells them"
+https://watchline.example/vocab/mail-drop-basis,https://watchline.example/onto/mailDropBasis,datatype_property,MailDropAddress.basis,Q6.4,as listed
+https://watchline.example/vocab/list-review-status,https://watchline.example/onto/listReviewStatus,datatype_property,MailDropAddress.reviewStatus,Q6.4,"values are the list-review-statuses concepts, stored as the list spells them"
+https://watchline.example/vocab/evidence-type,https://watchline.example/onto/evidenceType,datatype_property,CONNECTED_BY_IDENTITY.evidenceType,Q9.3,"values are the link-evidence-types concepts, stored as BOR spells them; as linkWeight, no domain"
+https://watchline.example/vocab/evidence-type,https://watchline.example/onto/evidenceType,datatype_property,CONNECTED_BY_DEED.evidenceType,Q9.3,"values are the link-evidence-types concepts, stored as BOR spells them; as linkWeight, no domain"
+https://watchline.example/vocab/masked-address-edges,https://watchline.example/onto/maskedEdges,datatype_property,NetworkMaskedAddress.maskedEdges,Q6.2,count of set-aside address edges from the release
+https://watchline.example/vocab/network-group-id,https://watchline.example/onto/groupId,datatype_property,CONNECTED_BY_NAME.networkGroupId,Q8.3,"the id of the network both ends sit in; absent on a boundary link. Ontology: the link joins the two landlords, the network is reached through their lots"
+https://watchline.example/vocab/network-group-id,https://watchline.example/onto/groupId,datatype_property,CONNECTED_BY_ADDRESS.networkGroupId,Q8.3,"the id of the network both ends sit in; absent on a boundary link. Ontology: the link joins the two landlords, the network is reached through their lots"
+https://watchline.example/vocab/network-group-id,https://watchline.example/onto/groupId,datatype_property,CONNECTED_BY_IDENTITY.networkGroupId,Q8.3,"the id of the network both ends sit in; absent on a boundary link. Ontology: the link joins the two landlords, the network is reached through their lots"
+https://watchline.example/vocab/portfolio-group-id,https://watchline.example/onto/portfolioId,datatype_property,CONNECTED_BY_IDENTITY.portfolioGroupId,Q9.3,"as networkGroupId, for the portfolio"
+https://watchline.example/vocab/portfolio-group-id,https://watchline.example/onto/portfolioId,datatype_property,CONNECTED_BY_DEED.portfolioGroupId,Q9.3,"as networkGroupId, for the portfolio"
+https://watchline.example/vocab/landlord-name,https://watchline.example/onto/landlordName,datatype_property,Landlord.name,Q8.3;Q8.1;Q9.1,as filed in the release: case and leading punctuation kept
+https://watchline.example/vocab/business-address,https://watchline.example/onto/landlordBusinessAddress,datatype_property,Landlord.businessAddresses,Q8.3,"graph: a list of strings; ontology: one value per address, not functional"
+https://watchline.example/vocab/anchor-landlord,https://watchline.example/onto/anchoredBy,object_property,ANCHORED_BY,Q8.1;Q9.1,from a network or a portfolio; no domain is declared because OWL has no single class for the two
+https://watchline.example/vocab/portfolio-masked-address,https://watchline.example/onto/PortfolioMaskedAddress,class,PortfolioMaskedAddress,Q6.3,one node per derived address text (579) from 5298 masked identities; the release names no address for the mask
+https://watchline.example/vocab/portfolio-masked-address-text,https://watchline.example/onto/portfolioMaskedAddressText,datatype_property,PortfolioMaskedAddress.address,Q6.3,"derived: the masked identity's own business address as filed, no ZIP"
+https://watchline.example/vocab/portfolio-masked-address-degree,https://watchline.example/onto/portfolioMaskedAddressDegree,datatype_property,PortfolioMaskedAddress.degree,Q6.3,the release's addr_degree; one value per text
+https://watchline.example/vocab/masked-identities,https://watchline.example/onto/maskedIdentities,datatype_property,PortfolioMaskedAddress.maskedIdentities,Q6.3,count of masked identities at the text
+https://watchline.example/vocab/document,https://watchline.example/onto/Document,class,Document,Q7.3,
+https://watchline.example/vocab/document-party,https://watchline.example/onto/DocumentParty,class,DocumentParty,Q7.3,
+https://watchline.example/vocab/has-party,https://watchline.example/onto/hasParty,object_property,HAS_PARTY,Q7.3,
+https://watchline.example/vocab/document-id,https://watchline.example/onto/documentId,datatype_property,Document.documentId,Q7.3,shared with Deed
+https://watchline.example/vocab/document-type,https://watchline.example/onto/documentType,datatype_property,Document.docType,Q7.3,"any ACRIS document type, as spelled; shared with Deed"
+https://watchline.example/vocab/document-date,https://watchline.example/onto/documentDate,datatype_property,Document.docDate,Q7.3,
+https://watchline.example/vocab/recorded-date,https://watchline.example/onto/recordedDate,datatype_property,Document.recordedDate,Q7.3,
+https://watchline.example/vocab/document-amount,https://watchline.example/onto/documentAmount,datatype_property,Document.amount,Q7.3,
+https://watchline.example/vocab/party-name,https://watchline.example/onto/partyName,datatype_property,DocumentParty.name,Q7.3,nameKey is a lookup key and not modeled
+https://watchline.example/vocab/mailing-address,https://watchline.example/onto/mailingAddress,datatype_property,DocumentParty.mailingAddress,Q7.3,"one property for grantees, contacts and document parties"
+https://watchline.example/vocab/address-line-two,https://watchline.example/onto/addressLineTwo,datatype_property,DocumentParty.addressLine2,Q7.3,"one property for grantees, contacts and document parties"
+https://watchline.example/vocab/zip-code,https://watchline.example/onto/zipCode,datatype_property,DocumentParty.zip,Q7.3,"one property for grantees, contacts and document parties"
+https://watchline.example/vocab/address-party-count,https://watchline.example/onto/addressPartyCount,datatype_property,DocumentParty.addressNames,Q7.3,over all ACRIS
+https://watchline.example/vocab/address-document-count,https://watchline.example/onto/addressDocumentCount,datatype_property,DocumentParty.addressDocuments,Q7.3,over all ACRIS
+https://watchline.example/vocab/party-role,https://watchline.example/onto/partyRole,datatype_property,HAS_PARTY.partyType,Q7.3,a property of the link; no domain
+https://watchline.example/vocab/process-address-entity-count,https://watchline.example/onto/processAddressEntities,datatype_property,DosEntity.processAddressEntities,Q7.2,over the whole DOS table
+https://watchline.example/vocab/grantor,https://watchline.example/onto/Grantor,class,Grantor,Q12.1;Q12.3,
+https://watchline.example/vocab/has-grantor,https://watchline.example/onto/hasGrantor,object_property,HAS_GRANTOR,Q12.1,
+https://watchline.example/vocab/grantor-name,https://watchline.example/onto/grantorName,datatype_property,Grantor.name,Q12.1;Q12.3,nameKey is a lookup key and not modeled
+https://watchline.example/vocab/mailing-address,https://watchline.example/onto/mailingAddress,datatype_property,Grantor.mailingAddress,Q12.1,one property for grantees, grantors, contacts and document parties
+https://watchline.example/vocab/address-line-two,https://watchline.example/onto/addressLineTwo,datatype_property,Grantor.addressLine2,Q12.1,one property for grantees, grantors, contacts and document parties
+https://watchline.example/vocab/zip-code,https://watchline.example/onto/zipCode,datatype_property,Grantor.zip,Q12.1,one property for grantees, grantors, contacts and document parties
+https://watchline.example/vocab/has-financing-document,https://watchline.example/onto/hasFinancingDocument,object_property,HAS_FINANCING_DOCUMENT,Q13.1;Q13.3,
+https://watchline.example/vocab/financing-document,https://watchline.example/onto/Document,class,Document,Q13.1;Q13.3,a financing document is a Document with documentType MTGE/ASST/SAT/AGMT/AL&R/TL&R/SAGE; the five kinds are computed at answer time and not classes
+https://watchline.example/vocab/violation,https://watchline.example/onto/Violation,class,Violation,Q15.1;Q15.2,counts by class and status, the oldest open date and the rate are computed at answer time
+https://watchline.example/vocab/has-violation,https://watchline.example/onto/hasViolation,object_property,HAS_VIOLATION,Q15.1,
+https://watchline.example/vocab/violation-id,https://watchline.example/onto/violationId,datatype_property,Violation.violationId,Q15.1,
+https://watchline.example/vocab/violation-class,https://watchline.example/onto/violationClass,datatype_property,Violation.violationClass,Q15.1,
+https://watchline.example/vocab/violation-status,https://watchline.example/onto/violationStatus,datatype_property,Violation.status,Q15.1;Q15.2,
+https://watchline.example/vocab/inspection-date,https://watchline.example/onto/inspectionDate,datatype_property,Violation.inspectionDate,Q15.1,
+https://watchline.example/vocab/order-number,https://watchline.example/onto/orderNumber,datatype_property,Violation.orderNumber,Q15.3,
+https://watchline.example/vocab/complaint-problem,https://watchline.example/onto/Problem,class,Problem,Q27.1;Q27.2,counts by type, category and status, the open count and the rate are computed at answer time
+https://watchline.example/vocab/has-problem,https://watchline.example/onto/hasProblem,object_property,HAS_PROBLEM,Q27.1,
+https://watchline.example/vocab/problem-id,https://watchline.example/onto/problemId,datatype_property,Problem.problemId,Q27.1,
+https://watchline.example/vocab/complaint-id,https://watchline.example/onto/complaintId,datatype_property,Problem.complaintId,Q27.1,distinct complaints are counted at answer time
+https://watchline.example/vocab/problem-type,https://watchline.example/onto/problemType,datatype_property,Problem.problemType,Q27.1,
+https://watchline.example/vocab/major-category,https://watchline.example/onto/majorCategory,datatype_property,Problem.majorCategory,Q27.1,
+https://watchline.example/vocab/minor-category,https://watchline.example/onto/minorCategory,datatype_property,Problem.minorCategory,Q27.3,
+https://watchline.example/vocab/problem-code,https://watchline.example/onto/problemCode,datatype_property,Problem.problemCode,Q27.3,
+https://watchline.example/vocab/problem-status,https://watchline.example/onto/problemStatus,datatype_property,Problem.status,Q27.1,
+https://watchline.example/vocab/received-date,https://watchline.example/onto/receivedDate,datatype_property,Problem.receivedDate,Q27.1;Q27.2,
+https://watchline.example/vocab/duplicate-flag,https://watchline.example/onto/duplicateFlag,datatype_property,Problem.duplicate,Q27.1,
+https://watchline.example/vocab/litigation-case,https://watchline.example/onto/Litigation,class,Litigation,Q28.1;Q28.2,owner match, counts and excluded cases are computed or counted
+https://watchline.example/vocab/has-litigation-case,https://watchline.example/onto/hasLitigation,object_property,HAS_LITIGATION,Q28.1,
+https://watchline.example/vocab/litigation-id,https://watchline.example/onto/litigationId,datatype_property,Litigation.litigationId,Q28.1,
+https://watchline.example/vocab/case-type,https://watchline.example/onto/caseType,datatype_property,Litigation.caseType,Q28.1,
+https://watchline.example/vocab/case-open-date,https://watchline.example/onto/caseOpenDate,datatype_property,Litigation.caseOpenDate,Q28.1,
+https://watchline.example/vocab/case-status,https://watchline.example/onto/caseStatus,datatype_property,Litigation.caseStatus,Q28.1,
+https://watchline.example/vocab/open-judgement,https://watchline.example/onto/openJudgement,datatype_property,Litigation.openJudgement,Q28.1,
+https://watchline.example/vocab/harassment-finding,https://watchline.example/onto/harassmentFinding,datatype_property,Litigation.harassmentFinding,Q28.1,
+https://watchline.example/vocab/finding-date,https://watchline.example/onto/findingDate,datatype_property,Litigation.findingDate,Q28.1,
+https://watchline.example/vocab/case-penalty,https://watchline.example/onto/penalty,datatype_property,Litigation.penalty,Q28.1,
+https://watchline.example/vocab/respondent,https://watchline.example/onto/respondent,datatype_property,Litigation.respondent,Q28.1;Q28.2,
+https://watchline.example/vocab/respondent,https://watchline.example/onto/respondentKeys,datatype_property,Litigation.respondentKeys,Q28.2,derived N3 keys; the same concept as respondent

@@ -1,0 +1,22 @@
+# Q10.2 expected evidence for lots in one layer and not the other (BOR release v0.3.0, run 2026-05-29-869bd299, rental lots).
+# check_evidence.py re-derives the differing lots from the release; kinds and link counts are graph facts (relationship type:stage).
+lots:
+  - bbl: "3008210012"
+    note: "anchor D: the two extra network lots are tied in only by a shared business address"
+    differences:
+      - {bbl: "3031990043", side: network_only, kinds: ["CONNECTED_BY_ADDRESS:"], links: 3}
+      - {bbl: "3033190036", side: network_only, kinds: ["CONNECTED_BY_ADDRESS:"], links: 3}
+  - bbl: "3008070024"
+    note: "anchor C: no differences"
+    differences: []
+  - bbl: "2023710022"
+    note: "OP-50218 spans ON-50218 and ON-52: address links add three network lots, deed links add five portfolio lots"
+    differences:
+      - {bbl: "3012090068", side: network_only, kinds: ["CONNECTED_BY_ADDRESS:"], links: 1}
+      - {bbl: "2030500086", side: network_only, kinds: ["CONNECTED_BY_ADDRESS:"], links: 1}
+      - {bbl: "2031020013", side: network_only, kinds: ["CONNECTED_BY_ADDRESS:"], links: 1}
+      - {bbl: "2026140033", side: portfolio_only, kinds: ["CONNECTED_BY_DEED:deed.held_since", "CONNECTED_BY_DEED:deed.linked_successor"], links: 3}
+      - {bbl: "2026140035", side: portfolio_only, kinds: ["CONNECTED_BY_DEED:deed.held_since", "CONNECTED_BY_DEED:deed.linked_successor"], links: 3}
+      - {bbl: "3023710040", side: portfolio_only, kinds: ["CONNECTED_BY_DEED:deed.held_since", "CONNECTED_BY_DEED:deed.linked_successor"], links: 3}
+      - {bbl: "3023930042", side: portfolio_only, kinds: ["CONNECTED_BY_DEED:deed.held_since", "CONNECTED_BY_DEED:deed.linked_successor"], links: 3}
+      - {bbl: "3031840001", side: portfolio_only, kinds: ["CONNECTED_BY_DEED:deed.held_since", "CONNECTED_BY_DEED:deed.linked_successor"], links: 3}

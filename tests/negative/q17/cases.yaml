@@ -1,0 +1,8 @@
+# Same format as tests/negative/q16/cases.yaml: bad data inside a transaction that is always rolled back.
+# Cases reuse the existing property key `status` (minted by the Q14 cases) so no new key token is created and the check keeps its catalog fast path.
+# The Q17-only keys (missing, lapsed, olderThanDeed, ...) are guarded by the check but not seeded here.
+cases:
+  - {name: lapsed status stored on a lot,                create: "MATCH (l:Lot) WITH l LIMIT 1 SET l.status = 'lapsed'", check: queries/checks/q17-computed-not-stored.cypher}
+  - {name: status stored on a building,                  create: "MATCH (b:Building) WITH b LIMIT 1 SET b.status = 'lapsed'", check: queries/checks/q17-computed-not-stored.cypher}
+  - {name: status stored on a registration,              create: "MATCH (r:Registration) WITH r LIMIT 1 SET r.status = 'ended'", check: queries/checks/q17-computed-not-stored.cypher}
+  - {name: status stored on a registration link,         create: "MATCH (:Building)-[h:HAS_REGISTRATION]->(:Registration) WITH h LIMIT 1 SET h.status = 'ended'", check: queries/checks/q17-computed-not-stored.cypher}

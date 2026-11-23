@@ -1,0 +1,10 @@
+# Q14.3 fixtures. HPD (2026-05-29) against ACRIS (frozen baseline, data/README.md). check_relation.py re-derives each from the source
+# (tests/q14_1/expected.sql, tests/q14_2/expected.sql and rule N3). A relation is a name lead, never a finding of the same party.
+cases:
+  - {bbl: "3008260002", date: "2026-01-15", basis: document, relation: coincide, label: "anchor A: the 2025 grantee equals the registered corporate owner (N3)"}
+  - {bbl: "3008260002", date: "2022-10-20", basis: document, relation: no-registration-in-force, label: "anchor A: a title holder is supported but no registration is in force (acceptable incomplete)"}
+  - {bbl: "3008380044", date: "2023-03-17", basis: document, relation: no-registration-in-force, label: "unrecorded deed plus a registration filed later"}
+  - {bbl: "3008770052", date: "2018-01-10", basis: document, relation: not-comparable, label: "only an individual owner is registered"}
+  - {bbl: "3008770052", date: "2019-06-01", basis: document, relation: no-registration-in-force, label: "lapsed registration"}
+  - {bbl: "3008070034", date: "2024-06-01", basis: document, relation: differ, label: "a 2016 grantee differs from the registered corporate owner in force: a conflict to report, not resolve"}
+  - {bbl: "3008260002", date: "1960-01-01", basis: document, relation: no-title-record, label: "no deed on or before the date"}

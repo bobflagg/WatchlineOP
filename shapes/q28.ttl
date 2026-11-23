@@ -1,0 +1,45 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix s2c:  <https://w3id.org/shacl2cypher#> .
+@prefix shp:  <https://watchline.example/shapes/> .
+
+# Q28 shapes: the rules OWL cannot express (ontology/ontology-notes.md, Q28 "Rules for Stage 6 shapes").
+# Compiled together with shapes/q01.ttl, which names Building, bin and TaxLot. The conditional rules (finding date only with a finding, keys only
+# with a respondent, no stored counts) are in queries/checks/q28-litigation.cypher.
+
+# --- Graph names ---
+onto:Litigation s2c:label "Litigation" .
+onto:hasLitigation s2c:relationship "HAS_LITIGATION" ; s2c:direction "out" .
+onto:litigationId s2c:property "litigationId" .
+onto:caseType s2c:property "caseType" .
+onto:caseOpenDate s2c:property "caseOpenDate" .
+onto:caseStatus s2c:property "caseStatus" .
+onto:openJudgement s2c:property "openJudgement" .
+onto:harassmentFinding s2c:property "harassmentFinding" .
+onto:findingDate s2c:property "findingDate" .
+onto:penalty s2c:property "penalty" .
+onto:respondent s2c:property "respondent" .
+
+# --- Rules ---
+shp:LitigationShape a sh:NodeShape ;
+    s2c:key "litigationId" ;
+    sh:targetClass onto:Litigation ;
+    # R1 required properties present and typed; open judgement and finding are the HPD enums; optional ones typed when present
+    sh:property [ sh:path onto:litigationId ; sh:minCount 1 ; sh:datatype xsd:integer ] ;
+    sh:property [ sh:path onto:caseType ; sh:minCount 1 ; sh:datatype xsd:string ] ;
+    sh:property [ sh:path onto:caseStatus ; sh:minCount 1 ; sh:datatype xsd:string ] ;
+    sh:property [ sh:path onto:openJudgement ; sh:minCount 1 ; sh:datatype xsd:string ; sh:in ( "YES" "NO" ) ] ;
+    sh:property [ sh:path onto:caseOpenDate ; sh:datatype xsd:date ] ;
+    sh:property [ sh:path onto:harassmentFinding ; sh:datatype xsd:string ; sh:in ( "After Inquest" "After Trial" "No Harassment" ) ] ;
+    sh:property [ sh:path onto:findingDate ; sh:datatype xsd:date ] ;
+    sh:property [ sh:path onto:penalty ; sh:datatype xsd:integer ; sh:minInclusive 0 ] ;
+    sh:property [ sh:path onto:respondent ; sh:datatype xsd:string ] ;
+    # R2 exactly one building carries each case
+    sh:property [ sh:path [ sh:inversePath onto:hasLitigation ] ; sh:minCount 1 ; sh:maxCount 1 ] .
+
+shp:BuildingLitigationShape a sh:NodeShape ;
+    s2c:key "bin" ;
+    sh:targetClass onto:Building ;
+    # R2 HAS_LITIGATION ends on a case
+    sh:property [ sh:path onto:hasLitigation ; sh:class onto:Litigation ] .

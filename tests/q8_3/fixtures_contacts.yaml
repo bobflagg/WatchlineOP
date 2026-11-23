@@ -1,0 +1,15 @@
+# Q8.3 expected HPD contacts behind each landlord record (BOR release v0.3.0, run 2026-05-29-869bd299).
+# check_contacts.py re-derives the release side from node_observations and observation_contacts, so a stale fixture fails.
+# Person names are not repeated: only the registration and the contact type are listed.
+landlords:
+  - {nodeId: 98617, groupId: ON-98617, contacts: [[350423, HeadOfficer]], note: "anchor C: the owners corporation's head officer"}
+  - {nodeId: 98618, groupId: ON-98617, contacts: [[309029, HeadOfficer], [309739, IndividualOwner], [374013, IndividualOwner]], note: "three registrations, three contacts"}
+  - {nodeId: 98619, groupId: ON-98617, contacts: [[328096, HeadOfficer]]}
+totals:
+  selected_contact_keys: 71237      # distinct (landlord, registration, type, corporation name, person name) of the selected observations
+  landlords_with_a_selected_contact: 30940
+  by_type: {HeadOfficer: 60783, IndividualOwner: 7916, JointOwner: 2538}
+  keys_not_held: 70                 # on a registration the graph does not hold (no valid BIN); not linked, not created
+  keys_linked: 71167                # held in the graph; 71165 match one contact, 2 match several that differ only in title
+  links: 71169
+  landlords_linked: 30922           # 18 landlords have only unheld keys

@@ -1,0 +1,9 @@
+# Q14.2 fixtures. hpd_registrations and hpd_contacts (frozen baseline, 2026-05-29). check_registrations.py re-derives each from the source with
+# tests/q14_2/expected.sql. The source has no period start, so a registration last filed after the date is "registered-later", not in force.
+cases:
+  - {bbl: "3008260002", date: "2022-10-20", registrations: 1, status: {"3014788|316103": "registered-later"}, label: "anchor A: last registered 2025-09-30, so nothing is in force on a 2022 date (today's version of the past)"}
+  - {bbl: "3008260002", date: "2026-01-15", registrations: 1, status: {"3014788|316103": "in-force"}, label: "anchor A: registered 2025-09-30 to 2026-09-01"}
+  - {bbl: "3008770052", date: "2018-01-10", registrations: 1, status: {"3016980|366578": "in-force"}, has_individual_owner: true, label: "an individual owner: in force, not comparable by name"}
+  - {bbl: "3008770052", date: "2019-06-01", registrations: 1, status: {"3016980|366578": "ended"}, label: "the registration ended 2018-09-01: a lapsed registration"}
+  - {bbl: "3008070034", date: "2024-06-01", registrations: 1, status: {"3013909|359794": "in-force"}, label: "corporate owner in force"}
+  - {bbl: "3008070034", date: "2025-01-01", registrations: 1, status: {"3013909|359794": "ended"}, label: "ended 2024-09-30"}

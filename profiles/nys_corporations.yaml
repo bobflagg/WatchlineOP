@@ -8,16 +8,16 @@ queried_on: 2026-11-13
 key: dosid
 key_notes: "dosid is unique and never null. Names repeat (998 names carry two or more dosids). Active entities only: a dissolved entity is absent. Not read: county, ceoname (filled on 474464 records, none an LLC) and locationname (filled on 346016, none an LLC); the answer says 'not carried for this entity type'."
 columns:
-  - {name: dosid, physical_type: integer, allowed: positive integer, sentinels: none, used_by: [Q5.1], notes: "Unique. The DOS id."}
-  - {name: currententityname, physical_type: text, allowed: free text, sentinels: {blank: "none (0 null or blank)"}, used_by: [Q5.1], notes: "Names carry periods, commas and apostrophes. Matched by rule N3 (compare.py), stored trimmed, otherwise as recorded."}
-  - {name: initialdosfilingdate, physical_type: date, allowed: "1800-02-16 to 2026-07-06", sentinels: none, used_by: [Q5.1], notes: "Never null. The earliest dates are pre-1900 and kept as recorded. The maximum is the table's data-through date."}
-  - {name: jurisdiction, physical_type: text, allowed: "state or country name (81 distinct)", observed: {New York: 3895871, Delaware: 195961, "New Jersey": 28803, Florida: 11562, California: 11336}, sentinels: {null_or_blank: "no jurisdiction (12603 of 4242054)"}, used_by: [Q5.1], notes: "Absent when blank (273 of the 119999 loaded records)."}
+  - {name: dosid, physical_type: integer, allowed: positive integer, sentinels: none, used_by: [Q5.1, Q22.1], notes: "Unique. The DOS id."}
+  - {name: currententityname, physical_type: text, allowed: free text, sentinels: {blank: "none (0 null or blank)"}, used_by: [Q5.1, Q22.1], notes: "Names carry periods, commas and apostrophes. Matched by rule N3 (compare.py), stored trimmed, otherwise as recorded."}
+  - {name: initialdosfilingdate, physical_type: date, allowed: "1800-02-16 to 2026-07-06", sentinels: none, used_by: [Q5.1, Q22.1], notes: "Never null. The earliest dates are pre-1900 and kept as recorded. The maximum is the table's data-through date."}
+  - {name: jurisdiction, physical_type: text, allowed: "state or country name (81 distinct)", observed: {New York: 3895871, Delaware: 195961, "New Jersey": 28803, Florida: 11562, California: 11336}, sentinels: {null_or_blank: "no jurisdiction (12603 of 4242054)"}, used_by: [Q5.1, Q22.1], notes: "Absent when blank (273 of the 119999 loaded records)."}
   - name: entitytype
     physical_type: text
     allowed: free text, 54 distinct types, spelled as DOS spells them
     observed: {"DOMESTIC LIMITED LIABILITY COMPANY": 2022391, "DOMESTIC BUSINESS CORPORATION": 1446247, "DOMESTIC NOT-FOR-PROFIT CORPORATION": 286303, "FOREIGN LIMITED LIABILITY COMPANY": 170990, "FOREIGN BUSINESS CORPORATION": 133805}
     sentinels: none
-    used_by: [Q5.1]
+    used_by: [Q5.1, Q22.1]
     notes: "Never null. Kept as recorded; no scheme, because DOS owns the list."
   - {name: dosprocessname, physical_type: text, allowed: free text, sentinels: {null_or_blank: "no process name (71726)", default: "'THE COMPANY' and 'THE LIMITED LIABILITY COMPANY' are the statutory default (97518), not a person"}, used_by: [Q5.2], notes: "Can be the entity's own name, a person or a service company. Where service goes, not who runs the entity."}
   - {name: dosprocessaddress1, physical_type: text, allowed: free text, sentinels: {null_or_blank: "71750"}, used_by: [Q5.2], notes: "Street line, as recorded."}

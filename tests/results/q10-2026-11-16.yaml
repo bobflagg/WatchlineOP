@@ -1,0 +1,20 @@
+# Q10 acceptance results, 2026-11-16. Database-backed checks run by the user on the rebuilt graph ("tests passed").
+question: Q10
+fixture_version: verified against the frozen baseline (2026-11-16)
+baseline: "Frozen baseline recorded 2026-11-16 in data/README.md: justfixwow-poc-baseline_2026-11-16.sql.gz, SHA-256 9124f6c0d0f0d2e453f1971247ed29c217d3d4b5f55338d95344e04a617b6278. BOR release v0.3.0 (file bor-v0.3.0-justfixwow-2026-05-29.zip, SHA-256 b085ac37ea818dae65b395fec7750fd3afcfa3da47c499ced6743fbfc4124223, run 2026-05-29-869bd299)."
+acceptance:
+  graph:
+    status: passed
+    reason: "baseline identified 2026-11-16; every graph check passed"
+    evidence:
+      sub_question_checks: "tests/q10_1 to q10_3 passed (user-reported 2026-11-16, release v0.3.0)"
+      shapes_and_ontology: "no new elements; no change since make shapes 414/414 and make profiles 695/695"
+  retrieval_extraction:
+    status: pending
+    reason: "not declared for Q10"
+  investigation:
+    status: pending
+    reason: "not declared for Q10"
+open_points:
+  - "Networks and portfolios are derived, run-local groupings (run 2026-05-29-869bd299); neither is the true list of an owner's buildings."
+  - "13 spanning portfolios in the graph (rental lots) against 14 in the release; OP-51862 spans two networks only through non-rental lots."

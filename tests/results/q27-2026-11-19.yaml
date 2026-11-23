@@ -1,0 +1,26 @@
+# Q27 acceptance results, 2026-11-19. Stage 6 written; shapes compile offline (242 rules over Q1 to Q27). Graph acceptance pending the user's runs.
+question: Q27
+fixture_version: verified against the frozen baseline (2026-11-16) by the checks once run
+baseline: "Frozen baseline recorded 2026-11-16 in data/README.md: justfixwow-poc-baseline_2026-11-16.sql.gz, SHA-256 9124f6c0d0f0d2e453f1971247ed29c217d3d4b5f55338d95344e04a617b6278."
+tools:
+  shacl2cypher: "0.3.0, strict mode; all 242 rules over Q1 to Q27 compile, no static diagnostics; coverage names and negative-case rules match (offline)"
+acceptance:
+  graph:
+    status: pending
+    reason: "not yet run on the loaded graph: the user runs make test K=q27, make shapes, make ontology and make thesaurus (make profiles passed 1221/1221 on the loaded graph at stage 2)"
+    evidence:
+      shapes: "shapes/q27.ttl: ProblemShape (seven typed properties, type and status enums, exactly one incoming HAS_PROBLEM) and BuildingProblemShape (HAS_PROBLEM ends on a Problem); 19 compiled rules"
+      supplemental_checks: "queries/checks/q27-problems.cypher (HAS_PROBLEM from buildings only and property-free; no stored count, total, rate or units; no problem before 2021-01-01; problem keeps seven properties)"
+      negative_cases: "24 in tests/negative/q27/cases.yaml (14 shape, 1 native constraint, 9 supplemental check)"
+      sub_question_checks: "tests/q27_1 (type, category and status counts, duplicates, distinct complaints, dates, load totals) and tests/q27_2 (rate, null for 0 or absent units, one row per lot) compare lookups with independent SQL; anchor C 2023 to 2025: 27 problems (12 emergency, 2 immediate emergency, 13 non-emergency), none open, 1 flagged duplicate, 32 units, 0.84375"
+  retrieval_extraction:
+    status: pending
+    reason: "not declared for Q27"
+  investigation:
+    status: pending
+    reason: "not declared for Q27"
+open_points:
+  - "Excluded problems: 27,561 since 2021-01-01 on registered lots (8,461 no usable BIN, 19,100 BIN not a registered building), counted by the loader and test."
+  - "Loaded window starts 2021-01-01 (user choice); a period starting earlier is answered for 2021 onward and says so."
+  - "Status is OPEN or CLOSE for the problem at the snapshot (2026-07-07); the complaint status, minor category and the apartment are not loaded."
+  - "OOPS! (make oops) pending: expect P11 and P13 only."

@@ -1,0 +1,27 @@
+# Q13.1 fixtures. real_property_master and real_property_legals (frozen baseline, data/README.md). check_documents.py re-derives each from the source,
+# so a stale fixture fails. Counting unit: distinct documents (a document on several lots counts once).
+lots:
+  - bbl: "3008070024"
+    label: "anchor C (438 52 Street): 17 documents, no satisfaction after the 2002, 2005 or 2015 mortgages"
+    documents: 17
+    by_type: {MTGE: 6, ASST: 3, SAT: 2, AGMT: 3, "AL&R": 2, SAGE: 1}
+    witnesses:
+      - {id: "BK_8030114900597", type: MTGE, recorded: "1980-03-24", docdate: "1980-03-24", amount: 0}      # a $0 mortgage, kept as recorded
+      - {id: "FT_3660005404666", type: MTGE, recorded: "1996-10-31", docdate: null, amount: 500000}          # old document, no document date
+      - {id: "2015032301122001", type: MTGE, recorded: "2015-04-08", docdate: "2015-03-20", amount: 1546326}
+      - {id: "2015032301122003", type: "AL&R", recorded: "2015-04-08", docdate: "2015-03-20", amount: 3200000}
+  - bbl: "3008260002"
+    label: "anchor A (5413 7 Avenue): a termination of lease and rent assignment but no satisfaction after the 2021 mortgage"
+    documents: 11
+    by_type: {MTGE: 4, ASST: 1, SAT: 2, AGMT: 1, "AL&R": 1, "TL&R": 1, SAGE: 1}
+    witnesses:
+      - {id: "2021031601183001", type: MTGE, recorded: "2021-03-22", docdate: "2021-02-16", amount: 8750000}
+      - {id: "2023061200959001", type: "TL&R", recorded: "2023-06-15", docdate: "2023-02-14", amount: 0}
+      - {id: "2023061400729001", type: SAGE, recorded: "2023-06-16", docdate: "2023-02-09", amount: 0}
+  - bbl: "3008080001"
+    label: "a multi-lot mortgage: one document on two lots, counted once on each"
+    witnesses:
+      - {id: "2003060300708001", type: MTGE, recorded: "2003-08-07", docdate: "2003-04-15", amount: 65444, other_lots: 1}
+  - bbl: "1000077501"
+    label: "a registered lot with no financing document in the snapshot: an empty list, not a finding"
+    documents: 0

@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: a masked address has one id (maskedAddressId is functional).
+id:bad-1 a onto:NetworkMaskedAddress ; onto:maskedAddressId "A0000011", "A0000025" .

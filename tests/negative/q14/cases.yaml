@@ -1,0 +1,7 @@
+# Same format as tests/negative/q13/cases.yaml: bad data inside a transaction that is always rolled back.
+cases:
+  - {name: registration status stored on a registration, create: "MATCH (r:Registration) WITH r LIMIT 1 SET r.status = 'in-force'", check: queries/checks/q14-computed-not-stored.cypher}
+  - {name: supporting flag stored on a deed,   create: "MATCH (d:Deed) WITH d LIMIT 1 SET d.supporting = true", check: queries/checks/q14-computed-not-stored.cypher}
+  - {name: relation stored on a lot,           create: "MATCH (l:Lot) WITH l LIMIT 1 SET l.relation = 'coincide'", check: queries/checks/q14-computed-not-stored.cypher}
+  - {name: status stored on a registration link, create: "MATCH (:Building)-[h:HAS_REGISTRATION]->(:Registration) WITH h LIMIT 1 SET h.status = 'ended'", check: queries/checks/q14-computed-not-stored.cypher}
+  - {name: period dates stored on a registration node, create: "MATCH (r:Registration) WITH r LIMIT 1 SET r.registrationEnd = date('2018-09-01')", check: queries/checks/q14-computed-not-stored.cypher}

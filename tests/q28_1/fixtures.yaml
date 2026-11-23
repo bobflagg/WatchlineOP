@@ -1,0 +1,39 @@
+# Q28.1 fixtures. hpd_litigations (data through 2026-07-09) and hpd_registrations (frozen baseline, data/README.md).
+# check_litigation.py re-derives each from the source, so a stale fixture fails. Counting unit: cases. No person's name is recorded here.
+buildings:
+  - bin: "3013901"
+    label: "anchor C (438 52 Street): one closed Tenant Action opened 2023-05-15, no finding, no penalty"
+    cases: 1
+    expect: {litigationId: 424938, caseType: "Tenant Action", opened: "2023-05-15", status: "CLOSED", judgement: "NO", finding: null, penalty: null}
+  - bin: "3014788"
+    label: "anchor A (5413 7 Avenue): several cases, some with several respondents; counts re-derived, not fixed here"
+    derived: true
+  - bin: "1020357"
+    label: "a case with a harassment finding After Trial, a finding date and a penalty (246506)"
+    expect: {litigationId: 246506, finding: "After Trial", found: "2017-09-22", penalty: 2000}
+  - bin: "3045120"
+    label: "a finding After Inquest with no finding date (345749): the date is absent, not invented"
+    expect: {litigationId: 345749, finding: "After Inquest", found: null, penalty: 5590}
+  - bin: "2048825"
+    label: "a case with no open date (386): absent, kept"
+    expect: {litigationId: 386, opened: null}
+  - bin: "2008519"
+    label: "a case opened 2030-10-05 (376899): source error, kept as recorded and counted"
+    expect: {litigationId: 376899, opened: "2030-10-05"}
+  - bin: "3389884"
+    label: "a case opened 1930-02-26 (367324): source error, kept as recorded and counted"
+    expect: {litigationId: 367324, opened: "1930-02-26"}
+  - bin: "1053600"
+    label: "a case with no respondent (31582): absent, not an empty string"
+    expect: {litigationId: 31582, respondent: null}
+out_of_scope:
+  # a case whose BIN is not a registered building is absent from the graph
+  rows: 1483
+totals:
+  loaded: 210169
+  no_open_date: 289
+  before_1990: 3
+  after_snapshot: 1
+  findings: 217
+  no_harassment: 5990
+  no_respondent: 2919

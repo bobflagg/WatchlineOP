@@ -83,7 +83,7 @@ def main() -> int:
                     so = [n for _, n in cur.fetchall()]
                     src = sorted((sql_outcome(g, o) for g in sg for o in so))
                     rec = session.run(lookup, bbl=bbl).single()
-                    got = sorted(name_agreement(g["name"], o["name"])["outcome"] for g in rec["grantees"] for o in rec["owners"]) if rec else None
+                    got = sorted(name_agreement(g["name"], o["corporationName"] if o["contactType"] == "CorporateOwner" else o["personName"])["outcome"] for g in rec["grantees"] for o in rec["owners"]) if rec else None
                     if "expect" in f:
                         exp = sorted(o for _, _, o, _ in f["expect"])
                         check(f"{bbl} source pairs match the fixture", src == exp, f"source gives {src}")

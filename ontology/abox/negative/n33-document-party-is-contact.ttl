@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: DocumentParty and Contact are disjoint. A party on an ACRIS document is not an HPD contact, even with the same name.
+id:bad-party-1 a onto:DocumentParty, onto:Contact .

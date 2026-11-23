@@ -1,0 +1,11 @@
+# Q7.1 fixtures. verified against the frozen baseline recorded in data/README.md (2026-11-16). Names are entities, never people.
+# addresses: expected hub registrations per shared address (HPD registrations that carry it, valid-BIN registrations only). Checked read-only 2026-11-16.
+pairs:
+  - a: "5413 PLAZA LLC"
+    b: "702 PLAZA LLC"
+    registrationsA: 1
+    registrationsB: 1
+    addresses:
+      - {street: "746 61ST STREET", zip5: "11220", registrations: 2}
+    sharedPeople: 2   # count only; names are never stored. The two registrations share two people (by name), as recorded by HPD
+    note: "anchors A and B; both are CorporateOwner (HPD spells one '702 Plaza LLC', equal under N3); 5413 PLAZA LLC is on registration 316103"

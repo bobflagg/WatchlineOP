@@ -1,0 +1,22 @@
+# Q25 downstream contract (retrieval-extraction). WatchlineOP does not run it; results stay pending until the downstream consumer
+# passes it on a versioned, replayable retrieval cache that the user supplies (like Q5.4, Q11.5 and Q16). No cache exists yet.
+question: Q25
+cache_needed: "versioned retrieval cache: for each case, the registry, query, retrieval date, the response page text or status and any 'needs payment' or login wall"
+entry:   # Q25.1, read from the graph (DosEntity); never from the cache
+  required: [entityName, jurisdiction, recordedBy]
+search_record:   # one per registry searched; field names from profiles/q25.yaml
+  required: [registry, query, retrievedOn, outcome, sourceCategory, matchBasis, reviewStatus]
+  when_record_found: [filingId, status, filingDate]
+  optional: [registeredAgent]   # absent when not public; never inferred
+unresolved_lead: [leadStep, stopReason]
+rules:
+  - "the recorded jurisdiction comes from the DOS record that states it; an entity with no recorded jurisdiction is not a Q25 entry"
+  - "outcome is one of registry-record-found, registry-status-only, registry-no-record, registry-unreachable; an unreachable registry is never an answer about the entity and is never reported as no record"
+  - "a step that needs payment or an account is an unresolved lead with stopReason needs-payment; the agent does not pay or bypass access"
+  - "a name match in another state is matchBasis lead-only unless a record other than the name connects the two; a similar name is reported as a lead about a different entity"
+  - "reviewStatus starts item-unreviewed; the project never sets confirmed or refuted"
+  - "registry findings are session evidence (sourceCategory public-record) and never loaded into the graph; officers and owners are reported only when the registry publishes them"
+  - "every search is stated with registry, query and retrieval date; nothing found is 'no record in the registry searched', never 'does not exist'"
+cases:   # fill from the cache
+  ordinary: [New Jersey entity with a public record (filing id and agent, with retrieval date)]
+  difficult: [Delaware entity showing name and status only (next step needs payment), similarly named entity in another state, registry unreachable, no record found]

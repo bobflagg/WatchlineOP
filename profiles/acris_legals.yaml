@@ -7,6 +7,6 @@ queried_on: 2026-11-12
 key: none
 key_notes: "A document names many lots (8031 of 160873 newest deeds on registered lots). (documentid, bbl) can repeat across versions; distinct pairs are used. A lot removed from a later version of a document cannot be detected."
 columns:
-  - {name: documentid, physical_type: text, allowed: free text id, sentinels: none, used_by: [Q3.1], notes: "Joins to the master."}
-  - {name: bbl, physical_type: "char(10)", allowed: "10 digits; first digit 1 to 5", sentinels: none, used_by: [Q3.1], notes: "Never null or malformed. Easement, air-rights and subterranean flags are not read."}
+  - {name: documentid, physical_type: text, allowed: free text id, sentinels: none, used_by: [Q3.1, Q12.1, Q13.1, Q14.1, Q17.3], notes: "Joins to the master."}
+  - {name: bbl, physical_type: "char(10)", allowed: "10 digits; first digit 1 to 5", sentinels: none, used_by: [Q3.1, Q12.1, Q13.1, Q14.1, Q17.3], notes: "Never null or malformed. Easement, air-rights and subterranean flags are not read."}
   - {name: goodthroughdate, physical_type: date, allowed: a date, sentinels: none, used_by: [Q3.1], notes: "Snapshot date of the table (2026-05-31). Dataset provenance only."}

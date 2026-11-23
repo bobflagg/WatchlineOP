@@ -1,0 +1,145 @@
+# Source profile: BOR release v0.3.0 (Owner Portfolio and Operational Network layers). Facts about the source only.
+# Profiled 2026-11-13 from release v0.2.1, re-profiled 2026-11-15 for v0.3.0 (run 2026-05-29-869bd299); only the tables and columns Q6, Q8 and Q9 read are listed.
+source_key: bor_layers
+kind: release
+data_through: 2026-05-29
+queried_on: 2026-11-13
+tables:
+  groups:
+    key: "layer, group_id"
+    row_count: 16196
+    notes: "Operational Network: 9673 rows (9627 wcc, 46 louvain). Owner Portfolio: 6523 rows (6451 identity, 61 deed_only, 11 deed_bridged). lot_count equals total_lot_count in every Operational Network row."
+  group_bbls:
+    key: "layer, bbl"
+    row_count: 114986
+    notes: "Operational Network: 71256 lots, each in exactly one network; none is a single-lot network; largest has 424 lots; all rental. Owner Portfolio: 43730 lots, 43318 rental and 412 co-op or condo lots outside the footprint (rental False), each in one portfolio; 53 portfolios have one rental lot; largest has 424. A BBL is well formed in every row."
+  bbl_status:
+    key: "layer, bbl"
+    row_count: 1717250
+    notes: "One row per PLUTO lot and layer (858625 per layer, no duplicates). Owner Portfolio: 43318 in_group, 412 excluded_from_footprint (coop_condo_excluded, keeps its group id), 814895 not_in_group; 18 detail codes. Operational Network: 71256 in_group, 787369 not_in_group. in_group rows equal group_bbls exactly; a not_in_group row has no group_id."
+  network_membership:
+    key: node_id
+    row_count: null
+    notes: "node_id to component_id, community_id (louvain only) and operational_network_id. 30924 nodes have a network. Q8.3 reads node_id and operational_network_id. Q19.3 checks component_id: all 30924 nodes have one (NC-<n>); community_id is set for the 380 nodes in Louvain communities."
+  method_metrics:
+    key: "stage, metric"
+    row_count: 18
+    notes: "Profiled 2026-11-19 for Q19.4. Nine stages (six that join portfolio landlords, three network stages), two metrics each (precision_inclusive, precision_strict). No row has a precision value; provisional is True on all 18 and adjudication_status is none. The note column says why a stage was not evaluated."
+  node_observations:
+    key: "node_id, bbl"
+    row_count: null
+    notes: "One row per node and lot where the landlord record appears, with the HPD registration BOR used (n_candidates, ambiguous say how sure). Q8.3 reads rows of nodes that have a network: 71256, one per lot."
+  graph_edges:
+    key: edge_id
+    row_count: 313458
+    notes: "New in release v0.3.0: every edge of both graphs, one row per (node pair, stage, evidence), node_a < node_b. Kept 83153 (Owner Portfolio 15338: identity.splink_base 10071, identity.splink_feedback 1671, identity.registered_llc 2379, identity.curated 194, deed.held_since 943, deed.linked_successor 80; Operational Network 67815: network.address 49027, network.identity 14206, network.name 4582). Set aside 230305, all network.address with drop_reason address_mask, cited to one of the 73 masked addresses (301 to 27250 each; an edge touching two is cited to the lower id). No deed edge was dropped at the hub cap in this run. Kept edges with no group_id: 1202 (network 430: edges across a boundary or outside a network; portfolio 772: groups BOR dropped as co-op or condo dominated). Identity evidence feeds both layers: 14315 portfolio rows, 14206 network rows (a registered-LLC pair two entities share counts once in the network and cites the first set). The network rows of a pair sum to the old network_edges row. Deed edges never enter the network."
+  node_names:
+    key: node_id
+    row_count: 118493
+    notes: "New in v0.3.0 reading: the landlord name of each node (a Who Owns What landlords_with_connections row), one per node, none blank; some carry leading punctuation (',MARIA CROSS'). The file has no business address column despite its description; the address is reached through node_observations.selected_observation_id and observation_contacts. Q8.3 reads the 31035 nodes that are group members."
+  observation_contacts:
+    key: observation_id
+    row_count: 209029
+    notes: "The HPD contact an observation stands for, with its business address as filed (house, street, apartment, city, state, zip). Q8.3 reads the address of the selected observation of each landlord's lots. Of the 31035 landlords, 27824 have one distinct address, 3116 have two or more (mostly spelling variants such as BROOKLYN, BROOKYLN, Brooklyn), 95 have no selected observation."
+  group_members:
+    key: "layer, node_id"
+    row_count: 46547
+    notes: "Node partition: a node is in at most one group per layer. Owner Portfolio: 15623 nodes in 6523 groups, 15512 also in a network, 111 only in a portfolio. 115 portfolio nodes cover no rental lot (only co-op or condo lots outside the footprint)."
+  masked_addresses:
+    key: address_id
+    row_count: 73
+    notes: "Operational Network address masks, one row per masked address text: one method (network_address_edge_mask), one normalizer version (c92693351768), one threshold (25 landlord nodes), one decision (masked); degree 26 to 216. The text is uppercase, with the city and ZIP removed and floor and unit text kept. The release has no ZIP. Q6.2 reads it; masked_address_nodes.csv (4117 node links) is not read."
+  identity_names:
+    key: identity_id
+    row_count: 145412
+    notes: "The name and business address that define an identity. Q6.3 reads the address of the 5298 identities masked as address evidence: house, street and apartment joined by single spaces with blanks left out gives 579 distinct texts (39 texts sit under more than one ZIP; one identity has no ZIP). An internal double space in the filed text is kept ('199 LEE  AVENUE 760')."
+  decision_events:
+    key: decision_id
+    row_count: null
+    notes: "Q6.3 reads only the address-related events: 73 rows (layer operational_network, subject_type address, rule aggregator_address_mask) and 5298 rows (layer identity, stage identity.splink_base, subject_type identity, rule splink_address_evidence_mask, detail holds only addr_degree). The Owner Portfolio mask is recorded on identities, never on addresses; Q6.3 derives the address of each masked identity from identity_names (579 distinct texts, one addr_degree each)."
+columns:
+  - {name: groups.layer, physical_type: text, allowed: [owner_portfolio, operational_network], sentinels: none, used_by: [Q8.1, Q9.1], notes: "Q8 reads operational_network rows only."}
+  - {name: groups.group_id, physical_type: text, allowed: "ON-<n> for Operational Networks, n = the smallest node id", sentinels: none, used_by: [Q8.1, Q9.1], notes: "Run-local: it means something only inside this run."}
+  - {name: groups.split, physical_type: text, allowed: [wcc, louvain], sentinels: none, used_by: [Q8.1], notes: "wcc: the whole connected component. louvain: a community cut from a component of more than 300 lots. Null for Owner Portfolios."}
+  - {name: group_bbls.layer, physical_type: text, allowed: [owner_portfolio, operational_network], sentinels: none, used_by: [Q8.2, Q9.2], notes: ""}
+  - {name: group_bbls.group_id, physical_type: text, allowed: "references groups", sentinels: none, used_by: [Q8.2, Q9.2], notes: ""}
+  - {name: group_bbls.bbl, physical_type: "text (10 digits)", allowed: "10 digits; first digit 1 to 5", sentinels: none, used_by: [Q8.2, Q9.2], notes: "All 71256 Operational Network lots are Lots in the Q1 graph."}
+  - {name: bbl_status.layer, physical_type: text, allowed: [owner_portfolio, operational_network], sentinels: none, used_by: [Q8.4, Q9.5], notes: ""}
+  - {name: bbl_status.bbl, physical_type: "text (10 digits)", allowed: "10 digits; first digit 1 to 5", sentinels: none, used_by: [Q8.4, Q9.5], notes: "Covers PLUTO lots only. 1009 Lots in the graph (HPD lots missing from PLUTO) have no row."}
+  - {name: bbl_status.status, physical_type: text, allowed: [in_group, not_in_group, excluded_from_footprint], sentinels: none, used_by: [Q8.4, Q9.5], notes: "excluded_from_footprint occurs only in Owner Portfolios: a co-op or condo lot in a published group but outside its rental footprint (412)."}
+  - name: bbl_status.top_level_reason
+    physical_type: text
+    allowed: [no_qualifying_linkage, excluded_by_policy, below_eligibility_rule, outside_source_coverage, outside_method_input]
+    sentinels: {blank: "in_group rows"}
+    used_by: [Q8.4, Q9.5]
+    notes: "Operational Network not_in_group lots: no_qualifying_linkage 92991, outside_source_coverage 677771, outside_method_input 9507, excluded_by_policy 5583, below_eligibility_rule 1517. In the graph's scope: 92991, 32936, 9507, 5583, 1517."
+  - name: bbl_status.reason_code
+    physical_type: text
+    allowed: [no_linkage, no_registration, no_owner_contact, aggregator_address_masked, address_evidence_masked, first_name_veto, common_name_veto, shared_company_degree_unknown, shared_company_name_not_rare, shared_company_first_name_conflict, shared_company_degree_cap, unmatched_node, coop_condo_excluded, coop_condo_dominated, institutional_screen, deed_not_latest, deed_parcels_out_of_range, successor_not_shell, successor_transfer_not_nominal]
+    sentinels: {blank: "in_group rows"}
+    used_by: [Q8.4, Q9.5]
+    notes: "19 of the release's 24 detail codes occur across the two layers: 11 in Operational Network, 18 in Owner Portfolio (10 shared; aggregator_address_masked only in networks). The other 5 (not_latest_registration, deed_hub_capped, curated_exclusion, group_below_min_size, pair_below_threshold) occur in neither."
+  - {name: network_membership.node_id, physical_type: integer, allowed: "node id of a Who Owns What landlord record", sentinels: none, used_by: [Q8.3], notes: "Run-local."}
+  - {name: network_membership.operational_network_id, physical_type: text, allowed: "references groups", sentinels: {blank: "nodes with no network"}, used_by: [Q8.3], notes: ""}
+  - {name: network_membership.component_id, physical_type: text, allowed: "NC-<n>, n the smallest node id of the connected component", sentinels: none, used_by: [Q19.3], notes: "The connected component before any Louvain cut. Two nodes of different networks can share it; Q19.3 compares it with a path over the network's links."}
+  - {name: method_metrics.stage, physical_type: text, allowed: [identity.splink_base, identity.splink_feedback, identity.curated, identity.registered_llc, deed.held_since, deed.linked_successor, network.identity, network.name, network.address], sentinels: none, used_by: [Q19.4], notes: "Two rows per stage (precision_inclusive, precision_strict)."}
+  - {name: method_metrics.precision, physical_type: numeric, allowed: "0 to 1 when evaluated", sentinels: {blank: "the stage was not evaluated; the note column says why"}, used_by: [Q19.4], notes: "Blank on all 18 rows in release v0.3.0. A figure is a benchmark property of the stage on its sample, never the probability that one link is correct."}
+  - {name: method_metrics.provisional, physical_type: boolean, allowed: ["True", "False"], sentinels: none, used_by: [Q19.4], notes: "True on all 18 rows: the gold standard is provisional (human_llm_provisional)."}
+  - {name: node_observations.node_id, physical_type: integer, allowed: "references network_membership", sentinels: none, used_by: [Q8.3, Q9.3], notes: ""}
+  - {name: node_observations.bbl, physical_type: "text (10 digits)", allowed: "10 digits", sentinels: none, used_by: [Q8.3, Q9.3], notes: ""}
+  - {name: node_observations.registration_id, physical_type: integer, allowed: "an HPD registration id", sentinels: none, used_by: [Q8.3, Q9.3], notes: "Asserted against hpd_registrations by tests/q8_3."}
+  - {name: node_observations.selected_observation_id, physical_type: text, allowed: "references observation_contacts; blank for 642 rows", sentinels: {blank: "no selected observation (95 landlords have none)"}, used_by: [Q8.3], notes: "The HPD contact WoW used for the landlord's lot; its business address is the landlord's address as filed for that lot."}
+  - {name: node_names.node_id, physical_type: integer, allowed: "references group_members", sentinels: none, used_by: [Q8.3, Q9.1], notes: ""}
+  - {name: node_names.name, physical_type: text, allowed: "any text as WoW holds it", sentinels: none, used_by: [Q8.3, Q9.1], notes: "Case and leading punctuation kept (',MARIA CROSS'); never blank for a group member. A name on a landlord record, not a legal owner."}
+  - {name: observation_contacts.observation_id, physical_type: text, allowed: "<registration>:<contact>:<k>", sentinels: none, used_by: [Q8.3], notes: ""}
+  - {name: observation_contacts.contact_type, physical_type: text, allowed: [HeadOfficer, IndividualOwner, JointOwner, Agent, CorporateOwner, Lessee], sentinels: none, used_by: [Q8.3], notes: "The HPD contact type of the observation, spelled as hpd_contacts.type. A selected observation is only HeadOfficer, IndividualOwner or JointOwner (60783, 7916 and 2538 distinct node, registration and name keys); the other types occur only as alternatives."}
+  - {name: observation_contacts.first_name, physical_type: text, allowed: "any text", sentinels: {blank: "no first name"}, used_by: [Q8.3], notes: "A personal name: matched to Contact.personName, never printed, stored in fixtures or logged."}
+  - {name: observation_contacts.middle_initial, physical_type: text, allowed: "any text", sentinels: {blank: "no middle initial"}, used_by: [Q8.3], notes: "As first_name."}
+  - {name: observation_contacts.last_name, physical_type: text, allowed: "any text", sentinels: {blank: "no last name"}, used_by: [Q8.3], notes: "As first_name."}
+  - {name: observation_contacts.corporation_name, physical_type: text, allowed: "any text", sentinels: {blank: "no corporation name"}, used_by: [Q8.3], notes: "Matched to Contact.corporationName exactly after trimming."}
+  - {name: observation_contacts.business_house, physical_type: text, allowed: "any text", sentinels: {blank: "no house number"}, used_by: [Q8.3], notes: "The business address parts are joined as '<house> <street> <apartment>, <city>, <state> <zip>' with blank parts left out; spelling and case are kept."}
+  - {name: observation_contacts.business_street, physical_type: text, allowed: "any text", sentinels: {blank: "no street"}, used_by: [Q8.3], notes: ""}
+  - {name: observation_contacts.business_apartment, physical_type: text, allowed: "any text", sentinels: {blank: "no apartment"}, used_by: [Q8.3], notes: ""}
+  - {name: observation_contacts.business_city, physical_type: text, allowed: "any text", sentinels: {blank: "no city"}, used_by: [Q8.3], notes: "Spelling varies for one address (BROOKLYN, BROOKYLN, Brooklyn); not normalized."}
+  - {name: observation_contacts.business_state, physical_type: text, allowed: "any text", sentinels: {blank: "no state"}, used_by: [Q8.3], notes: ""}
+  - {name: observation_contacts.business_zip, physical_type: text, allowed: "any text", sentinels: {blank: "no zip"}, used_by: [Q8.3], notes: ""}
+  - {name: groups.anchor_node_id, physical_type: integer, allowed: "references group_members of the same group", sentinels: none, used_by: [Q8.1, Q9.1], notes: "The member with the most lots (all lots of the node, co-op and condo included), ties to the smallest node id; never the owner or controller. Node ids are renumbered by every rebuild, so an anchor holds for this release only."}
+  - {name: graph_edges.layer, physical_type: text, allowed: [owner_portfolio, operational_network], sentinels: none, used_by: [Q8.3, Q9.3], notes: "Identity edges appear in both layers; deed edges in the portfolio only; name and address edges in the network only."}
+  - {name: graph_edges.edge_id, physical_type: text, allowed: "GE<7 digits>", sentinels: none, used_by: [Q8.3, Q9.3], notes: "Run-local. One id per layer row, so an identity edge has two."}
+  - {name: graph_edges.node_a, physical_type: integer, allowed: "less than node_b", sentinels: none, used_by: [Q8.3, Q9.3], notes: "A landlord record. An end can be outside the loaded Landlords (2 kept portfolio edges, all masked edges but 5012)."}
+  - {name: graph_edges.node_b, physical_type: integer, allowed: "greater than node_a", sentinels: none, used_by: [Q8.3, Q9.3], notes: ""}
+  - name: graph_edges.stage
+    physical_type: text
+    allowed: [identity.splink_base, identity.splink_feedback, identity.curated, identity.registered_llc, deed.held_since, deed.linked_successor, network.identity, network.name, network.address]
+    sentinels: none
+    used_by: [Q8.3, Q9.3]
+    notes: "A portfolio row has an identity or deed stage; a network row has a network stage. The network row of an identity edge says network.identity, so the portfolio row's stage is the one stored."
+  - {name: graph_edges.weight, physical_type: float, allowed: ">= 0", sentinels: {blank: "every Owner Portfolio row"}, used_by: [Q8.3], notes: "The network's weight: 1.5 times the name match, 1.0 times the address match, 100 for an identity edge. A pair's name and address rows sum the mutual matches the source lists twice."}
+  - {name: graph_edges.kept, physical_type: boolean, allowed: ["True", "False"], sentinels: none, used_by: [Q8.3, Q9.3, Q6.2], notes: "False for the 230305 address edges BOR masked. Only kept rows become relationships."}
+  - {name: graph_edges.drop_reason, physical_type: text, allowed: [address_mask, deed_hub_cap], sentinels: {blank: "every kept row"}, used_by: [Q6.2], notes: "Only address_mask occurs in this run."}
+  - {name: graph_edges.evidence_type, physical_type: text, allowed: [identity_cluster, link_set, evidence_item, masked_address], sentinels: {blank: "kept name and address rows"}, used_by: [Q8.3, Q9.3, Q6.2], notes: ""}
+  - {name: graph_edges.evidence_id, physical_type: text, allowed: "an id in identity_clusters, link_sets, evidence_items or masked_addresses", sentinels: {blank: "kept name and address rows"}, used_by: [Q8.3, Q9.3, Q6.2], notes: "Run-local."}
+  - {name: graph_edges.group_id, physical_type: text, allowed: "references groups", sentinels: {blank: "an edge across a network boundary, outside every group, or set aside"}, used_by: [Q8.3, Q9.3], notes: "The group of both ends in the row's own layer."}
+  - {name: groups.composition, physical_type: text, allowed: [identity, deed_only, deed_bridged], sentinels: {blank: "Operational Network rows"}, used_by: [Q9.1], notes: "Owner Portfolio rows only: 6451 identity, 61 deed_only, 11 deed_bridged."}
+  - {name: group_bbls.rental, physical_type: boolean, allowed: ["True", "False"], sentinels: none, used_by: [Q9.2], notes: "False marks a co-op or condo lot outside the published footprint (412, all in Owner Portfolios); it keeps its group id. Q9 loads membership for True rows only."}
+  - {name: group_members.layer, physical_type: text, allowed: [owner_portfolio, operational_network], sentinels: none, used_by: [Q9.3], notes: "Q9 reads owner_portfolio rows only."}
+  - {name: group_members.group_id, physical_type: text, allowed: "references groups", sentinels: none, used_by: [Q9.3], notes: ""}
+  - {name: group_members.node_id, physical_type: integer, allowed: "references node_observations", sentinels: none, used_by: [Q9.3], notes: "Run-local landlord record id. Every lot of a portfolio node is in group_bbls of the same group."}
+  - {name: masked_addresses.address_id, physical_type: text, allowed: "A<7 digits>", sentinels: none, used_by: [Q6.2], notes: "Run-local."}
+  - {name: masked_addresses.method, physical_type: text, allowed: [network_address_edge_mask], sentinels: none, used_by: [Q6.2], notes: "One value for every row; recorded once in data/sources.yaml, not on the node."}
+  - {name: masked_addresses.normalizer_version, physical_type: text, allowed: [c92693351768], sentinels: none, used_by: [Q6.2], notes: "One value for every row."}
+  - {name: masked_addresses.degree, physical_type: integer, allowed: "26 to 216", sentinels: none, used_by: [Q6.2], notes: "Landlord records (nodes) at the address."}
+  - {name: masked_addresses.degree_unit, physical_type: text, allowed: ["landlords (lwc nodes)"], sentinels: none, used_by: [Q6.2], notes: "One value for every row."}
+  - {name: masked_addresses.threshold, physical_type: integer, allowed: [25], sentinels: none, used_by: [Q6.2], notes: "One value for every row; an address is masked above it."}
+  - {name: masked_addresses.decision, physical_type: text, allowed: [masked], sentinels: none, used_by: [Q6.2], notes: "One value for every row."}
+  - {name: masked_addresses.address, physical_type: text, allowed: free text, sentinels: none, used_by: [Q6.2], notes: "Unique across rows. Uppercase; floor and unit text kept; no ZIP. 31 of the 73 texts are carried by at least one HPD contact."}
+  - {name: identity_names.identity_id, physical_type: text, allowed: "I<7 digits>", sentinels: none, used_by: [Q6.3], notes: "Joins decision_events.subject_id for the identity mask events."}
+  - {name: identity_names.business_house, physical_type: text, allowed: "any text", sentinels: {blank: "no house number"}, used_by: [Q6.3], notes: ""}
+  - {name: identity_names.business_street, physical_type: text, allowed: "any text", sentinels: {blank: "no street"}, used_by: [Q6.3], notes: "Uppercase, as filed."}
+  - {name: identity_names.business_apartment, physical_type: text, allowed: "any text", sentinels: {blank: "no apartment or floor"}, used_by: [Q6.3], notes: "Floor and unit text (9FLOOR, 1204) is part of the address text, as in the network mask."}
+  - {name: decision_events.subject_id, physical_type: text, allowed: "I<7 digits> for the identity mask events", sentinels: none, used_by: [Q6.3], notes: ""}
+  - {name: decision_events.detail, physical_type: "text (JSON)", allowed: "an object with addr_degree, an integer", sentinels: none, used_by: [Q6.3], notes: "26 to 281; one value per derived address text. Differs from the network degree for 28 of the 30 texts both methods masked."}
+  - {name: decision_events.layer, physical_type: text, allowed: [identity, operational_network], sentinels: none, used_by: [Q6.3], notes: "Only the rows named above are read."}
+  - {name: decision_events.stage, physical_type: text, allowed: [identity.splink_base, network.address], sentinels: none, used_by: [Q6.3], notes: ""}
+  - {name: decision_events.subject_type, physical_type: text, allowed: [identity, address], sentinels: none, used_by: [Q6.3], notes: "The Owner Portfolio mask has subject type identity."}
+  - {name: decision_events.rule, physical_type: text, allowed: [splink_address_evidence_mask, aggregator_address_mask], sentinels: none, used_by: [Q6.3], notes: ""}

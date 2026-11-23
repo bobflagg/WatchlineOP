@@ -1,0 +1,27 @@
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q11 example data. Values come from the verified fixtures in tests/q11_*/fixtures.yaml (ACRIS 2026-05-31, HPD contacts 2026-05-29,
+# DOS 2026-07-06). Q11 adds no ontology element: it reads the Q2 to Q9 elements. Person names are not repeated.
+
+# Q11.1: the anchor mortgage, current type MTGE. Party type 1 is the borrower and 2 the lender on a mortgage (the code is kept as recorded).
+id:mtge-2021031601183001 a onto:Document ; onto:documentId "2021031601183001" ; onto:documentType "MTGE" ;
+    onto:recordedDate "2021-03-22"^^xsd:date ; onto:documentAmount 8750000 ;
+    onto:hasParty id:mtge-party-5413, id:mtge-party-702, id:mtge-party-lender .
+id:mtge-party-5413 a onto:DocumentParty ; onto:partyName "5413 PLAZA LLC" ; onto:partyRole 1 .
+id:mtge-party-702 a onto:DocumentParty ; onto:partyName "702 PLAZA LLC" ; onto:partyRole 1 .
+id:mtge-party-lender a onto:DocumentParty ; onto:partyName "CONNECTONE BANK" ; onto:partyRole 2 .
+
+# Q11.2: the roles HPD records on anchor A's registration; the affiliation type is derived from the role and is not stored.
+id:reg-316103 a onto:Registration ; onto:registrationId 316103 ;
+    onto:hasContact id:q11-owner, id:q11-agent, id:q11-share, id:q11-site, id:q11-head .
+id:q11-owner a onto:Contact ; onto:contactType "CorporateOwner" ; onto:corporationName "5413 PLAZA LLC" .
+id:q11-agent a onto:Contact ; onto:contactType "Agent" .
+id:q11-share a onto:Contact ; onto:contactType "Shareholder" .
+id:q11-site  a onto:Contact ; onto:contactType "SiteManager" .
+id:q11-head  a onto:Contact ; onto:contactType "HeadOfficer" .
+
+# Q11.3: the DOS record of anchor A, with the hub count of its process address.
+id:dos-5857246 a onto:DosEntity ; onto:dosId 5857246 ; onto:initialFilingDate "2020-10-14"^^xsd:date ;
+    onto:processAddress "5 CROMWELL CIRCLE" ; onto:processAddressEntities 5 .

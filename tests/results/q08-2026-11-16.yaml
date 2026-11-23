@@ -1,0 +1,27 @@
+# Q8 acceptance results, 2026-11-16. Supersedes the 2026-11-13 file for this question, which records the earlier BOR release v0.2.1 (run 2026-05-29-149e871f) and counts from before the Contact merge.
+# Database-backed checks run by the user on the rebuilt graph on 2026-11-16 ("all tests passed"; make shapes 414/414); offline checks run here.
+question: Q8
+fixture_version: verified against the frozen baseline (2026-11-16)
+baseline: "Frozen baseline recorded 2026-11-16 in data/README.md: justfixwow-poc-baseline_2026-11-16.sql.gz, SHA-256 9124f6c0d0f0d2e453f1971247ed29c217d3d4b5f55338d95344e04a617b6278 (plain-SQL dump of the 11 public source tables). BOR release v0.3.0 (file bor-v0.3.0-justfixwow-2026-05-29.zip, SHA-256 b085ac37ea818dae65b395fec7750fd3afcfa3da47c499ced6743fbfc4124223, run 2026-05-29-869bd299). Mail-drop list data/mail_drop_addresses.csv SHA-256 1cfb12ca43fc4e0f27d34be3fd876e0d5e78594151877ab75764d7c3bcf5e641 (preliminary, all rows unreviewed)."
+tools:
+  neo4j: "see tests/results/shapes.json (written by make shapes)"
+  shacl2cypher: "0.3.0 (strict mode; all 198 rules of Q1 to Q9 compile, no static diagnostics; coverage names and negative-case rules match)"
+  reasoner: "ROBOT with HermiT; offline ontology check 155/155 (2026-11-16)"
+acceptance:
+  graph:
+    status: passed
+    reason: "baseline identified 2026-11-16; every graph check passed"
+    evidence:
+      sub_question_checks: "tests/q8_1 to q8_4 passed (make test, 2026-11-16); q8_3 compares every landlord, cover and link with release v0.3.0; tests/q8_3/check_contacts.py 13/13 (BASED_ON_CONTACT: 71,237 selected contacts, 71,167 linked, 70 on registrations not in the graph, 71,169 links on 30,922 landlords)"
+      profiles: "make profiles 695/695 (user-reported 2026-11-16, after the Q7 changes)"
+      shapes: "make shapes 414/414, including the Q8 rules and the BASED_ON_CONTACT rule"
+      oops: "make oops 2026-11-16 (whole ontology): P11 on 5 link properties and P13 on 17 properties, both accepted; nothing new"
+  retrieval_extraction:
+    status: pending
+    reason: "not declared for Q8"
+  investigation:
+    status: pending
+    reason: "not declared for Q8"
+open_points:
+  - "Operational Network ids are run-local (run 2026-05-29-869bd299); the answer names the run."
+  - "A landlord record is a name on a filing; BASED_ON_CONTACT is the record WoW used, not a finding of ownership."

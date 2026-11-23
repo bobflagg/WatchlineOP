@@ -1,0 +1,18 @@
+# Q18.1 fixtures. ACRIS deeds (frozen baseline, data/README.md); counts observed in the graph 2026-11-18 and re-derived by check_classification.py
+# from the source, so a stale fixture fails. Names are entities, never people. Classification is computed, never stored.
+lots:
+  - bbls: ["3008260005"]
+    label: "anchor B: 13 deeds, 12 zero-transfer and one priced (the $6,800,000 deed to the second LLC)"
+    counts: {correction: 0, zero-transfer: 12, priced: 1}
+    documents:
+      - {id: "2021022201130001", classification: zero-transfer, amount: 0}
+      - {id: "2021022201130002", classification: priced, amount: 6800000}
+  - bbls: ["3008260002"]
+    label: "anchor A: seven deeds, six zero-transfer and one priced"
+    counts: {correction: 0, zero-transfer: 6, priced: 1}
+  - bbls: ["2033260069", "2033280064", "2033280097"]
+    label: "a three-lot portfolio: six zero-transfer deeds, none priced (an old record, not a finding)"
+    counts: {correction: 0, zero-transfer: 6, priced: 0}
+  - bbls: ["3008070024", "3067510012"]
+    label: "two lots of anchor C's portfolio: eight deeds, one priced"
+    counts: {correction: 0, zero-transfer: 7, priced: 1}

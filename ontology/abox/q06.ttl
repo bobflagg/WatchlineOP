@@ -1,0 +1,31 @@
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q6 example data. Values come from the verified fixtures in tests/q6_*/fixtures.yaml (BOR release v0.3.0, run 2026-05-29-869bd299;
+# data/mail_drop_addresses.csv, preliminary). Counts of contacts, registrations and buildings per address are computed at query time.
+
+# Masked by the Operational Network method; the release text has no ZIP (HPD carries it under ZIP 11205).
+id:masked-a0000011 a onto:NetworkMaskedAddress ; onto:maskedAddressId "A0000011" ; onto:maskedAddressText "455 PARK AVENUE" ; onto:maskedAddressDegree 99 .
+# Text that names several HPD addresses (ZIPs 10017 and 10022).
+id:masked-a0000025 a onto:NetworkMaskedAddress ; onto:maskedAddressId "A0000025" ; onto:maskedAddressText "909 THIRD AVENUE" ; onto:maskedAddressDegree 125 .
+# Floor text kept: a different masked address from the street line alone.
+id:masked-a0000007 a onto:NetworkMaskedAddress ; onto:maskedAddressId "A0000007" ; onto:maskedAddressText "210 EAST 23 STREET 5 FL" ; onto:maskedAddressDegree 133 .
+
+# On the curated list: a registered-agent address; links nothing on its own.
+id:listed-418-broadway-12207 a onto:MailDropAddress ; onto:mailDropAddressKey "418 BROADWAY" ; onto:zipFive "12207" ;
+    onto:mailDropKind "registered_agent" ; onto:mailDropBasis "top process names: REGISTERED AGENTS INC." ; onto:listReviewStatus "unreviewed" .
+# The list's own spelling (AVE), not HPD's (AVENUE).
+id:listed-575-fifth-ave-10017 a onto:MailDropAddress ; onto:mailDropAddressKey "575 FIFTH AVE" ; onto:zipFive "10017" ;
+    onto:mailDropKind "management_office" ; onto:mailDropBasis "HPD Agent contact at this address on 751 of 764 registrations" ; onto:listReviewStatus "unreviewed" .
+# The one entry with no ZIP: it matches any ZIP.
+id:listed-120-broadway-any a onto:MailDropAddress ; onto:mailDropAddressKey "120 BROADWAY" ;
+    onto:mailDropKind "unknown" ; onto:mailDropBasis "top process names: THE CORPORATION TRUST CO." ; onto:listReviewStatus "unreviewed" .
+
+# Masked by the Owner Portfolio method: the release records the mask on identities, so the text is derived from them. The same text is also
+# a network mask, but the nodes are different individuals and the degrees differ (110 against 99).
+id:portfolio-masked-455-park-avenue a onto:PortfolioMaskedAddress ; onto:portfolioMaskedAddressText "455 PARK AVENUE" ;
+    onto:portfolioMaskedAddressDegree 110 ; onto:maskedIdentities 99 .
+# Masked by the Owner Portfolio method only (not a network mask): a text with floor text kept.
+id:portfolio-masked-575-fifth-avenue-9floor a onto:PortfolioMaskedAddress ; onto:portfolioMaskedAddressText "575 FIFTH AVENUE 9FLOOR" ;
+    onto:portfolioMaskedAddressDegree 229 ; onto:maskedIdentities 217 .

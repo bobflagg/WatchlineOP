@@ -1,0 +1,21 @@
+# Q9.1 expected Owner Portfolio of a lot (BOR release v0.3.0, run 2026-05-29-869bd299).
+# check_portfolio.py re-derives each from the release (groups.csv, group_bbls.csv), so a stale fixture fails.
+lots:
+  - {bbl: "3008070024", groupId: OP-98617, composition: identity, note: "anchor C: a five-lot portfolio"}
+  - {bbl: "3008210012", groupId: OP-53559, composition: identity, note: "anchor D: 33 lots, against 35 in its Operational Network"}
+  - {bbl: "1012120025", groupId: OP-84986, composition: identity, note: "six lots"}
+  - {bbl: "4019660080", groupId: OP-10201, composition: deed_only, note: "two lots tied by a qualifying deed"}
+  - {bbl: "4100220010", groupId: OP-5346, composition: deed_bridged, note: "identity groups joined by a deed"}
+  - {bbl: "3008260002", groupId: null, composition: null, note: "anchor A: in no portfolio (no linkage)"}
+  - {bbl: "3008970014", groupId: null, composition: null, note: "anchor F: in no portfolio (no HPD registration)"}
+  - {bbl: "1000317501", groupId: null, composition: null, note: "a co-op or condo lot in a portfolio but outside its rental footprint"}
+  - {bbl: "3027677501", groupId: null, composition: null, note: "the co-op or condo lot of OP-100619; its rental lot 3027530021 is a member"}
+  - {bbl: "3027530021", groupId: OP-100619, composition: identity, note: "a portfolio with one rental lot"}
+absent_from_graph:
+  - {bbl: "2046000009", note: "unregistered PLUTO lot with fewer than 3 residential units: no Lot"}
+totals:   # Owner Portfolio layer of the release
+  portfolios: 6523
+  by_composition: {identity: 6451, deed_only: 61, deed_bridged: 11}
+  rental_memberships: 43318
+  excluded_lots: 412
+  single_lot_portfolios: 53

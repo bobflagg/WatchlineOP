@@ -1,0 +1,30 @@
+# Q9.5 expected reason a lot is in no Owner Portfolio (BOR release v0.3.0, bbl_status.csv).
+# check_absence.py re-derives each from the release, so a stale fixture fails. null means no value.
+# One lot per detail code that occurs in this layer (18), plus a portfolio member and a lot outside BOR's universe.
+lots:
+  - {bbl: "3008070024", portfolioAbsence: null, portfolioAbsenceDetail: null, note: "anchor C is in a portfolio: no absence"}
+  - {bbl: "3008260002", portfolioAbsence: no_qualifying_linkage, portfolioAbsenceDetail: no_linkage, note: "anchor A"}
+  - {bbl: "3008970014", portfolioAbsence: outside_source_coverage, portfolioAbsenceDetail: no_registration, note: "anchor F: no HPD registration"}
+  - {bbl: "1000520008", portfolioAbsence: outside_method_input, portfolioAbsenceDetail: no_owner_contact, note: ""}
+  - {bbl: "1001370001", portfolioAbsence: outside_method_input, portfolioAbsenceDetail: unmatched_node, note: "the node matched no resolved identity"}
+  - {bbl: "1000167501", portfolioAbsence: excluded_by_policy, portfolioAbsenceDetail: address_evidence_masked, note: ""}
+  - {bbl: "1000160180", portfolioAbsence: excluded_by_policy, portfolioAbsenceDetail: coop_condo_dominated, note: "co-op or condo lots are the majority of the group's footprint"}
+  - {bbl: "1000317501", portfolioAbsence: excluded_by_policy, portfolioAbsenceDetail: coop_condo_excluded, note: "in a portfolio but outside its rental footprint"}
+  - {bbl: "1001620049", portfolioAbsence: excluded_by_policy, portfolioAbsenceDetail: institutional_screen, note: ""}
+  - {bbl: "1000150022", portfolioAbsence: below_eligibility_rule, portfolioAbsenceDetail: first_name_veto, note: ""}
+  - {bbl: "1001630023", portfolioAbsence: below_eligibility_rule, portfolioAbsenceDetail: common_name_veto, note: ""}
+  - {bbl: "1004500003", portfolioAbsence: below_eligibility_rule, portfolioAbsenceDetail: shared_company_degree_unknown, note: ""}
+  - {bbl: "1001750007", portfolioAbsence: below_eligibility_rule, portfolioAbsenceDetail: shared_company_name_not_rare, note: ""}
+  - {bbl: "1008590081", portfolioAbsence: below_eligibility_rule, portfolioAbsenceDetail: shared_company_first_name_conflict, note: ""}
+  - {bbl: "1007960013", portfolioAbsence: below_eligibility_rule, portfolioAbsenceDetail: shared_company_degree_cap, note: ""}
+  - {bbl: "1000530037", portfolioAbsence: below_eligibility_rule, portfolioAbsenceDetail: deed_not_latest, note: ""}
+  - {bbl: "3009450055", portfolioAbsence: below_eligibility_rule, portfolioAbsenceDetail: deed_parcels_out_of_range, note: ""}
+  - {bbl: "1008930036", portfolioAbsence: below_eligibility_rule, portfolioAbsenceDetail: successor_not_shell, note: ""}
+  - {bbl: "1001750002", portfolioAbsence: below_eligibility_rule, portfolioAbsenceDetail: successor_transfer_not_nominal, note: ""}
+  - {bbl: "1005560059", portfolioAbsence: null, portfolioAbsenceDetail: null, note: "registered with HPD, not in PLUTO: BOR has no row, so no reason"}
+absent_from_graph:
+  - {bbl: "2046000009", note: "unregistered PLUTO lot with fewer than 3 residential units: BOR reason no_registration, but no Lot"}
+totals:   # Owner Portfolio layer of the release; per-detail counts over lots in the graph are compared with the release at check time
+  release_lots_in_portfolio: 43318
+  release_lots_excluded_from_footprint: 412
+  detail_codes_in_layer: 18

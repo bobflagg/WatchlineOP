@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: corporationName is functional. A contact has one corporation name as recorded; a second spelling is another contact.
+id:bad-contact-1 a onto:Contact ; onto:corporationName "ACME LLC", "ACME LLC." .

@@ -1,0 +1,28 @@
+# SUPERSEDED 2026-11-16 by tests/results/q06-2026-11-16.yaml: this file records BOR release v0.2.1 and pre-merge counts. Kept as history.
+# Q6 acceptance results, 2026-11-14. Stage 1 to 5 checks passed, and `make load`, `make test` and `make shapes` passed on the loaded graph
+# (user-reported 2026-11-14). Acceptance stays pending only on the unidentified frozen dump.
+question: Q6
+fixture_version: provisional (not yet verified against an identified frozen dump)
+baseline: "Pending: dump filename and SHA-256 are not recorded in data/README.md. No result below is 'passed' for acceptance. The BOR release is identified (v0.2.1, sha256 b694512a...33df, run 2026-05-29-149e871f); the mail-drop list file is identified by its sha256 in data/sources.yaml and is preliminary (all rows unreviewed)."
+tools:
+  neo4j: "see tests/results/shapes.json (written by make shapes)"
+  shacl2cypher: "0.3.0 (strict mode; all 169 rules of Q1 to Q6, Q8 and Q9 compile, no static diagnostics; coverage names match)"
+acceptance:
+  graph:
+    status: pending
+    reason: "baseline not identified; every check below has run and passed"
+    evidence:
+      sub_question_checks: "q6_1 to q6_4 passed after loading (user-reported 2026-11-13); q6_3 proves the release records the Owner Portfolio mask per identity only"
+      ontology: "make profiles, taxonomy, thesaurus and ontology (136/136) passed (user-reported); OOPS! run 2026-11-13: P11 and P13 kept, nothing new"
+      shapes_compile: "passed (all rules compile in strict mode)"
+      supplemental_checks_on_loaded_graph: "passed: q06-addresses, q06-no-relationships (inside make shapes, user-reported)"
+      negative_cases: "passed: 19 Q6 cases, each rejected by its named layer (inside make shapes, user-reported)"
+  retrieval_extraction:
+    status: pending
+    reason: "not declared for Q6"
+  investigation:
+    status: pending
+    reason: "not declared for Q6"
+open_points:
+  - "The HPD-to-list-key rule needs the list's address normalizer (AVE, 116TH, no unit); Q6.4 matches the key as spelled and a miss is not a clearance."
+  - "The list is preliminary: every row is unreviewed."

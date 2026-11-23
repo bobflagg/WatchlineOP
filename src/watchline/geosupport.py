@@ -9,6 +9,7 @@ hold, and an outage must never be reported as "address not found".
 """
 import os
 import re
+import unicodedata
 from dataclasses import dataclass, replace
 from enum import StrEnum
 
@@ -17,7 +18,12 @@ import httpx
 REQUIRED_RELEASE = os.environ.get("GEOSUPPORT_RELEASE", "25b")  # pinned with geosupport/Dockerfile
 URL = os.environ.get("GEOSUPPORT_URL", "http://localhost:8081")
 MAX_CANDIDATES = 5
-_BASES = ("as_typed", "after_spelling_ordinals_as_digits")  # index matches the variant list in Client.resolve()
+# Basis names, in the order Client.resolve() tries them. Any basis but AS_TYPED marks a resolved match as inferred.
+AS_TYPED = "as_typed"
+ORDINALS = "after_spelling_ordinals_as_digits"
+MARKS = "after_removing_apostrophes"
+ORDINALS_MARKS = "after_spelling_ordinals_as_digits_and_removing_apostrophes"
+CANDIDATE = "after_taking_the_citys_spelling_of_the_street"
 _NONE_BBL = "0000000000"
 
 
@@ -45,7 +51,7 @@ class Result:
     grc: str | None = None
     message: str | None = None
     typed: str = ""                   # what was sent to Geosupport
-    basis: str | None = None          # which spelling matched: as_typed or after_spelling_ordinals_as_digits
+    basis: str | None = None          # which spelling matched: as_typed or the repair that was applied
     inferred: bool = False            # True when a resolved match came from a variant, not the address as typed
 
 
@@ -88,6 +94,9 @@ def interpret(response: dict, typed: str = "") -> Result:
 
 # ---- cleaning what a person types ------------------------------------------------------------------------------
 
+_MARKS = re.compile("[\u0027\u2018\u2019\u02bc\u0060\u00b4]")  # straight, curly and modifier apostrophes, grave, acute
+
+
 _UNIT = re.compile(r"\b(?:APT|APARTMENT|UNIT|STE|SUITE|FL|FLOOR|RM|ROOM)\b\.?\s*[\w-]+|#\s*[\w-]+|\b(?:REAR|BSMT|BASEMENT)\b", re.I)
 _ONES = {"FIRST": 1, "SECOND": 2, "THIRD": 3, "FOURTH": 4, "FIFTH": 5, "SIXTH": 6, "SEVENTH": 7, "EIGHTH": 8, "NINTH": 9,
          "TENTH": 10, "ELEVENTH": 11, "TWELFTH": 12, "THIRTEENTH": 13, "FOURTEENTH": 14, "FIFTEENTH": 15, "SIXTEENTH": 16,
@@ -100,6 +109,11 @@ _TENTHS = {"TWENTIETH": 20, "THIRTIETH": 30, "FORTIETH": 40, "FIFTIETH": 50, "SI
 def clean(house: str, street: str) -> tuple[str, str, list[str]]:
     """Strip unit and floor text from a typed address. Returns house, street and what was removed."""
     removed = []
+    # The sidecar answers non-ASCII text with a 500, which would read as an outage: fold to ASCII first.
+    house, street = (unicodedata.normalize("NFKD", _MARKS.sub("'", t)).encode("ascii", "ignore").decode() for t in (house, street))
+    if "," in street:  # "10 Hallett's Pt, Astoria": the part after a comma is a locality hint, not the street
+        street, locality = street.split(",", 1)
+        removed.append(f"locality: {locality.strip()}")
 
     def cut(m):
         removed.append(m.group(0).strip())
@@ -126,6 +140,16 @@ def spelled_ordinals_to_digits(street: str) -> str:
         else:
             out.append(w); i += 1
     return " ".join(out)
+
+
+def remove_apostrophes(street: str) -> str:
+    """"Hallett's Point" -> "Halletts Point": the city's street names carry no apostrophe in this position."""
+    return _MARKS.sub("", street)
+
+
+def street_key(name: str) -> str:
+    """Letters and digits only, upper case. Two spellings with the same key differ only in marks and spacing."""
+    return re.sub(r"[^A-Z0-9]", "", name.upper())
 
 
 # ---- the client --------------------------------------------------------------------------------------------------
@@ -180,17 +204,22 @@ class Client:
         """
         house, street, _removed = clean(house, street)
         tried = [f"{house} {street}"]
-        variants = [street]
-        digits = spelled_ordinals_to_digits(street)
-        if digits != street.upper():
-            variants.append(digits)
+        # (basis, street spelling). Each repair changes the street spelling only, never the house number or borough.
+        variants = [(AS_TYPED, street)]
+        for basis, v in ((ORDINALS, spelled_ordinals_to_digits(street)), (MARKS, remove_apostrophes(street)),
+                         (ORDINALS_MARKS, spelled_ordinals_to_digits(remove_apostrophes(street)))):
+            if all(v.upper() != seen.upper() for _, seen in variants):
+                variants.append((basis, v))
         try:
             self._pin_release()
         except httpx.HTTPError as exc:
             return Result(Outcome.UNAVAILABLE, message=str(exc)[:120], typed=tried[0]), tried
         last = Result(Outcome.FAILED, typed=tried[0])
+        basis = AS_TYPED
         names: list[str] = []
-        for i, v in enumerate(variants):
+        queue = list(variants)
+        while queue:
+            basis, v = queue.pop(0)
             typed = f"{house} {v}"
             if typed not in tried:
                 tried.append(typed)
@@ -201,8 +230,15 @@ class Client:
             names += [n for n in last.candidates if n not in names]
             if last.outcome in (Outcome.RESOLVED, Outcome.NO_TAX_LOT, Outcome.HOUSE_NUMBER_OUT_OF_RANGE):
                 break
+            if not queue and basis != CANDIDATE and last.outcome in (Outcome.STREET_AMBIGUOUS, Outcome.STREET_NOT_RECOGNIZED):
+                # Last repair: the city's own list holds exactly one street that differs from what was typed only in
+                # marks or spacing. Several such names, or none, stay as candidates for a person to choose.
+                keys = {street_key(x) for _, x in variants} | ({street_key(last.street)} if last.street else set())
+                same = [n for n in names if street_key(n) in keys]
+                if len(same) == 1 and f"{house} {same[0]}" not in tried:
+                    queue.append((CANDIDATE, same[0]))
         if names and last.outcome in (Outcome.STREET_AMBIGUOUS, Outcome.STREET_NOT_RECOGNIZED):
             # similar names from any spelling tried, kept even if a later spelling says "not recognized"
             last = replace(last, outcome=Outcome.STREET_AMBIGUOUS, candidates=tuple(names[:MAX_CANDIDATES]),
                            candidate_total=len(names))
-        return replace(last, basis=_BASES[i], inferred=i > 0 and last.outcome is Outcome.RESOLVED), tried
+        return replace(last, basis=basis, inferred=basis != AS_TYPED and last.outcome is Outcome.RESOLVED), tried

@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: a lot has one top-level absence reason (networkAbsence is functional).
+id:bad-1 a onto:TaxLot ; onto:bbl "3008260002" ; onto:networkAbsence "no_qualifying_linkage", "outside_source_coverage" .

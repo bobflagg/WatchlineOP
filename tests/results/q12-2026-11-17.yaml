@@ -1,0 +1,26 @@
+# Q12 acceptance results, 2026-11-17. Database-backed checks (make test, make shapes) and make oops run by the user; passed (user-reported).
+question: Q12
+fixture_version: verified against the frozen baseline (2026-11-16) by the checks once run
+baseline: "Frozen baseline recorded 2026-11-16 in data/README.md: justfixwow-poc-baseline_2026-11-16.sql.gz, SHA-256 9124f6c0d0f0d2e453f1971247ed29c217d3d4b5f55338d95344e04a617b6278. BOR release v0.3.0 (run 2026-05-29-869bd299)."
+tools:
+  shacl2cypher: "0.3.0, strict mode; all 209 rules over Q1 to Q12 compile, no static diagnostics; coverage names and negative-case rules match (offline, 2026-11-17)"
+acceptance:
+  graph:
+    status: passed
+    reason: "baseline identified 2026-11-16; make test and make shapes passed on the loaded graph after the apostrophe syntax fix in queries/checks/q12-name-keys.cypher (user-reported 2026-11-17)"
+    evidence:
+      shapes: "shapes/q12.ttl (GrantorShape, DeedGrantorShape): 11 compiled rules (blank-is-absent, one deed per grantor, HAS_GRANTOR class)"
+      supplemental_checks: "queries/checks/q12-name-keys.cypher (N3 name key present exactly when the name has content; no stored not-a-sale, attribution or count)"
+      native: "grantor_key_unique"
+      negative_cases: "14 in tests/negative/q12/cases.yaml (8 shape rules, 1 native constraint, 5 supplemental check)"
+      sub_question_checks: "tests/q12_1 to q12_3 passed within make test (user-reported)"
+  retrieval_extraction:
+    status: pending
+    reason: "not declared for Q12"
+  investigation:
+    status: pending
+    reason: "not declared for Q12"
+open_points:
+  - "make oops (2026-11-17): P11 (5 relationship properties without a domain, accepted) and P13 (18 properties without inverses, accepted); nothing new for Q12 beyond hasGrantor."
+  - "Anchor C's owner is spelled differently in ACRIS and HPD, so it is a recorded gap in attribution."
+  - "Q22 treats a spacing difference as a normalization match while Q3 and Q12 keep it a difference; reconcile before Q22."

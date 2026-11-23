@@ -1,0 +1,60 @@
+# Source profile: HPD housing maintenance code violations. Facts about the source only.
+# Queried 2026-11-18 against the frozen database (information_schema and counts over the whole table and the registered-lot subset).
+source_key: hpd_violations
+table: public.hpd_violations
+data_through: 2026-07-02
+row_count: 1970575
+queried_on: 2026-11-18   # ordernumber added 2026-11-21 (Q15.3 pest extension)
+key: violationid
+key_notes: "violationid is unique where present. 4 rows have no violationid, class, status, inspection date, BBL or BIN; none is on a registered lot."
+columns:
+  - name: violationid
+    physical_type: integer
+    allowed: positive integer
+    sentinels: {null: "4 rows, none on a registered lot"}
+    unique: true
+    used_by: [Q15.1, Q15.2]
+    notes: "1,912,362 distinct values on registered lots, one per row."
+  - name: class
+    physical_type: "char(1)"
+    allowed: "A, B, C, I"
+    sentinels: {null: "5 rows (4 without id, 1 with a null status and BBL); none on a registered lot"}
+    used_by: [Q15.1]
+    notes: "The inspector's class at citation. A non-hazardous, B hazardous, C immediately hazardous, I information. Never null or other on registered lots."
+  - name: violationstatus
+    physical_type: text
+    allowed: "Open, Close"
+    sentinels: {null: "5 rows; none on a registered lot"}
+    used_by: [Q15.1, Q15.2]
+    notes: "'Close' covers closed and dismissed; finer status is in currentstatus, which is not used. Open means open at the snapshot (data through 2026-07-02). 471,058 open on registered lots."
+  - name: inspectiondate
+    physical_type: date
+    allowed: "1903-12-16 to 2026-07-02 on registered lots"
+    sentinels: {null: "4 rows; none on a registered lot"}
+    used_by: [Q15.1]
+    notes: "The inspection date, not the notice or entry date. Old dates (before 1970) exist and are kept as recorded."
+  - name: bin
+    physical_type: "char(7)"
+    allowed: "7 digits; first digit 1 to 5; not ending 000000"
+    sentinels:
+      blank_or_null: "no BIN"
+      "x000000": "placeholder BIN"
+      other_invalid: "malformed value"
+    used_by: [Q15.1, Q15.2]
+    notes: "On registered lots 3,540 rows have no usable BIN; 7,230 more have a valid BIN that is not a registered building. Both groups (10,770) are excluded and counted."
+  - name: bbl
+    physical_type: "char(10)"
+    allowed: "10 digits; first digit 1 to 5"
+    sentinels: {null: "5 rows"}
+    used_by: [Q15.1]
+    notes: "Used only to select violations on HPD-registered lots (a BBL present in hpd_registrations). Never malformed when present."
+  - name: ordernumber
+    physical_type: text
+    allowed: "numeric text, 1 to 4 digits, no leading zero (369 distinct values over the table; 364 on loaded rows)"
+    sentinels: {null: "4 rows (the same 4 without violationid); none on a loaded row"}
+    used_by: [Q15.3]
+    notes: >-
+      HPD's Housing Maintenance Code order number, kept as text as recorded. No HPD code table is in the snapshot; the meaning of a code is read
+      from the violation descriptions. Eight codes cite a pest infestation (142,777 rows over the whole table, 137,646 on loaded rows):
+      566, 866 (vermin, species in free text), 567, 867 (rodents), 568, 868 (roaches), 569, 869 (mice). See data/hpd_pest_orders.yaml. The description
+      column (novdescription) names apartments and is not used. Queried 2026-11-21.

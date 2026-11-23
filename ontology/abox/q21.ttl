@@ -1,0 +1,27 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q21 example data. Values follow tests/q21_*/fixtures.yaml (BOR release v0.3.0, run 2026-05-29-869bd299; hpd_violations through 2026-07-02).
+# Q21 adds no ontology element: it reads the Q8, Q9 and Q15 elements. Per-lot open counts, rates, ranks, the concentration share and the layer
+# comparison are computed at answer time and are not in the graph. Entities only; no person is named. Violation ids are illustrative.
+
+# Anchor D: one lot, three buildings, in an Operational Network (35 lots) and an Owner Portfolio (33 rental lots). Units are lot-wide.
+id:lot-3008210012-q21 a onto:TaxLot ; onto:bbl "3008210012" ; onto:residentialUnits 18 ;
+    onto:hasBuilding id:bldg-3324448-q21, id:bldg-3324450-q21, id:bldg-3324451-q21 ;
+    onto:inNetwork id:on-18742-q21 ; onto:inPortfolio id:op-53559-q21 .
+id:bldg-3324448-q21 a onto:Building ; onto:bin "3324448" ; onto:hasViolation id:violation-q21-open-b .
+id:bldg-3324450-q21 a onto:Building ; onto:bin "3324450" ; onto:hasViolation id:violation-q21-open-c .
+id:bldg-3324451-q21 a onto:Building ; onto:bin "3324451" .
+id:violation-q21-open-b a onto:Violation ; onto:violationId 2000001 ; onto:violationClass "B" ; onto:violationStatus "Open" ; onto:inspectionDate "2024-02-01"^^xsd:date .
+id:violation-q21-open-c a onto:Violation ; onto:violationId 2000002 ; onto:violationClass "C" ; onto:violationStatus "Open" ; onto:inspectionDate "2024-03-01"^^xsd:date .
+id:on-18742-q21 a onto:OperationalNetwork ; onto:groupId "ON-18742" ; onto:networkSplit "wcc" .
+id:op-53559-q21 a onto:OwnerPortfolio ; onto:portfolioId "OP-53559" ; onto:portfolioComposition "identity" .
+
+# A lot with no PLUTO unit count: no residentialUnits, so the rate is unavailable (never 0).
+id:lot-3022117501-q21 a onto:TaxLot ; onto:bbl "3022117501" ; onto:inNetwork id:on-16213-q21 .
+id:on-16213-q21 a onto:OperationalNetwork ; onto:groupId "ON-16213" ; onto:networkSplit "wcc" .
+
+# A lot in a network but in no portfolio (anchor A): the portfolio side is absent, with BOR's reason.
+id:lot-3008260002-q21 a onto:TaxLot ; onto:bbl "3008260002" ; onto:portfolioAbsence "no_qualifying_linkage" ; onto:portfolioAbsenceDetail "no_linkage" .

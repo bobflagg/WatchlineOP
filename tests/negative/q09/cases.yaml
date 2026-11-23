@@ -1,0 +1,68 @@
+# Same format as tests/negative/q08/cases.yaml: bad data inside a transaction that is always rolled back.
+cases:
+- name: portfolio id with wrong format
+  create: 'CREATE (:OwnerPortfolio {groupId: ''X-1'', composition: ''identity''})'
+  rule: OwnerPortfolioShape.portfolioId.pattern
+- name: portfolio id as number
+  create: 'CREATE (:OwnerPortfolio {groupId: 5, composition: ''identity''})'
+  rule: OwnerPortfolioShape.portfolioId.datatype
+- name: portfolio without id
+  create: 'CREATE (:OwnerPortfolio {composition: ''identity''})'
+  rule: OwnerPortfolioShape.portfolioId.minCount
+- name: portfolio without composition
+  create: 'CREATE (:OwnerPortfolio {groupId: ''OP-999999999''})'
+  rule: OwnerPortfolioShape.portfolioComposition.minCount
+- name: composition outside the three codes
+  create: 'CREATE (:OwnerPortfolio {groupId: ''OP-999999999'', composition: ''merged''})'
+  rule: OwnerPortfolioShape.portfolioComposition.in
+- name: portfolio with no member lot
+  create: 'CREATE (:OwnerPortfolio {groupId: ''OP-999999999'', composition: ''identity''})'
+  rule: OwnerPortfolioShape.inv_inPortfolio.minCount
+- name: lot in two portfolios
+  create: 'MATCH (l:Lot)-[:IN_PORTFOLIO]->(:OwnerPortfolio) WITH l LIMIT 1 CREATE (l)-[:IN_PORTFOLIO]->(:OwnerPortfolio {groupId: ''OP-999999998'', composition: ''identity''})'
+  rule: LotPortfolioShape.inPortfolio.maxCount
+- name: top-level absence outside the five codes
+  create: 'MATCH (l:Lot) WHERE NOT (l)-[:IN_PORTFOLIO]->() WITH l LIMIT 1 SET l.portfolioAbsence = ''unknown'''
+  rule: LotPortfolioShape.portfolioAbsence.in
+- name: absence detail outside the 18 codes
+  create: 'MATCH (l:Lot) WHERE NOT (l)-[:IN_PORTFOLIO]->() WITH l LIMIT 1 SET l.portfolioAbsenceDetail = ''unknown'''
+  rule: LotPortfolioShape.portfolioAbsenceDetail.in
+- name: detail without a top-level reason
+  create: 'MATCH (l:Lot) WHERE NOT (l)-[:IN_PORTFOLIO]->() AND l.portfolioAbsence IS NULL WITH l LIMIT 1 SET l.portfolioAbsenceDetail = ''no_linkage'''
+  check: queries/checks/q09-absence.cypher
+- name: absence reason on a lot in a portfolio
+  create: 'MATCH (l:Lot)-[:IN_PORTFOLIO]->(:OwnerPortfolio) WITH l LIMIT 1 SET l.portfolioAbsence = ''no_qualifying_linkage'', l.portfolioAbsenceDetail = ''no_linkage'''
+  check: queries/checks/q09-absence.cypher
+- name: detail under the wrong top-level reason
+  create: 'MATCH (l:Lot) WHERE NOT (l)-[:IN_PORTFOLIO]->() WITH l LIMIT 1 SET l.portfolioAbsence = ''below_eligibility_rule'', l.portfolioAbsenceDetail = ''coop_condo_excluded'''
+  check: queries/checks/q09-absence.cypher
+- name: duplicate portfolio id
+  create: 'MATCH (p:OwnerPortfolio) WITH p LIMIT 1 CREATE (:OwnerPortfolio {groupId: p.groupId})'
+  error: constraint
+- name: landlord with no lot and no link
+  create: 'CREATE (:Landlord {nodeId: 999999999})'
+  check: queries/checks/q09-landlords.cypher
+- name: lot in a portfolio that no landlord covers
+  create: 'MATCH (l:Lot)-[:IN_PORTFOLIO]->(:OwnerPortfolio) WITH l LIMIT 1 MATCH ()-[c:COVERS]->(l) DELETE c'
+  check: queries/checks/q09-landlords.cypher
+- name: landlord in a multi-landlord portfolio with no link
+  create: 'MATCH (a:Landlord)-[:COVERS]->(:Lot)-[:IN_PORTFOLIO]->(p)<-[:IN_PORTFOLIO]-(:Lot)<-[:COVERS]-(b:Landlord) WHERE a <> b AND COUNT { (a)-[k:CONNECTED_BY_IDENTITY|CONNECTED_BY_DEED]-() WHERE k.portfolioEdgeId IS NOT NULL } = 1 WITH a LIMIT 1 MATCH (a)-[k:CONNECTED_BY_IDENTITY|CONNECTED_BY_DEED]-() WHERE k.portfolioEdgeId IS NOT NULL DELETE k'
+  check: queries/checks/q09-landlords.cypher
+- name: link from a landlord to itself
+  create: 'MATCH (a:Landlord) WITH a LIMIT 1 CREATE (a)-[:CONNECTED_BY_IDENTITY {portfolioEdgeId: ''GE9999999'', evidenceId: ''C9999999'', stage: ''identity.splink_base'', evidenceType: ''identity_cluster''}]->(a)'
+  check: queries/checks/q09-links.cypher
+- name: link with a signal outside the six codes
+  create: 'MATCH ()-[k:CONNECTED_BY_IDENTITY]->() WHERE k.portfolioEdgeId IS NOT NULL WITH k LIMIT 1 SET k.stage = ''identity.guess'''
+  check: queries/checks/q09-links.cypher
+- name: link without a signal
+  create: 'MATCH ()-[k:CONNECTED_BY_IDENTITY|CONNECTED_BY_DEED]->() WHERE k.portfolioEdgeId IS NOT NULL WITH k LIMIT 1 REMOVE k.stage'
+  check: queries/checks/q09-links.cypher
+- name: deed link with a network weight
+  create: 'MATCH ()-[k:CONNECTED_BY_DEED]->() WITH k LIMIT 1 SET k.weight = 1.0'
+  check: queries/checks/q09-links.cypher
+- name: link between landlords of different portfolios
+  create: 'MATCH (a:Landlord)-[:COVERS]->(:Lot)-[:IN_PORTFOLIO]->(p:OwnerPortfolio) WITH a, p LIMIT 1 MATCH (b:Landlord)-[:COVERS]->(:Lot)-[:IN_PORTFOLIO]->(q:OwnerPortfolio) WHERE q <> p WITH a, b, p LIMIT 1 CREATE (a)-[:CONNECTED_BY_IDENTITY {portfolioEdgeId: ''GE9999999'', evidenceId: ''C9999999'', stage: ''identity.splink_base'', evidenceType: ''identity_cluster'', portfolioGroupId: p.groupId}]->(b)'
+  check: queries/checks/q09-links.cypher
+- name: landlord covering lots of two portfolios
+  create: 'MATCH (a:Landlord)-[:COVERS]->(:Lot)-[:IN_PORTFOLIO]->(p:OwnerPortfolio) WITH a, p LIMIT 1 MATCH (l:Lot)-[:IN_PORTFOLIO]->(q:OwnerPortfolio) WHERE q <> p WITH a, l LIMIT 1 CREATE (a)-[:COVERS {registrationId: 1}]->(l)'
+  check: queries/checks/q09-links.cypher

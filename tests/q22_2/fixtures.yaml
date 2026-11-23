@@ -1,0 +1,3 @@
+# Q22.2 joining records. Re-derived from the source by check_joins.py. Names are entities.
+pairs:
+  - {a: "702 54 STREET LLC", b: "702 PLAZA LLC", note: "anchor B: both on the lot's deeds, no record joins the names", shared_lots: ["3008260005"]}

@@ -1,0 +1,4 @@
+# Q18.3 fixtures: signals do not depend on whether a lot is asked about alone or with its portfolio.
+pairs:
+  - {bbl: "3008070024", set: ["3008070024", "3067510012"]}
+  - {bbl: "2033260069", set: ["2033260069", "2033280064", "2033280097"]}

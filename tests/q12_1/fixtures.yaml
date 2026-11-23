@@ -1,0 +1,46 @@
+# Q12.1 fixtures. real_property_master, real_property_parties, real_property_legals (frozen baseline, data/README.md).
+# check_deeds.py re-derives each from the source, so a stale fixture fails. Names are entities, never people.
+lots:
+  - bbl: "3008260002"
+    label: "anchor A (5413 7 Avenue), since 2015: a sale and a no-money deed with the same name on both sides"
+    start: "2015-01-01"
+    end: null
+    deeds: 2
+    not_sales: 1
+    documents:
+      - {id: "2021022201130003", recorded: "2021-02-26", amount: 5000000, not_sale: false, grantors: ["5413 7TH AVENUE LLC"], grantees: ["5413 PLAZA LLC"], other_lots: 0}
+      - {id: "2025032100031001", recorded: "2025-04-02", amount: 0, not_sale: true, grantors: ["5413 PLAZA LLC"], grantees: ["5413 PLAZA LLC"], other_lots: 0}
+  - bbl: "3008260002"
+    label: "anchor A, no period: seven deeds, six without an amount"
+    start: null
+    end: null
+    deeds: 7
+    not_sales: 6
+  - bbl: "3008260002"
+    label: "anchor A, a period with no deed"
+    start: "2022-01-01"
+    end: "2024-12-31"
+    deeds: 0
+    not_sales: 0
+  - bbl: "1002380036"
+    label: "2015: four deeds; two DEED at amount 0 and a CORRD are not sales, one DEED records 4,650,000 (the correction names the same lot on the same day)"
+    start: "2015-01-01"
+    end: "2015-12-31"
+    deeds: 4
+    not_sales: 3
+    documents:
+      - {id: "2015061000284001", recorded: null, amount: 0, not_sale: true, grantors: ["167 HESTER STREET REALTY CORP."], grantees: ["HESTER STREET HOLDING, LLC"], other_lots: 0}
+  - bbl: "1003060006"
+    label: "a multi-lot deed: one deed covering three lots, four grantors, one grantee"
+    start: "2020-01-01"
+    end: "2020-12-31"
+    documents:
+      - {id: "2020021400087001", recorded: "2020-02-18", amount: 0, not_sale: true, grantors: ["BP FORYSTH INVESTORS LLC", "MS FORSYTH LLC", "PBL FORSYTH LLC", "SAL FORSYTH LLC"], grantees: ["FORSYTH OWNER LLC"], other_lots: 2}
+  - bbl: "1000077501"
+    label: "a registered lot with no deed in the snapshot: an empty timeline, not a finding"
+    start: null
+    end: null
+    deeds: 0
+    not_sales: 0
+totals:
+  grantors: 1619378   # distinct party rows of partytype 1 on the 1,003,931 loaded deeds (scripts/profile_q12_scope.py, 2026-11-16)

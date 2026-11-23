@@ -1,0 +1,37 @@
+# Q27.3 fixtures. hpd_complaints_and_problems (data through 2026-07-07) and hpd_registrations (frozen baseline, data/README.md).
+# check_pest_problems.py re-derives each from the source, so a stale fixture fails. Counting unit: problem records.
+buildings:
+  - bin: "3013901"
+    label: "anchor C (438 52 Street), 2021 onward: 7 closed pest problems (MICE 1, ROACHES 3, OTHER 2, FLIES 1), none open; a building with several pests"
+    start: "2021-01-01"
+    end: "2026-12-31"
+    by_code: {"MICE": 1, "ROACHES": 3, "OTHER": 2, "FLIES": 1}
+    open: 0
+  - bin: "3014788"
+    label: "anchor A (5413 7 Avenue): derived from the source; counts are re-derived, not fixed here"
+    start: "2021-01-01"
+    end: "2026-12-31"
+    derived: true
+  - bin: "3324448"
+    label: "anchor D building on a three-building lot: no loaded problem at all, so an empty answer (not evidence of no pests)"
+    start: "2021-01-01"
+    end: "2026-12-31"
+    by_code: {}
+    open: 0
+  - bin: "3018581"
+    label: "mice only: 4 MICE problems, 1 open; derived from the source"
+    start: "2021-01-01"
+    end: "2026-12-31"
+    derived: true
+  - bin: "3000820"
+    label: "OTHER only: 2 problems coded OTHER, no MICE; OTHER is not mice. Derived from the source"
+    start: "2021-01-01"
+    end: "2026-12-31"
+    derived: true
+totals:
+  # loaded pest problems per problem code, minor category PESTS (queried 2026-11-21)
+  loaded: {"MICE": 147185, "ROACHES": 130774, "OTHER": 41677, "BED BUGS": 15259, "FLIES": 10853, "TERMITES": 1637, "FLEAS": 1636}
+  loaded_open: {"MICE": 1508, "ROACHES": 1385, "OTHER": 575, "BED BUGS": 172, "FLIES": 170, "TERMITES": 32, "FLEAS": 32}
+  loaded_duplicates: {"MICE": 313, "ROACHES": 262, "OTHER": 90, "BED BUGS": 38, "FLIES": 8, "TERMITES": 2, "FLEAS": 1}
+  all_loaded: 4033827
+  minor_categories: 59

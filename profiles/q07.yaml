@@ -1,0 +1,198 @@
+# Question schema: Q7 "What shared evidence (people, business addresses, resolved identities) do these two entities or buildings have,
+# and which of it was set aside as non-evidence?" (sub-questions Q7.1 to Q7.5).
+# Extends the Q2 to Q4 and Q8 graph; declares only what Q7 adds: the ACRIS document layer (Q7.3). Q7.1 reads Contact, Q7.2 reads the
+# DOS nodes, Q7.4 reads the Q6 masks and the mail-drop list, Q7.5 reads Landlord links and groups; none of these adds a graph element.
+question: Q7
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [acris_master, acris_parties, hpd_contacts]
+
+graph:
+  constraints:
+    - {name: document_id_unique, label: Document, property: documentId, kind: unique}
+    - {name: document_party_key_unique, label: DocumentParty, property: partyKey, kind: unique}
+
+  nodes:
+    Document:
+      concept: document
+      key: documentId
+      scope: >-
+        One Document per ACRIS document whose current version (latest modifieddate, then goodthroughdate) names two or more distinct
+        parties whose N3 name equals the N3 name of an HPD CorporateOwner Contact (scope C, decision 2026-11-16; 96901 documents,
+        profiled 2026-11-16). Q11.1 adds scope M (decision 2026-11-16): current-type MTGE documents naming at least one HPD CorporateOwner name
+        (N3), 492092 documents profiled by scripts/profile_q11_scope.py; Q13 adds scope F (decision 2026-11-17): every current-type financing document (MTGE, ASST, SAT, AGMT, AL&R, TL&R, SAGE) recorded against a graph lot, 2885412 documents, linked by HAS_FINANCING_DOCUMENT (profiles/q13.yaml); a document in several scopes loads once. Every document type is loaded, and every party of a loaded document is loaded. Anchor mortgage
+        2021031601183001 is inside it (HPD spells one owner "702 Plaza LLC", equal under N3). A Deed of Q3 and a Document are separate nodes
+        that share a documentId; no relationship joins them.
+      proved_by: tests/q7_3/expected.sql
+      properties:
+        documentId:
+          concept: document-id
+          type: string
+          source: acris_master.documentid
+          null_policy: never absent
+        docType:
+          concept: document-type
+          type: string
+          source: acris_master.doctype
+          rule: Stored as ACRIS spells it, from the current version. No type is excluded.
+          null_policy: never absent
+        docDate:
+          concept: document-date
+          type: date
+          source: acris_master.docdate
+          rule: As recorded.
+          null_policy: "absent when ACRIS has none"
+        recordedDate:
+          concept: recorded-date
+          type: date
+          source: acris_master.recordedfiled
+          rule: As recorded.
+          null_policy: "absent when ACRIS has none"
+        amount:
+          concept: document-amount
+          type: integer
+          source: acris_master.docamount
+          units: whole US dollars
+          rule: As recorded. 0 is common and is never read as a free sale.
+          null_policy: "absent when ACRIS has none"
+
+    DocumentParty:
+      concept: document-party
+      key: partyKey
+      scope: >-
+        One DocumentParty per distinct party row (any partytype) on a loaded Document: same document, name, street line, second line and
+        ZIP are one. The party's role is on the link, so a name recorded under two partytypes with one address is one node with two links.
+      proved_by: tests/q7_3/expected.sql
+      properties:
+        partyKey:
+          concept: document-party
+          type: string
+          source: acris_parties.documentid, acris_parties.name, acris_parties.address1, acris_parties.address2, acris_parties.zip
+          rule: "Identity only, joined as documentid|name|address1|address2|zip with blanks empty. Not an answer field."
+          identity_only: true
+          null_policy: never absent
+        name:
+          concept: party-name
+          type: string
+          source: acris_parties.name
+          rule: Trimmed, otherwise as recorded. The answer shows this value; the comparison key is `nameKey`.
+          null_policy: "absent when blank"
+        nameKey:
+          concept: party-name
+          type: string
+          source: acris_parties.name
+          rule: "Lookup key only: rule N3 applied to the name (as Q5 DosEntity.nameKey). Not an answer field."
+          identity_only: true
+          null_policy: "absent when the name has no letters"
+        mailingAddress:
+          concept: mailing-address
+          type: string
+          source: acris_parties.address1
+          rule: Trimmed, as recorded. Can hold a care-of line or a person's name.
+          null_policy: "absent when blank"
+        addressLine2:
+          concept: address-line-two
+          type: string
+          source: acris_parties.address2
+          rule: Trimmed, as recorded. Reported apart, never compared.
+          null_policy: "absent when blank"
+        zip:
+          concept: zip-code
+          type: string
+          source: acris_parties.zip
+          rule: Trimmed, as recorded (5 digits, 9 digits or non-US text).
+          null_policy: "absent when blank"
+        addressNames:
+          concept: address-party-count
+          type: integer
+          source: acris_parties.name, acris_parties.address1, acris_parties.zip
+          rule: >-
+            Hub count: distinct N3 party names at the same upper-cased street line and first five ZIP characters, over ALL ACRIS party rows,
+            not only loaded documents. Counts only names with at least one letter, so it is 0 when every name at the address is a symbol (one party is named a backtick). Fixed when loaded.
+          counting_unit: distinct names
+          null_policy: "absent when the party has no street line, and on parties only of scope F documents (not computed, decision 2026-11-17)"
+        addressDocuments:
+          concept: address-document-count
+          type: integer
+          source: acris_parties.documentid, acris_parties.address1, acris_parties.zip
+          rule: Distinct documents over all ACRIS party rows at the same street line and first five ZIP characters.
+          counting_unit: distinct documents
+          null_policy: "absent when the party has no street line, and on parties only of scope F documents (not computed, decision 2026-11-17)"
+
+  relationships:
+    HAS_PARTY:
+      concept: has-party
+      from: Document
+      to: DocumentParty
+      source: acris_parties.documentid, acris_parties.partytype
+      rule: One per (Document, DocumentParty, partytype) row.
+      proved_by: tests/q7_3/expected.sql
+      properties:
+        partyType:
+          concept: party-role
+          type: integer
+          source: acris_parties.partytype
+          rule: "The recorded code, 1, 2 or 3. Its meaning depends on the document type (borrower or lender on a mortgage, grantor or grantee on a deed), so it is never renamed."
+          null_policy: never absent
+
+answer:
+  Q7.1:
+    lookup: tests/q7_1/lookup.cypher
+    fields:
+      registrationsA:  {concept: registration, source: "Registration with a Contact whose nameKey equals the first name", type: integer, counting_unit: registrations, null_policy: "0 when no contact carries the name; then nothing is shared"}
+      registrationsB:  {concept: registration, source: "Registration with a Contact whose nameKey equals the second name", type: integer, counting_unit: registrations, null_policy: "0 when no contact carries the name"}
+      sharedAddresses: {concept: mailing-address, source: "street line plus first five ZIP characters on contacts of both sides' registrations", type: "list of {street, zip5, typesA, typesB, registrations}", null_policy: "empty list means no shared business address"}
+      sharedPeople:    {concept: person-name, source: "Contact.personName equal (uppercase) on both sides' registrations", type: "list of {personName, typesA, typesB}", null_policy: "empty list means no shared person; a name is a lead, never repeated outside the answer"}
+      typesA:          {concept: contact-type, source: Contact.contactType, type: "list of string", allowed_scheme: contact-types, allowed: [CorporateOwner, IndividualOwner, JointOwner, Agent, HeadOfficer, Officer, Shareholder, SiteManager, Lessee]}
+    note: "Contacts are found by name key (rule N3): a lead, not a stored link. Hub count is the registrations that carry the address. Set-aside status is Q7.4."
+  Q7.2:
+    lookup: tests/q7_2/lookup.cypher
+    fields:
+      recordsA:    {concept: dos-entity, source: "DosEntity with nameKey equal to the first name", type: "list of {dosId, name, filingDate, process address parts, entities}", null_policy: "empty list means no record in the active-entity snapshot, not that the entity does not exist"}
+      recordsB:    {concept: dos-entity, source: "DosEntity with nameKey equal to the second name", type: "list of {dosId, name, filingDate, process address parts, entities}", null_policy: "empty list means no record in the active-entity snapshot"}
+      entities:    {concept: process-address-entity-count, source: DosEntity.processAddressEntities, type: integer, counting_unit: "DOS entities over the whole active-entity table", null_policy: "absent when the record has no process street line"}
+      sharedPairs: {concept: dos-process-address, source: "derived: uppercase process street line plus first five ZIP characters equal on a record of each side; line 2 reported apart", type: "list of [dosId, dosId]", null_policy: "empty list means the process addresses differ or one is absent"}
+    note: "Where the state forwards legal service; it can be a service company, so sharing it is not evidence of common ownership."
+  Q7.3:
+    lookup: tests/q7_3/lookup.cypher
+    fields:
+      documents:    {concept: document, source: "Document with a HAS_PARTY link to a party named by each of the two given names (N3)", type: "list of document records, newest recorded date first", null_policy: "empty list means no loaded document names both; documents outside scope C are not searched"}
+      documentId:   {concept: document-id, source: Document.documentId, type: string}
+      docType:      {concept: document-type, source: Document.docType, type: string}
+      recordedDate: {concept: recorded-date, source: Document.recordedDate, type: date, null_policy: "absent when ACRIS has none"}
+      parties:      {concept: document-party, source: "Document-[:HAS_PARTY]->DocumentParty", type: "list of {name, partyType, mailingAddress, addressLine2, zip, addressNames, addressDocuments}", null_policy: "all parties of the document are listed, the two given ones marked"}
+      name:         {concept: party-name, source: DocumentParty.name, type: string, null_policy: "absent when blank"}
+      partyType:    {concept: party-role, source: "HAS_PARTY.partyType", type: integer}
+      mailingAddress: {concept: mailing-address, source: DocumentParty.mailingAddress, type: string, null_policy: "absent when blank"}
+      addressLine2: {concept: address-line-two, source: DocumentParty.addressLine2, type: string, null_policy: "absent when blank"}
+      zip:          {concept: zip-code, source: DocumentParty.zip, type: string, null_policy: "absent when blank"}
+      addressNames: {concept: address-party-count, source: DocumentParty.addressNames, type: integer, counting_unit: "distinct names over all ACRIS", null_policy: "absent when the party has no street line"}
+      addressDocuments: {concept: address-document-count, source: DocumentParty.addressDocuments, type: integer, counting_unit: "distinct documents over all ACRIS", null_policy: "absent when the party has no street line"}
+    note: "A name match is a lead, shown with its evidence. Role is the recorded partytype."
+  Q7.4:
+    lookup: tests/q7_4/lookup.cypher
+    fields:
+      networkMask:   {concept: network-masked-address, source: "NetworkMaskedAddress with the street line plus second line as text", type: "{addressId, address, degree, maskedEdges}", null_policy: "absent when the method did not mask this text, not a clearance"}
+      portfolioMask: {concept: portfolio-masked-address, source: "PortfolioMaskedAddress with the same text", type: "{address, degree, maskedIdentities}", null_policy: "absent when no identity at this text was masked"}
+      mailDrop:      {concept: mail-drop-address, source: "MailDropAddress with the list's key spelling and ZIP", type: "list of {listZip, kind, basis, reviewStatus}", null_policy: "empty list means not listed under this spelling, or the list was not consulted (listNotConsulted)"}
+      setAside:      {concept: set-aside, source: "derived: any of the three classifications marks the address", type: boolean, null_policy: "never absent; false means used, with the hub count"}
+      listNotConsulted: {concept: mail-drop-address-key, source: "derived: no list spelling was supplied", type: boolean, null_policy: "never absent"}
+    note: "Each classification is reported apart with its method and run (data/sources.yaml). A mask is a method's decision; the list is preliminary and unreviewed. Setting an item aside is not a finding about the parties."
+  Q7.5:
+    lookup: tests/q7_5/lookup.cypher
+    lookups: [tests/q7_5/lookup_lots.cypher]
+    fields:
+      lotsA:         {concept: tax-lot, source: "Lot of each side with its group and absence reasons", type: "list of {bbl, networkGroupId, networkSplit, networkAbsence, networkAbsenceDetail, portfolioGroupId, portfolioComposition, portfolioAbsence, portfolioAbsenceDetail}", null_policy: "group absent when the lot is in none; BOR's reason then explains it"}
+      landlordsA:    {concept: landlord, source: "Landlord-[:COVERS]->Lot of side A", type: "list of integer", counting_unit: "landlord records", null_policy: "empty list means no landlord record covers the lots"}
+      links:         {concept: link-weight, source: "CONNECTED_BY_IDENTITY, CONNECTED_BY_DEED, CONNECTED_BY_NAME and CONNECTED_BY_ADDRESS between a landlord of each side", type: "list of {type, nodeA, nodeB, weight, stage, evidenceType, evidenceId, networkGroupId, portfolioGroupId}", null_policy: "empty list means no kept link; links at a masked address are not loaded (Q6.2 counts them)"}
+    note: "Group ids hold only inside the named run (BOR 2026-05-29-869bd299). No group and no link do not show the two are unrelated, and a group is an apparent-owner attribution, not legal ownership."
+
+diagnostics: []
+
+not_stored:   # deliberately absent from the graph
+  - {term: Q7.1 shared contacts, reason: found at answer time by N3 name match over Contact (a lead); not stored}
+  - {term: Q7.2 shared DOS process address, reason: answered from the DOS nodes at answer time}
+  - {term: Q7.4 set aside, reason: derived at answer time from the Q6 masks and the mail-drop list}
+  - {term: Q7.5 grouping and links, reason: read from Landlord, IN_NETWORK, IN_PORTFOLIO and link properties at answer time}
+  - {term: documents outside scope C, reason: out of scope; decision 2026-11-16 (an anchor-type pair is found only when both names are HPD owners)}
+  - {term: crfn, reel, page and percent transferred, reason: not needed for Q7}

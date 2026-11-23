@@ -1,0 +1,20 @@
+# Q16 downstream contract (retrieval-extraction). WatchlineOP does not run it; results stay pending until the downstream consumer
+# passes it on a versioned, replayable retrieval cache that the user supplies (like Q5.4 and Q11.5). No cache exists yet.
+question: Q16
+cache_needed: "versioned retrieval cache: for each case, the queries, sources searched, dates, retrieved page or document text and any scan text with OCR confidence"
+item_record:   # one per retrieved item; field names from profiles/q16.yaml
+  required: [publisher, itemDate, locator, sourceCategory, reviewStatus, factRelation, matchBasis, citedRecordedItem]
+  one_of: [quotedClaim, extractedValue]   # extractedValue absent when unreadable, partial or behind payment (then an unresolved lead with the reason)
+  with_value: [extractionMethod, confidence]
+inputs: [entityOrAddress, sourcesSearched, asOfDate, stepAndTimeBudget]
+rules:
+  - "a report is shown as a reported claim with publisher, date and quoted text; reviewStatus starts item-unreviewed; the project never sets confirmed or refuted"
+  - "a name is compared by rule N3; a similar but not identical name or a low-confidence scan is matchBasis lead-only, factRelation unrelated, and never joins recorded facts"
+  - "two contradicting items are both returned with reviewStatus contested; neither is chosen"
+  - "a person in a claim or signatory is shown with the source and the role the item gives; the recorded role is returned beside it; no ownership is inferred"
+  - "an item dated after asOfDate is outside the answer and listed as such; a superseded claim is reported with both dates"
+  - "nothing found: 'no reports or documents found in the sources searched' with the queries and dates; never 'no news'"
+  - "a claim is never stated as fact and is kept apart from the Owner Portfolio; factRelation is computed against the cited recorded HPD, ACRIS or DOS value and not stored"
+cases:   # fill from the cache; neutral Sunset Park buildings may have no coverage, which is itself a case
+  ordinary: [article naming the exact LLC, retrieved filing with a named manager]
+  difficult: [article naming a similarly named entity, two contradicting articles, scanned attachment with an uncertain name, paid-only registry step, report dated after the as-of date, nothing found]

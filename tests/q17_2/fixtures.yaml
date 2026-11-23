@@ -1,0 +1,10 @@
+# Q17.2 fixtures. hpd_registrations (frozen baseline, data/README.md), as of 2026-05-29. check_lapsed.py re-derives each with tests/q17_2/expected.sql.
+as_of: "2026-05-29"
+cases:
+  - {bbl: "3008210019", lapsed: holds, registrations: 1, label: "anchor E: last registered 2020-08-31, period ended 2021-09-01"}
+  - {bbl: "3008260002", lapsed: does-not-hold, registrations: 1, label: "anchor A: period ends 2026-09-01, not ended on the snapshot date"}
+  - {bbl: "3008770052", lapsed: holds, registrations: 1, label: "period ended 2018-09-01"}
+  - {bbl: "1000247501", lapsed: does-not-hold, registrations: 2, label: "one registration ended and one running: not lapsed, each listed"}
+  - {bbl: "1001450005", lapsed: does-not-hold, registrations: 1, label: "undated registration whose end date is after the snapshot: judged by the end date"}
+  - {bbl: "3008970014", lapsed: cannot-tell, registrations: 0, label: "anchor F: no registration"}
+  - {bbl: "1018840001", lapsed: cannot-tell, registrations: 0, label: "placeholder registration id 0: no usable registration"}

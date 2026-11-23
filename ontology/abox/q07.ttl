@@ -1,0 +1,13 @@
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q7 example data. Values come from the verified fixtures in tests/q7_*/fixtures.yaml (ACRIS parties 2026-05-31; DOS 2026-07-06).
+# The anchor mortgage names both entities as borrowers (party type 1, which is not modeled on the node: it sits on the link).
+id:doc-2021031601183001 a onto:Document ; onto:documentId "2021031601183001" ; onto:hasParty id:party-5413-plaza, id:party-702-plaza .
+id:party-5413-plaza a onto:DocumentParty ; onto:partyName "5413 PLAZA LLC" ; onto:mailingAddress "5 CROMWELL CIRCLE" ; onto:zipCode "10304" ;
+    onto:addressPartyCount 7 ; onto:addressDocumentCount 12 .
+id:party-702-plaza a onto:DocumentParty ; onto:partyName "702 PLAZA LLC" ; onto:mailingAddress "5 CROMWELL CIRCLE" ; onto:zipCode "10304" ;
+    onto:addressPartyCount 7 ; onto:addressDocumentCount 12 .
+# A DOS record with a hub count over the whole table (5 entities list the process address).
+id:dos-5857246 a onto:DosEntity ; onto:processAddress "5 CROMWELL CIRCLE" ; onto:processAddressEntities 5 .

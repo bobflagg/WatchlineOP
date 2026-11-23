@@ -55,7 +55,7 @@ def main() -> int:
                     src = sorted((mask(*r) for r in cur.fetchall()), key=key)
                     check(f"{f['bbl']} fixture matches source", src == exp, f"source gives {src}")
                     rows = session.run(lookup, bbl=f["bbl"]).data()
-                    got = sorted((mask(r["registrationId"], o["contactType"], o["name"]) for r in rows for o in r["owners"]), key=key)
+                    got = sorted((mask(r["registrationId"], o["contactType"], o["corporationName"] if o["contactType"] == "CorporateOwner" else o["personName"]) for r in rows for o in r["owners"]), key=key)
                     check(f"{f['bbl']} graph matches fixture", got == exp, f"graph gives {got}")
     failed = results.count(False)
     print(f"{len(results) - failed}/{len(results)} checks passed")

@@ -1,0 +1,26 @@
+# Q24 acceptance results, 2026-11-19. Graph acceptance pending until the user runs make test K=q24 and make shapes.
+question: Q24
+fixture_version: "tests/q24_1 to q24_4 fixtures.yaml and contract.yaml; matches, person leads and near names re-derived from the frozen baseline by each check; person fixtures are rules, never names"
+baseline: "Database facts from the frozen baseline recorded 2026-11-16 in data/README.md."
+tools:
+  shacl2cypher: "0.3.0; Q24 adds no SHACL shape, so the compiled rule set is unchanged"
+acceptance:
+  graph:
+    status: pending
+    reason: "q24_1 (23/23), q24_2 (9/9), q24_3 (19/19) and q24_4 (5/5) pass when run read-only; make test K=q24 and make shapes are for the user to run"
+    evidence:
+      shapes: "none (no graph element)"
+      supplemental_checks: "queries/checks/q24-computed-not-stored.cypher (coverage Q24-R1)"
+      sub_question_checks: "tests/q24_1 (entity matches), q24_2 (person leads), q24_3 (near names), q24_4 (contract) (coverage Q24-R2)"
+      negative_cases: "4 in tests/negative/q24/cases.yaml (reuse the key `status`, no new key minted)"
+  retrieval_extraction:
+    status: pending
+    reason: "not declared for Q24 (acceptance_types: [graph])"
+  investigation:
+    status: pending
+    reason: "not declared for Q24"
+open_points:
+  - "A name match is a lead, not a link. Common personal names return unrelated people; roles are as recorded, not findings about ownership."
+  - "ACRIS records people last name first and HPD first name first; deed parties are searched in both orders."
+  - "Near names are found by a shared core only; spacing variants, abbreviations and misspellings are not found. DOS records are loaded only when their name equals an HPD owner or deed grantee name."
+  - "A person lookup scans Contact.personName (no index)."

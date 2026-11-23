@@ -1,0 +1,21 @@
+# Agent-level evaluation case (draft). Not run by make test.
+id: eval-q28-anchor-a
+question: Q28
+input: "Has HPD taken the owner of BIN 3014788 to Housing Court, and are the respondents the registered owner?"
+tools: [neo4j read, Building -> HAS_LITIGATION -> Litigation, registered owner contacts]
+must_include:
+  - every loaded case for the BIN, with caseType, caseOpenDate and caseStatus
+  - case 508048 respondent matches the registered owner "5413 PLAZA LLC" (N3 key)
+  - harassment findings listed apart from "No Harassment" outcomes
+  - owner = HPD contact types CorporateOwner, IndividualOwner, JointOwner over every registration of the BIN
+must_say:
+  - the name match is a lead, not proof of identity
+  - scope is cases on HPD-registered lots whose BIN is a registered Building
+must_not:
+  - call "No Harassment" a finding
+  - drop cases with no open date or no respondent (report them as recorded)
+  - repeat any individual's name (write "a person (name not repeated)")
+expected_source: tests/q28_2/expected.sql (graph answer must equal the SQL answer)
+negative_variant:
+  input: "Are the respondents of the cases on BIN 3013901 the registered owner?"
+  expect: case 424938 reported as NOT matching under N3 (STREET vs ST), flagged as a possible spelling difference; no claim of a different owner

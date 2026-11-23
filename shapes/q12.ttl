@@ -1,0 +1,31 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix s2c:  <https://w3id.org/shacl2cypher#> .
+@prefix shp:  <https://watchline.example/shapes/> .
+
+# Q12 shapes: the rules OWL cannot express (ontology/ontology-notes.md, Q12 "Rules for Stage 6 shapes").
+# Compiled together with shapes/q03.ttl, which names Deed, Grantee, mailingAddress, addressLineTwo and zipCode.
+
+# --- Graph names ---
+onto:Grantor s2c:label "Grantor" .
+onto:hasGrantor s2c:relationship "HAS_GRANTOR" ; s2c:direction "out" .
+onto:grantorName s2c:property "name" .
+
+# --- Rules ---
+shp:GrantorShape a sh:NodeShape ;
+    s2c:key "partyKey" ;
+    sh:targetClass onto:Grantor ;
+    # R1 a blank name or address part is absent, never an empty string
+    sh:property [ sh:path onto:grantorName ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:mailingAddress ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:addressLineTwo ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:zipCode ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    # R2 every grantor belongs to exactly one deed
+    sh:property [ sh:path [ sh:inversePath onto:hasGrantor ] ; sh:minCount 1 ; sh:maxCount 1 ] .
+
+shp:DeedGrantorShape a sh:NodeShape ;
+    s2c:key "documentId" ;
+    sh:targetClass onto:Deed ;
+    # R2 HAS_GRANTOR ends on a grantor
+    sh:property [ sh:path onto:hasGrantor ; sh:class onto:Grantor ] .

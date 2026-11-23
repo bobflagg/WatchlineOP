@@ -1,0 +1,34 @@
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q8 example data. Values come from the verified fixtures in tests/q8_*/fixtures.yaml
+# (BOR release v0.3.0, run 2026-05-29-869bd299). Names and business addresses are shown for one landlord record. Link weights and evidence have no
+# domain in the ontology, so they are left out here.
+
+# Anchor C: a whole component of five lots and three landlord records; one record covers three lots.
+id:on-98617 a onto:OperationalNetwork ; onto:anchoredBy id:landlord-98618 ; onto:groupId "ON-98617" ; onto:networkSplit "wcc" .
+id:lot-3008070024 a onto:TaxLot ; onto:bbl "3008070024" ; onto:inNetwork id:on-98617 .
+id:lot-3008870067 a onto:TaxLot ; onto:bbl "3008870067" ; onto:inNetwork id:on-98617 .
+id:lot-3053340026 a onto:TaxLot ; onto:bbl "3053340026" ; onto:inNetwork id:on-98617 .
+id:lot-3067970008 a onto:TaxLot ; onto:bbl "3067970008" ; onto:inNetwork id:on-98617 .
+id:lot-3067510012 a onto:TaxLot ; onto:bbl "3067510012" ; onto:inNetwork id:on-98617 .
+id:landlord-98617 a onto:Landlord ; onto:covers id:lot-3008070024 ; onto:connectedByIdentity id:landlord-98618, id:landlord-98619 .
+id:landlord-98618 a onto:Landlord ; onto:landlordName "SAHIT HADZOVIC" ;
+    onto:landlordBusinessAddress "300 EAST SECOND STREET D, BROOKLYN, NY 11218", "300 EAST SECOND STREET D, Brooklyn, NY 11218" ; onto:covers id:lot-3008870067, id:lot-3053340026, id:lot-3067970008 ; onto:connectedByIdentity id:landlord-98619 ; onto:connectedByName id:landlord-98619 ; onto:connectedByAddress id:landlord-98619 .
+id:contact-98619 a onto:Contact ; onto:contactType "HeadOfficer" .
+id:landlord-98619 a onto:Landlord ; onto:basedOnContact id:contact-98619 ; onto:covers id:lot-3067510012 .
+
+# A Louvain community (a cut of a larger component).
+id:on-675 a onto:OperationalNetwork ; onto:groupId "ON-675" ; onto:networkSplit "louvain" .
+
+# Anchor A: in no network; no accepted link connected its landlord records.
+id:lot-3008260002 a onto:TaxLot ; onto:bbl "3008260002" ;
+    onto:networkAbsence "no_qualifying_linkage" ; onto:networkAbsenceDetail "no_linkage" .
+
+# Anchor F: in no network; no HPD registration.
+id:lot-3008970014 a onto:TaxLot ; onto:bbl "3008970014" ;
+    onto:networkAbsence "outside_source_coverage" ; onto:networkAbsenceDetail "no_registration" .
+
+# A registered lot missing from PLUTO: BOR has no status row, so no absence is recorded.
+id:lot-1005560059 a onto:TaxLot ; onto:bbl "1005560059" .

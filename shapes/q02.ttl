@@ -10,12 +10,13 @@
 
 # --- Graph names ---
 onto:Registration s2c:label "Registration" .
-onto:OwnerContact s2c:label "OwnerContact" .
+onto:Contact s2c:label "Contact" .
 onto:hasRegistration s2c:relationship "HAS_REGISTRATION" ; s2c:direction "out" .
-onto:hasOwnerContact s2c:relationship "HAS_OWNER_CONTACT" ; s2c:direction "out" .
+onto:hasContact s2c:relationship "HAS_CONTACT" ; s2c:direction "out" .
 onto:registrationId s2c:property "registrationId" .
 onto:contactType s2c:property "contactType" .
-onto:ownerName s2c:property "name" .
+onto:corporationName s2c:property "corporationName" .
+onto:personName s2c:property "personName" .
 
 # --- Rules ---
 shp:RegistrationShape a sh:NodeShape ;
@@ -25,18 +26,19 @@ shp:RegistrationShape a sh:NodeShape ;
     sh:property [ sh:path onto:registrationId ; sh:minCount 1 ; sh:datatype xsd:integer ; sh:minInclusive 1 ] ;
     # R3 every registration is linked to at least one building
     sh:property [ sh:path [ sh:inversePath onto:hasRegistration ] ; sh:minCount 1 ] ;
-    sh:property [ sh:path onto:hasOwnerContact ; sh:class onto:OwnerContact ] .
+    sh:property [ sh:path onto:hasContact ; sh:class onto:Contact ] .
 
-shp:OwnerContactShape a sh:NodeShape ;
+shp:ContactShape a sh:NodeShape ;
     s2c:key "contactKey" ;
-    sh:targetClass onto:OwnerContact ;
-    # R2 type present and one of the three owner types
+    sh:targetClass onto:Contact ;
+    # R2 type present and one of the nine HPD types
     sh:property [ sh:path onto:contactType ; sh:minCount 1 ; sh:datatype xsd:string ;
-                  sh:pattern "^(CorporateOwner|IndividualOwner|JointOwner)$" ] ;
-    # R5 a blank name is absent, never an empty string
-    sh:property [ sh:path onto:ownerName ; sh:datatype xsd:string ; sh:minLength 1 ] ;
-    # R3 every owner contact is linked to exactly one registration
-    sh:property [ sh:path [ sh:inversePath onto:hasOwnerContact ] ; sh:minCount 1 ; sh:maxCount 1 ] .
+                  sh:pattern "^(CorporateOwner|IndividualOwner|JointOwner|Agent|HeadOfficer|Officer|Shareholder|SiteManager|Lessee)$" ] ;
+    # R5 a blank corporation or person name is absent, never an empty string
+    sh:property [ sh:path onto:corporationName ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    sh:property [ sh:path onto:personName ; sh:datatype xsd:string ; sh:minLength 1 ] ;
+    # R3 every contact is linked to exactly one registration
+    sh:property [ sh:path [ sh:inversePath onto:hasContact ] ; sh:minCount 1 ; sh:maxCount 1 ] .
 
 shp:BuildingRegistrationShape a sh:NodeShape ;
     s2c:key "bin" ;

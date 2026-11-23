@@ -1,0 +1,28 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q15 example data. Values follow the fixtures in tests/q15_1/fixtures.yaml (hpd_violations through 2026-07-02).
+# Entities only; no names. Counts by class and status, the oldest open date and the rate are computed at answer time.
+
+# Anchor C (438 52 Street): one building, one lot with 32 residential units (PLUTO). Two of its violations shown:
+# an open class B and a closed class A. Violations hang on the building, never on the lot.
+id:lot-3008070024 a onto:TaxLot ; onto:bbl "3008070024" ; onto:residentialUnits 32 ; onto:hasBuilding id:bldg-3013901 .
+id:bldg-3013901 a onto:Building ; onto:bin "3013901" ;
+    onto:hasViolation id:violation-example-open-b, id:violation-example-closed-a .
+id:violation-example-open-b a onto:Violation ; onto:violationId 1000001 ;
+    onto:violationClass "B" ; onto:violationStatus "Open" ; onto:inspectionDate "2023-03-25"^^xsd:date .
+id:violation-example-closed-a a onto:Violation ; onto:violationId 1000002 ;
+    onto:violationClass "A" ; onto:violationStatus "Close" ; onto:inspectionDate "2019-06-10"^^xsd:date .
+
+# Q15.3 (pest extension, tests/q15_3/fixtures.yaml): anchor C's open violations carry an order number. Its class B violation cites order 508
+# (not a pest order); its one open class C violation cites order 568 (roaches, in data/hpd_pest_orders.yaml): a pest violation, but not mice.
+# The pest kind is not stored; it is read from the order list at answer time.
+id:violation-example-open-roach a onto:Violation ; onto:violationId 1000003 ;
+    onto:violationClass "C" ; onto:violationStatus "Open" ; onto:inspectionDate "2023-03-25"^^xsd:date ; onto:orderNumber "568" .
+id:bldg-3013901 onto:hasViolation id:violation-example-open-roach .
+id:violation-example-open-b onto:orderNumber "508" .
+
+# A building with no violation in the snapshot: no hasViolation edge. An empty result, not evidence of good conditions.
+id:bldg-3324448 a onto:Building ; onto:bin "3324448" .

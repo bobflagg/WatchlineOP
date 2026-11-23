@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: a listed address is not an HPD contact (disjoint classes).
+id:bad-1 a onto:MailDropAddress, onto:Contact ; onto:mailDropAddressKey "418 BROADWAY" .

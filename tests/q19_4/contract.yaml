@@ -1,0 +1,16 @@
+# Q19 answer contract (computed at answer time; nothing here is stored in the graph). Not run by WatchlineOP beyond graph acceptance.
+inputs: [two lots (BBL), layer or layers, run]
+per_layer: {state: [same, different, ungrouped], reasons_when_ungrouped: "BOR detail code and its top-level reason, one per lot"}
+same_group: [composition_or_split, representative_path, stage_and_evidence_per_link, full_detail_on_request]
+network_only: [connected_before_subdivision, same_network, split]
+method: {stage_precision: "per stage, or 'not evaluated'; release v0.3.0 has no figure for any stage"}
+caveats:
+  - "Name the run (2026-05-29-869bd299, release v0.3.0) and the layer; group ids are valid only inside the run."
+  - "Absence of a link is not evidence of different owners; ungrouped and different groups are not findings about owners."
+  - "A path is a chain of landlord records, not a direct record between the lots and not a finding of common ownership; other paths of the same length may exist."
+  - "A method's benchmark precision is not the probability that a particular link is correct."
+  - "Pre-subdivision connectivity is not network membership: two lots with a path across a cut can be in different networks."
+  - "Edges not exported: membership only, with the statement that evidence is not available."
+uncertain:
+  - "Ownership behind a landlord record is not in the release."
+  - "A different spelling or address in HPD can keep two records from linking; the release's evaluation is provisional."

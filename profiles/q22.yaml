@@ -1,0 +1,37 @@
+# Question schema: Q22 "Same entity or not": what supports treating two recorded names as one entity, what argues against, what is unresolved
+# (sub-questions Q22.1 and Q22.2). Adds no graph element (stage 1, 2026-11-19). Answered from Contact, Grantee, Grantor, DocumentParty,
+# DosEntity and their lots (Q2, Q3, Q5, Q7, Q12). The comparison and the joining records are computed at answer time; a name match is a lead.
+question: Q22
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [hpd_contacts, acris_parties, acris_legals, nys_corporations]
+
+graph:
+  constraints: []
+  nodes: {}
+  relationships: {}
+
+answer:
+  Q22.1:
+    proved_by: tests/q22_1/check_names.py
+    fields:
+      outcome: {concept: name-agreement, source: "derived: src/watchline/compare.py entity_name_comparison(nameA, nameB)", type: string, allowed_scheme: entity-name-outcomes, allowed: [exact-normalized, normalization-match, abbreviation-match, differs-by-numeral-or-word, different, not-comparable], null_policy: "never absent. not-comparable when either name is absent. Not a finding of one entity"}
+      rule:    {concept: comparison-rule, source: "derived: compare.py", type: string, allowed: [N1, N2, N3, S1, L1, AB1], null_policy: "absent for different, differs-by-numeral-or-word and not-comparable; otherwise the first rule that makes the names equal"}
+      nameA:   {concept: corporation-name, source: "input name with its source (HPD contact, ACRIS party or DOS entity)", type: string, null_policy: "shown as recorded; a person's name is shown with role and source, not repeated in documents"}
+      nameB:   {concept: corporation-name, source: "input name with its source", type: string, null_policy: "as nameA"}
+    note: "Rules apply in order N1, N2, N3, S1, L1, AB1. Q3 and Q5 keep a space as a difference; only Q22 uses S1, L1 and AB1 (decision 2026-11-19). differs-by-numeral-or-word is never a match."
+  Q22.2:
+    lookup: tests/q22_2/lookup.cypher
+    proved_by: tests/q22_2/check_joins.py
+    fields:
+      kind:    {concept: name-agreement, source: "lookup: deed-party, registration-contact, document-party or dos-entity", type: string, allowed: [deed-party, registration-contact, document-party, dos-entity], null_policy: "never absent"}
+      ref:     {concept: tax-lot, source: "lookup: lot bbl, document id or DOS id by kind", type: string, null_policy: "never absent; a record in both names' result sets is a joining record"}
+      address: {concept: mailing-address, source: "Contact.mailingAddress or DosEntity.processAddress", type: string, null_policy: "absent when the kind carries none. A shared address is a lead only; masked or mail-drop addresses support no identity"}
+    note: "The agent intersects the result sets of the two names. No shared record means 'no joining record found', not 'different entities'. A DOS long form is found only when its record is in the graph."
+
+diagnostics: []
+
+not_stored:   # deliberately absent from the graph
+  - {term: name comparison outcome and rule, reason: "computed from the two recorded names at answer time; a stored outcome would read as a link"}
+  - {term: joining record, reason: "computed by intersecting lots, registrations, documents and DOS ids of the two names"}
+  - {term: same-entity verdict, reason: "a judgment the agent states with evidence for and against, never a graph fact"}

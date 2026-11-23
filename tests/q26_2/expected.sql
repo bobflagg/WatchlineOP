@@ -1,0 +1,8 @@
+-- Q26.2 expected answers: owner names of a lot and the DOS records under each name key (rule N3). Independent of the graph.
+-- hpd_registrations (frozen baseline, data/README.md), hpd_contacts, dos_active_corporations (data through 2026-07-06). SQL lives in tests/q26_support.py
+-- (OWNERS_SQL, DOS_SQL) so the check and this file cannot drift; the rule is restated here.
+-- Rule: owner contact types CorporateOwner, IndividualOwner, JointOwner on a usable registration of the lot. A corporation name is looked up by its N3 key.
+-- present: any name has a record. no_qualifying_linkage: names looked up, none has a record (Q22 may still offer a long-form lead).
+-- outside_method_input: no owner contact, or only a person (no entity name to look up).
+-- Expected: 5413 PLAZA LLC (anchor A) 1 record; 20 RIVER TERRACE APARTMENT CORPORATION 0; 438 52 ST OWNERS CORP (anchor C, HPD spelling) 0;
+-- anchor E: individual owner only; anchor F: no registration, so no owner contact.

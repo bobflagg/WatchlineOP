@@ -1,0 +1,16 @@
+# Q28.2 fixtures. hpd_litigations, hpd_registrations and hpd_contacts (frozen baseline, data/README.md). Rule N3 compares names.
+# check_respondent.py re-derives each from the source. Only entity (not person) names are recorded here.
+buildings:
+  - bin: "3014788"
+    label: "anchor A (5413 7 Avenue): case 508048 names '5413 PLAZA LLC' (the registered owner) with two individuals; case 36698 names an earlier entity"
+    expect:
+      - {litigationId: 508048, matched_keys: ["5413 PLAZA LLC"]}
+      - {litigationId: 36698, matched_keys: []}
+  - bin: "3013901"
+    label: "anchor C (438 52 Street): respondent '438 52 STREET OWNERS CORPORATION' against the HPD owner '438 52 ST OWNERS CORP' is different under N3 (ST vs STREET): not matched, a recorded gap not reconciled"
+    expect:
+      - {litigationId: 424938, matched_keys: []}
+  - bin: "1053600"
+    label: "case 31582 has no respondent: not comparable, never different"
+    expect:
+      - {litigationId: 31582, not_comparable: true}

@@ -1,0 +1,157 @@
+# Question schema: Q9 "Which lots, buildings and residential units are attributed to this building's Owner Portfolio, through which
+# ownership signals, and how does that footprint differ from its Operational Network?" (sub-questions Q9.1 to Q9.5).
+# Extends the Q1 and Q8 graph; declares only what Q9 adds. The run, release and snapshot are fixed per deployment and recorded once in
+# data/sources.yaml (bor_layers). Ids from the release are run-local. Member counts (Q9.2) and the comparison with the network (Q9.4)
+# are computed from IN_PORTFOLIO, IN_NETWORK, Lot and HAS_BUILDING and not stored.
+question: Q9
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [bor_layers]
+
+graph:
+  constraints:
+    - {name: owner_portfolio_id_unique, label: OwnerPortfolio, property: groupId, kind: unique}
+
+  nodes:
+    Lot:
+      concept: tax-lot
+      key: bbl
+      scope: "Declared by Q1; Q9 adds the two portfolio absence properties."
+      proved_by: tests/q9_5/check_absence.py
+      properties:
+        portfolioAbsence:
+          concept: portfolio-absence
+          type: string
+          source: bor_layers.bbl_status.top_level_reason
+          allowed_scheme: network-absence-reasons
+          allowed_level: top
+          allowed: [no_qualifying_linkage, excluded_by_policy, below_eligibility_rule, outside_source_coverage, outside_method_input]
+          rule: "Set from the Owner Portfolio rows of bbl_status with status not_in_group or excluded_from_footprint, for lots in the graph. The stored value is BOR's own code."
+          null_policy: "absent when the lot is in a portfolio, or has no BOR status row (1009 lots missing from PLUTO)"
+          proved_by: tests/q9_5/check_absence.py
+        portfolioAbsenceDetail:
+          concept: portfolio-absence-detail
+          type: string
+          source: bor_layers.bbl_status.reason_code
+          allowed_scheme: network-absence-reasons
+          allowed_level: detail
+          allowed_subset: true
+          allowed: [no_linkage, no_registration, no_owner_contact, unmatched_node, address_evidence_masked, coop_condo_excluded, coop_condo_dominated, institutional_screen, first_name_veto, common_name_veto, shared_company_degree_unknown, shared_company_name_not_rare, shared_company_first_name_conflict, shared_company_degree_cap, deed_not_latest, deed_parcels_out_of_range, successor_not_shell, successor_transfer_not_nominal]
+          rule: "As portfolioAbsence. The 18 codes are the ones this layer uses; a co-op or condo lot outside the footprint has coop_condo_excluded."
+          null_policy: "absent exactly when portfolioAbsence is absent"
+          proved_by: tests/q9_5/check_absence.py
+
+    OwnerPortfolio:
+      concept: owner-portfolio
+      key: groupId
+      scope: "One OwnerPortfolio per Owner Portfolio row of groups (6523 rows)."
+      proved_by: tests/q9_1/check_portfolio.py
+      properties:
+        groupId:
+          concept: portfolio-group-id
+          type: string
+          source: bor_layers.groups.group_id
+          rule: "OP-<n>, n the smallest landlord id in the portfolio. Run-local."
+          null_policy: never absent
+          proved_by: tests/q9_1/check_portfolio.py
+        composition:
+          concept: portfolio-composition
+          type: string
+          source: bor_layers.groups.composition
+          allowed_scheme: portfolio-compositions
+          allowed: [identity, deed_only, deed_bridged]
+          rule: "BOR's own code: 6451 identity, 61 deed_only, 11 deed_bridged."
+          null_policy: never absent
+          proved_by: tests/q9_1/check_portfolio.py
+
+  relationships:
+    IN_PORTFOLIO:
+      concept: in-portfolio
+      from: Lot
+      to: OwnerPortfolio
+      source: bor_layers.group_bbls.bbl, bor_layers.group_bbls.group_id, bor_layers.group_bbls.rental
+      rule: "One per Owner Portfolio row of group_bbls with rental True (43318). Every member is a Lot that already exists; a missing Lot is an error. The 412 rental False rows (co-op or condo lots outside the footprint) get no relationship; they carry the absence reason coop_condo_excluded."
+      proved_by: tests/q9_1/check_portfolio.py
+    CONNECTED_BY_DEED:
+      concept: connected-by-deed
+      from: Landlord
+      to: Landlord
+      source: bor_layers.graph_edges.node_a, bor_layers.graph_edges.node_b
+      rule: "One per kept deed.* row of graph_edges (1023: held_since 943, linked_successor 80): two landlord records whose buildings were conveyed by one joint deed. Owner Portfolio only; BOR never uses a deed edge in the Operational Network. Nodes on more than 20 joint deeds are left out (none dropped in this run)."
+      proved_by: tests/q9_3/check_signals.py
+      properties:
+        stage:
+          concept: ownership-signal
+          type: string
+          source: bor_layers.graph_edges.stage
+          allowed_scheme: ownership-signals
+          allowed: [deed.held_since, deed.linked_successor]
+          rule: "BOR's stage code, as BOR spells it (with its dot)."
+          null_policy: never absent
+          proved_by: tests/q9_3/check_signals.py
+        evidenceType:
+          concept: evidence-type
+          type: string
+          source: bor_layers.graph_edges.evidence_type
+          allowed_scheme: link-evidence-types
+          allowed: [evidence_item]
+          null_policy: never absent
+          proved_by: tests/q9_3/check_signals.py
+        evidenceId:
+          concept: evidence-id
+          type: string
+          source: bor_layers.graph_edges.evidence_id
+          rule: "A deed evidence item of the release; run-local. With the pair it is the identity of the relationship."
+          identity_only: true
+          null_policy: never absent
+          proved_by: tests/q9_3/check_signals.py
+        portfolioEdgeId:
+          concept: edge-id
+          type: string
+          source: bor_layers.graph_edges.edge_id
+          identity_only: true
+          null_policy: never absent
+          proved_by: tests/q9_3/check_signals.py
+        portfolioGroupId:
+          concept: portfolio-group-id
+          type: string
+          source: bor_layers.graph_edges.group_id
+          null_policy: "absent when BOR dropped the group as co-op or condo dominated (11 deed edges)"
+          proved_by: tests/q9_3/check_signals.py
+
+answer:
+  Q9.1:
+    lookup: tests/q9_1/lookup.cypher
+    lookups: [tests/q9_1/lookup_anchor.cypher]
+    fields:
+      portfolioId: {concept: portfolio-group-id, source: OwnerPortfolio.groupId, type: string, null_policy: absent when the lot is in no portfolio; the answer names the run once}
+      anchor: {concept: anchor-landlord, source: "OwnerPortfolio-[:ANCHORED_BY]->Landlord", type: "{nodeId, name}", null_policy: absent when the lot is in no portfolio; the name is the landlord record's, not the owner's}
+      composition: {concept: portfolio-composition, source: OwnerPortfolio.composition, type: string, allowed_scheme: portfolio-compositions, allowed: [identity, deed_only, deed_bridged], null_policy: absent when the lot is in no portfolio}
+    note: "A portfolio is an apparent-owner attribution from ownership signals, not legal ownership. Ids hold only inside the named run."
+  Q9.2:
+    lookup: tests/q9_2/lookup.cypher
+    fields:
+      lots:             {concept: tax-lot, source: "OwnerPortfolio<-[:IN_PORTFOLIO]-Lot", type: "list of string (BBL)", counting_unit: "rental lots in the graph; co-op and condo lots outside the footprint are not counted"}
+      buildings:        {concept: building, source: "Lot-[:HAS_BUILDING]->Building", type: "list of string (BIN)", counting_unit: "BINs listed in HPD registrations", null_policy: "a member lot with no listed building adds none; the answer counts such lots"}
+      residentialUnits: {concept: residential-units, source: derived, type: integer, counting_unit: "residential units as PLUTO counts them, summed over the member lots", rule: "sum of Lot.unitsRes; lots with none recorded add nothing and are counted apart"}
+  Q9.3:
+    lookup: tests/q9_3/lookup.cypher
+    fields:
+      links: {concept: connected-by-identity, source: "CONNECTED_BY_IDENTITY|CONNECTED_BY_DEED with portfolioGroupId", type: "list of {type, nodeA, nodeB, stage, evidenceId}", null_policy: "empty when the portfolio has one landlord record; a record that covers only co-op or condo lots appears only as a link end"}
+      signal: {concept: ownership-signal, source: "CONNECTED_BY_IDENTITY.stage|CONNECTED_BY_DEED.stage", type: string, allowed_scheme: ownership-signals, allowed: [identity.splink_base, identity.splink_feedback, identity.curated, identity.registered_llc, deed.held_since, deed.linked_successor]}
+    note: "Every edge BOR used, one per piece of evidence, so a pair can have several. A signal says how two records were joined, not that they are one owner."
+  Q9.4:
+    lookup: tests/q9_4/lookup.cypher
+    fields:
+      portfolioLots:     {concept: owner-portfolio, source: "OwnerPortfolio<-[:IN_PORTFOLIO]-Lot", type: integer, counting_unit: "rental lots in the graph"}
+      networkLots:       {concept: operational-network, source: "OperationalNetwork<-[:IN_NETWORK]-Lot", type: integer, counting_unit: "rental lots in the graph"}
+      inBoth:            {concept: tax-lot, source: derived, type: integer, counting_unit: "lots in the portfolio and in the network"}
+      portfolioOnlyLots: {concept: owner-portfolio, source: derived, type: "list of string (BBL)", null_policy: "empty when the network covers every portfolio lot"}
+      networkOnlyLots:   {concept: operational-network, source: derived, type: "list of string (BBL)", null_policy: "empty when the portfolio covers every network lot"}
+    note: "The layers are never mixed: each count is for one layer, and differences are lists of lots."
+  Q9.5:
+    lookup: tests/q9_5/lookup.cypher
+    fields:
+      portfolioAbsence:       {concept: portfolio-absence, source: Lot.portfolioAbsence, type: string, allowed_scheme: network-absence-reasons, allowed_level: top, allowed: [no_qualifying_linkage, excluded_by_policy, below_eligibility_rule, outside_source_coverage, outside_method_input], null_policy: "absent when the lot is in a portfolio or has no BOR status row"}
+      portfolioAbsenceDetail: {concept: portfolio-absence-detail, source: Lot.portfolioAbsenceDetail, type: string, allowed_scheme: network-absence-reasons, allowed_level: detail, allowed_subset: true, allowed: [no_linkage, no_registration, no_owner_contact, unmatched_node, address_evidence_masked, coop_condo_excluded, coop_condo_dominated, institutional_screen, first_name_veto, common_name_veto, shared_company_degree_unknown, shared_company_name_not_rare, shared_company_first_name_conflict, shared_company_degree_cap, deed_not_latest, deed_parcels_out_of_range, successor_not_shell, successor_transfer_not_nominal], null_policy: "absent exactly when portfolioAbsence is absent"}
+    note: "Absence is not evidence of different owners. A lot not in the graph has no answer here."

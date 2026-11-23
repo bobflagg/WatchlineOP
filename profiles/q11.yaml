@@ -1,0 +1,78 @@
+# Question schema: Q11 "What evidence supports an ownership, parent-company, management, financing or other affiliation involving this
+# entity, which relationship is documented, and which is only hypothesized?" (sub-questions Q11.1 to Q11.4).
+# Adds no graph element (decision 2026-11-16). Q11.1 reads the Q7.3 Document layer, now loaded for a second scope M (mortgages, declared in
+# profiles/q07.yaml); Q11.2 reads Registration and Contact; Q11.3 reads DosEntity; Q11.4 reads Lot, OperationalNetwork and OwnerPortfolio.
+# The affiliation type and evidence status of each item are computed from the recorded role or the source and are not stored.
+# Q11.5 (reported claims, a documented parent company) needs a replayable retrieval cache: pending.
+question: Q11
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [acris_master, acris_parties, hpd_contacts, nys_corporations]
+
+graph:
+  constraints: []
+  nodes: {}
+  relationships: {}
+
+answer:
+  Q11.1:
+    lookup: tests/q11_1/lookup.cypher
+    fields:
+      documentId:   {concept: mortgage, source: Document.documentId, type: string, null_policy: "a mortgage is a Document of type MTGE; none listed means no loaded mortgage names the entity"}
+      recordedDate: {concept: recorded-date, source: Document.recordedDate, type: date, null_policy: "absent when ACRIS has none"}
+      docDate:      {concept: document-date, source: Document.docDate, type: date, null_policy: "absent when ACRIS has none"}
+      amount:       {concept: document-amount, source: Document.amount, type: integer, counting_unit: "whole US dollars, as recorded", null_policy: "absent when ACRIS has none; 0 is never read as a free loan"}
+      givenRoles:   {concept: party-role, source: "HAS_PARTY.partyType of the party named by the given name", type: "list of integer", allowed: [1, 2], null_policy: "never empty for a listed mortgage; 1 is the borrower and 2 the lender"}
+      parties:      {concept: document-party, source: "Document-[:HAS_PARTY]->DocumentParty", type: "list of {name, nameKey, partyType, mailingAddress, zip}", null_policy: "every party of the mortgage is listed; a co-borrower is a shared-borrower record, not common control"}
+      affiliationType:  {concept: affiliation, source: "derived: the given party is a lender (financing) or a borrower (financing with the lender; other with a co-borrower)", type: string, allowed_scheme: affiliation-types, allowed_subset: true, allowed: [financing-affiliation, other-affiliation], null_policy: "never absent for a listed party"}
+      evidenceStatus:   {concept: affiliation, source: "derived: a recorded document", type: string, allowed_scheme: evidence-statuses, allowed_subset: true, allowed: [documented], null_policy: "always documented; a name match is the lead that finds the document"}
+    note: "Scope M: mortgages naming an HPD corporate owner (N3). A mortgage under a differently spelled name is absent (anchor C, a recorded gap), which the answer states. A lender is financing, not control or parenthood."
+  Q11.2:
+    lookup: tests/q11_2/lookup.cypher
+    fields:
+      registrationId: {concept: registration-id, source: Registration.registrationId, type: integer, null_policy: "never absent for a listed registration"}
+      givenTypes:     {concept: contact-type, source: "Contact.contactType of the contact carrying the given name key", type: "list of string", allowed_scheme: contact-types, allowed: [CorporateOwner, IndividualOwner, JointOwner, Agent, HeadOfficer, Officer, Shareholder, SiteManager, Lessee], null_policy: "the entity's own role on the registration"}
+      others:         {concept: contact, source: "every other Contact of the registration", type: "list of {contactType, corporationName, personName, title, mailingAddress, zip}", null_policy: "a person name is returned for the answer only; never repeated in logs or fixtures"}
+      affiliationType: {concept: affiliation, source: "derived from contactType: owner types and Shareholder = ownership, Agent and SiteManager = management, HeadOfficer, Officer and Lessee = other (tests/q11_2/fixtures.yaml type_map)", type: string, allowed_scheme: affiliation-types, allowed_subset: true, allowed: [ownership-affiliation, management-affiliation, other-affiliation], null_policy: "never absent; the recorded role is kept and never changed by the type. No HPD role records a parent company"}
+      evidenceStatus: {concept: affiliation, source: "derived: a recorded registration disclosure", type: string, allowed_scheme: evidence-statuses, allowed_subset: true, allowed: [documented], null_policy: "always documented; a disclosed agent is not an owner and a shareholder's share is unstated"}
+    note: "Contacts are found by name key (rule N3): a lead, not a stored link. The registrant's disclosure, not a verified fact."
+  Q11.3:
+    lookup: tests/q11_3/lookup.cypher
+    fields:
+      dosId:         {concept: dos-id, source: DosEntity.dosId, type: integer, null_policy: "absent (no row) when the active-entity snapshot has no record, not that the entity does not exist"}
+      name:          {concept: dos-entity-name, source: DosEntity.name, type: string}
+      entityType:    {concept: entity-type, source: DosEntity.entityType, type: string, null_policy: "absent when blank"}
+      jurisdiction:  {concept: jurisdiction, source: DosEntity.jurisdiction, type: string, null_policy: "absent when blank"}
+      filingDate:    {concept: initial-filing-date, source: DosEntity.filingDate, type: date, null_policy: "absent when the table has none"}
+      processName:   {concept: dos-process-name, source: DosEntity.processName, type: string, null_policy: "absent when blank; a person name is returned for the answer only"}
+      processAddress: {concept: dos-process-address, source: DosEntity.processAddress, type: string, null_policy: "absent when blank"}
+      processZip:    {concept: zip-code, source: DosEntity.processZip, type: string, null_policy: "absent when blank"}
+      entities:      {concept: process-address-entity-count, source: DosEntity.processAddressEntities, type: integer, counting_unit: "DOS entities over the whole active-entity table", null_policy: "absent when the record has no process street line"}
+      affiliationType: {concept: affiliation, source: "derived: a service-of-process contact", type: string, allowed_scheme: affiliation-types, allowed_subset: true, allowed: [other-affiliation], null_policy: "always other; never ownership, parenthood or management"}
+      evidenceStatus: {concept: affiliation, source: "derived: a recorded state filing", type: string, allowed_scheme: evidence-statuses, allowed_subset: true, allowed: [documented], null_policy: "always documented; a widely shared process address is a service-address lead and supports no link"}
+    note: "The process contact is where the state forwards legal service; it can be a service company."
+  Q11.4:
+    lookup: tests/q11_4/lookup.cypher
+    fields:
+      bbl:                {concept: bbl, source: Lot.bbl, type: string, null_policy: "absent when no registration names the entity"}
+      networkGroupId:     {concept: network-group-id, source: OperationalNetwork.groupId, type: string, null_policy: "absent when the lot is in no network; the run is 2026-05-29-869bd299"}
+      networkSplit:       {concept: network-split, source: OperationalNetwork.split, type: string, allowed_scheme: network-splits, allowed: [wcc, louvain], null_policy: "absent when the lot is in no network"}
+      networkLots:        {concept: in-network, source: "count of Lot-[:IN_NETWORK]->OperationalNetwork", type: integer, counting_unit: "lots in the graph", null_policy: "0 when the lot is in no network"}
+      networkAbsence:     {concept: network-absence, source: Lot.networkAbsence, type: string, allowed_scheme: network-absence-reasons, allowed_level: top, allowed: [no_qualifying_linkage, excluded_by_policy, below_eligibility_rule, outside_source_coverage, outside_method_input], null_policy: "absent when the lot is in a network or has no BOR status row"}
+      portfolioGroupId:   {concept: portfolio-group-id, source: OwnerPortfolio.groupId, type: string, null_policy: "absent when the lot is in no portfolio"}
+      portfolioComposition: {concept: portfolio-composition, source: OwnerPortfolio.composition, type: string, allowed_scheme: portfolio-compositions, allowed: [identity, deed_only, deed_bridged], null_policy: "absent when the lot is in no portfolio"}
+      portfolioLots:      {concept: in-portfolio, source: "count of Lot-[:IN_PORTFOLIO]->OwnerPortfolio", type: integer, counting_unit: "rental lots in the graph", null_policy: "0 when the lot is in no portfolio"}
+      portfolioAbsence:   {concept: portfolio-absence, source: Lot.portfolioAbsence, type: string, allowed_scheme: network-absence-reasons, allowed_level: top, allowed: [no_qualifying_linkage, excluded_by_policy, below_eligibility_rule, outside_source_coverage, outside_method_input], null_policy: "absent when the lot is in a portfolio or has no BOR status row"}
+      affiliationType:    {concept: affiliation, source: "derived: a portfolio is an apparent-owner lead (ownership-affiliation); a network is an infrastructure connection (other-affiliation)", type: string, allowed_scheme: affiliation-types, allowed_subset: true, allowed: [ownership-affiliation, other-affiliation], null_policy: "absent when the lot is in neither layer"}
+      evidenceStatus:     {concept: affiliation, source: "derived: a BOR/NLR group, a method's conclusion", type: string, allowed_scheme: evidence-statuses, allowed_subset: true, allowed: [hypothesized], null_policy: "always hypothesized; a lead to verify, never a finding of common ownership"}
+    note: "Lots are found by name key (a lead), then read as in Q7.5. Group ids hold only inside the named run. No group is not a finding that no relationship exists. Evidence per link: Q7.5 and Q8.3."
+
+diagnostics: []
+
+not_stored:   # deliberately absent from the graph
+  - {term: affiliation type and evidence status, reason: computed from the recorded role or the source at answer time}
+  - {term: shared-borrower relationship, reason: computed from the borrowers on one mortgage}
+  - {term: parent company, reason: no loaded source documents one; the answer says none is documented}
+  - {term: reported claims (Q11.5), reason: retrieval and session evidence, pending a replayable cache}
+  - {term: assignments, satisfactions and agreements, reason: not loaded; scope M is MTGE only (decision 2026-11-16)}
+  - {term: mortgages under a differently spelled owner name, reason: scope M is by N3 name; anchor C is a recorded gap}

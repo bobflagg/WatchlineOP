@@ -1,0 +1,63 @@
+# Question schema: Q21 "Violations across a layer": which lots of an Operational Network or Owner Portfolio have the most open violations per
+# residential unit, how concentrated they are, and how the answer changes between the layers (sub-questions Q21.1 to Q21.3).
+# Adds no graph element (stage 1, 2026-11-19). Answered from Lot, HAS_BUILDING, HAS_VIOLATION, IN_NETWORK and IN_PORTFOLIO (Q8, Q9, Q15).
+# Counts, rates, ranks, shares and layer comparisons are computed at answer time. Group ids are run-local (run 2026-05-29-869bd299).
+question: Q21
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [hpd_violations, hpd_registrations, pluto, bor_layers]
+
+graph:
+  constraints: []
+  nodes: {}
+  relationships: {}
+
+answer:
+  Q21.1:
+    lookups: [tests/q21_1/lookup_network.cypher, tests/q21_1/lookup_portfolio.cypher]
+    proved_by: tests/q21_1/check_ranking.py
+    fields:
+      bbl:       {concept: tax-lot, source: Lot.bbl, type: string, null_policy: "never absent; one row per member lot of the group"}
+      unitsRes:  {concept: residential-units, source: Lot.unitsRes, type: integer, counting_unit: "PLUTO residential units, lot-wide", null_policy: "absent when PLUTO has no unit count; 0 kept as recorded and gives rate unavailable"}
+      open:      {concept: violation, source: "derived: distinct Violations with status Open of the lot's Buildings", type: integer, counting_unit: "distinct open violations, open at the snapshot (data through 2026-07-02)", null_policy: "0 when none; zero is not evidence of good conditions. A building on several lots counts toward each"}
+      classA:    {concept: violation-class, source: "derived: open count with violationClass A", type: integer, counting_unit: "distinct open violations", null_policy: "0 when none; classes are reported apart, never summed into severity"}
+      classB:    {concept: violation-class, source: "derived: open count with violationClass B", type: integer, counting_unit: "distinct open violations", null_policy: "0 when none"}
+      classC:    {concept: violation-class, source: "derived: open count with violationClass C", type: integer, counting_unit: "distinct open violations", null_policy: "0 when none"}
+      classI:    {concept: violation-class, source: "derived: open count with violationClass I", type: integer, counting_unit: "distinct open violations", null_policy: "0 when none"}
+      rate:      {concept: open-violation-rate, source: "derived: open / unitsRes", type: float, counting_unit: "open violations per residential unit", null_policy: "absent (rate unavailable) when unitsRes is 0 or absent; ranked last, never 0"}
+    note: "Ranked by rate (available first), then open count, then bbl: the rank is the row order, not stored. A violation is what an inspector cited, not a measure of conditions. Operational Network lists all members; Owner Portfolio lists rental members only. Both layers are derived leads."
+  Q21.2:
+    lookups: [tests/q21_2/lookup_network.cypher, tests/q21_2/lookup_portfolio.cypher]
+    proved_by: tests/q21_2/check_concentration.py
+    fields:
+      memberLots:   {concept: tax-lot, source: "derived: member lots of the group", type: integer, counting_unit: "lots", null_policy: "never absent"}
+      lotsWithOpen: {concept: lot-violation-ranking, source: "derived: member lots with at least one open violation", type: integer, counting_unit: "lots", null_policy: "never absent"}
+      sumOpen:      {concept: violation-concentration, source: "derived: sum of the lots' open counts", type: integer, counting_unit: "open violations counted once per lot", null_policy: "never absent; can exceed distinctOpen when a building sits on several lots"}
+      topOpen:      {concept: violation-concentration, source: "derived: open count of the top lots by open count", type: integer, counting_unit: "open violations counted once per lot", null_policy: "never absent; the number of top lots is a parameter (3)"}
+      distinctOpen: {concept: violation, source: "derived: distinct open Violations over the whole group", type: integer, counting_unit: "distinct open violations", null_policy: "never absent"}
+      topShare:     {concept: violation-concentration, source: "derived: topOpen / sumOpen", type: float, counting_unit: "share of recorded open violations", null_policy: "absent when the group has no open violation"}
+    note: "A share of recorded open violations at the snapshot, not a measure of conditions. The answer states the number of top lots and the member count."
+  Q21.3:
+    lookup: tests/q21_3/lookup.cypher
+    proved_by: tests/q21_3/check_layers.py
+    fields:
+      bbl:                    {concept: tax-lot, source: Lot.bbl, type: string, null_policy: "never absent"}
+      networkGroupId:         {concept: network-group-id, source: OperationalNetwork.groupId, type: string, null_policy: "absent when the lot is in no network; run-local"}
+      portfolioGroupId:       {concept: portfolio-group-id, source: OwnerPortfolio.groupId, type: string, null_policy: "absent when the lot is in no portfolio; run-local"}
+      networkAbsenceDetail:   {concept: network-absence-detail, source: Lot.networkAbsenceDetail, type: string, allowed_scheme: network-absence-reasons, allowed_level: detail, allowed_subset: true, allowed: ["no_linkage", "no_registration", "no_owner_contact", "aggregator_address_masked", "address_evidence_masked", "first_name_veto", "common_name_veto", "shared_company_degree_unknown", "shared_company_name_not_rare", "shared_company_first_name_conflict", "shared_company_degree_cap"], null_policy: "absent when the lot is in a network"}
+      portfolioAbsenceDetail: {concept: portfolio-absence-detail, source: Lot.portfolioAbsenceDetail, type: string, allowed_scheme: network-absence-reasons, allowed_level: detail, allowed_subset: true, allowed: ["no_linkage", "no_registration", "no_owner_contact", "unmatched_node", "address_evidence_masked", "coop_condo_excluded", "coop_condo_dominated", "institutional_screen", "first_name_veto", "common_name_veto", "shared_company_degree_unknown", "shared_company_name_not_rare", "shared_company_first_name_conflict", "shared_company_degree_cap", "deed_not_latest", "deed_parcels_out_of_range", "successor_not_shell", "successor_transfer_not_nominal"], null_policy: "absent when the lot is in a portfolio"}
+      netLots:                {concept: in-network, source: "derived: member bbls of the lot's network", type: "list of string", counting_unit: lots, null_policy: "empty when the lot is in no network"}
+      portLots:               {concept: in-portfolio, source: "derived: rental member bbls of the lot's portfolio", type: "list of string", counting_unit: lots, null_policy: "empty when the lot is in no portfolio"}
+      onlyNetwork:            {concept: operational-network, source: "derived: netLots not in portLots", type: "list of string", counting_unit: lots, null_policy: "computed, not stored"}
+      onlyPortfolio:          {concept: owner-portfolio, source: "derived: portLots not in netLots", type: "list of string", counting_unit: lots, null_policy: "computed, not stored"}
+      both:                   {concept: lot-violation-ranking, source: "derived: lots in both lists", type: "list of string", counting_unit: lots, null_policy: "computed, not stored"}
+    note: "The agent runs Q21.1 and Q21.2 for each group and shows how the ranked list and the share change. The lists differ because the layers use different methods, not because one is right."
+
+diagnostics: []
+
+not_stored:   # deliberately absent from the graph
+  - {term: open violations per lot, reason: "computed at answer time from HAS_BUILDING and HAS_VIOLATION; a stored count would go stale and double count shared buildings"}
+  - {term: rate per unit and rank, reason: "computed from the lot's open count and PLUTO units; rank is the row order"}
+  - {term: concentration share, reason: "computed at answer time; depends on the number of top lots chosen"}
+  - {term: hazardous, reason: "not a class; classes A, B, C and I are reported apart and never combined"}
+  - {term: layer comparison, reason: "set differences of two membership lists, computed at answer time"}

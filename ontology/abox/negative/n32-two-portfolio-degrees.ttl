@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: a portfolio masked address has one degree (functional).
+id:bad-1 a onto:PortfolioMaskedAddress ; onto:portfolioMaskedAddressText "455 PARK AVENUE" ; onto:portfolioMaskedAddressDegree 110, 111 .

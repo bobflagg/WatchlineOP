@@ -1,0 +1,4 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: Litigation and Violation are disjoint. An action HPD brought is not what an inspector cited.
+id:bad-case-13 a onto:Litigation, onto:Violation ; onto:litigationId 2 .

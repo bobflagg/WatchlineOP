@@ -1,0 +1,14 @@
+# Q19.4 stage precision as a method property (BOR release v0.3.0, method_metrics.csv; run 2026-05-29-869bd299).
+# check_method.py re-derives `evaluated` from the release. In this release none of the stages that join portfolio landlords has a
+# benchmark precision, so the answer says "not evaluated"; a figure, when a release supplies one, is stated per stage and never as a
+# link probability.
+stages:
+  - {stage: identity.splink_base, evaluated: false}
+  - {stage: identity.splink_feedback, evaluated: false}
+  - {stage: identity.curated, evaluated: false}
+  - {stage: identity.registered_llc, evaluated: false}
+  - {stage: deed.held_since, evaluated: false}
+  - {stage: deed.linked_successor, evaluated: false}
+portfolios:    # portfolios whose link stages the lookup must return
+  - {groupId: OP-100039, stages: [identity.registered_llc, identity.splink_base]}
+  - {groupId: OP-10201, stages: [deed.held_since]}

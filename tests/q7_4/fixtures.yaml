@@ -1,0 +1,18 @@
+# Q7.4 fixtures: shared addresses classified as set aside (with every reason) or used. Derived from tests/q6_2, q6_3 and q6_4 (BOR release
+# v0.3.0, run 2026-05-29-869bd299; data/mail_drop_addresses.csv, preliminary). verified against the frozen baseline recorded in data/README.md (2026-11-16).
+addresses:
+  - {street: "455 PARK AVENUE", line2: null, zip5: "11205", listAddress: null, setAside: true, network: true, portfolio: true, mailDrop: [], listNotConsulted: true,
+     note: "masked by both methods (degrees 99 and 110); the list is not consulted without its key spelling"}
+  - {street: "909 THIRD AVENUE", line2: null, zip5: "10017", listAddress: null, setAside: true, network: true, portfolio: true, mailDrop: [], listNotConsulted: true,
+     note: "masked by both methods; the text names no ZIP"}
+  - {street: "188 PULASKI", line2: null, zip5: "11206", listAddress: null, setAside: true, network: true, portfolio: true, mailDrop: [], listNotConsulted: true,
+     note: "masked by both methods"}
+  - {street: "575 FIFTH AVENUE", line2: "9FLOOR", zip5: "10017", listAddress: "575 FIFTH AVE", setAside: true, network: false, portfolio: true,
+     mailDrop: [{listZip: "10017", kind: management_office}], listNotConsulted: false,
+     note: "portfolio mask on the street plus second line; the list holds 575 FIFTH AVE"}
+  - {street: "418 BROADWAY", line2: null, zip5: "12207", listAddress: "418 BROADWAY", setAside: true, network: false, portfolio: false,
+     mailDrop: [{listZip: "12207", kind: registered_agent}], listNotConsulted: false, note: "mail-drop list only"}
+  - {street: "418 BROADWAY", line2: null, zip5: "11207", listAddress: "418 BROADWAY", setAside: false, network: false, portfolio: false, mailDrop: [],
+     listNotConsulted: false, note: "same street text, different ZIP: a different address, used"}
+  - {street: "746 61ST STREET", line2: null, zip5: "11220", listAddress: "746 61ST ST", setAside: false, network: false, portfolio: false, mailDrop: [],
+     listNotConsulted: false, note: "anchors A and B: no mask and not listed, so the shared address is used (with its hub count of 2 registrations)"}

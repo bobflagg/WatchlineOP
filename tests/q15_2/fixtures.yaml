@@ -1,0 +1,6 @@
+# Q15.2 fixtures. hpd_violations, hpd_registrations, pluto_latest 26v1 (frozen baseline, data/README.md). check_rate.py re-derives each.
+buildings:
+  - {bin: "3013901", label: "anchor C: 4 open, 32 units, rate 0.125", rows: [{bbl: "3008070024", units: 32, open: 4, rate: 0.125}]}
+  - {bin: "1052551", label: "PLUTO records 0 units: rate unavailable, not 0", rows: [{bbl: "1016650047", units: 0, open: 6, rate: null}]}
+  - {bin: "3343256", label: "lot not in PLUTO: no unit count, rate unavailable", rows: [{bbl: "3042719001", units: null, open: 1, rate: null}], note: "76 further open violations of this BIN carry BBL 3042710001, not HPD-registered, so outside the load scope"}
+  - {bin: "3042334", label: "BIN on two lots: one row per lot, never summed", lots: 2}

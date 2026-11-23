@@ -1,0 +1,29 @@
+# Q7 acceptance results, 2026-11-16. Supersedes the 2026-11-13 file for this question, which records the earlier BOR release v0.2.1 (run 2026-05-29-149e871f) and counts from before the Contact merge.
+# Database-backed checks run by the user on the rebuilt graph on 2026-11-16 ("all tests passed"; make shapes 414/414); offline checks run here.
+question: Q7
+fixture_version: verified against the frozen baseline (2026-11-16)
+baseline: "Frozen baseline recorded 2026-11-16 in data/README.md: justfixwow-poc-baseline_2026-11-16.sql.gz, SHA-256 9124f6c0d0f0d2e453f1971247ed29c217d3d4b5f55338d95344e04a617b6278 (plain-SQL dump of the 11 public source tables). BOR release v0.3.0 (file bor-v0.3.0-justfixwow-2026-05-29.zip, SHA-256 b085ac37ea818dae65b395fec7750fd3afcfa3da47c499ced6743fbfc4124223, run 2026-05-29-869bd299). Mail-drop list data/mail_drop_addresses.csv SHA-256 1cfb12ca43fc4e0f27d34be3fd876e0d5e78594151877ab75764d7c3bcf5e641 (preliminary, all rows unreviewed)."
+tools:
+  neo4j: "see tests/results/shapes.json (written by make shapes)"
+  shacl2cypher: "0.3.0 (strict mode; all 198 rules of Q1 to Q9 compile, no static diagnostics; coverage names and negative-case rules match)"
+  reasoner: "ROBOT with HermiT; offline ontology check 155/155 (2026-11-16)"
+acceptance:
+  graph:
+    status: passed
+    reason: "baseline identified 2026-11-16; every graph check passed"
+    evidence:
+      sub_question_checks: "tests/q7_1 6/6, q7_2 42/42, q7_3 59/59 (user-reported 2026-11-16); q7_4 and q7_5 passed (make test, user-reported)"
+      load: "96,901 documents, 312,981 document parties, 314,366 HAS_PARTY links; 119,999 DosEntity with process-address hub counts (user-reported)"
+      profiles: "make profiles 695/695 (user-reported 2026-11-16, after the Q7 changes)"
+      shapes: "make shapes 414/414 after relaxing addressPartyCount to 0 or more (a name with no letter is not counted)"
+      ontology: "offline 155/155; taxonomy 89/89; thesaurus 11/11; SKOS clean"
+      oops: "make oops 2026-11-16 (whole ontology): P11 on 5 link properties and P13 on 17 properties, both accepted; nothing new"
+  retrieval_extraction:
+    status: pending
+    reason: "not declared for Q7"
+  investigation:
+    status: pending
+    reason: "not declared for Q7"
+open_points:
+  - "Scope C loads 96,901 documents (two or more distinct HPD corporate-owner names by rule N3); documents outside it are not searched. Widen to scope B (942,305 documents) only if a question needs it."
+  - "Fixtures hold entity names, never people; shared people are counted only."

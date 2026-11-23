@@ -1,0 +1,13 @@
+# Q11.1 fixtures. real_property_master and real_property_parties (frozen baseline, data/README.md). check_mortgages.py re-derives each from the source.
+totals:
+  mortgages: 492092
+  single_party_mortgages: 19   # recorded with one distinct party row (12 the same party as borrower and lender, 6 lender only, 1 borrower only); kept as recorded, 2026-11-16   # scripts/profile_q11_scope.py 2026-11-16 (current type MTGE, naming at least one HPD corporate owner, N3)
+entities:
+  - name: "5413 PLAZA LLC"
+    documents:
+      - {id: "2021031601183001", recorded: "2021-03-22", amount: 8750000, given_role: 1, borrowers: ["5413 PLAZA LLC", "702 PLAZA LLC"], lenders: ["CONNECTONE BANK"]}
+    note: "anchors A and B: shared borrower and a lender. A financing relationship and a shared-borrower record, not common control"
+  - name: "438 52ND STREET OWNERS' CORP."
+    documents: []
+    source_documents: ["2015032301122001"]   # recorded 2015-04-08, $1,546,326, lender RIDGEWOOD SAVINGS BANK (partytype 2)
+    note: "anchor C, a documented gap: ACRIS spells the borrower '438 52ND STREET OWNERS' CORP.' and HPD '438 52 ST OWNERS CORP', which differ under N3, so no HPD owner name is on the mortgage and it is not loaded (scope M is by name). The answer states the limit; it does not guess the match"

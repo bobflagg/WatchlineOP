@@ -1,0 +1,14 @@
+# Q18 answer contract (computed at answer time; nothing here is stored in the graph).
+fields: [documentId, recordedDate, docDate, amount, grantors, grantees, classification, lots, signals, followOn]
+classification: {correction: "CORRD or CONDEED", zero-transfer: "recorded amount 0, not a correction", priced: "an amount above 0, not a correction"}
+caveats:
+  - "A zero-transfer deed is a hint, not a finding of restructuring; a priced deed is not a finding of an arm's-length sale."
+  - "Every signal is a name or record lead under rule N3; none is a finding of common ownership or control."
+  - "A buyer with no recorded relationship is 'no relationship established'."
+  - "The Owner Portfolio only chooses the lots asked about; no signal uses group membership, so the grouping is not its own evidence."
+  - "The registered-owner signal is current HPD registration, not historical ownership."
+uncertain:
+  - "Beneficial ownership behind a person or an LLC on either side is not in the deeds."
+  - "A name spelled differently in ACRIS and HPD is missed by the name signals."
+  - "No signal holding means no independent support found, not a clearance."
+  - "Whether a priced deed between related entities is a sale at market value is not known from the record."

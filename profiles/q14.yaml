@@ -1,0 +1,62 @@
+# Question schema: Q14 "Which title holders and HPD-registered owners do the records support for the date of a given violation, and what gaps or
+# conflicts prevent a definite attribution?" (sub-questions Q14.1 to Q14.3).
+# Adds no graph element (decision 2026-11-17). Q14.1 reads the Q3/Q12 deed layer (Lot, Deed, Grantee), Q14.2 reads Building, Registration and Contact
+# (Q2), Q14.3 computes from both. Violations are not loaded (user choice: 1,970,575 rows): the date is an input from a source tool, and the caller
+# says which violation date counts. The date basis, the supporting-deed flags, the registration status and the relation are computed, not stored.
+question: Q14
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [acris_master, acris_parties, acris_legals, hpd_registrations, hpd_contacts]
+
+graph:
+  constraints: []
+  nodes: {}
+  relationships: {}
+
+answer:
+  Q14.1:
+    lookup: tests/q14_1/lookup.cypher
+    fields:
+      documentId:       {concept: document-id, source: Deed.documentId, type: string, counting_unit: "distinct documents; a deed covering several lots is one deed"}
+      docType:          {concept: document-type, source: Deed.docType, type: string}
+      docDate:          {concept: document-date, source: Deed.docDate, type: date, null_policy: "absent when ACRIS has none; the document basis then uses the recorded date"}
+      recordedDate:     {concept: recorded-date, source: Deed.recordedDate, type: date, null_policy: "never absent on a deed"}
+      amount:           {concept: document-amount, source: Deed.amount, type: integer, counting_unit: "whole US dollars, as recorded", null_policy: "0 reported as recorded, never as a free sale"}
+      effDate:          {concept: supporting-deed, source: "derived: Deed.docDate, else Deed.recordedDate (basis document), or Deed.recordedDate (basis recorded)", type: date, null_policy: "never absent for a listed deed; the latest such date on or before the input date, ties all listed"}
+      basis:            {concept: date-basis, source: "input: the caller's choice", type: string, allowed: [document, recorded], null_policy: "always named in the answer; document is as now known, recorded is what public record showed"}
+      docDateAbsent:    {concept: document-date, source: "derived: Deed.docDate is absent", type: boolean, null_policy: "never absent; true means the date rests on the recorded date"}
+      recordedAfterDate: {concept: recorded-date, source: "derived: Deed.recordedDate is after the input date", type: boolean, null_policy: "never absent; true means the deed was not yet recorded on the date and is supported by its document date only"}
+      confirmatory:     {concept: not-a-sale, source: "derived: Deed.docType in (CORRD, CONDEED)", type: boolean, null_policy: "never absent; true means the deed re-records an earlier transfer"}
+      otherLots:        {concept: has-deed, source: "count of other Lots on HAS_DEED to the same Deed", type: integer, counting_unit: "other graph lots", null_policy: "0 when the deed names no other graph lot"}
+      grantees:         {concept: grantee, source: "Deed-[:HAS_GRANTEE]->Grantee", type: "list of {name, nameKey}", null_policy: "empty list means none is recorded; all are listed. A title holder lead, not proof of title or of responsibility; a person's name is returned for the answer only"}
+    note: "An empty result means no deed in the snapshot on or before the date (no title record), never that the lot had no owner. Tied deeds are all returned, none is chosen."
+  Q14.2:
+    lookup: tests/q14_2/lookup.cypher
+    fields:
+      bin:              {concept: bin, source: Building.bin, type: string}
+      registrationId:   {concept: registration-id, source: Registration.registrationId, type: integer, counting_unit: "distinct registrations", null_policy: "never absent; registrationid 0 is a placeholder and is excluded (Q2.1)"}
+      lastRegistered:   {concept: last-registered-date, source: HAS_REGISTRATION.lastRegistered, type: date, null_policy: "absent when HPD has no date or its rows disagree; never inferred"}
+      registrationEnd:  {concept: registration-end-date, source: HAS_REGISTRATION.registrationEnd, type: date, null_policy: "absent when its rows disagree; never inferred"}
+      status:           {concept: registration-in-force, source: "derived from lastRegistered, registrationEnd and the input date", type: string, allowed: [registered-later, ended, undated, end-unknown, in-force], null_policy: "never absent; every registration of the lot's buildings is listed with one status and none is chosen. In force is HPD's registration period, not responsibility"}
+      owners:           {concept: owner-contact, source: "Registration-[:HAS_CONTACT]->Contact with an owner type", type: "list of {contactType, corporationName, nameKey, personName}", null_policy: "empty list means no owner contact is recorded; a person's name is returned for the answer only"}
+    note: "The source keeps one row per registration with the last registration date and an end date, no start and no earlier filing: today's version of the past. A registration filed after the date is not in force even if an earlier one existed."
+  Q14.3:
+    lookup: tests/q14_3/lookup.cypher
+    fields:
+      deeds:               {concept: supporting-deed, source: "Q14.1 documentIds", type: "list of string", counting_unit: "distinct documents", null_policy: "empty list means no deed on or before the date"}
+      granteeNames:        {concept: grantee-name, source: "Deed-[:HAS_GRANTEE]->Grantee.name of the supporting deeds", type: "list of string", null_policy: "empty list means none is recorded; labelled ACRIS in the answer"}
+      registrationsInForce: {concept: registration-in-force, source: "derived: count of Q14.2 registrations with status in-force", type: integer, counting_unit: "distinct registrations", null_policy: "0 means none is in force on the date (a gap, not an absent owner)"}
+      ownerNames:          {concept: corporation-name, source: "Contact.corporationName of CorporateOwner contacts of the registrations in force", type: "list of string", null_policy: "empty list means no corporate owner is in force; individuals are not compared; labelled HPD in the answer"}
+      relation:            {concept: title-registration-relation, source: "derived: grantee and corporate owner name keys (rule N3)", type: string, allowed: [coincide, differ, not-comparable, no-title-record, no-registration-in-force], null_policy: "never absent; a name lead, never a finding of the same party or of responsibility; a difference can be spelling"}
+    note: "Nothing is stored. Both name lists are returned labelled by source so a spelling difference can be judged by the reader."
+
+diagnostics: []
+
+not_stored:   # deliberately absent from the graph
+  - {term: violation and its inspection, notice and issue dates, reason: "not loaded (user choice 2026-11-17, 1,970,575 rows); the date is an input read from a source tool and the caller names which date counts"}
+  - {term: date basis, reason: an input of the lookup}
+  - {term: supporting-deed flags (recordedAfterDate, confirmatory, docDateAbsent), reason: computed from the deed's dates and type at answer time}
+  - {term: registration status (in force and the others), reason: computed from the registration's dates and the input date}
+  - {term: title and registration relation, reason: computed from name keys at answer time; evidence Type II, a name lead}
+  - {term: registration start or earlier filings, reason: the source has neither; the answer states that the records are today's version of the past}
+  - {term: DOS status of a past title holder, reason: DOS holds active entities only; absence says nothing about the entity on the date}

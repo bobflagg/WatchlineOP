@@ -78,12 +78,17 @@ sources:
     reliability: I
     retrieved_at: null
     notes: >-
-      Use real_property_parties, not acris_real_property_parties (the older copy). Q3 profile (queried 2026-11-12):
+      Q7 (2026-11-16): the Document load (scope C) keeps every party row of the 96,901 documents naming two or more distinct HPD corporate-owner names by rule N3 (312,981 distinct parties, 314,366 party links); hub counts per street line plus first five ZIP characters are over the whole table.       Use real_property_parties, not acris_real_property_parties (the older copy). Q3 profile (queried 2026-11-12):
       partytype 1 = grantor (25.3M rows), 2 = grantee (21.0M), 3 = other (46k). On the 1,003,931 in-scope deeds there
       are 1,520,638 distinct grantee rows (1,520,456 with a name, 943,047 with address1). 38 deeds have no grantee.
       address1 is not always a street: it can hold a care-of line or a person's name. address2 mixes units, floors
       and second street lines. Names can carry double spaces; no lowercase names were seen in a Sunset Park sample of 12,736 rows. Exact duplicate rows
       occur and are one grantee.
+      Q12.1 (2026-11-16, scripts/profile_q12_scope.py): the Deed load also keeps the grantor rows (partytype 1) of the 1,003,931 loaded deeds: 1,619,378 distinct
+      party rows, 4 deeds with none, 294 rows with no name.
+      Q11.1 scope M (2026-11-16, scripts/profile_q11_scope.py): the Document load also keeps every party row of the 492,092 current-type MTGE documents naming at
+      least one HPD corporate owner (N3). On a mortgage partytype 1 is the borrower and 2 the lender (no other value seen). Anchor C's mortgage is not in scope:
+      ACRIS and HPD spell the owner differently (a documented gap).
 
   acris_legals:
     name: ACRIS - Real Property Legals
@@ -102,6 +107,12 @@ sources:
       never null or malformed. A deed can name many lots (8,031 of 160,873 newest deeds on registered lots). Sunset Park
       deed rows carry no easement, air-rights or subterranean-rights flags; those flags are not read. Distinct
       (bbl, documentid) pairs are used; a lot removed from a later version of a document cannot be detected.
+      Q13 scope F (2026-11-17, scripts/load_financing.py, scripts/profile_q13_scope.py): the Document load also keeps every distinct party row of the
+      current-type MTGE, ASST, SAT, AGMT, AL&R, TL&R and SAGE documents recorded against a graph lot (2,885,412 documents, 7,345,721 distinct party rows, profiled 2026-11-17); the lot link is
+      HAS_FINANCING_DOCUMENT, one per distinct (BBL, documentid). Hub counts (addressNames, addressDocuments) are not computed for these parties.
+      Document-type wording used by the answer contract: MTGE mortgage, ASST assignment of mortgage, AL&R assignment of leases and rents,
+      SAT satisfaction of mortgage, TL&R termination of assignment of leases and rents, AGMT agreement, SAGE sundry agreement (the project's wording, not
+      official ACRIS text; to verify).
 
   acris_document_codes:
     name: ACRIS - Document Control Codes
@@ -174,8 +185,8 @@ sources:
     schema: public
     key: violationid
     row_count: 1970575
-    used_for: violations by class (A/B/C), status and dates
-    columns_used: violationid, buildingid, registrationid, class, inspectiondate, novissueddate, currentstatus, currentstatusdate, violationstatus, bin, bbl
+    used_for: violations by class (A/B/C/I), status and dates; loaded for registered lots and buildings (Q15)
+    columns_used: violationid, class, inspectiondate, violationstatus, bin, bbl, ordernumber
     data_through: 2026-07-02 # max inspectiondate
     reliability: I
     retrieved_at: null
@@ -183,6 +194,11 @@ sources:
       The table has an `apartment` column. Do not return it. Open counts here can
       differ from the live source (for example 438 52 Street, BBL 3008070024, shows 4
       open violations here, as in Q15). That is a freshness limit, not a test failure.
+      Q15.3 (pest extension, profiled 2026-11-21): `ordernumber` is HPD's order code,
+      text, numeric, present on every loaded row (364 distinct). Eight codes cite a
+      pest infestation (Admin. Code 27-2017/27-2018): data/hpd_pest_orders.yaml. No
+      HPD code table is available locally, so each kind is read from the descriptions.
+      `novdescription` names apartments and is never loaded.
 
   hpd_complaints:
     name: Housing Maintenance Code Complaints and Problems
@@ -191,16 +207,19 @@ sources:
     schema: public
     key: problemid
     row_count: 16167204
-    used_for: complaints and problems by building (type, category, status, dates). About 16M problem rows; use building-level aggregates only (see competency-questions, Q27)
-    columns_used: receiveddate, problemid, complaintid, buildingid, type, majorcategory, minorcategory, problemcode, complaintstatus, complaintstatusdate, problemstatus, problemstatusdate, problemduplicateflag, bin, bbl
-    columns_excluded: apartment, unittype, spacetype, complaintanonymousflag, uniquekey, latitude, longitude, censustract
+    used_for: complaints and problems by building (type, category, status, dates). About 16M problem rows; loaded for Q27 as Problem nodes since 2021-01-01 on registered lots and buildings (4,033,827 rows; user choice 2026-11-19)
+    columns_used: receiveddate, problemid, complaintid, type, majorcategory, minorcategory, problemcode, problemstatus, problemduplicateflag, bin, bbl
+    columns_excluded: apartment, unittype, spacetype, complaintanonymousflag, uniquekey, latitude, longitude, censustract, complaintstatus, complaintstatusdate, problemstatusdate, buildingid
     data_through: 2026-07-07 # max receiveddate
     reliability: I
     retrieved_at: null
     notes: >-
       Use hpd_complaints_and_problems. The split tables hpd_complaints and
       hpd_complaint_problems end 2023-11-30 and are not used. `apartment` is filled on
-      nearly every row. Per Q27, no apartment, unit or complainant detail
+      nearly every row. Q27.3 (pest extension, profiled 2026-11-21): `minorcategory` (59
+      distinct on loaded rows) and `problemcode` (142 distinct on loaded rows; 441 over the whole table) are loaded as
+      recorded; pests are minorcategory PESTS, named by problemcode (MICE, ROACHES, OTHER,
+      BED BUGS, FLIES, TERMITES, FLEAS). Per Q27, no apartment, unit or complainant detail
       may be loaded or returned, only building-level counts.
 
   hpd_litigations:
@@ -218,6 +237,11 @@ sources:
     notes: >-
       Two rows have caseopendate after 2026-11-09 (the latest is 2030-10-05). Treat
       them as source errors: report, do not silently drop or correct.
+      Q28 (profiled 2026-11-20): 239,434 rows, litigationid unique; 210,169 on a registered lot and BIN
+      load as `Litigation`, 1,483 on registered lots do not (counted). Scope: 289 with no open
+      date, 3 before 1990, 1 after the snapshot, 217 findings (After Inquest or After Trial),
+      5,990 'No Harassment', 2,919 with no respondent. `respondent` is a comma-joined string;
+      `casestatus` is free text. Penalty is a whole-dollar string (all digits).
 
   nys_corporations:
     name: Active Corporations - Beginning 1800
@@ -242,21 +266,35 @@ sources:
     publisher: project repos (BOR, NLR)
     table: null
     id: null
+    kind: release  # CSV files in a zip kept outside the repo; read with src/watchline/bor_release.py
+    release: v0.3.0
+    run_id: 2026-05-29-869bd299
+    snapshot_id: justfixwow-2026-05-29
+    schema_version: "0.3.0"
+    file: bor-v0.3.0-justfixwow-2026-05-29.zip
+    sha256: b085ac37ea818dae65b395fec7750fd3afcfa3da47c499ced6743fbfc4124223
+    path_env: BOR_RELEASE_ZIP  # default ~/Learning/Sabbatical/beneficial-ownership-resolution/dist/<file>
     used_for: group memberships and the supporting edges, loaded as Type II
     reliability: II
     source_category: project_derived
-    retrieved_at: null
+    retrieved_at: 2026-11-15  # the release's build date; its data is complete through 2026-05-29
+    columns_used: identity_names.identity_id, identity_names.business_house, identity_names.business_street, identity_names.business_apartment, decision_events.subject_id, decision_events.detail, groups.anchor_node_id, node_names.node_id, node_names.name, node_observations.selected_observation_id, observation_contacts.observation_id, observation_contacts.business_house, observation_contacts.business_street, observation_contacts.business_apartment, observation_contacts.business_city, observation_contacts.business_state, observation_contacts.business_zip, observation_contacts.contact_type, observation_contacts.first_name, observation_contacts.middle_initial, observation_contacts.last_name, observation_contacts.corporation_name, groups.layer, groups.group_id, groups.split, group_bbls.layer, group_bbls.group_id, group_bbls.bbl, bbl_status.layer, bbl_status.bbl, bbl_status.status, bbl_status.reason_code, bbl_status.top_level_reason, network_membership.node_id, network_membership.operational_network_id, network_membership.component_id, method_metrics.stage, method_metrics.precision, method_metrics.provisional, node_observations.node_id, node_observations.bbl, node_observations.registration_id, graph_edges.layer, graph_edges.edge_id, graph_edges.node_a, graph_edges.node_b, graph_edges.stage, graph_edges.weight, graph_edges.kept, graph_edges.drop_reason, graph_edges.evidence_type, graph_edges.evidence_id, graph_edges.group_id, groups.composition, group_bbls.rental, group_members.layer, group_members.group_id, group_members.node_id, masked_addresses.address_id, masked_addresses.method, masked_addresses.normalizer_version, masked_addresses.degree, masked_addresses.degree_unit, masked_addresses.threshold, masked_addresses.decision, masked_addresses.address, decision_events.layer, decision_events.stage, decision_events.subject_type, decision_events.rule
     notes: >-
-      Not read from justfixwow. The Who Owns What tables in the wow schema
-      (wow_bldgs, wow_landlords, wow_portfolios) are a different, third-party
-      grouping and must not be mistaken for the BOR layers.
+      Not read from justfixwow. Built by BOR from the same snapshot (run 2026-05-29-869bd299), so group ids
+      are valid for this run only. Release v0.3.0 (2026-11-15) replaced v0.2.1 (run 2026-05-29-869bd299) when BOR began publishing every
+      edge (graph_edges); network_edges and group_witness are no longer read. Precision figures in the release rest on a provisional gold standard
+      (human_llm_provisional); a group is a lead, not legal ownership. The Who Owns What tables in the wow
+      schema (wow_bldgs, wow_landlords, wow_portfolios) are a different, third-party grouping and must not
+      be mistaken for the BOR layers.
 
   mail_drop_list:
     name: Curated mail-drop and registered-agent address list
     publisher: this project (resolution/)
     table: null
     id: null
-    file: src/watchline/mail_drop_addresses.csv
+    file: data/mail_drop_addresses.csv  # moved from src/watchline/ on 2026-11-13
+    sha256: 1cfb12ca43fc4e0f27d34be3fd876e0d5e78594151877ab75764d7c3bcf5e641
+    columns_used: address_key, zip5, kind, basis, review_status
     status: preliminary # 122 rows, all review_status "unreviewed"; snapshot_id justfixwow-2026-05-29
     used_for: addresses that must never on their own link two entities
     reliability: II
@@ -265,7 +303,7 @@ sources:
     notes: >-
       Columns: address_key, zip5, kind (registered_agent, law_firm, management_office, unknown),
       basis, per-source counts, sources (dos_process, bor_masked, hpd_agent), note, snapshot_id,
-      review_status. The file sits under src/ for now and should move to data/ when Q6 starts.
+      review_status. Keys use the list's own address normalizer (street types abbreviated, ordinals as 116TH, hyphens as spaces, no unit or floor), which is not the HPD spelling and is not in this repository; one row (120 BROADWAY) has no ZIP. Q6.4 matches on the list's key as spelled.
 
   geosupport:
     name: NYC Geosupport address resolution

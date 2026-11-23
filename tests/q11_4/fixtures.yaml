@@ -1,0 +1,15 @@
+# Q11.4 fixtures (BOR release v0.3.0, run 2026-05-29-869bd299; lots found by HPD name lead). check_leads.py re-derives each from the release.
+entities:
+  - name: "5413 PLAZA LLC"
+    lots:
+      - {bbl: "3008260002", networkGroupId: null, portfolioGroupId: null, networkAbsence: no_qualifying_linkage, portfolioAbsence: no_qualifying_linkage}
+    note: "anchor A: BOR placed it in no group in either layer. The answer says no group lead, not that no relationship exists"
+  - name: "MOSHOLU PRESERVATION CORP"
+    lots:
+      - {bbl: "2033260069", networkGroupId: ON-30432, portfolioGroupId: OP-102335, networkLots: 120, portfolioLots: 3}
+      - {bbl: "2033280064", networkGroupId: ON-30432, portfolioGroupId: OP-102335, networkLots: 120, portfolioLots: 3}
+      - {bbl: "2033280097", networkGroupId: ON-30432, portfolioGroupId: OP-102335, networkLots: 120, portfolioLots: 3}
+    note: "all three lots in one portfolio (identity composition) and one 120-lot network: derived leads, labeled hypothesized"
+  - name: "NO SUCH ENTITY LLC"
+    lots: []
+    note: "no registration names it: no lots, no leads"

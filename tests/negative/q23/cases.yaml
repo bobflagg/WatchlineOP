@@ -1,0 +1,9 @@
+# Same format as tests/negative/q22/cases.yaml: bad data inside a transaction that is always rolled back.
+# Cases reuse the existing property key `status` so no new key token is created and the check keeps its catalog fast path.
+# The Q23-only keys, relationship types and labels (footprintLots, MANAGED_BY, AgentFootprint, ...) are guarded by the check but not seeded here.
+cases:
+  - {name: status stored on a contact,       create: "MATCH (n:Contact) WITH n LIMIT 1 SET n.status = 'commercial'", check: queries/checks/q23-computed-not-stored.cypher}
+  - {name: status stored on a registration,  create: "MATCH (n:Registration) WITH n LIMIT 1 SET n.status = 'commercial'", check: queries/checks/q23-computed-not-stored.cypher}
+  - {name: status stored on a building,      create: "MATCH (n:Building) WITH n LIMIT 1 SET n.status = 'commercial'", check: queries/checks/q23-computed-not-stored.cypher}
+  - {name: status stored on a lot,           create: "MATCH (n:Lot) WITH n LIMIT 1 SET n.status = 'commercial'", check: queries/checks/q23-computed-not-stored.cypher}
+  - {name: status stored on a network mask,  create: "MATCH (n:NetworkMaskedAddress) WITH n LIMIT 1 SET n.status = 'commercial'", check: queries/checks/q23-computed-not-stored.cypher}

@@ -1,0 +1,69 @@
+# Question schema: Q24 "Starting from a name": which buildings and roles do the records show for an entity or person name, and how reliable is the match
+# (sub-questions Q24.1 to Q24.4). Adds no graph element (stage 1, 2026-11-19). Answered from Contact (nameKey, corporationName, personName), Grantee and
+# Grantor (nameKey, name), DosEntity (nameKey, name) and HAS_CONTACT, HAS_REGISTRATION, HAS_BUILDING, HAS_DEED, HAS_GRANTEE, HAS_GRANTOR.
+# Matches, leads, bases, counts and the outcome are computed at answer time.
+question: Q24
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [hpd_contacts, hpd_registrations, acris_parties, nys_corporations]
+
+graph:
+  constraints: []
+  nodes: {}
+  relationships: {}
+
+answer:
+  Q24.1:
+    lookup: tests/q24_1/lookup.cypher
+    proved_by: tests/q24_1/check_entity.py
+    fields:
+      source: {concept: name-search, source: "derived: the table the record comes from", type: string, allowed: [hpd_contacts, acris_parties, nys_corporations], null_policy: "never absent"}
+      role:   {concept: contact-type, source: "Contact.contactType, or grantee or grantor, or 'filed entity' for a DOS record", type: string, null_policy: "never absent; as recorded. A name in a role is not a finding about ownership"}
+      name:   {concept: corporation-name, source: "Contact.corporationName, Grantee.name, Grantor.name or DosEntity.name", type: string, null_policy: "as recorded; compared with the name as given to decide the basis"}
+      ref:    {concept: registration-id, source: "registration id, deed document id or DOS id", type: string, counting_unit: "distinct records", null_policy: "never absent"}
+      bin:    {concept: bin, source: Building.bin, type: string, null_policy: "absent for a deed or DOS record"}
+      bbl:    {concept: bbl, source: Lot.bbl, type: string, null_policy: "absent for a DOS record. A building on two lots counts toward both"}
+      basis:  {concept: name-agreement, source: "derived: exact when the recorded name equals the given name, else normalized (rule N3)", type: string, allowed: [exact, normalized], null_policy: "never absent for a row"}
+    note: "Every row is a lead, never a stored link. State rule N3 and the key. DOS records are loaded only when their name equals an HPD owner or deed grantee name, so no DOS row is not 'no filing'."
+  Q24.2:
+    lookup: tests/q24_2/lookup.cypher
+    proved_by: tests/q24_2/check_person.py
+    fields:
+      source:    {concept: name-search, source: "derived: hpd_contacts or acris_parties", type: string, allowed: [hpd_contacts, acris_parties], null_policy: "never absent"}
+      role:      {concept: contact-type, source: "Contact.contactType, or grantee or grantor", type: string, null_policy: "never absent; as recorded"}
+      order:     {concept: person-name, source: "derived: 'as given' (HPD order) or 'reversed' (last name first, deed parties only)", type: string, allowed: ["as given", "reversed"], null_policy: "never absent"}
+      records:   {concept: name-search, source: "derived: distinct registrations or deeds", type: integer, counting_unit: "distinct registrations (HPD) or deeds (ACRIS)", null_policy: "never absent"}
+      buildings: {concept: building, source: "derived: distinct Buildings of those registrations", type: integer, counting_unit: "distinct buildings", null_policy: "absent for deed parties"}
+      lots:      {concept: tax-lot, source: "derived: distinct Lots of those buildings or deeds", type: integer, counting_unit: "distinct lots; a building on two lots counts toward both", null_policy: "never absent"}
+      sample:    {concept: registration-id, source: "derived: the first ten registration ids or deed document ids", type: "list of string", null_policy: "at most ten"}
+    note: "Every person row is a lead, never a match: common personal names return unrelated people. The count is returned with the sample. A person's name is never repeated outside the answer."
+  Q24.3:
+    lookup: tests/q24_3/lookup.cypher
+    proved_by: tests/q24_3/check_near.py
+    fields:
+      source:  {concept: name-search, source: "derived: hpd_contacts or acris_parties", type: string, allowed: [hpd_contacts, acris_parties], null_policy: "never absent"}
+      nameKey: {concept: corporation-name, source: "Contact.nameKey or Grantee.nameKey of a different name that shares the core", type: string, null_policy: "never absent; rule N3 form"}
+      records: {concept: name-search, source: "derived: distinct registrations (HPD) or deeds (ACRIS) carrying the name", type: integer, counting_unit: "distinct registrations or deeds", null_policy: "never absent"}
+      kind:    {concept: legal-suffix-only, source: "derived: compare.entity_name_comparison plus legal-suffix-only", type: string, allowed: [normalization-match, abbreviation-match, differs-by-numeral-or-word, legal-suffix-only], null_policy: "never absent; a candidate classified different is dropped"}
+    note: "Leads, never matches. Candidates share the key's core as a whole-word prefix; spacing variants, abbreviations and misspellings are not found. DOS records are not searched here."
+  Q24.4:
+    contract: tests/q24_4/contract.yaml
+    proved_by: tests/q24_4/check_contract.py
+    fields:
+      outcome:  {concept: name-search, source: "derived: matches, leads-only or no-match-in-these-sources", type: string, allowed: [matches, leads-only, no-match-in-these-sources], null_policy: "never absent"}
+      snapshot: {concept: name-search, source: "data/sources.yaml data_through of the four sources", type: "map of source to date", null_policy: "never absent"}
+    note: "No match is 'no match in these sources' with the normalization used, never 'does not exist'. A name match is a lead, not a link; roles are as recorded."
+
+diagnostics: []
+
+not_stored:   # deliberately absent from the graph
+  - {term: name match, reason: "a match is a lead found by name at answer time; a stored link would read as a finding of identity"}
+  - {term: match basis (exact or normalized), reason: "computed from the recorded name and the name as given"}
+  - {term: person name key, reason: "Contact.personName is compared in uppercase at answer time; an index can be added if the scan is slow, but no new property is needed"}
+  - {term: near-name kind, reason: "classified at answer time by compare.entity_name_comparison and the legal-suffix rule"}
+  - {term: filer, reason: "not a role in any loaded source"}
+  - {term: outcome, reason: "assembled from the three lookups at answer time"}
+
+open_points:
+  - "ACRIS records people last name first, HPD first name first; deed parties are searched in both orders and each row says which."
+  - "A person lookup scans Contact.personName (no index); about a second on the loaded graph."

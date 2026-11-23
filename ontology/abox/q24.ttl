@@ -1,0 +1,20 @@
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+
+# Q24 example data. Values follow tests/q24_*/fixtures.yaml (frozen baseline in data/README.md). Q24 adds no ontology element: it reads the Q2, Q3,
+# Q4, Q5 and Q12 elements. Matches, leads, bases, counts and the outcome are computed at answer time and are not in the graph.
+# Entities only; no person is named (a person's name is a placeholder token, never a real name).
+
+# Anchor A: one entity name in three sources, each with its own role (HPD registered owner, deed grantee, DOS record).
+id:lot-3008260002-q24 a onto:TaxLot ; onto:bbl "3008260002" ; onto:hasBuilding id:bldg-3324446-q24 ; onto:hasDeed id:deed-2021022201130003-q24 .
+id:bldg-3324446-q24 a onto:Building ; onto:bin "3324446" ; onto:hasRegistration id:reg-316103-q24 .
+id:reg-316103-q24 a onto:Registration ; onto:registrationId 316103 ; onto:hasContact id:owner-5413-plaza-q24 .
+id:owner-5413-plaza-q24 a onto:Contact ; onto:contactType "CorporateOwner" ; onto:corporationName "5413 PLAZA LLC" .
+id:deed-2021022201130003-q24 a onto:Deed ; onto:documentId "2021022201130003" ; onto:documentType "DEED" ; onto:hasGrantee id:grantee-5413-plaza-q24 .
+id:grantee-5413-plaza-q24 a onto:Grantee ; onto:granteeName "5413 PLAZA LLC" .
+id:dos-5857246-q24 a onto:DosEntity ; onto:dosId 5857246 ; onto:dosEntityName "5413 PLAZA LLC" .
+
+# A person: HPD records the name first name first, the deed party last name first; the answer searches both orders. Placeholder tokens only.
+id:person-owner-q24 a onto:Contact ; onto:contactType "IndividualOwner" ; onto:personName "FIRSTNAME LASTNAME" .
+id:person-grantee-q24 a onto:Grantee ; onto:granteeName "LASTNAME FIRSTNAME" .

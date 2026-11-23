@@ -18,7 +18,7 @@ cases:
   - {name: grantee name as number,   create: "MATCH (d:Deed) WITH d LIMIT 1 CREATE (d)-[:HAS_GRANTEE]->(:Grantee {partyKey: 'x', name: 7})", rule: GranteeShape.granteeName.datatype}
   - {name: grantee with empty address, create: "MATCH (d:Deed) WITH d LIMIT 1 CREATE (d)-[:HAS_GRANTEE]->(:Grantee {partyKey: 'x', mailingAddress: ''})", rule: GranteeShape.mailingAddress.minLength}
   - {name: grantee with empty zip,   create: "MATCH (d:Deed) WITH d LIMIT 1 CREATE (d)-[:HAS_GRANTEE]->(:Grantee {partyKey: 'x', zip: ''})", rule: GranteeShape.zipCode.minLength}
-  - {name: owner contact with empty address, create: "MATCH (r:Registration) WITH r LIMIT 1 CREATE (r)-[:HAS_OWNER_CONTACT]->(:OwnerContact {contactKey: 'x', contactType: 'CorporateOwner', mailingAddress: ''})", rule: OwnerContactAddressShape.mailingAddress.minLength}
+  - {name: contact with empty address, create: "MATCH (r:Registration) WITH r LIMIT 1 CREATE (r)-[:HAS_CONTACT]->(:Contact {contactKey: 'x', contactType: 'CorporateOwner', mailingAddress: ''})", rule: ContactAddressShape.mailingAddress.minLength}
   - {name: duplicate HAS_DEED pair,  create: "MATCH (l:Lot)-[:HAS_DEED]->(d:Deed) WITH l, d LIMIT 1 CREATE (l)-[:HAS_DEED]->(d)", check: queries/checks/q03-duplicate-deed-pair.cypher}
   - {name: duplicate documentId,     create: "MATCH (d:Deed) WITH d LIMIT 1 CREATE (:Deed {documentId: d.documentId})", error: constraint}
   - {name: duplicate partyKey,       create: "MATCH (g:Grantee) WITH g LIMIT 1 CREATE (:Grantee {partyKey: g.partyKey})", error: constraint}

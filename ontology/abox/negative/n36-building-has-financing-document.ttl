@@ -1,0 +1,5 @@
+@prefix onto: <https://watchline.example/onto/> .
+@prefix id:   <https://watchline.example/id/> .
+# Must be inconsistent: hasFinancingDocument has domain TaxLot, and TaxLot and Building are disjoint. Only lots link to financing documents; a building does not.
+id:bad-building-6 a onto:Building ; onto:hasFinancingDocument id:bad-doc-6 .
+id:bad-doc-6 a onto:Document ; onto:documentId "0000000000000001" ; onto:documentType "MTGE" .

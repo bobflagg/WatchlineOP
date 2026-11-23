@@ -1,0 +1,173 @@
+# Question schema: Q6 "Was this address masked or down-weighted by a given method as an aggregator address, why, and is it also on the
+# curated mail-drop list?" (sub-questions Q6.1 to Q6.4). Adds three node types with no relationships. The run, release and snapshot are
+# fixed per deployment and recorded once in data/sources.yaml (bor_layers). The mask's method, normalizer version, threshold and unit are
+# one value each for the release and are not stored per node. Contacts, registrations and buildings per address (Q6.1) are counted at
+# query time from Contact, Registration and Building (Q2, Q4).
+question: Q6
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [bor_layers, hpd_contacts, mail_drop_list]
+
+graph:
+  constraints:
+    - {name: network_masked_address_id_unique, label: NetworkMaskedAddress, property: addressId, kind: unique}
+    - {name: portfolio_masked_address_unique, label: PortfolioMaskedAddress, property: address, kind: unique}
+    - {name: mail_drop_address_key_unique, label: MailDropAddress, property: listKey, kind: unique}
+
+  nodes:
+    NetworkMaskedAddress:
+      concept: network-masked-address
+      key: addressId
+      scope: "One NetworkMaskedAddress per row of masked_addresses.csv (73): an address text the Operational Network method masked in the pinned run."
+      proved_by: tests/q6_2/check_masked.py
+      properties:
+        addressId:
+          concept: masked-address-id
+          type: string
+          source: bor_layers.masked_addresses.address_id
+          rule: "A<7 digits>, as the release spells it. Run-local."
+          null_policy: never absent
+          proved_by: tests/q6_2/check_masked.py
+        address:
+          concept: masked-address-text
+          type: string
+          source: bor_layers.masked_addresses.address
+          rule: "The release's text, as written: uppercase, no city or ZIP, floor and unit text kept. Not normalized further."
+          null_policy: never absent
+          proved_by: tests/q6_2/check_masked.py
+        degree:
+          concept: masked-address-degree
+          type: integer
+          source: bor_layers.masked_addresses.degree
+          rule: "Landlord records (Who Owns What nodes) at the address; 26 to 216, above the method's threshold of 25."
+          null_policy: never absent
+          proved_by: tests/q6_2/check_masked.py
+        maskedEdges:
+          concept: masked-address-edges
+          type: integer
+          source: bor_layers.graph_edges.evidence_id, bor_layers.graph_edges.drop_reason
+          rule: "Address edges BOR set aside at this address (rows of graph_edges with drop_reason address_mask citing it); an edge touching two masked addresses is cited to the lower id. 301 to 27250; the 73 counts sum to 230305. The edges themselves are not loaded: most join landlords in no network."
+          null_policy: never absent
+          proved_by: tests/q6_2/check_masked.py
+
+    PortfolioMaskedAddress:
+      concept: portfolio-masked-address
+      key: address
+      scope: "One PortfolioMaskedAddress per address text derived from the identities the Owner Portfolio method masked as address evidence (579 texts from 5298 identities). The release records the mask on identities, not addresses; the text is derived (see address)."
+      proved_by: tests/q6_3/check_portfolio_masked.py
+      properties:
+        address:
+          concept: portfolio-masked-address-text
+          type: string
+          source: bor_layers.identity_names.business_house, bor_layers.identity_names.business_street, bor_layers.identity_names.business_apartment, bor_layers.decision_events.subject_id
+          rule: "The masked identity's own business address as filed: house, street and apartment, blanks left out, joined by single spaces; uppercase, no city or ZIP, floor and unit text kept. Not normalized further (an internal double space stays). Derived by this project, not named by the release."
+          null_policy: never absent
+          proved_by: tests/q6_3/check_portfolio_masked.py
+        degree:
+          concept: portfolio-masked-address-degree
+          type: integer
+          source: bor_layers.decision_events.detail
+          rule: "The release's addr_degree for the masked identities at the text; one value per text, 26 to 281, above the method's threshold of 25. It differs from the network degree for 28 of the 30 texts both methods masked."
+          null_policy: never absent
+          proved_by: tests/q6_3/check_portfolio_masked.py
+        maskedIdentities:
+          concept: masked-identities
+          type: integer
+          source: bor_layers.decision_events.subject_id
+          rule: "How many identities with this text the method masked; they sum to 5298."
+          null_policy: never absent
+          proved_by: tests/q6_3/check_portfolio_masked.py
+
+    MailDropAddress:
+      concept: mail-drop-address
+      key: listKey
+      scope: "One MailDropAddress per row of data/mail_drop_addresses.csv (122). The list is preliminary: every row is unreviewed."
+      proved_by: tests/q6_4/check_list.py
+      properties:
+        listKey:
+          concept: mail-drop-address
+          type: string
+          source: mail_drop_list.address_key, mail_drop_list.zip5
+          rule: "Identity only, joined as address_key|zip5 (zip5 empty when blank). Not an answer field."
+          identity_only: true
+          null_policy: never absent
+        address:
+          concept: mail-drop-address-key
+          type: string
+          source: mail_drop_list.address_key
+          rule: "The list's key as spelled: uppercase, street types abbreviated, ordinals as 116TH, no unit or floor. Not HPD's spelling."
+          null_policy: never absent
+          proved_by: tests/q6_4/check_list.py
+        zip5:
+          concept: zip-five
+          type: string
+          source: mail_drop_list.zip5
+          rule: "The first five digits of the ZIP, as listed."
+          null_policy: "absent when blank (1 of 122 rows, 120 BROADWAY); a row with no ZIP matches any ZIP"
+          proved_by: tests/q6_4/check_list.py
+        kind:
+          concept: mail-drop-kind
+          type: string
+          source: mail_drop_list.kind
+          allowed_scheme: mail-drop-kinds
+          allowed: [registered_agent, law_firm, management_office, unknown]
+          rule: "The list's own code."
+          null_policy: never absent
+          proved_by: tests/q6_4/check_list.py
+        basis:
+          concept: mail-drop-basis
+          type: string
+          source: mail_drop_list.basis
+          rule: "As listed."
+          null_policy: never absent
+          proved_by: tests/q6_4/check_list.py
+        reviewStatus:
+          concept: list-review-status
+          type: string
+          source: mail_drop_list.review_status
+          allowed_scheme: list-review-statuses
+          allowed: [unreviewed]
+          rule: "The list's own code. All 122 rows are unreviewed."
+          null_policy: never absent
+          proved_by: tests/q6_4/check_list.py
+
+  relationships: {}
+
+answer:
+  Q6.1:
+    lookup: tests/q6_1/lookup.cypher
+    fields:
+      contacts:      {concept: contact, source: "Contact with this street line and ZIP", type: integer, counting_unit: "contacts as the graph holds them (distinct per registration, type, names and title)", null_policy: "0 when none; contacts whose duplicates disagree on a street line or ZIP have none and are not counted"}
+      ownerContacts: {concept: owner-contact, source: "Contact with an owner type", type: integer, counting_unit: "owner contacts", null_policy: "0 when none"}
+      roleContacts:  {concept: role-contact, source: "Contact with a non-owner type", type: integer, counting_unit: "role contacts", null_policy: "0 when none"}
+      registrations: {concept: registration, source: "Registration-[:HAS_CONTACT]->Contact", type: integer, counting_unit: "registrations", null_policy: "0 when none"}
+      buildings:     {concept: building, source: "Building-[:HAS_REGISTRATION]->Registration", type: integer, counting_unit: "BINs of those registrations", null_policy: "0 when none"}
+    note: "The key is the uppercase street line and the first five ZIP characters, as HPD records them; a different spelling is a different address. A shared address is a lead, not evidence of common ownership."
+  Q6.2:
+    lookup: tests/q6_2/lookup.cypher
+    fields:
+      addressId:   {concept: masked-address-id, source: NetworkMaskedAddress.addressId, type: string, null_policy: "no row when the method did not mask this text"}
+      address:     {concept: masked-address-text, source: NetworkMaskedAddress.address, type: string}
+      degree:      {concept: masked-address-degree, source: NetworkMaskedAddress.degree, type: integer, null_policy: "absent with the row"}
+      maskedEdges: {concept: masked-address-edges, source: NetworkMaskedAddress.maskedEdges, type: integer, counting_unit: "address links WoW offered between landlord records that BOR set aside", null_policy: "absent with the row"}
+      hpdContacts: {concept: contact, source: "Contact whose street line plus second line equals the text", type: integer, counting_unit: "contacts", null_policy: "0 when no HPD contact carries the text"}
+      hpdZips:     {concept: zip-five, source: "contacts' ZIPs, first five characters", type: "list of string", null_policy: "empty when no HPD contact carries the text; several ZIPs mean the text names several addresses"}
+    note: "Name the method (Operational Network address mask), its threshold (25 landlord records), normalizer version and run, which are recorded once in data/sources.yaml. No row means the method did not mask this text, not that the address is safe. Masking is a method's decision, not a finding about the address."
+  Q6.3:
+    lookup: tests/q6_3/lookup.cypher
+    fields:
+      address:          {concept: portfolio-masked-address-text, source: PortfolioMaskedAddress.address, type: string, null_policy: "no row when no identity at this text was masked"}
+      degree:           {concept: portfolio-masked-address-degree, source: PortfolioMaskedAddress.degree, type: integer, null_policy: "absent with the row"}
+      maskedIdentities: {concept: masked-identities, source: PortfolioMaskedAddress.maskedIdentities, type: integer, counting_unit: "identities", null_policy: "absent with the row"}
+      hpdContacts:      {concept: contact, source: "Contact whose street line plus second line equals the text", type: integer, counting_unit: "contacts", null_policy: "0 when no HPD contact carries the text"}
+      hpdZips:          {concept: zip-five, source: "contacts' ZIPs, first five characters", type: "list of string", null_policy: "empty when no HPD contact carries the text"}
+    note: "Say the method (Owner Portfolio address-evidence mask: Splink address evidence at an address shared by more landlords than the threshold of 25), the run, and that the release records the mask on identities, so the address is derived from the masked identities' own business addresses. A masked address means identity matching gave its address evidence less weight, not that the address is an aggregator or that anyone there is unrelated. No row means no identity at this text was masked, not that the address is safe. The text names no ZIP; list the ZIPs of HPD contacts that carry it."
+  Q6.4:
+    lookup: tests/q6_4/lookup.cypher
+    fields:
+      address:      {concept: mail-drop-address-key, source: MailDropAddress.address, type: string, null_policy: "no row when the list does not hold this key spelling; a miss is not a clearance"}
+      listZip:      {concept: zip-five, source: MailDropAddress.zip5, type: string, null_policy: "absent for the one row that matches any ZIP"}
+      kind:         {concept: mail-drop-kind, source: MailDropAddress.kind, type: string, allowed_scheme: mail-drop-kinds, allowed: [registered_agent, law_firm, management_office, unknown]}
+      basis:        {concept: mail-drop-basis, source: MailDropAddress.basis, type: string}
+      reviewStatus: {concept: list-review-status, source: MailDropAddress.reviewStatus, type: string, allowed_scheme: list-review-statuses, allowed: [unreviewed]}
+    note: "A project classification, separate from any method's masking, and preliminary: every entry is unreviewed. Co-location at a listed address supports no ownership or identity claim."

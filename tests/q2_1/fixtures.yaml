@@ -1,4 +1,4 @@
-# Q2.1 expected registrations per Building. Provisional until the frozen dump is identified (data/README.md).
+# Q2.1 expected registrations per Building. verified against the frozen baseline recorded in data/README.md (2026-11-16).
 # Checked read-only 2026-11-12. check_registrations.py re-derives each from the source, so a stale fixture fails.
 # A date of null means absent. mode: exact = exactly these registrations; count = this many registrations.
 buildings:

@@ -1,0 +1,7 @@
+# Q21.3 fixtures: lots whose two layers are compared. Group ids and members are re-derived from the pinned BOR release (v0.3.0);
+# check_layers.py fails on a stale fixture.
+lots:
+  - {bbl: "3008210012", note: "anchor D: network ON-18742 (35 lots) against portfolio OP-53559 (33 lots)"}
+  - {bbl: "3008070024", note: "anchor C: both layers, five lots"}
+  - {bbl: "3008260002", note: "anchor A: no portfolio; network reported, portfolio absent with its reason"}
+  - {bbl: "3027530021", note: "a portfolio with one rental lot"}

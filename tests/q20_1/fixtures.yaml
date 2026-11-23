@@ -1,0 +1,14 @@
+# Q20.1 expected recorded trail for anchor A (frozen baseline, data/README.md; BOR release v0.3.0 for layers).
+# check_trail.py re-derives each fact from the source and from the component lookups, so a stale fixture fails.
+# Person names are never stored. The trail is a chain of record links, not a finding of common ownership.
+anchor_a:
+  address: "5413 7 AVENUE"
+  bbl: "3008260002"
+  bin: "3014788"
+  registrationId: 316103
+  owner: {contactType: CorporateOwner, name: "5413 PLAZA LLC"}
+  deeds: {"2025032100031001": {recorded: "2025-04-02", amount: 0}, "2021022201130003": {recorded: "2021-02-26", amount: 5000000}}
+  dos: {dosId: 5857246, processName: "5413 PLAZA LLC", processAddress: "5 CROMWELL CIRCLE", processCity: "STATEN ISLAND", processZip: "10304", agent: none}
+  mortgage: {documentId: "2021031601183001", recorded: "2021-03-22", amount: 8750000, borrowers: ["5413 PLAZA LLC", "702 PLAZA LLC"], lenders: ["CONNECTONE BANK"]}
+  shared_hpd_address: {street: "746 61ST STREET", zip5: "11220", with: "702 PLAZA LLC"}
+  layers: {networkId: null, portfolioId: null}

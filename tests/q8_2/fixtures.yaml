@@ -1,0 +1,12 @@
+# Q8.2 expected members of a network, in three counting units (BOR release v0.3.0 + PLUTO 26v1 + HPD registrations).
+# check_members.py re-derives lots from the release and buildings, units and missing units from the source
+# database with expected.sql, so a stale fixture fails.
+networks:
+  - {groupId: ON-98617, split: wcc,     lots: 5,  buildings: 5,  units: 116, lotsMissingUnits: 0, note: "anchor C"}
+  - {groupId: ON-18742, split: wcc,     lots: 35, buildings: 44, units: 466, lotsMissingUnits: 0, note: "anchor D: more buildings than lots (44 vs 35)"}
+  - {groupId: ON-675,   split: louvain, lots: 27, buildings: 28, units: 562, lotsMissingUnits: 0, note: "a Louvain community"}
+  - {groupId: ON-1,     split: wcc,     lots: 2,  buildings: 2,  units: 3,   lotsMissingUnits: 0, note: "two lots"}
+  - {groupId: ON-60782, split: louvain, lots: 2,  buildings: 2,  units: 16,  lotsMissingUnits: 0, note: "the smallest Louvain community"}
+  - {groupId: ON-16213, split: wcc,     lots: 2,  buildings: 2,  units: 4,   lotsMissingUnits: 1, note: "lot 3022117501 has no PLUTO unit count: partial total"}
+hub:   # the largest network: only its lot count is fixed; buildings and units are compared with the source at check time
+  - {groupId: ON-42365, split: wcc, lots: 424}

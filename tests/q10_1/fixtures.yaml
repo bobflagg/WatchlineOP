@@ -1,0 +1,8 @@
+# Q10.1 expected network and portfolio of a lot (BOR release v0.3.0, run 2026-05-29-869bd299, rental lots).
+# check_pair.py re-derives each from the release, so a stale fixture fails. networkOnly and portfolioOnly are lot counts.
+lots:
+  - {bbl: "3008210012", networkId: ON-18742, networkSplit: wcc, portfolioId: OP-53559, composition: identity, networkLots: 35, portfolioLots: 33, networkOnly: 2, portfolioOnly: 0, note: "anchor D: the network holds two lots the portfolio does not"}
+  - {bbl: "3008070024", networkId: ON-98617, networkSplit: wcc, portfolioId: OP-98617, composition: identity, networkLots: 5, portfolioLots: 5, networkOnly: 0, portfolioOnly: 0, note: "anchor C: the two layers agree"}
+  - {bbl: "1000050010", networkId: ON-2792, networkSplit: wcc, portfolioId: null, composition: null, networkLots: 98, portfolioLots: 0, networkOnly: 98, portfolioOnly: 0, note: "in a network, in no portfolio"}
+  - {bbl: "1003490020", networkId: null, networkSplit: null, portfolioId: OP-34557, composition: deed_only, networkLots: 0, portfolioLots: 23, networkOnly: 0, portfolioOnly: 23, note: "in a portfolio, in no network"}
+  - {bbl: "3008260002", networkId: null, networkSplit: null, portfolioId: null, composition: null, networkLots: 0, portfolioLots: 0, networkOnly: 0, portfolioOnly: 0, note: "anchor A: in neither"}

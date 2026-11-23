@@ -1,0 +1,44 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix onto: <https://watchline.example/onto/> .
+@prefix s2c:  <https://w3id.org/shacl2cypher#> .
+@prefix shp:  <https://watchline.example/shapes/> .
+
+# Q27 shapes: the rules OWL cannot express (ontology/ontology-notes.md, Q27 "Rules for Stage 6 shapes").
+# Compiled together with shapes/q01.ttl, which names Building, bin and TaxLot.
+
+# --- Graph names ---
+onto:Problem s2c:label "Problem" .
+onto:hasProblem s2c:relationship "HAS_PROBLEM" ; s2c:direction "out" .
+onto:problemId s2c:property "problemId" .
+onto:complaintId s2c:property "complaintId" .
+onto:problemType s2c:property "problemType" .
+onto:majorCategory s2c:property "majorCategory" .
+onto:minorCategory s2c:property "minorCategory" .
+onto:problemCode s2c:property "problemCode" .
+onto:problemStatus s2c:property "status" .
+onto:receivedDate s2c:property "receivedDate" .
+onto:duplicateFlag s2c:property "duplicate" .
+
+# --- Rules ---
+shp:ProblemShape a sh:NodeShape ;
+    s2c:key "problemId" ;
+    sh:targetClass onto:Problem ;
+    # R1 all nine properties present and typed (minorCategory and problemCode: uppercase text as HPD records, Q27.3); type and status are the HPD enums
+    sh:property [ sh:path onto:problemId ; sh:minCount 1 ; sh:datatype xsd:integer ] ;
+    sh:property [ sh:path onto:complaintId ; sh:minCount 1 ; sh:datatype xsd:integer ] ;
+    sh:property [ sh:path onto:problemType ; sh:minCount 1 ; sh:datatype xsd:string ; sh:in ( "EMERGENCY" "NON EMERGENCY" "IMMEDIATE EMERGENCY" "HAZARDOUS" "REFERRAL" ) ] ;
+    sh:property [ sh:path onto:majorCategory ; sh:minCount 1 ; sh:datatype xsd:string ] ;
+    sh:property [ sh:path onto:minorCategory ; sh:minCount 1 ; sh:datatype xsd:string ; sh:pattern "^[A-Z0-9].*$" ] ;
+    sh:property [ sh:path onto:problemCode ; sh:minCount 1 ; sh:datatype xsd:string ; sh:pattern "^[A-Z0-9].*$" ] ;
+    sh:property [ sh:path onto:problemStatus ; sh:minCount 1 ; sh:datatype xsd:string ; sh:in ( "OPEN" "CLOSE" ) ] ;
+    sh:property [ sh:path onto:receivedDate ; sh:minCount 1 ; sh:datatype xsd:date ] ;
+    sh:property [ sh:path onto:duplicateFlag ; sh:minCount 1 ; sh:datatype xsd:boolean ] ;
+    # R2 exactly one building carries each problem
+    sh:property [ sh:path [ sh:inversePath onto:hasProblem ] ; sh:minCount 1 ; sh:maxCount 1 ] .
+
+shp:BuildingProblemShape a sh:NodeShape ;
+    s2c:key "bin" ;
+    sh:targetClass onto:Building ;
+    # R2 HAS_PROBLEM ends on a problem
+    sh:property [ sh:path onto:hasProblem ; sh:class onto:Problem ] .

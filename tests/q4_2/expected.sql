@@ -1,4 +1,4 @@
--- Q4.2 expected business addresses of RoleContact nodes, from the frozen snapshot. Provisional until the dump is identified.
+-- Q4.2 expected business addresses of non-owner Contact nodes, from the frozen snapshot. verified against the frozen baseline recorded in data/README.md (2026-11-16).
 -- Address = house number and street name joined by one space (blank parts left out), plus apartment and ZIP as recorded.
 -- If duplicates of one contact disagree on a part, or only some have it, that part is absent, never picked (360 contacts).
 -- SiteManager never has an address. Same address on several roles is a record link only, not evidence of identity.

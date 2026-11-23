@@ -1,0 +1,140 @@
+# Question schema: Q27 "Complaints": complaint problems of a building in a period by type, major category and status, and the rate per
+# residential unit (sub-questions Q27.1 and Q27.2), and the pest complaint problems of a building (Q27.3, extension of 2026-11-21).
+# Adds one node, Problem, and one relationship, HAS_PROBLEM (Building to Problem), loaded by scripts/load_problems.py (decision 2026-11-19).
+# Counts, the open count, the rate and the pest are computed at answer time, not stored. The apartment is never loaded.
+# Extension (2026-11-21): two properties, minorCategory and problemCode, on Problem; the pest is read from them, not stored separately.
+question: Q27
+concept_base: https://watchline.example/vocab/
+database: watchline
+sources: [hpd_complaints, hpd_registrations, pluto]
+
+graph:
+  constraints:
+    - {name: problem_id_unique, label: Problem, property: problemId, kind: unique}
+
+  nodes:
+    Problem:
+      concept: complaint-problem
+      key: problemId
+      scope: >-
+        One Problem per hpd_complaints_and_problems row received on or after 2021-01-01 whose BBL is in hpd_registrations and whose BIN is a Building in the graph.
+        4,061,388 problems since 2021-01-01 are on registered lots; 4,033,827 load; 27,561 are excluded and counted (8,461 with no usable BIN, 19,100 with a BIN
+        that is not a registered building). Earlier problems are not loaded. Queried 2026-11-19; data through 2026-07-07. Counting unit: problem records.
+      proved_by: tests/q27_1/expected.sql
+      properties:
+        problemId:
+          concept: problem-id
+          type: integer
+          source: hpd_complaints.problemid
+          rule: Identity. Unique in the source.
+          null_policy: never absent
+        complaintId:
+          concept: complaint-id
+          type: integer
+          source: hpd_complaints.complaintid
+          rule: As recorded. Shared by the problems of one complaint; used to count distinct complaints.
+          null_policy: never absent (no loaded row lacks one)
+        problemType:
+          concept: problem-type
+          type: string
+          source: hpd_complaints.type
+          allowed: [EMERGENCY, NON EMERGENCY, IMMEDIATE EMERGENCY, HAZARDOUS, REFERRAL]
+          rule: As HPD records. HAZARDOUS and REFERRAL are allowed but absent from the loaded subset. Types are counted, never added into a severity score.
+          null_policy: never absent (no loaded row lacks one)
+        majorCategory:
+          concept: major-category
+          type: string
+          source: hpd_complaints.majorcategory
+          rule: As HPD records, uppercase. No fixed list is declared; the answer reports the values present.
+          null_policy: never absent (no loaded row lacks one)
+        minorCategory:
+          concept: minor-category
+          type: string
+          source: hpd_complaints.minorcategory
+          proved_by: tests/q27_3/expected.sql
+          rule: "As HPD records, uppercase, text. No fixed list is declared (59 values on loaded rows). Read with the major category: a minor category can sit under two majors. PESTS (under UNSANITARY CONDITION only) marks a pest complaint."
+          null_policy: never absent (no loaded row lacks one)
+        problemCode:
+          concept: problem-code
+          type: string
+          source: hpd_complaints.problemcode
+          proved_by: tests/q27_3/expected.sql
+          rule: "As HPD records, uppercase, text. No fixed list is declared (142 values on loaded rows). Under PESTS the seven values are MICE, ROACHES, OTHER, BED BUGS, FLIES, TERMITES, FLEAS. OTHER appears under many minor categories and never means mice; a code is read with its minor category."
+          null_policy: never absent (no loaded row lacks one)
+        status:
+          concept: problem-status
+          type: string
+          source: hpd_complaints.problemstatus
+          allowed: [OPEN, CLOSE]
+          rule: The problem's own status at the snapshot. The complaint's status is not stored.
+          null_policy: never absent (no loaded row lacks one)
+        receivedDate:
+          concept: received-date
+          type: date
+          source: hpd_complaints.receiveddate
+          rule: As recorded; the loaded window starts 2021-01-01.
+          null_policy: never absent
+        duplicate:
+          concept: duplicate-flag
+          type: boolean
+          source: hpd_complaints.problemduplicateflag
+          rule: HPD's flag, kept as recorded. Duplicate-flagged problems are counted and reported apart, never removed.
+          null_policy: never absent (no loaded row lacks one)
+      # not stored: apartment, unit type, space type, anonymity, coordinates, pest kind, complaint status and dates
+
+  relationships:
+    HAS_PROBLEM:
+      concept: has-problem
+      from: Building
+      to: Problem
+      source: hpd_complaints.bin, hpd_complaints.problemid
+      rule: >-
+        One per loaded problem, from the Building whose BIN the problem records. Problems belong to the building, not the lot; a lot's
+        problems are those of its buildings.
+      proved_by: tests/q27_1/expected.sql
+
+answer:
+  Q27.1:
+    lookup: tests/q27_1/lookup.cypher
+    fields:
+      problemType:    {concept: problem-type, source: Problem.problemType, type: string, allowed: [EMERGENCY, NON EMERGENCY, IMMEDIATE EMERGENCY, HAZARDOUS, REFERRAL], null_policy: "absent only on the empty row of a building with no problem in the period"}
+      majorCategory:  {concept: major-category, source: Problem.majorCategory, type: string, null_policy: "absent only on the empty row of a building with no problem in the period"}
+      status:         {concept: problem-status, source: Problem.status, type: string, allowed: [OPEN, CLOSE], null_policy: "open at the snapshot date (data through 2026-07-07); absent only on the empty row"}
+      problems:       {concept: complaint-problem, source: "derived: count of Problems of the building in the period per type, category and status", type: integer, counting_unit: "problem records, duplicate-flagged included", null_policy: "0 on the empty row; zero problems is not evidence of good conditions"}
+      duplicates:     {concept: duplicate-flag, source: "derived: count of those Problems with duplicate true", type: integer, counting_unit: "problem records flagged duplicate", null_policy: "never absent; 0 when none"}
+      complaints:     {concept: complaint-id, source: "derived: count of distinct Problem.complaintId", type: integer, counting_unit: "distinct complaints", null_policy: "never absent; 0 on the empty row"}
+      firstReceived:  {concept: received-date, source: "derived: earliest Problem.receivedDate per row", type: date, null_policy: "absent on the empty row"}
+      lastReceived:   {concept: received-date, source: "derived: latest Problem.receivedDate per row", type: date, null_policy: "absent on the empty row"}
+    note: "A problem is what was reported, not what was found. One complaint can have several problems. Problems are loaded from 2021-01-01; a period starting earlier is answered for 2021 onward and says so, never as none. An empty result means no problem in the snapshot for this building in the period, or a BIN outside the registered scope (27,561 problems are excluded and counted). The answer names the period, the snapshot date and the counting unit."
+  Q27.2:
+    lookup: tests/q27_2/lookup.cypher
+    fields:
+      bbl:        {concept: bbl, source: Lot.bbl, type: string, null_policy: "one row per lot the building sits on; never summed across lots"}
+      unitsRes:   {concept: residential-units, source: Lot.unitsRes, type: integer, counting_unit: "residential units, whole lot (PLUTO)", null_policy: "absent when PLUTO has no value or the lot is not in PLUTO; 0 means PLUTO records none"}
+      problems:   {concept: complaint-problem, source: "derived: count of the building's Problems received in the period", type: integer, counting_unit: "problem records, duplicate-flagged included", null_policy: "never absent; 0 when none"}
+      rate:       {concept: complaint-rate, source: "derived: problems / unitsRes", type: float, counting_unit: "problems per residential unit over the whole period, not annualized", null_policy: "absent (rate unavailable) when unitsRes is absent or 0; never 0 or infinity"}
+    note: "The rate uses PLUTO residential units, which are lot-wide, so a building on a larger lot is diluted. The answer states the period, the numerator, the unit count and the unit count's source (PLUTO 26v1)."
+
+  Q27.3:
+    lookup: tests/q27_3/lookup.cypher
+    fields:
+      problemCode:   {concept: problem-code, source: Problem.problemCode, type: string, allowed: [MICE, ROACHES, OTHER, "BED BUGS", FLIES, TERMITES, FLEAS], null_policy: "pest named by HPD's code; absent only on the empty row of a building with no pest complaint in the period; OTHER is never mice"}
+      status:        {concept: problem-status, source: Problem.status, type: string, allowed: [OPEN, CLOSE], null_policy: "open at the snapshot date (data through 2026-07-07); absent only on the empty row"}
+      problems:      {concept: pest-complaint, source: "derived: count of the building's Problems with minorCategory PESTS in the period per problem code and status", type: integer, counting_unit: "problem records, duplicate-flagged included", null_policy: "0 on the empty row; zero pest complaints is not evidence of no pests"}
+      duplicates:    {concept: duplicate-flag, source: "derived: count of those Problems with duplicate true", type: integer, counting_unit: "problem records flagged duplicate", null_policy: "never absent; 0 when none"}
+      complaints:    {concept: complaint-id, source: "derived: count of distinct Problem.complaintId", type: integer, counting_unit: "distinct complaints", null_policy: "never absent; 0 on the empty row"}
+      firstReceived: {concept: received-date, source: "derived: earliest Problem.receivedDate per row", type: date, null_policy: "absent on the empty row"}
+      lastReceived:  {concept: received-date, source: "derived: latest Problem.receivedDate per row", type: date, null_policy: "absent on the empty row"}
+    note: "A pest complaint is what a tenant reported, not what was found. The count is per building, never per unit. Problems are loaded from 2021-01-01; a period starting earlier is answered for 2021 onward and says so. Only MICE says mice; OTHER is a catch-all. A pest violation (Q15.3) is an inspector's citation and is counted apart. The answer names the period, the snapshot date and the counting unit."
+
+diagnostics: []
+
+not_stored:   # deliberately absent from the graph
+  - {term: apartment, reason: "source column not returned or loaded (tenant privacy and relevance); only the building is the unit"}
+  - {term: unit type, space type, anonymity flag and coordinates, reason: "not needed to answer; anonymity and exact coordinates are not used (Q27 caveat)"}
+  - {term: pest kind (the pest named by the problem code), reason: "read from problemCode at answer time with minorCategory PESTS; not stored separately"}
+  - {term: complaint status and status dates, reason: "the problem's own status answers the question; the two differ on 7,423 loaded rows"}
+  - {term: problem counts by type, category and status, reason: computed from the Problems at answer time}
+  - {term: complaint rate, reason: "computed from the period's problem count and the lot's PLUTO units; answer contract"}
+  - {term: problems before 2021-01-01, reason: "outside the loaded window (user choice 2026-11-19); the answer reports them as not loaded"}
+  - {term: excluded problems (no usable or unregistered BIN), reason: "27,561 rows are counted by the loader and the test, not stored"}

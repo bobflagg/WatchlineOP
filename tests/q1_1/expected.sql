@@ -1,6 +1,6 @@
 -- Q1.1 expected answers for the Lot nodes, from the frozen JustFix/WoW snapshot.
 -- Independent of the loader: plain SQL on pluto_latest (26v1) and hpd_registrations (2026-05-29).
--- Values below were checked read-only on 2026-11-11 and are provisional until the dump is identified.
+-- Values below were checked read-only on 2026-11-11 and are verified against the frozen baseline recorded in data/README.md (2026-11-16).
 --
 -- Lot rules: a Lot exists for every BBL in hpd_registrations, plus every pluto_latest lot with
 -- unitsres >= 3 that is not registered. address = PLUTO address; if the BBL is not in PLUTO, the address of its

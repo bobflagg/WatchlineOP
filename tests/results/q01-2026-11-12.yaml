@@ -1,7 +1,7 @@
 # Q1 acceptance results, 2026-11-12. Shape and sub-question counts are from the user's runs of `make graph`.
 question: Q1
-fixture_version: provisional (not yet verified against an identified frozen dump)
-baseline: "Pending: dump filename and SHA-256 are not recorded in data/README.md. Until they are, no result below is 'passed' for acceptance."
+fixture_version: verified against the frozen baseline (2026-11-16)
+baseline: "Frozen baseline recorded 2026-11-16 in data/README.md: justfixwow-poc-baseline_2026-11-16.sql.gz, SHA-256 9124f6c0d0f0d2e453f1971247ed29c217d3d4b5f55338d95344e04a617b6278 (plain-SQL dump of the 11 public source tables)."
 tools:
   neo4j: "recorded in tests/results/shapes.json by `make shapes` (covers Q1 and Q2 since 2026-11-12) (version and edition)"
   shacl2cypher: "0.3.0 (strict mode; all 21 rules compile)"
@@ -9,8 +9,9 @@ tools:
   geosupport: "25b (Docker image, localhost:8081)"
 acceptance:
   graph:
-    status: pending
-    reason: baseline not identified
+    status: passed
+    reason: \"baseline identified 2026-11-16; every graph check passed\"
+    rerun_2026_11_16: "All database-backed checks (make test, make shapes 414/414 including the Q7 rules) passed on the rebuilt graph on 2026-11-16 (user-reported). The graph now has the merged Contact node and Landlord-to-Contact links, so older counts in this file are history, not the current counts."
     evidence:
       sub_question_checks: {q1_1: "13/13", q1_2: "22/22", q1_3: "101/101", q1_4: "31/31", profiles: "78/78"}
       shapes: "46/46 (21 rules on the graph, coverage, 18 seeded bad-data cases, rollback)"

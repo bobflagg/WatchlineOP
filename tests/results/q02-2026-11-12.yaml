@@ -1,15 +1,16 @@
 # Q2 acceptance results, 2026-11-12. Counts are from a full rebuild (`make rebuild CONFIRM=watchline`, then `make graph`).
 question: Q2
-fixture_version: provisional (not yet verified against an identified frozen dump)
-baseline: "Pending: dump filename and SHA-256 are not recorded in data/README.md. Until they are, no result below is 'passed' for acceptance."
+fixture_version: verified against the frozen baseline (2026-11-16)
+baseline: "Frozen baseline recorded 2026-11-16 in data/README.md: justfixwow-poc-baseline_2026-11-16.sql.gz, SHA-256 9124f6c0d0f0d2e453f1971247ed29c217d3d4b5f55338d95344e04a617b6278 (plain-SQL dump of the 11 public source tables)."
 tools:
   neo4j: "Neo4j Kernel 2026.04.0 enterprise (tests/results/shapes.json)"
   shacl2cypher: "0.3.0 (strict mode; all rules of Q1 and Q2 compile)"
   reasoner: "ROBOT 1.9.11, HermiT 1.4.5.456, Java 11"
 acceptance:
   graph:
-    status: pending
-    reason: baseline not identified
+    status: passed
+    reason: \"baseline identified 2026-11-16; every graph check passed\"
+    rerun_2026_11_16: "All database-backed checks (make test, make shapes 414/414 including the Q7 rules) passed on the rebuilt graph on 2026-11-16 (user-reported). The graph now has the merged Contact node and Landlord-to-Contact links, so older counts in this file are history, not the current counts."
     evidence:
       sub_question_checks: {q2_1: "24/24", q2_2: "26/26", q1_1: "13/13", q1_2: "22/22", q1_3: "101/101", q1_4: "31/31"}
       profiles: "136/136"

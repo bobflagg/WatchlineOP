@@ -1,0 +1,7 @@
+# Q11.3 fixtures. dos_active_corporations (frozen baseline, data/README.md, data through 2026-07-06). check_process.py re-derives each from the source.
+entities:
+  - {name: "5413 PLAZA LLC", records: [{dosId: 5857246, filed: "2020-10-14", hasProcessName: true, street: "5 CROMWELL CIRCLE", zip5: "10304", entities: 5}],
+     note: "anchor A: a process address listed by five entities is a service-address lead, supporting no link"}
+  - {name: "702 PLAZA LLC", records: [{dosId: 5857608, filed: "2020-10-15", hasProcessName: true, street: "5 CROMWELL CIRCLE", zip5: "10304", entities: 5}],
+     note: "anchor B: the same process address as anchor A, a day later"}
+  - {name: "NO SUCH ENTITY LLC", records: [], note: "no record: the answer says so, not that the entity does not exist"}

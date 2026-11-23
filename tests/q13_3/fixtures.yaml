@@ -1,0 +1,11 @@
+# Q13.3 fixtures. The kind and description of each document type are the answer contract (tests/q13_support.py KINDS); counts re-derived from the source.
+lots:
+  - bbl: "3008070024"
+    label: "anchor C: five mortgages after 1980 and only two satisfactions (1982, 2001); no termination"
+    by_kind: {mortgage: 6, assignment: 5, satisfaction: 2, termination: 0, agreement: 4}
+    satisfaction_dates: ["1982-12-21", "2001-08-23"]
+  - bbl: "3008260002"
+    label: "anchor A: a termination of lease and rent assignment (2023) with no satisfaction after the 2021 mortgage"
+    by_kind: {mortgage: 4, assignment: 2, satisfaction: 2, termination: 1, agreement: 2}
+    satisfaction_dates: ["1993-05-19", "2018-11-19"]
+    termination_dates: ["2023-06-15"]

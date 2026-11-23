@@ -1,6 +1,6 @@
 -- Q2.1 expected answers for Registration nodes and HAS_REGISTRATION, from the frozen JustFix/WoW snapshot.
 -- Independent of the loader. hpd_registrations (2026-05-29), checked read-only 2026-11-12.
--- Provisional until the dump is identified (data/README.md).
+-- verified against the frozen baseline recorded in data/README.md (2026-11-16).
 --
 -- Rules: a Registration exists for each registrationid on a row with a valid BIN (Q1.2 rule) and registrationid > 0.
 -- registrationid 0 is a placeholder shared by 3 unrelated buildings (1056989, 2063477, 4238296) and is excluded and

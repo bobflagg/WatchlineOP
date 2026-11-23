@@ -1,0 +1,8 @@
+# Q7.3 fixtures. real_property_parties (2026-05-31). Scope C (decision 2026-11-16).
+totals:
+  documents: 96901   # profile_q07_scope.py 2026-11-16 (scope C); confirmed by load_documents.py
+pairs:
+  - a: "5413 PLAZA LLC"
+    b: "702 PLAZA LLC"
+    documents: ["2021031601183001", "2021031601183002", "2023061200959001"]   # in scope C: HPD spells the owner "702 Plaza LLC", equal under N3
+    note: "anchor mortgage 2021031601183001 names both as partytype 1 (lender CONNECTONE BANK); 2023061200959001 names both as partytype 2"

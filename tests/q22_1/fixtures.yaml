@@ -1,0 +1,12 @@
+# Q22.1 expected name comparisons (rules in src/watchline/compare.py, entity_name_comparison). Names are entities, never people.
+# check_names.py confirms each recorded spelling exists in its source table and recomputes the outcome.
+pairs:
+  - {a: "KS TURNPIKE LLC", a_source: hpd_contacts, b: "K S TURNPIKE LLC", b_source: dos_active_corporations, outcome: normalization-match, rule: S1, note: "anchor G: a space only; Q3 and Q5 keep it a difference"}
+  - {a: "702 54 STREET LLC", a_source: real_property_parties, b: "702 PLAZA LLC", b_source: real_property_parties, outcome: different, rule: null, note: "anchor B"}
+  - {a: "HP SUNSET PARK I HDFC INC.", a_source: hpd_contacts, b: "HP SUNSET PARK I HOUSING DEVELOPMENT FUND COMPANY, INC.", b_source: dos_active_corporations, outcome: abbreviation-match, rule: AB1, note: "anchor D"}
+  - {a: "702 PLAZA LLC", a_source: hpd_contacts, b: "702 PLAZA LLC", b_source: real_property_parties, outcome: exact-normalized, rule: N1, note: "case only"}
+  - {a: "438 52ND ST. OWNERS' CORP.", a_source: real_property_parties, b: "438 52ND ST OWNERS CORP", b_source: null, outcome: normalization-match, rule: N3, note: "anchor C, deed spelling"}
+synthetic:   # not in a source; pure rule cases
+  - {a: "ACME HOLDINGS LLC", b: "ACME HOLDINGS II LLC", outcome: differs-by-numeral-or-word, rule: null}
+  - {a: "ACME CORPORATION", b: "ACME CORP", outcome: normalization-match, rule: L1}
+  - {a: "ACME LLC", b: null, outcome: not-comparable, rule: null}

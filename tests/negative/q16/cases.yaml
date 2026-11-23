@@ -1,0 +1,10 @@
+# Same format as tests/negative/q14/cases.yaml: bad data inside a transaction that is always rolled back.
+# Cases avoid minting a new property key: a key token persists after a rollback and would make the check scan the whole graph on every later run.
+# The Q16-only property keys (publisher, quotedClaim, ...) are therefore guarded by the check but not seeded here.
+cases:
+  - {name: review status stored on a lot,          create: "MATCH (l:Lot) WITH l LIMIT 1 SET l.reviewStatus = 'confirmed'", check: queries/checks/q16-computed-not-stored.cypher}
+  - {name: review status stored on a contact,      create: "MATCH (c:Contact) WITH c LIMIT 1 SET c.reviewStatus = 'confirmed'", check: queries/checks/q16-computed-not-stored.cypher}
+  - {name: review status stored on a DOS entity,   create: "MATCH (e:DosEntity) WITH e LIMIT 1 SET e.reviewStatus = 'refuted'", check: queries/checks/q16-computed-not-stored.cypher}
+  - {name: retrieved item node created,            create: "CREATE (:RetrievedItem)", check: queries/checks/q16-computed-not-stored.cypher}
+  - {name: reported claim node created,            create: "CREATE (:ReportedClaim)", check: queries/checks/q16-computed-not-stored.cypher}
+  - {name: filing document node created,           create: "CREATE (:FilingDocument)", check: queries/checks/q16-computed-not-stored.cypher}

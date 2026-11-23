@@ -1,0 +1,95 @@
+# Same format as tests/negative/q08/cases.yaml: bad data inside a transaction that is always rolled back.
+cases:
+- name: masked id with wrong format
+  create: 'CREATE (:NetworkMaskedAddress {addressId: ''X1'', address: ''1 TEST STREET'', degree: 30})'
+  rule: NetworkMaskedAddressShape.maskedAddressId.pattern
+- name: masked address without id
+  create: 'CREATE (:NetworkMaskedAddress {address: ''1 TEST STREET'', degree: 30})'
+  rule: NetworkMaskedAddressShape.maskedAddressId.minCount
+- name: masked address without text
+  create: 'CREATE (:NetworkMaskedAddress {addressId: ''A9999999'', degree: 30})'
+  rule: NetworkMaskedAddressShape.maskedAddressText.minCount
+- name: masked address with empty text
+  create: 'CREATE (:NetworkMaskedAddress {addressId: ''A9999999'', address: '''', degree: 30})'
+  rule: NetworkMaskedAddressShape.maskedAddressText.minLength
+- name: masked degree as text
+  create: 'CREATE (:NetworkMaskedAddress {addressId: ''A9999999'', address: ''1 TEST STREET'', degree: ''30''})'
+  rule: NetworkMaskedAddressShape.maskedAddressDegree.datatype
+- name: masked degree at the threshold
+  create: 'CREATE (:NetworkMaskedAddress {addressId: ''A9999999'', address: ''1 TEST STREET'', degree: 25})'
+  rule: NetworkMaskedAddressShape.maskedAddressDegree.minInclusive
+- name: masked address without degree
+  create: 'CREATE (:NetworkMaskedAddress {addressId: ''A9999999'', address: ''1 TEST STREET''})'
+  rule: NetworkMaskedAddressShape.maskedAddressDegree.minCount
+- name: masked address without edge count
+  create: 'CREATE (:NetworkMaskedAddress {addressId: ''A9999999'', address: ''1 TEST STREET'', degree: 30})'
+  rule: NetworkMaskedAddressShape.maskedEdges.minCount
+- name: masked edge count as text
+  create: 'CREATE (:NetworkMaskedAddress {addressId: ''A9999999'', address: ''1 TEST STREET'', degree: 30, maskedEdges: ''300''})'
+  rule: NetworkMaskedAddressShape.maskedEdges.datatype
+- name: masked edge count below zero
+  create: 'CREATE (:NetworkMaskedAddress {addressId: ''A9999999'', address: ''1 TEST STREET'', degree: 30, maskedEdges: -1})'
+  rule: NetworkMaskedAddressShape.maskedEdges.minInclusive
+- name: duplicate masked text
+  create: 'MATCH (a:NetworkMaskedAddress) WITH a LIMIT 1 CREATE (:NetworkMaskedAddress {addressId: ''A9999998'', address: a.address, degree: 30})'
+  check: queries/checks/q06-addresses.cypher
+- name: duplicate masked id
+  create: 'MATCH (a:NetworkMaskedAddress) WITH a LIMIT 1 CREATE (:NetworkMaskedAddress {addressId: a.addressId, address: ''2 TEST STREET'', degree: 30})'
+  error: constraint
+- name: listed address without kind
+  create: 'CREATE (:MailDropAddress {listKey: ''1 TEST ST|10001'', address: ''1 TEST ST'', zip5: ''10001'', basis: ''test'', reviewStatus: ''unreviewed''})'
+  rule: MailDropAddressShape.mailDropKind.minCount
+- name: listed kind outside the four codes
+  create: 'CREATE (:MailDropAddress {listKey: ''1 TEST ST|10001'', address: ''1 TEST ST'', zip5: ''10001'', kind: ''bank'', basis: ''test'', reviewStatus: ''unreviewed''})'
+  rule: MailDropAddressShape.mailDropKind.in
+- name: listed zip5 not five digits
+  create: 'CREATE (:MailDropAddress {listKey: ''1 TEST ST|10001'', address: ''1 TEST ST'', zip5: ''1000'', kind: ''unknown'', basis: ''test'', reviewStatus: ''unreviewed''})'
+  rule: MailDropAddressShape.zipFive.pattern
+- name: listed review status other than unreviewed
+  create: 'CREATE (:MailDropAddress {listKey: ''1 TEST ST|10001'', address: ''1 TEST ST'', zip5: ''10001'', kind: ''unknown'', basis: ''test'', reviewStatus: ''approved''})'
+  rule: MailDropAddressShape.listReviewStatus.in
+- name: listed address without basis
+  create: 'CREATE (:MailDropAddress {listKey: ''1 TEST ST|10001'', address: ''1 TEST ST'', zip5: ''10001'', kind: ''unknown'', reviewStatus: ''unreviewed''})'
+  rule: MailDropAddressShape.mailDropBasis.minCount
+- name: list key that does not match its address and ZIP
+  create: 'CREATE (:MailDropAddress {listKey: ''2 TEST ST|10001'', address: ''1 TEST ST'', zip5: ''10001'', kind: ''unknown'', basis: ''test'', reviewStatus: ''unreviewed''})'
+  check: queries/checks/q06-addresses.cypher
+- name: duplicate list key
+  create: 'MATCH (a:MailDropAddress) WITH a LIMIT 1 CREATE (:MailDropAddress {listKey: a.listKey, address: a.address, kind: ''unknown'', basis: ''test'', reviewStatus: ''unreviewed''})'
+  error: constraint
+- name: node that is both a masked and a listed address
+  create: 'MATCH (a:MailDropAddress) WITH a LIMIT 1 SET a:NetworkMaskedAddress'
+  check: queries/checks/q06-addresses.cypher
+- name: masked address linked to a contact
+  create: 'MATCH (a:NetworkMaskedAddress) WITH a LIMIT 1 MATCH (c:Contact) WITH a, c LIMIT 1 CREATE (a)-[:SAME_TEXT]->(c)'
+  check: queries/checks/q06-no-relationships.cypher
+- name: listed address linked to a contact
+  create: 'MATCH (a:MailDropAddress) WITH a LIMIT 1 MATCH (c:Contact) WITH a, c LIMIT 1 CREATE (a)-[:SAME_TEXT]->(c)'
+  check: queries/checks/q06-no-relationships.cypher
+- name: portfolio masked address without text
+  create: 'CREATE (:PortfolioMaskedAddress {degree: 30, maskedIdentities: 2})'
+  rule: PortfolioMaskedAddressShape.portfolioMaskedAddressText.minCount
+- name: portfolio masked address with empty text
+  create: 'CREATE (:PortfolioMaskedAddress {address: '''', degree: 30, maskedIdentities: 2})'
+  rule: PortfolioMaskedAddressShape.portfolioMaskedAddressText.minLength
+- name: portfolio masked degree at the threshold
+  create: 'CREATE (:PortfolioMaskedAddress {address: ''1 TEST STREET'', degree: 25, maskedIdentities: 2})'
+  rule: PortfolioMaskedAddressShape.portfolioMaskedAddressDegree.minInclusive
+- name: portfolio masked degree as text
+  create: 'CREATE (:PortfolioMaskedAddress {address: ''1 TEST STREET'', degree: ''30'', maskedIdentities: 2})'
+  rule: PortfolioMaskedAddressShape.portfolioMaskedAddressDegree.datatype
+- name: portfolio masked address without degree
+  create: 'CREATE (:PortfolioMaskedAddress {address: ''1 TEST STREET'', maskedIdentities: 2})'
+  rule: PortfolioMaskedAddressShape.portfolioMaskedAddressDegree.minCount
+- name: portfolio masked address with no masked identity
+  create: 'CREATE (:PortfolioMaskedAddress {address: ''1 TEST STREET'', degree: 30, maskedIdentities: 0})'
+  rule: PortfolioMaskedAddressShape.maskedIdentities.minInclusive
+- name: portfolio masked address without identity count
+  create: 'CREATE (:PortfolioMaskedAddress {address: ''1 TEST STREET'', degree: 30})'
+  rule: PortfolioMaskedAddressShape.maskedIdentities.minCount
+- name: portfolio masked address with a relationship
+  create: 'MATCH (a:PortfolioMaskedAddress) WITH a LIMIT 1 MATCH (l:Lot) WITH a, l LIMIT 1 CREATE (a)-[:NEAR]->(l)'
+  check: queries/checks/q06-no-relationships.cypher
+- name: node that is both masked addresses
+  create: 'MATCH (a:PortfolioMaskedAddress) WITH a LIMIT 1 SET a:NetworkMaskedAddress'
+  check: queries/checks/q06-addresses.cypher

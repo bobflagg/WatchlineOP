@@ -1,0 +1,23 @@
+# Q25 acceptance results, 2026-11-19. Graph acceptance pending until the user runs make shapes.
+question: Q25
+fixture_version: "none: no retrieval cache exists; tests/q25/contract.yaml is the contract the cache is built against"
+baseline: "Frozen baseline recorded 2026-11-16 in data/README.md (Q25.1 reads DosEntity from it; the registry search uses no database source)."
+tools:
+  shacl2cypher: "0.3.0; Q25 adds no SHACL shape, so the compiled rule set is unchanged"
+acceptance:
+  graph:
+    status: pending
+    reason: "Q25 stores nothing. The only graph rule is the absence check queries/checks/q25-computed-not-stored.cypher and its four negative cases; make shapes is for the user to run"
+    evidence:
+      shapes: "none (no graph element)"
+      supplemental_checks: "queries/checks/q25-computed-not-stored.cypher (coverage Q25-R1)"
+      negative_cases: "4 in tests/negative/q25/cases.yaml (1 status, 3 label; none mints a property key)"
+  retrieval_extraction:
+    status: pending
+    reason: "needs a versioned, replayable retrieval cache supplied by the user and a downstream run of tests/q25/contract.yaml; never reported as passed because the graph is ready"
+  investigation:
+    status: pending
+    reason: "not declared for Q25"
+open_points:
+  - "No cache of registry searches exists. A Delaware entity may show name and status only; the next step is an unresolved lead (needs payment)."
+  - "A name match in another state is a lead until another record connects it."

@@ -1,0 +1,9 @@
+# Q23.2 fixtures: footprint lots of an agent against a reference building's layers (BOR release v0.3.0, run 2026-05-29-869bd299).
+# check_layers.py re-derives footprint lots from the source and groups from the release, so a stale fixture fails.
+cases:
+  - {nameKey: "BRIGHTON MANAGEMENT", bin: "3025921", referenceLot: "3010910002", network: ON-142, portfolio: OP-92928, lots: 39, networkSame: 39, networkOther: 0, networkNone: 0, portfolioSame: 38, portfolioOther: 0, portfolioNone: 1,
+     note: "whole footprint in one network; one lot (1008960012) is in no portfolio"}
+  - {nameKey: "BRIGHTON MANAGEMENT", bin: "1019505", referenceLot: "1008960012", network: ON-142, portfolio: null, lots: 39, networkSame: 39, networkOther: 0, networkNone: 0, portfolioSame: 0, portfolioOther: 38, portfolioNone: 1,
+     note: "reference lot has no portfolio: nothing is 'same'; 38 sit in another portfolio"}
+  - {nameKey: "DOUGLAS ELLIMAN PROPERTY MANAGEMENT", bin: "1001569", referenceLot: "1001440030", network: ON-52285, portfolio: OP-52285, lots: 309, networkSame: 7, networkOther: 10, networkNone: 292, portfolioSame: 7, portfolioOther: 3, portfolioNone: 299,
+     note: "large footprint: 292 of 309 lots in no network; a commercial-service pattern that is a suggestion, not proof"}

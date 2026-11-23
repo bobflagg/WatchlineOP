@@ -1,17 +1,27 @@
 {
   "neo4j": "Neo4j Kernel 2026.04.0 enterprise",
   "shacl2cypher": "0.3.0",
-  "rules": 119,
+  "rules": 264,
   "checks": [
     {
-      "check": "all 119 rules compile in strict mode",
+      "check": "all 264 rules compile in strict mode",
       "passed": true,
       "detail": "[] []"
     },
     {
       "check": "the graph is loaded",
       "passed": true,
-      "detail": "(3983274, 3734461)"
+      "detail": "(23464305, 23537937)"
+    },
+    {
+      "check": "graph conforms to BuildingLitigationShape.hasLitigation.class",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to BuildingProblemShape.hasProblem.class",
+      "passed": true,
+      "detail": "0 violations"
     },
     {
       "check": "graph conforms to BuildingRegistrationShape.hasRegistration.class",
@@ -40,6 +50,101 @@
     },
     {
       "check": "graph conforms to BuildingShape.inv_hasBuilding.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to BuildingViolationShape.hasViolation.class",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ContactAddressShape.addressLineTwo.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ContactAddressShape.addressLineTwo.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ContactAddressShape.mailingAddress.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ContactAddressShape.mailingAddress.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ContactAddressShape.zipCode.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ContactAddressShape.zipCode.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ContactShape.contactType.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ContactShape.contactType.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ContactShape.contactType.pattern",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ContactShape.corporationName.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ContactShape.corporationName.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ContactShape.inv_hasContact.maxCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ContactShape.inv_hasContact.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ContactShape.personName.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ContactShape.personName.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ContactTitleShape.contactTitle.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ContactTitleShape.contactTitle.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DeedGrantorShape.hasGrantor.class",
       "passed": true,
       "detail": "0 violations"
     },
@@ -105,6 +210,131 @@
     },
     {
       "check": "graph conforms to DeedShape.recordedDate.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentPartyShape.addressDocumentCount.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentPartyShape.addressDocumentCount.minInclusive",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentPartyShape.addressLineTwo.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentPartyShape.addressLineTwo.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentPartyShape.addressPartyCount.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentPartyShape.addressPartyCount.minInclusive",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentPartyShape.inv_hasParty.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentPartyShape.mailingAddress.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentPartyShape.mailingAddress.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentPartyShape.partyName.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentPartyShape.partyName.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentPartyShape.zipCode.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentPartyShape.zipCode.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentShape.documentAmount.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentShape.documentAmount.minInclusive",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentShape.documentDate.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentShape.documentId.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentShape.documentId.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentShape.documentId.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentShape.documentType.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentShape.documentType.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentShape.documentType.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentShape.hasParty.class",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentShape.hasParty.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DocumentShape.recordedDate.datatype",
       "passed": true,
       "detail": "0 violations"
     },
@@ -294,6 +524,16 @@
       "detail": "0 violations"
     },
     {
+      "check": "graph conforms to DosHubShape.processAddressEntities.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to DosHubShape.processAddressEntities.minInclusive",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
       "check": "graph conforms to GranteeShape.addressLineTwo.datatype",
       "passed": true,
       "detail": "0 violations"
@@ -344,7 +584,237 @@
       "detail": "0 violations"
     },
     {
+      "check": "graph conforms to GrantorShape.addressLineTwo.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to GrantorShape.addressLineTwo.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to GrantorShape.grantorName.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to GrantorShape.grantorName.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to GrantorShape.inv_hasGrantor.maxCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to GrantorShape.inv_hasGrantor.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to GrantorShape.mailingAddress.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to GrantorShape.mailingAddress.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to GrantorShape.zipCode.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to GrantorShape.zipCode.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LandlordShape.basedOnContact.class",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LandlordShape.covers.class",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LandlordShape.landlordName.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LandlordShape.landlordName.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LandlordShape.landlordName.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LitigationShape.caseOpenDate.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LitigationShape.caseStatus.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LitigationShape.caseStatus.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LitigationShape.caseType.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LitigationShape.caseType.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LitigationShape.findingDate.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LitigationShape.harassmentFinding.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LitigationShape.harassmentFinding.in",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LitigationShape.inv_hasLitigation.maxCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LitigationShape.inv_hasLitigation.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LitigationShape.litigationId.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LitigationShape.litigationId.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LitigationShape.openJudgement.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LitigationShape.openJudgement.in",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LitigationShape.openJudgement.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LitigationShape.penalty.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LitigationShape.penalty.minInclusive",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LitigationShape.respondent.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
       "check": "graph conforms to LotDeedShape.hasDeed.class",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotFinancingShape.hasFinancingDocument.class",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotNetworkShape.inNetwork.class",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotNetworkShape.inNetwork.maxCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotNetworkShape.networkAbsence.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotNetworkShape.networkAbsence.in",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotNetworkShape.networkAbsenceDetail.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotNetworkShape.networkAbsenceDetail.in",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotPortfolioShape.inPortfolio.class",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotPortfolioShape.inPortfolio.maxCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotPortfolioShape.portfolioAbsence.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotPortfolioShape.portfolioAbsence.in",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotPortfolioShape.portfolioAbsenceDetail.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to LotPortfolioShape.portfolioAbsenceDetail.in",
       "passed": true,
       "detail": "0 violations"
     },
@@ -429,77 +899,342 @@
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to OwnerContactAddressShape.addressLineTwo.datatype",
+      "check": "graph conforms to MailDropAddressShape.listReviewStatus.datatype",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to OwnerContactAddressShape.addressLineTwo.minLength",
+      "check": "graph conforms to MailDropAddressShape.listReviewStatus.in",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to OwnerContactAddressShape.mailingAddress.datatype",
+      "check": "graph conforms to MailDropAddressShape.listReviewStatus.minCount",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to OwnerContactAddressShape.mailingAddress.minLength",
+      "check": "graph conforms to MailDropAddressShape.mailDropAddressKey.datatype",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to OwnerContactAddressShape.zipCode.datatype",
+      "check": "graph conforms to MailDropAddressShape.mailDropAddressKey.minCount",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to OwnerContactAddressShape.zipCode.minLength",
+      "check": "graph conforms to MailDropAddressShape.mailDropAddressKey.minLength",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to OwnerContactShape.contactType.datatype",
+      "check": "graph conforms to MailDropAddressShape.mailDropBasis.datatype",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to OwnerContactShape.contactType.minCount",
+      "check": "graph conforms to MailDropAddressShape.mailDropBasis.minCount",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to OwnerContactShape.contactType.pattern",
+      "check": "graph conforms to MailDropAddressShape.mailDropBasis.minLength",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to OwnerContactShape.inv_hasOwnerContact.maxCount",
+      "check": "graph conforms to MailDropAddressShape.mailDropKind.datatype",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to OwnerContactShape.inv_hasOwnerContact.minCount",
+      "check": "graph conforms to MailDropAddressShape.mailDropKind.in",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to OwnerContactShape.ownerName.datatype",
+      "check": "graph conforms to MailDropAddressShape.mailDropKind.minCount",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to OwnerContactShape.ownerName.minLength",
+      "check": "graph conforms to MailDropAddressShape.zipFive.datatype",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to RegistrationRoleShape.hasRoleContact.class",
+      "check": "graph conforms to MailDropAddressShape.zipFive.pattern",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to RegistrationShape.hasOwnerContact.class",
+      "check": "graph conforms to NetworkMaskedAddressShape.maskedAddressDegree.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to NetworkMaskedAddressShape.maskedAddressDegree.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to NetworkMaskedAddressShape.maskedAddressDegree.minInclusive",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to NetworkMaskedAddressShape.maskedAddressId.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to NetworkMaskedAddressShape.maskedAddressId.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to NetworkMaskedAddressShape.maskedAddressId.pattern",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to NetworkMaskedAddressShape.maskedAddressText.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to NetworkMaskedAddressShape.maskedAddressText.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to NetworkMaskedAddressShape.maskedAddressText.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to NetworkMaskedAddressShape.maskedEdges.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to NetworkMaskedAddressShape.maskedEdges.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to NetworkMaskedAddressShape.maskedEdges.minInclusive",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OperationalNetworkShape.groupId.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OperationalNetworkShape.groupId.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OperationalNetworkShape.groupId.pattern",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OperationalNetworkShape.inv_inNetwork.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OperationalNetworkShape.networkSplit.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OperationalNetworkShape.networkSplit.in",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OperationalNetworkShape.networkSplit.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OwnerPortfolioShape.inv_inPortfolio.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OwnerPortfolioShape.portfolioComposition.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OwnerPortfolioShape.portfolioComposition.in",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OwnerPortfolioShape.portfolioComposition.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OwnerPortfolioShape.portfolioId.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OwnerPortfolioShape.portfolioId.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to OwnerPortfolioShape.portfolioId.pattern",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to PortfolioMaskedAddressShape.maskedIdentities.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to PortfolioMaskedAddressShape.maskedIdentities.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to PortfolioMaskedAddressShape.maskedIdentities.minInclusive",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to PortfolioMaskedAddressShape.portfolioMaskedAddressDegree.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to PortfolioMaskedAddressShape.portfolioMaskedAddressDegree.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to PortfolioMaskedAddressShape.portfolioMaskedAddressDegree.minInclusive",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to PortfolioMaskedAddressShape.portfolioMaskedAddressText.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to PortfolioMaskedAddressShape.portfolioMaskedAddressText.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to PortfolioMaskedAddressShape.portfolioMaskedAddressText.minLength",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ProblemShape.complaintId.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ProblemShape.complaintId.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ProblemShape.duplicateFlag.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ProblemShape.duplicateFlag.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ProblemShape.inv_hasProblem.maxCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ProblemShape.inv_hasProblem.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ProblemShape.majorCategory.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ProblemShape.majorCategory.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ProblemShape.problemId.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ProblemShape.problemId.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ProblemShape.problemStatus.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ProblemShape.problemStatus.in",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ProblemShape.problemStatus.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ProblemShape.problemType.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ProblemShape.problemType.in",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ProblemShape.problemType.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ProblemShape.receivedDate.datatype",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to ProblemShape.receivedDate.minCount",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to RegistrationShape.hasContact.class",
       "passed": true,
       "detail": "0 violations"
     },
@@ -524,87 +1259,77 @@
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to RoleContactShape.addressLineTwo.datatype",
+      "check": "graph conforms to ViolationShape.inspectionDate.datatype",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to RoleContactShape.addressLineTwo.minLength",
+      "check": "graph conforms to ViolationShape.inspectionDate.minCount",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to RoleContactShape.contactTitle.datatype",
+      "check": "graph conforms to ViolationShape.inv_hasViolation.maxCount",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to RoleContactShape.contactTitle.minLength",
+      "check": "graph conforms to ViolationShape.inv_hasViolation.minCount",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to RoleContactShape.contactType.datatype",
+      "check": "graph conforms to ViolationShape.orderNumber.datatype",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to RoleContactShape.contactType.minCount",
+      "check": "graph conforms to ViolationShape.orderNumber.minCount",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to RoleContactShape.contactType.pattern",
+      "check": "graph conforms to ViolationShape.orderNumber.pattern",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to RoleContactShape.corporationName.datatype",
+      "check": "graph conforms to ViolationShape.violationClass.datatype",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to RoleContactShape.corporationName.minLength",
+      "check": "graph conforms to ViolationShape.violationClass.in",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to RoleContactShape.inv_hasRoleContact.maxCount",
+      "check": "graph conforms to ViolationShape.violationClass.minCount",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to RoleContactShape.inv_hasRoleContact.minCount",
+      "check": "graph conforms to ViolationShape.violationId.datatype",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to RoleContactShape.mailingAddress.datatype",
+      "check": "graph conforms to ViolationShape.violationId.minCount",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to RoleContactShape.mailingAddress.minLength",
+      "check": "graph conforms to ViolationShape.violationStatus.datatype",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to RoleContactShape.personName.datatype",
+      "check": "graph conforms to ViolationShape.violationStatus.in",
       "passed": true,
       "detail": "0 violations"
     },
     {
-      "check": "graph conforms to RoleContactShape.personName.minLength",
-      "passed": true,
-      "detail": "0 violations"
-    },
-    {
-      "check": "graph conforms to RoleContactShape.zipCode.datatype",
-      "passed": true,
-      "detail": "0 violations"
-    },
-    {
-      "check": "graph conforms to RoleContactShape.zipCode.minLength",
+      "check": "graph conforms to ViolationShape.violationStatus.minCount",
       "passed": true,
       "detail": "0 violations"
     },
@@ -645,6 +1370,146 @@
     },
     {
       "check": "graph conforms to queries/checks/q05-name-key-scope.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q08-absence.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q08-covers.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q08-links.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q08-labels.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q09-absence.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q09-links.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q09-landlords.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q06-addresses.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q06-no-relationships.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q07-documents.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q11-mortgages.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q12-name-keys.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q13-financing.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q14-computed-not-stored.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q15-violations.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q27-problems.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q28-litigation.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q16-computed-not-stored.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q17-computed-not-stored.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q18-computed-not-stored.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q19-computed-not-stored.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q20-computed-not-stored.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q21-computed-not-stored.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q22-computed-not-stored.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q23-computed-not-stored.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q24-computed-not-stored.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q25-computed-not-stored.cypher",
+      "passed": true,
+      "detail": "0 violations"
+    },
+    {
+      "check": "graph conforms to queries/checks/q26-computed-not-stored.cypher",
       "passed": true,
       "detail": "0 violations"
     },
@@ -784,52 +1649,52 @@
       "detail": ""
     },
     {
-      "check": "negative: HAS_OWNER_CONTACT ends on a registration is flagged by RegistrationShape.hasOwnerContact.class",
+      "check": "negative: HAS_CONTACT ends on a registration is flagged by RegistrationShape.hasContact.class",
       "passed": true,
       "detail": ""
     },
     {
-      "check": "negative: contact type Agent is flagged by OwnerContactShape.contactType.pattern",
+      "check": "negative: contact type not an HPD type is flagged by ContactShape.contactType.pattern",
       "passed": true,
       "detail": ""
     },
     {
-      "check": "negative: contact type as number is flagged by OwnerContactShape.contactType.datatype",
+      "check": "negative: contact type as number is flagged by ContactShape.contactType.datatype",
       "passed": true,
       "detail": ""
     },
     {
-      "check": "negative: contact without type is flagged by OwnerContactShape.contactType.minCount",
+      "check": "negative: contact without type is flagged by ContactShape.contactType.minCount",
       "passed": true,
       "detail": ""
     },
     {
-      "check": "negative: contact with empty name is flagged by OwnerContactShape.ownerName.minLength",
+      "check": "negative: contact with empty corporation name is flagged by ContactShape.corporationName.minLength",
       "passed": true,
       "detail": ""
     },
     {
-      "check": "negative: contact with name as number is flagged by OwnerContactShape.ownerName.datatype",
+      "check": "negative: contact with corporation name as number is flagged by ContactShape.corporationName.datatype",
       "passed": true,
       "detail": ""
     },
     {
-      "check": "negative: contact with no registration is flagged by OwnerContactShape.inv_hasOwnerContact.minCount",
+      "check": "negative: contact with empty person name is flagged by ContactShape.personName.minLength",
       "passed": true,
       "detail": ""
     },
     {
-      "check": "negative: contact on two registrations is flagged by OwnerContactShape.inv_hasOwnerContact.maxCount",
+      "check": "negative: person name as number is flagged by ContactShape.personName.datatype",
       "passed": true,
       "detail": ""
     },
     {
-      "check": "negative: registration end before last is flagged by queries/checks/q02-end-before-last.cypher",
+      "check": "negative: contact with no registration is flagged by ContactShape.inv_hasContact.minCount",
       "passed": true,
       "detail": ""
     },
     {
-      "check": "negative: duplicate building and registration pair is flagged by queries/checks/q02-duplicate-pair.cypher",
+      "check": "negative: contact on two registrations is flagged by ContactShape.inv_hasContact.maxCount",
       "passed": true,
       "detail": ""
     },
@@ -934,12 +1799,7 @@
       "detail": ""
     },
     {
-      "check": "negative: owner contact with empty address is flagged by OwnerContactAddressShape.mailingAddress.minLength",
-      "passed": true,
-      "detail": ""
-    },
-    {
-      "check": "negative: duplicate HAS_DEED pair is flagged by queries/checks/q03-duplicate-deed-pair.cypher",
+      "check": "negative: contact with empty address is flagged by ContactAddressShape.mailingAddress.minLength",
       "passed": true,
       "detail": ""
     },
@@ -954,77 +1814,17 @@
       "detail": ""
     },
     {
-      "check": "negative: role contact without type is flagged by RoleContactShape.contactType.minCount",
+      "check": "negative: contact with empty title is flagged by ContactTitleShape.contactTitle.minLength",
       "passed": true,
       "detail": ""
     },
     {
-      "check": "negative: role contact with owner type is flagged by RoleContactShape.contactType.pattern",
+      "check": "negative: contact with empty address is flagged by ContactAddressShape.mailingAddress.minLength",
       "passed": true,
       "detail": ""
     },
     {
-      "check": "negative: role contact type as number is flagged by RoleContactShape.contactType.datatype",
-      "passed": true,
-      "detail": ""
-    },
-    {
-      "check": "negative: role contact with no registration is flagged by RoleContactShape.inv_hasRoleContact.minCount",
-      "passed": true,
-      "detail": ""
-    },
-    {
-      "check": "negative: role contact on two registrations is flagged by RoleContactShape.inv_hasRoleContact.maxCount",
-      "passed": true,
-      "detail": ""
-    },
-    {
-      "check": "negative: HAS_ROLE_CONTACT ends on a registration is flagged by RegistrationRoleShape.hasRoleContact.class",
-      "passed": true,
-      "detail": ""
-    },
-    {
-      "check": "negative: role contact with empty title is flagged by RoleContactShape.contactTitle.minLength",
-      "passed": true,
-      "detail": ""
-    },
-    {
-      "check": "negative: role contact with empty corporation name is flagged by RoleContactShape.corporationName.minLength",
-      "passed": true,
-      "detail": ""
-    },
-    {
-      "check": "negative: role contact with empty person name is flagged by RoleContactShape.personName.minLength",
-      "passed": true,
-      "detail": ""
-    },
-    {
-      "check": "negative: person name as number is flagged by RoleContactShape.personName.datatype",
-      "passed": true,
-      "detail": ""
-    },
-    {
-      "check": "negative: role contact with empty address is flagged by RoleContactShape.mailingAddress.minLength",
-      "passed": true,
-      "detail": ""
-    },
-    {
-      "check": "negative: role contact with empty zip is flagged by RoleContactShape.zipCode.minLength",
-      "passed": true,
-      "detail": ""
-    },
-    {
-      "check": "negative: corporation name on a head officer is flagged by queries/checks/q04-corporation-name-types.cypher",
-      "passed": true,
-      "detail": ""
-    },
-    {
-      "check": "negative: site manager with an address is flagged by queries/checks/q04-site-manager-address.cypher",
-      "passed": true,
-      "detail": ""
-    },
-    {
-      "check": "negative: duplicate contactKey is refused by a native constraint",
+      "check": "negative: contact with empty zip is flagged by ContactAddressShape.zipCode.minLength",
       "passed": true,
       "detail": ""
     },
@@ -1129,12 +1929,677 @@
       "detail": ""
     },
     {
+      "check": "negative: duplicate dosId is refused by a native constraint",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: masked id with wrong format is flagged by NetworkMaskedAddressShape.maskedAddressId.pattern",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: masked address without id is flagged by NetworkMaskedAddressShape.maskedAddressId.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: masked address without text is flagged by NetworkMaskedAddressShape.maskedAddressText.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: masked address with empty text is flagged by NetworkMaskedAddressShape.maskedAddressText.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: masked degree as text is flagged by NetworkMaskedAddressShape.maskedAddressDegree.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: masked degree at the threshold is flagged by NetworkMaskedAddressShape.maskedAddressDegree.minInclusive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: masked address without degree is flagged by NetworkMaskedAddressShape.maskedAddressDegree.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: masked address without edge count is flagged by NetworkMaskedAddressShape.maskedEdges.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: masked edge count as text is flagged by NetworkMaskedAddressShape.maskedEdges.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: masked edge count below zero is flagged by NetworkMaskedAddressShape.maskedEdges.minInclusive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate masked id is refused by a native constraint",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: listed address without kind is flagged by MailDropAddressShape.mailDropKind.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: listed kind outside the four codes is flagged by MailDropAddressShape.mailDropKind.in",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: listed zip5 not five digits is flagged by MailDropAddressShape.zipFive.pattern",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: listed review status other than unreviewed is flagged by MailDropAddressShape.listReviewStatus.in",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: listed address without basis is flagged by MailDropAddressShape.mailDropBasis.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate list key is refused by a native constraint",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: portfolio masked address without text is flagged by PortfolioMaskedAddressShape.portfolioMaskedAddressText.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: portfolio masked address with empty text is flagged by PortfolioMaskedAddressShape.portfolioMaskedAddressText.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: portfolio masked degree at the threshold is flagged by PortfolioMaskedAddressShape.portfolioMaskedAddressDegree.minInclusive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: portfolio masked degree as text is flagged by PortfolioMaskedAddressShape.portfolioMaskedAddressDegree.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: portfolio masked address without degree is flagged by PortfolioMaskedAddressShape.portfolioMaskedAddressDegree.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: portfolio masked address with no masked identity is flagged by PortfolioMaskedAddressShape.maskedIdentities.minInclusive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: portfolio masked address without identity count is flagged by PortfolioMaskedAddressShape.maskedIdentities.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: document without type is flagged by DocumentShape.documentType.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: document without id is flagged by DocumentShape.documentId.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: negative amount is flagged by DocumentShape.documentAmount.minInclusive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: recorded date as text is flagged by DocumentShape.recordedDate.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: document with no party is flagged by DocumentShape.hasParty.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: HAS_PARTY ends on a document party is flagged by DocumentShape.hasParty.class",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: party with no document is flagged by DocumentPartyShape.inv_hasParty.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: party with empty name is flagged by DocumentPartyShape.partyName.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: party with empty address is flagged by DocumentPartyShape.mailingAddress.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: negative hub count is flagged by DocumentPartyShape.addressPartyCount.minInclusive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: hub count as text is flagged by DocumentPartyShape.addressDocumentCount.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: DOS hub count of zero is flagged by DosHubShape.processAddressEntities.minInclusive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate documentId is refused by a native constraint",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate partyKey is refused by a native constraint",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: network id with wrong format is flagged by OperationalNetworkShape.groupId.pattern",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: network id as number is flagged by OperationalNetworkShape.groupId.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: network without id is flagged by OperationalNetworkShape.groupId.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: network without split is flagged by OperationalNetworkShape.networkSplit.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: network split outside the two codes is flagged by OperationalNetworkShape.networkSplit.in",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: network with one member lot is flagged by OperationalNetworkShape.inv_inNetwork.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: lot in two networks is flagged by LotNetworkShape.inNetwork.maxCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: top-level absence outside the five codes is flagged by LotNetworkShape.networkAbsence.in",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: absence detail outside the eleven codes is flagged by LotNetworkShape.networkAbsenceDetail.in",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate network id is refused by a native constraint",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate landlord id is refused by a native constraint",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: landlord without a name is flagged by LandlordShape.landlordName.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: landlord with a blank name is flagged by LandlordShape.landlordName.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: landlord name as number is flagged by LandlordShape.landlordName.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: BASED_ON_CONTACT ends on a registration is flagged by LandlordShape.basedOnContact.class",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: portfolio id with wrong format is flagged by OwnerPortfolioShape.portfolioId.pattern",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: portfolio id as number is flagged by OwnerPortfolioShape.portfolioId.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: portfolio without id is flagged by OwnerPortfolioShape.portfolioId.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: portfolio without composition is flagged by OwnerPortfolioShape.portfolioComposition.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: composition outside the three codes is flagged by OwnerPortfolioShape.portfolioComposition.in",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: portfolio with no member lot is flagged by OwnerPortfolioShape.inv_inPortfolio.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: lot in two portfolios is flagged by LotPortfolioShape.inPortfolio.maxCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: top-level absence outside the five codes is flagged by LotPortfolioShape.portfolioAbsence.in",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: absence detail outside the 18 codes is flagged by LotPortfolioShape.portfolioAbsenceDetail.in",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate portfolio id is refused by a native constraint",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: grantor with no deed is flagged by GrantorShape.inv_hasGrantor.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: grantor on two deeds is flagged by GrantorShape.inv_hasGrantor.maxCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: HAS_GRANTOR ends on a grantor is flagged by DeedGrantorShape.hasGrantor.class",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: grantor with empty name is flagged by GrantorShape.grantorName.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: grantor name as number is flagged by GrantorShape.grantorName.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: grantor with empty address is flagged by GrantorShape.mailingAddress.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: grantor with empty second line is flagged by GrantorShape.addressLineTwo.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: grantor with empty zip is flagged by GrantorShape.zipCode.minLength",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate grantor key is refused by a native constraint",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: financing link ends on a building is flagged by LotFinancingShape.hasFinancingDocument.class",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: financing document without id is flagged by DocumentShape.documentId.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: financing document without type is flagged by DocumentShape.documentType.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: financing document without a party is flagged by DocumentShape.hasParty.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: financing document with negative amount is flagged by DocumentShape.documentAmount.minInclusive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: violation without id is flagged by ViolationShape.violationId.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: violation id as text is flagged by ViolationShape.violationId.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: violation without class is flagged by ViolationShape.violationClass.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: violation of class D is flagged by ViolationShape.violationClass.in",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: violation without status is flagged by ViolationShape.violationStatus.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: violation with status Dismissed is flagged by ViolationShape.violationStatus.in",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: violation without inspection date is flagged by ViolationShape.inspectionDate.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: inspection date as text is flagged by ViolationShape.inspectionDate.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: violation without order number is flagged by ViolationShape.orderNumber.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: order number as integer is flagged by ViolationShape.orderNumber.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: order number with a leading zero is flagged by ViolationShape.orderNumber.pattern",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: violation with no building is flagged by ViolationShape.inv_hasViolation.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: violation cited by two buildings is flagged by ViolationShape.inv_hasViolation.maxCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate violation id is refused by a native constraint",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: violation link ends on a lot is flagged by BuildingViolationShape.hasViolation.class",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: problem without id is flagged by ProblemShape.problemId.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: problem id as text is flagged by ProblemShape.problemId.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: problem without complaint id is flagged by ProblemShape.complaintId.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: complaint id as text is flagged by ProblemShape.complaintId.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: problem without type is flagged by ProblemShape.problemType.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: problem of type URGENT is flagged by ProblemShape.problemType.in",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: problem without category is flagged by ProblemShape.majorCategory.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: problem without status is flagged by ProblemShape.problemStatus.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: problem with status CLOSED is flagged by ProblemShape.problemStatus.in",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: problem without received date is flagged by ProblemShape.receivedDate.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: received date as text is flagged by ProblemShape.receivedDate.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: problem without duplicate flag is flagged by ProblemShape.duplicateFlag.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate flag as text is flagged by ProblemShape.duplicateFlag.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: problem with no building is flagged by ProblemShape.inv_hasProblem.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: problem carried by two buildings is flagged by ProblemShape.inv_hasProblem.maxCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate problem id is refused by a native constraint",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: problem link ends on a lot is flagged by BuildingProblemShape.hasProblem.class",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: case without id is flagged by LitigationShape.litigationId.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: case id as text is flagged by LitigationShape.litigationId.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: case without type is flagged by LitigationShape.caseType.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: case type as number is flagged by LitigationShape.caseType.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: case without status is flagged by LitigationShape.caseStatus.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: case status as number is flagged by LitigationShape.caseStatus.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: case without open judgement is flagged by LitigationShape.openJudgement.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: open judgement MAYBE is flagged by LitigationShape.openJudgement.in",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: open date as text is flagged by LitigationShape.caseOpenDate.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: finding of Guilty is flagged by LitigationShape.harassmentFinding.in",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: finding date as text is flagged by LitigationShape.findingDate.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: negative penalty is flagged by LitigationShape.penalty.minInclusive",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: penalty as text is flagged by LitigationShape.penalty.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: respondent as number is flagged by LitigationShape.respondent.datatype",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: case with no building is flagged by LitigationShape.inv_hasLitigation.minCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: case carried by two buildings is flagged by LitigationShape.inv_hasLitigation.maxCount",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate case id is refused by a native constraint",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: case link ends on a lot is flagged by BuildingLitigationShape.hasLitigation.class",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: registration end before last is flagged by queries/checks/q02-end-before-last.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate building and registration pair is flagged by queries/checks/q02-duplicate-pair.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: duplicate HAS_DEED pair is flagged by queries/checks/q03-duplicate-deed-pair.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: corporation name on a head officer is flagged by queries/checks/q04-corporation-name-types.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: site manager with an address is flagged by queries/checks/q04-site-manager-address.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
       "check": "negative: filing date after the snapshot is flagged by queries/checks/q05-filing-date-not-future.cypher",
       "passed": true,
       "detail": ""
     },
     {
-      "check": "negative: DOS entity linked to an owner contact is flagged by queries/checks/q05-no-relationships.cypher",
+      "check": "negative: DOS entity linked to an contact is flagged by queries/checks/q05-no-relationships.cypher",
       "passed": true,
       "detail": ""
     },
@@ -1149,14 +2614,699 @@
       "detail": ""
     },
     {
-      "check": "negative: duplicate dosId is refused by a native constraint",
+      "check": "negative: duplicate masked text is flagged by queries/checks/q06-addresses.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: list key that does not match its address and ZIP is flagged by queries/checks/q06-addresses.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: node that is both a masked and a listed address is flagged by queries/checks/q06-addresses.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: node that is both masked addresses is flagged by queries/checks/q06-addresses.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: masked address linked to a contact is flagged by queries/checks/q06-no-relationships.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: listed address linked to a contact is flagged by queries/checks/q06-no-relationships.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: portfolio masked address with a relationship is flagged by queries/checks/q06-no-relationships.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: party type 4 is flagged by queries/checks/q07-documents.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: hub count without address is flagged by queries/checks/q07-documents.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: scope F party with an address and no hub count in a non-financing document is flagged by queries/checks/q07-documents.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: detail without a top-level reason is flagged by queries/checks/q08-absence.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: absence reason on a lot in a network is flagged by queries/checks/q08-absence.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: detail under the wrong top-level reason is flagged by queries/checks/q08-absence.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: covers without a registration id is flagged by queries/checks/q08-covers.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: covers with a registration id as text is flagged by queries/checks/q08-covers.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: lot in a network that no landlord covers is flagged by queries/checks/q08-covers.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: landlord covering a lot of another network is flagged by queries/checks/q08-covers.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: link from a landlord to itself is flagged by queries/checks/q08-links.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: link with the higher landlord id first is flagged by queries/checks/q08-links.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: name link without an edge id is flagged by queries/checks/q08-links.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: address link with a weight of zero is flagged by queries/checks/q08-links.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: identity link with a weight other than 100 is flagged by queries/checks/q08-links.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: link inside a network with no group id is flagged by queries/checks/q08-links.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: network with no link inside it is flagged by queries/checks/q08-links.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: landlord with an empty address list is flagged by queries/checks/q08-labels.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: landlord with unsorted addresses is flagged by queries/checks/q08-labels.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: network with no anchor is flagged by queries/checks/q08-labels.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: portfolio with two anchors is flagged by queries/checks/q08-labels.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: detail without a top-level reason is flagged by queries/checks/q09-absence.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: absence reason on a lot in a portfolio is flagged by queries/checks/q09-absence.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: detail under the wrong top-level reason is flagged by queries/checks/q09-absence.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: landlord with no lot and no link is flagged by queries/checks/q09-landlords.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: lot in a portfolio that no landlord covers is flagged by queries/checks/q09-landlords.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: landlord in a multi-landlord portfolio with no link is flagged by queries/checks/q09-landlords.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: link from a landlord to itself is flagged by queries/checks/q09-links.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: link with a signal outside the six codes is flagged by queries/checks/q09-links.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: link without a signal is flagged by queries/checks/q09-links.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: deed link with a network weight is flagged by queries/checks/q09-links.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: link between landlords of different portfolios is flagged by queries/checks/q09-links.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: landlord covering lots of two portfolios is flagged by queries/checks/q09-links.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: mortgage with party type 3 is flagged by queries/checks/q11-mortgages.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: mortgage naming no HPD owner is flagged by queries/checks/q11-mortgages.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: affiliation type stored on a document is flagged by queries/checks/q11-mortgages.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: evidence status stored on a link is flagged by queries/checks/q11-mortgages.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: named grantor without nameKey is flagged by queries/checks/q12-name-keys.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: grantee nameKey not N3 is flagged by queries/checks/q12-name-keys.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: nameKey without a name is flagged by queries/checks/q12-name-keys.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: not-a-sale flag stored on a deed is flagged by queries/checks/q12-name-keys.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: attribution stored on a link is flagged by queries/checks/q12-name-keys.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: financing document of another type is flagged by queries/checks/q13-financing.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: financing link from a building is flagged by queries/checks/q13-financing.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: financing link with a property is flagged by queries/checks/q13-financing.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: kind stored on a document is flagged by queries/checks/q13-financing.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: outstanding flag stored on a document is flagged by queries/checks/q13-financing.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: hub count on a party with no address is flagged by queries/checks/q13-financing.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: registration status stored on a registration is flagged by queries/checks/q14-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: supporting flag stored on a deed is flagged by queries/checks/q14-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: relation stored on a lot is flagged by queries/checks/q14-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a registration link is flagged by queries/checks/q14-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: period dates stored on a registration node is flagged by queries/checks/q14-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: violation link from a lot is flagged by queries/checks/q15-violations.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: violation link with a property is flagged by queries/checks/q15-violations.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: rate stored on a lot is flagged by queries/checks/q15-violations.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: open count stored on a building is flagged by queries/checks/q15-violations.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: oldest date stored on a violation is flagged by queries/checks/q15-violations.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: pest kind stored on a violation is flagged by queries/checks/q15-violations.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: description stored on a violation is flagged by queries/checks/q15-violations.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: apartment stored on a violation is flagged by queries/checks/q15-violations.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: review status stored on a lot is flagged by queries/checks/q16-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: review status stored on a contact is flagged by queries/checks/q16-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: review status stored on a DOS entity is flagged by queries/checks/q16-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: retrieved item node created is flagged by queries/checks/q16-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: reported claim node created is flagged by queries/checks/q16-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: filing document node created is flagged by queries/checks/q16-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: lapsed status stored on a lot is flagged by queries/checks/q17-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a building is flagged by queries/checks/q17-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a registration is flagged by queries/checks/q17-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a registration link is flagged by queries/checks/q17-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a deed is flagged by queries/checks/q18-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a grantor is flagged by queries/checks/q18-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a grantee is flagged by queries/checks/q18-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a landlord is flagged by queries/checks/q19-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on an operational network is flagged by queries/checks/q19-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on an owner portfolio is flagged by queries/checks/q19-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a lot is flagged by queries/checks/q19-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a connecting link is flagged by queries/checks/q19-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a lot is flagged by queries/checks/q20-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a registration is flagged by queries/checks/q20-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a contact is flagged by queries/checks/q20-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a deed is flagged by queries/checks/q20-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a DOS entity is flagged by queries/checks/q20-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on an owner portfolio is flagged by queries/checks/q20-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a lot is flagged by queries/checks/q21-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a building is flagged by queries/checks/q21-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on an operational network is flagged by queries/checks/q21-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on an owner portfolio is flagged by queries/checks/q21-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a contact is flagged by queries/checks/q22-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a grantee is flagged by queries/checks/q22-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a grantor is flagged by queries/checks/q22-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a DOS entity is flagged by queries/checks/q22-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a contact is flagged by queries/checks/q23-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a registration is flagged by queries/checks/q23-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a building is flagged by queries/checks/q23-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a lot is flagged by queries/checks/q23-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a network mask is flagged by queries/checks/q23-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a contact is flagged by queries/checks/q24-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a grantee is flagged by queries/checks/q24-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a grantor is flagged by queries/checks/q24-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a DOS entity is flagged by queries/checks/q24-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a DOS entity is flagged by queries/checks/q25-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: registry search node created is flagged by queries/checks/q25-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: registry finding node created is flagged by queries/checks/q25-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: foreign entity node created is flagged by queries/checks/q25-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a lot is flagged by queries/checks/q26-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a building is flagged by queries/checks/q26-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a contact is flagged by queries/checks/q26-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on a DOS entity is flagged by queries/checks/q26-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on an operational network is flagged by queries/checks/q26-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: status stored on an owner portfolio is flagged by queries/checks/q26-computed-not-stored.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: problem link from a lot is flagged by queries/checks/q27-problems.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: problem link with a property is flagged by queries/checks/q27-problems.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: rate stored on a lot is flagged by queries/checks/q27-problems.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: problem count stored on a building is flagged by queries/checks/q27-problems.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: problem received before the loaded window is flagged by queries/checks/q27-problems.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: apartment stored on a problem is flagged by queries/checks/q27-problems.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: coordinates stored on a problem is flagged by queries/checks/q27-problems.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: case link from a lot is flagged by queries/checks/q28-litigation.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: case link with a property is flagged by queries/checks/q28-litigation.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: owner match stored on a case is flagged by queries/checks/q28-litigation.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: case count stored on a building is flagged by queries/checks/q28-litigation.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: case count stored on a lot is flagged by queries/checks/q28-litigation.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: finding date without a finding is flagged by queries/checks/q28-litigation.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: finding date with No Harassment is flagged by queries/checks/q28-litigation.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: respondent keys without a respondent is flagged by queries/checks/q28-litigation.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: respondent keys empty list is flagged by queries/checks/q28-litigation.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: empty respondent string is flagged by queries/checks/q28-litigation.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: address stored on a case is flagged by queries/checks/q28-litigation.cypher",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "check": "negative: judgement amount stored on a case is flagged by queries/checks/q28-litigation.cypher",
       "passed": true,
       "detail": ""
     },
     {
       "check": "seeded bad data left no trace (rolled back)",
       "passed": true,
-      "detail": "(3983274, 3734461) -> (3983274, 3734461)"
+      "detail": "(23464305, 23537937) -> (23464305, 23537937)"
     }
   ]
 }

@@ -1,6 +1,6 @@
 -- Q1.2 expected answers for Building nodes and HAS_BUILDING, from the frozen JustFix/WoW snapshot.
 -- Independent of the loader. hpd_registrations (2026-05-29) and pluto_latest (26v1), checked read-only 2026-11-11.
--- Provisional until the dump is identified (data/README.md).
+-- verified against the frozen baseline recorded in data/README.md (2026-11-16).
 --
 -- Rules: a valid BIN matches ^[1-5][0-9]{6}$ and does not end in 000000; other BINs are excluded.
 -- A Lot has a Building for each distinct valid BIN registered on its BBL. Building.address = house number and
