@@ -6,7 +6,18 @@ The POC uses one fixed JustFix/Who Owns What PostgreSQL snapshot. Database-backe
 
 Complete this short record from the actual dump and restore procedure before freezing acceptance fixtures. Unknown values are explicitly pending; the database name and table row counts alone do not identify a dump.
 
-**Baseline (identified 2026-11-16).** The frozen baseline is a plain-SQL dump of the 11 `public` source tables of the live `justfixwow` database, taken by the user on 2026-11-16 and checksummed:
+**Current database (recorded 2026-11-28).** The source database is now `watchline`, a new version of the JustFix/WoW database with data through 2026-10-30. It replaces `justfixwow` as the source for loads, tests and expected answers (the baseline below is superseded and kept as history). Every database-backed fixture is re-derived against `watchline`.
+
+| Item | Value |
+| --- | --- |
+| Database | `watchline` (PostgreSQL; connection in the git-ignored `.env`, `JUSTFIX_DATABASE_URL`). The Neo4j POC database has the same name; they are different systems |
+| Data through | 2026-10-30 (the BOR manifest's `snapshot_date`, from the newest `real_property_master.recordedfiled` and `hpd_registrations.lastregistrationdate`) |
+| Identified by | Row counts and content fingerprints of 9 tables, matching the pinned BOR release's `manifest.json` `source_tables` exactly (`scripts/check_bor_snapshot.py`, all tables match, user-run 2026-11-28): `hpd_contacts` 744,753; `hpd_registrations` 187,127; `hpd_registrations_grouped_by_bbl_with_contacts` 187,050; `wow_landlords` 172,991; `landlords_with_connections` 119,217; `pluto_latest` 858,312; `real_property_master` 17,143,212; `real_property_legals` 22,833,692; `real_property_parties` 46,772,868. The fingerprint is count plus the sum of the first 60 bits of `md5(row::text)` per row |
+| Paired BOR release | `bor-v0.3.0-watchline-2026-10-30.zip`, run `2026-10-30-d416292c`, snapshot `watchline-2026-10-30`, SHA-256 `21677ec3e3020a4dda2f4999b2b45173b99586c456d75db6a6834423aa62b42e` (pinned in `sources.yaml`, `bor_layers`) |
+| Dump file and checksum | Pending: no dump of `watchline` has been taken. Until then the fingerprints above identify the database. Tables the loaders read but the BOR manifest does not fingerprint (`hpd_violations`, `hpd_complaints_and_problems`, `hpd_litigations`, `dos_active_corporations`) are not yet identified |
+| How it was created | Pending: restore procedure and source dumps not recorded |
+
+**Previous baseline (identified 2026-11-16; superseded 2026-11-28).** The frozen baseline is a plain-SQL dump of the 11 `public` source tables of the live `justfixwow` database, taken by the user on 2026-11-16 and checksummed:
 
 | Item | Value |
 | --- | --- |

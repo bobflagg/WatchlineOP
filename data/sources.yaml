@@ -268,21 +268,23 @@ sources:
     id: null
     kind: release  # CSV files in a zip kept outside the repo; read with src/watchline/bor_release.py
     release: v0.3.0
-    run_id: 2026-05-29-869bd299
-    snapshot_id: justfixwow-2026-05-29
+    run_id: 2026-10-30-d416292c
+    snapshot_id: watchline-2026-10-30
     schema_version: "0.3.0"
-    file: bor-v0.3.0-justfixwow-2026-05-29.zip
-    sha256: b085ac37ea818dae65b395fec7750fd3afcfa3da47c499ced6743fbfc4124223
+    file: bor-v0.3.0-watchline-2026-10-30.zip
+    sha256: 21677ec3e3020a4dda2f4999b2b45173b99586c456d75db6a6834423aa62b42e
     path_env: BOR_RELEASE_ZIP  # default ~/Learning/Sabbatical/beneficial-ownership-resolution/dist/<file>
     used_for: group memberships and the supporting edges, loaded as Type II
     reliability: II
     source_category: project_derived
-    retrieved_at: 2026-11-15  # the release's build date; its data is complete through 2026-05-29
+    retrieved_at: 2026-11-28  # the release's build date; its data is complete through 2026-10-30
     columns_used: identity_names.identity_id, identity_names.business_house, identity_names.business_street, identity_names.business_apartment, decision_events.subject_id, decision_events.detail, groups.anchor_node_id, node_names.node_id, node_names.name, node_observations.selected_observation_id, observation_contacts.observation_id, observation_contacts.business_house, observation_contacts.business_street, observation_contacts.business_apartment, observation_contacts.business_city, observation_contacts.business_state, observation_contacts.business_zip, observation_contacts.contact_type, observation_contacts.first_name, observation_contacts.middle_initial, observation_contacts.last_name, observation_contacts.corporation_name, groups.layer, groups.group_id, groups.split, group_bbls.layer, group_bbls.group_id, group_bbls.bbl, bbl_status.layer, bbl_status.bbl, bbl_status.status, bbl_status.reason_code, bbl_status.top_level_reason, network_membership.node_id, network_membership.operational_network_id, network_membership.component_id, method_metrics.stage, method_metrics.precision, method_metrics.provisional, node_observations.node_id, node_observations.bbl, node_observations.registration_id, graph_edges.layer, graph_edges.edge_id, graph_edges.node_a, graph_edges.node_b, graph_edges.stage, graph_edges.weight, graph_edges.kept, graph_edges.drop_reason, graph_edges.evidence_type, graph_edges.evidence_id, graph_edges.group_id, groups.composition, group_bbls.rental, group_members.layer, group_members.group_id, group_members.node_id, masked_addresses.address_id, masked_addresses.method, masked_addresses.normalizer_version, masked_addresses.degree, masked_addresses.degree_unit, masked_addresses.threshold, masked_addresses.decision, masked_addresses.address, decision_events.layer, decision_events.stage, decision_events.subject_type, decision_events.rule
     notes: >-
-      Not read from justfixwow. Built by BOR from the same snapshot (run 2026-05-29-869bd299), so group ids
-      are valid for this run only. Release v0.3.0 (2026-11-15) replaced v0.2.1 (run 2026-05-29-869bd299) when BOR began publishing every
-      edge (graph_edges); network_edges and group_witness are no longer read. Precision figures in the release rest on a provisional gold standard
+      Not read from the source database. Built by BOR from the `watchline` snapshot (run 2026-10-30-d416292c, snapshot_date 2026-10-30), so group
+      ids are valid for this run only; the release is valid only with the matching database (compare manifest source_tables with
+      scripts/check_bor_snapshot.py). It replaced the earlier v0.3.0 build on snapshot justfixwow-2026-05-29 (run 2026-05-29-869bd299; zip
+      bor-v0.3.0-justfixwow-2026-05-29.zip, sha256 b085ac37...4223), which replaced v0.2.1 when BOR began publishing every
+      edge (graph_edges); network_edges and group_witness are no longer read. This release publishes no method precision. Precision figures in the release rest on a provisional gold standard
       (human_llm_provisional); a group is a lead, not legal ownership. The Who Owns What tables in the wow
       schema (wow_bldgs, wow_landlords, wow_portfolios) are a different, third-party grouping and must not
       be mistaken for the BOR layers.
